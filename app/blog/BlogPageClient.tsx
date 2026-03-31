@@ -24,6 +24,19 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 4,
+    title: 'Amanita phalloides (Death Cap): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Amanita phalloides, the Death Cap, is one of the most dangerous mushrooms in the world. Learn death cap identification by cap, gills, ring, volva, habitat, and toxic risk to stay safe.',
+    category: 'Safety',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Mar 31, 2026',
+    readTime: '13 min',
+    slug: '/amanita-phalloides-death-cap',
+    image: '/amanita-phalloides-death-cap-identification.webp',
+  },
+  {
     id: 1,
     title: 'Death Cap vs Destroying Angel: Key Differences, Identification & Safety Guide',
     excerpt:
