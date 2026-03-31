@@ -72,6 +72,7 @@ function shuffleOptions(q: typeof QUESTIONS[0]) {
     [indexed[i], indexed[j]] = [indexed[j], indexed[i]]
   }
   return {
+    q: q.q,
     options: indexed.map(x => x.opt),
     correct: indexed.findIndex(x => x.isCorrect),
   }
