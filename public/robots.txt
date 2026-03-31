@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Optional crawl hygiene
+Disallow: /login
+Disallow: /api/
+Disallow: /checkout/
+Disallow: /account/
+
+Sitemap: https://mushroomidentifiers.com/sitemap.xml

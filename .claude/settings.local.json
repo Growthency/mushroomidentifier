@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /e/mushroomidentifiers -maxdepth 1 -type f \\\\\\(-name .env* -o -name *config* -o -name *.json \\\\\\))",
+      "Bash(ls -la /e/mushroomidentifiers/.env*)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}
