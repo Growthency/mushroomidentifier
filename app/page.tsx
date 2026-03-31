@@ -577,6 +577,13 @@ export default function Home() {
           <p className="text-base sm:text-lg leading-relaxed mt-8 text-center" style={{ color: 'var(--text-muted)' }}>
             Whether you are walking through a Pacific Northwest conifer forest, exploring a Rocky Mountain meadow, or simply observing mushrooms growing on a fallen hardwood log, the tool can provide a quick starting point for understanding what species you may be seeing.
           </p>
+          <p className="text-base sm:text-lg leading-relaxed mt-4 text-center" style={{ color: 'var(--text-muted)' }}>
+            Want to sharpen your identification skills before heading into the field? Try our free{' '}
+            <Link href="/mushroom-identification-quiz" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>
+              mushroom identification quiz
+            </Link>{' '}
+            — 50 expert questions covering toxic species, edible fungi, and anatomy terms with a 30-second timer per question.
+          </p>
         </div>
       </section>
 

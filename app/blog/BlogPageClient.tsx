@@ -24,6 +24,19 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 7,
+    title: 'Mushroom Identification Quiz — Test Your Fungi Knowledge (50 Questions)',
+    excerpt:
+      'Think you know your mushrooms? Take our free 50-question mushroom identification quiz with a 30-second timer, instant feedback, and high score tracking. Challenge yourself now!',
+    category: 'Guide',
+    riskLevel: 'General',
+    region: 'Worldwide',
+    date: 'Mar 31, 2026',
+    readTime: '10 min',
+    slug: '/mushroom-identification-quiz',
+    image: '/mushroom-identification-quiz-various-species.webp',
+  },
+  {
     id: 6,
     title: 'Amanita virosa (Destroying Angel): Identification, Features, Habitat & Safety Guide',
     excerpt:
