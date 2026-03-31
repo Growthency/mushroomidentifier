@@ -24,6 +24,19 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 5,
+    title: 'Amanita bisporigera (Destroying Angel): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Amanita bisporigera, the Destroying Angel, is one of the deadliest mushrooms in North America. Learn destroying angel identification by its pure white cap, gills, ring, volva, and habitat.',
+    category: 'Safety',
+    riskLevel: 'Toxic',
+    region: 'US North America',
+    date: 'Mar 31, 2026',
+    readTime: '12 min',
+    slug: '/amanita-bisporigera-destroying-angel',
+    image: '/amanita-bisporigera-destroying-angel-identification.webp',
+  },
+  {
     id: 4,
     title: 'Amanita phalloides (Death Cap): Identification, Features, Habitat & Safety Guide',
     excerpt:
