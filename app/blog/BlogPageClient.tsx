@@ -36,6 +36,19 @@ const articles: Article[] = [
     slug: '/death-cap-vs-destroying-angel',
     image: '/Death Cap vs Destroying Angel.webp',
   },
+  {
+    id: 2,
+    title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
+    excerpt:
+      'Learn mushroom anatomy with a clear guide to cap, gills, stem, ring, and volva. Understand how these fungal structures help with accurate mushroom identification and safety.',
+    category: 'Guide',
+    riskLevel: 'General',
+    region: 'Worldwide',
+    date: 'Mar 31, 2026',
+    readTime: '14 min',
+    slug: '/mushroom-parts-explained',
+    image: '/parts of mushrooms.webp',
+  },
 ]
 
 const riskLevelColors: Record<string, string> = {
