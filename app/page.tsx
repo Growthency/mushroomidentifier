@@ -15,6 +15,15 @@ interface Particle {
 const PARTICLE_COUNT = 80
 const CONNECTION_DISTANCE = 150
 
+const REVIEWS = [
+  { text: "This is genuinely the best mushroom identification tool I have used. The look-alike warnings saved me from a dangerous mistake on my last foray.", name: "Marcus K.", role: "Professional Forager, Germany", avatar: "https://i.pravatar.cc/80?img=11" },
+  { text: "The UI is stunning and the results are incredibly detailed. I use it every weekend. Worth every penny of the Pro subscription.", name: "Sophie L.", role: "Mycology Enthusiast, France", avatar: "https://i.pravatar.cc/80?img=5" },
+  { text: "As a mycologist I was skeptical — but the accuracy is remarkable. The critical features section is exactly what beginners need to stay safe.", name: "Dr. R. Tanaka", role: "Mycologist, Japan", avatar: "https://i.pravatar.cc/80?img=12" },
+  { text: "I found a rare species on my first hike using this tool. The habitat analysis feature is something no other app offers.", name: "Elena V.", role: "Nature Photographer, Italy", avatar: "https://i.pravatar.cc/80?img=47" },
+  { text: "Incredibly fast results. I showed it to my foraging club and everyone was blown away. We now use it as a first check on every find.", name: "James O.", role: "Hiking Guide, USA", avatar: "https://i.pravatar.cc/80?img=33" },
+  { text: "The toxicity warnings are a lifesaver — literally. Clear, detailed and the look-alike comparisons helped me teach my students mushroom safety.", name: "Priya M.", role: "Botanist, India", avatar: "https://i.pravatar.cc/80?img=44" },
+]
+
 export default function Home() {
   const [userId, setUserId] = useState<string | null>(null)
   const [hasUsedFreeScan, setHasUsedFreeScan] = useState(false)
@@ -23,6 +32,7 @@ export default function Home() {
   const [analyzing, setAnalyzing] = useState(false)
   const [result, setResult] = useState<any | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [reviewIdx, setReviewIdx] = useState(0)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<Particle[]>([])
@@ -116,6 +126,11 @@ export default function Home() {
     return () => {
       window.removeEventListener('resize', resizeCanvas)
     }
+  }, [])
+
+  useEffect(() => {
+    const t = setInterval(() => setReviewIdx(i => (i + 1) % 6), 4000)
+    return () => clearInterval(t)
   }, [])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1129,6 +1144,9 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
+                <img src="/Death%20Cap%20vs%20Paddy%20Straw%20Mushroom.webp" alt="Death Cap vs Paddy Straw Mushroom comparison" className="w-full h-full object-cover" />
+              </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 1. Death Cap vs Paddy Straw Mushroom
               </h3>
@@ -1176,6 +1194,9 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
+                <img src="/Destroying%20Angel%20vs%20Button%20Mushroom.webp" alt="Destroying Angel vs Button Mushroom comparison" className="w-full h-full object-cover" />
+              </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 2. Destroying Angel vs Button Mushroom
               </h3>
@@ -1223,26 +1244,23 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-xl mb-16" style={{ height: '400px' }}>
-            <img
-              src="https://images.pexels.com/photos/1400172/pexels-photo-1400172.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              alt="Mushroom identifier analyzing chanterelle mushrooms growing in forest habitat"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-              <div className="p-8">
-                <h3 className="font-playfair text-2xl sm:text-3xl font-bold text-white mb-2">
-                  Visual Comparison Is Critical
-                </h3>
-                <p className="text-white/90 text-base sm:text-lg">
-                  Our AI mushroom identifier uses advanced pattern recognition to spot subtle differences between look-alike species.
-                </p>
-              </div>
+          <div className="relative overflow-hidden rounded-2xl mb-16 p-10 text-center" style={{ background: 'linear-gradient(135deg, var(--accent-bg) 0%, var(--bg-card) 100%)', border: '1px solid var(--border)' }}>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)', color: '#fff' }}>
+              <Microscope className="w-8 h-8" />
             </div>
+            <h3 className="font-playfair text-2xl sm:text-3xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+              Visual Comparison Is Critical
+            </h3>
+            <p className="text-base sm:text-lg max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
+              Our AI mushroom identifier uses advanced pattern recognition to spot subtle differences between look-alike species — analyzing cap texture, gill structure, and habitat clues simultaneously.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
+                <img src="/Chanterelle%20vs%20False%20Chanterelle.webp" alt="Chanterelle vs False Chanterelle comparison" className="w-full h-full object-cover" />
+              </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 3. Chanterelle vs False Chanterelle
               </h3>
@@ -1290,6 +1308,9 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
+                <img src="/Oyster%20Mushroom%20vs%20Angel%20Wings.webp" alt="Oyster Mushroom vs Angel Wings comparison" className="w-full h-full object-cover" />
+              </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 4. Oyster Mushroom vs Angel Wings
               </h3>
@@ -1339,6 +1360,9 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
+                <img src="/Morel%20vs%20False%20Morel.webp" alt="Morel vs False Morel comparison" className="w-full h-full object-cover" />
+              </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 5. Morel vs False Morel
               </h3>
@@ -1386,6 +1410,9 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
+                <img src="/Puffball%20vs%20Young%20Amanita.webp" alt="Puffball vs Young Amanita comparison" className="w-full h-full object-cover" />
+              </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 6. Puffball vs Young Amanita
               </h3>
@@ -1433,26 +1460,23 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-xl mb-16" style={{ height: '400px' }}>
-            <img
-              src="https://images.pexels.com/photos/1227513/pexels-photo-1227513.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              alt="Mushroom identifier distinguishing bolete mushrooms with distinctive pore patterns"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-              <div className="p-8">
-                <h3 className="font-playfair text-2xl sm:text-3xl font-bold text-white mb-2">
-                  Structural Details Matter
-                </h3>
-                <p className="text-white/90 text-base sm:text-lg">
-                  Pore patterns, gill structures, and stem characteristics are key to accurate mushroom identification.
-                </p>
-              </div>
+          <div className="relative overflow-hidden rounded-2xl mb-16 p-10 text-center" style={{ background: 'linear-gradient(135deg, var(--bg-card) 0%, var(--accent-bg) 100%)', border: '1px solid var(--border)' }}>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)', color: '#fff' }}>
+              <Leaf className="w-8 h-8" />
             </div>
+            <h3 className="font-playfair text-2xl sm:text-3xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+              Structural Details Matter
+            </h3>
+            <p className="text-base sm:text-lg max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
+              Pore patterns, gill structures, and stem characteristics are the key to accurate mushroom identification — features our AI is specifically trained to detect and compare.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
+                <img src="/King%20Bolete%20vs%20Bitter%20Bolete.webp" alt="King Bolete vs Bitter Bolete comparison" className="w-full h-full object-cover" />
+              </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 7. King Bolete vs Bitter Bolete
               </h3>
@@ -1500,6 +1524,9 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
+                <img src="/Shaggy%20Ink%20Cap%20vs%20Common%20Ink%20Cap.webp" alt="Shaggy Ink Cap vs Common Ink Cap comparison" className="w-full h-full object-cover" />
+              </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 8. Shaggy Ink Cap vs Common Ink Cap
               </h3>
@@ -1612,74 +1639,48 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-24 px-6 overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-4">
+          <div className="text-center mb-16">
             <p className="text-xs font-semibold tracking-widest mb-3" style={{ color: 'var(--accent)' }}>REVIEWS</p>
             <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
               Trusted by Foragers <span className="italic" style={{ color: 'var(--accent)' }}>Worldwide</span>
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
-            <div className="p-8 rounded-xl card-lift" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-amber-400 text-xl">★</span>
-                ))}
-              </div>
-              <p className="text-base leading-relaxed mb-6 italic" style={{ color: 'var(--text-muted)' }}>
-                "This is genuinely the best mushroom identification tool I have used. The look-alike warnings saved me from a dangerous mistake on my last foray."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
-                  MK
-                </div>
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Marcus K.</p>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Professional Forager, Germany</p>
-                </div>
-              </div>
+          {/* Slider */}
+          <div className="relative">
+            <div className="grid md:grid-cols-3 gap-8">
+              {[0, 1, 2].map(offset => {
+                const review = REVIEWS[(reviewIdx + offset) % REVIEWS.length]
+                return (
+                  <div key={offset} className="p-8 rounded-2xl card-lift transition-all duration-500" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+                    <div className="flex gap-1 mb-5">
+                      {[...Array(5)].map((_, i) => <span key={i} className="text-amber-400 text-xl">★</span>)}
+                    </div>
+                    <p className="text-base leading-relaxed mb-6 italic" style={{ color: 'var(--text-muted)' }}>
+                      "{review.text}"
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full object-cover" style={{ border: '2px solid var(--accent-bg)' }} />
+                      <div>
+                        <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{review.name}</p>
+                        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{review.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
-
-            <div className="p-8 rounded-xl card-lift" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-amber-400 text-xl">★</span>
-                ))}
-              </div>
-              <p className="text-base leading-relaxed mb-6 italic" style={{ color: 'var(--text-muted)' }}>
-                "The UI is stunning and the results are incredibly detailed. I use it every weekend. Worth every penny of the Pro subscription."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
-                  SL
-                </div>
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Sophie L.</p>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Mycology Enthusiast, France</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-8 rounded-xl card-lift" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-amber-400 text-xl">★</span>
-                ))}
-              </div>
-              <p className="text-base leading-relaxed mb-6 italic" style={{ color: 'var(--text-muted)' }}>
-                "As a mycologist I was skeptical — but the accuracy is remarkable. The critical features section is exactly what beginners need to stay safe."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
-                  RT
-                </div>
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Dr. R. Tanaka</p>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Mycologist, Japan</p>
-                </div>
-              </div>
+            {/* Dots */}
+            <div className="flex justify-center gap-2 mt-10">
+              {REVIEWS.map((_, i) => (
+                <button key={i} onClick={() => setReviewIdx(i)}
+                  className="w-2 h-2 rounded-full transition-all"
+                  style={{ background: i === reviewIdx ? 'var(--accent)' : 'var(--border)', transform: i === reviewIdx ? 'scale(1.4)' : 'scale(1)' }}
+                  aria-label={`Review ${i + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
