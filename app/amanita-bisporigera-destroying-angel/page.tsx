@@ -470,7 +470,7 @@ export default function DestroyingAngelPage() {
           {/* AI Identifier */}
           <Section>
             <H2>How Our Mushroom Identifier Helps Identify Destroying Angel</H2>
-            <p className="mb-4">Our mushroom identifier uses AI and image recognition to analyze:</p>
+            <p className="mb-4">Our <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">identify deadly mushrooms online</Link> tool uses AI and image recognition to analyze:</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
               {[
                 'Pure white cap',
@@ -530,7 +530,7 @@ export default function DestroyingAngelPage() {
               </p>
               <p className="mt-3">
                 Understanding its cap, gills, stem, ring, and volva, along with its habitat and growth pattern,
-                is essential for safe identification. Using a mushroom identifier can help analyze features, but
+                is essential for safe identification. Using a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">toxic fungal species identifier</Link> can help analyze features, but
                 should always be combined with expert knowledge.{' '}
                 <strong>When in doubt — do not touch or consume.</strong>
               </p>

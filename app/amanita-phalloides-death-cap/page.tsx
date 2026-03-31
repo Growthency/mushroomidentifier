@@ -554,7 +554,7 @@ export default function DeathCapPage() {
           <Section>
             <H2>How Our Mushroom Identifier Helps Identify Death Cap</H2>
             <p className="mb-4">
-              Our mushroom identifier uses AI and computer vision to analyze:
+              Our <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">AI mushroom species checker</Link> uses computer vision to analyze:
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
               {[
@@ -629,7 +629,7 @@ export default function DeathCapPage() {
                 stem, ring, and volva, along with habitat and seasonality, is critical for safe identification.
               </p>
               <p className="mt-3">
-                Using a mushroom identifier can help analyze features, but it should always be combined with expert
+                Using a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">wild mushroom identification tool</Link> can help analyze features, but it should always be combined with expert
                 knowledge. When it comes to wild mushrooms — <strong>if in doubt, do not touch or consume.</strong>
               </p>
             </InfoBox>

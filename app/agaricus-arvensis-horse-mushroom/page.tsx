@@ -406,7 +406,7 @@ export default function HorseMushroomPage() {
           {/* ── AI Identifier ── */}
           <Section>
             <H2>How Our Mushroom Identifier Helps Identify This Species</H2>
-            <p>Our <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> uses AI and computer vision to analyze:</p>
+            <p>Our <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">AI-based mushroom identification</Link> tool uses computer vision to analyze:</p>
             <div className="grid md:grid-cols-2 gap-3 my-5">
               {['Cap shape and size', 'Gill color progression', 'Stem and ring structure', 'Habitat and growth pattern'].map((feat) => (
                 <div key={feat} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>

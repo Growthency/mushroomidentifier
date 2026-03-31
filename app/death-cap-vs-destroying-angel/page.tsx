@@ -220,7 +220,7 @@ export default function DeathCapVsDestroyingAngelPage() {
               <li>Habitat and environment</li>
             </ul>
             <p>
-              This is exactly how a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier app</Link> works — analyzing multiple features together rather than relying on a single visual clue.
+              This is exactly how an <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">online wild mushroom identifier</Link> works — analyzing multiple features together rather than relying on a single visual clue.
             </p>
           </Section>
 

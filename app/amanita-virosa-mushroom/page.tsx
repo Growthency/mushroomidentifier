@@ -88,7 +88,7 @@ export default function AmanitaVirosaPage() {
               dangerous toxic mushrooms in Europe. It is responsible for many fatal poisonings due to its potent
               amatoxins, which damage the liver and kidneys. Because it closely resembles edible white mushrooms,
               accurate <em>Amanita virosa</em> identification requires careful examination of all mushroom parts
-              or assistance from a mushroom identifier.
+              or assistance from a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">poisonous mushroom identification tool</Link>.
             </p>
           </div>
 
@@ -471,7 +471,7 @@ export default function AmanitaVirosaPage() {
           {/* AI Identifier */}
           <Section>
             <H2>How Our Mushroom Identifier Helps Identify Destroying Angel</H2>
-            <p className="mb-4">Our mushroom identifier uses AI and image recognition to analyze:</p>
+            <p className="mb-4">Our <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">fungal species recognition tool</Link> uses AI and image recognition to analyze:</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
               {[
                 'Pure white cap',
