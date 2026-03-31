@@ -128,6 +128,7 @@ export default function DestroyingAngelPage() {
                 alt="Amanita bisporigera destroying angel identification — pure white mushroom in forest"
                 width={615}
                 height={820}
+                sizes="(max-width: 768px) 100vw, 820px"
                 className="w-full object-cover"
                 style={{ maxHeight: '480px', objectFit: 'cover', objectPosition: 'center top' }}
                 priority

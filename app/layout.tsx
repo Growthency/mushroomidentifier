@@ -1,11 +1,28 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Inter, Playfair_Display } from 'next/font/google'
+import Script from 'next/script'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ScrollToTop from '@/components/ui/ScrollToTop'
 
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+  style: ['normal', 'italic'],
+  weight: ['400', '700', '900'],
+})
+
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mushroomidentifiers.com'),
   title: 'Mushroom Identifier - Free Fungi Identification Tool By Picture',
   description: 'Free Mushroom Identifier tool to identify wild fungi by picture. Upload a photo to detect mushroom species using AI image recognition and a detailed mushroom ID chart.',
   icons: {
@@ -14,9 +31,15 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Mushroom Identifier - Free Fungi Identification Tool By Picture',
     description: 'Free Mushroom Identifier tool to identify wild fungi by picture. Upload a photo to detect mushroom species using AI image recognition and a detailed mushroom ID chart.',
+    url: 'https://mushroomidentifiers.com',
+    siteName: 'Mushroom Identifier',
+    type: 'website',
     images: [
       {
-        url: 'https://bolt.new/static/og_default.png',
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Mushroom Identifier - Free AI Fungi Identification Tool',
       },
     ],
   },
@@ -24,11 +47,10 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Mushroom Identifier - Free Fungi Identification Tool By Picture',
     description: 'Free Mushroom Identifier tool to identify wild fungi by picture. Upload a photo to detect mushroom species using AI image recognition and a detailed mushroom ID chart.',
-    images: [
-      {
-        url: 'https://bolt.new/static/og_default.png',
-      },
-    ],
+    images: ['/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://mushroomidentifiers.com',
   },
 }
 
@@ -38,21 +60,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="dipMWRMeOiWrrLH32OCvAQS-wR14IzCVSCLFUt9mH-0" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>" />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-X00VE6WCX6"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-X00VE6WCX6');
-            `,
-          }}
-        />
         {/* Site-wide identity schema only — page-specific schemas live in each page component */}
         <script
           type="application/ld+json"
@@ -93,6 +104,20 @@ export default function RootLayout({
           <Footer />
           <ScrollToTop />
         </ThemeProvider>
+
+        {/* Google Analytics — lazyOnload so it never blocks main thread */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-X00VE6WCX6"
+          strategy="lazyOnload"
+        />
+        <Script id="google-analytics" strategy="lazyOnload">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-X00VE6WCX6');
+          `}
+        </Script>
       </body>
     </html>
   )

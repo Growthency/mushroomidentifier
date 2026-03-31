@@ -103,6 +103,7 @@ export default function HorseMushroomPage() {
                 alt="Agaricus arvensis horse mushroom identification — large white cap in grassland habitat"
                 width={820}
                 height={546}
+                sizes="(max-width: 768px) 100vw, 820px"
                 className="w-full object-cover"
                 priority
                 style={{ display: 'block' }}

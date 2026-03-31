@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+/* Fonts loaded via next/font/google in layout.tsx — no external @import needed */
 
 @tailwind base;
 @tailwind components;
@@ -47,7 +47,7 @@ html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), 'Inter', sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -116,7 +116,7 @@ body {
 .card-glow:hover::before { opacity: 0.5; }
 
 /* ── Typography ── */
-.font-playfair { font-family: 'Playfair Display', serif; }
+.font-playfair { font-family: var(--font-playfair), 'Playfair Display', serif; }
 h1, h2, h3, h4 { letter-spacing: -0.02em; }
 
 /* ── Article / Blog Post prose styles ── */

@@ -109,10 +109,11 @@ export default function MushroomPartsExplainedPage() {
           <figure className="mb-12">
             <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
               <Image
-                src="/parts of mushrooms.webp"
+                src="/parts-of-mushrooms.webp"
                 alt="Mushroom parts explained — diagram of cap, gills, stem, ring, and volva anatomy"
                 width={900}
                 height={520}
+                sizes="(max-width: 768px) 100vw, 900px"
                 className="w-full object-cover"
                 priority
                 style={{ display: 'block' }}

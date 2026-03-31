@@ -129,6 +129,7 @@ export default function AmanitaVirosaPage() {
                 alt="Amanita virosa mushroom destroying angel — pure white specimens in European forest"
                 width={820}
                 height={546}
+                sizes="(max-width: 768px) 100vw, 820px"
                 className="w-full object-cover"
                 style={{ maxHeight: '480px', objectFit: 'cover', objectPosition: 'center' }}
                 priority

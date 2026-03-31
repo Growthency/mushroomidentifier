@@ -177,10 +177,11 @@ export default function DeathCapVsDestroyingAngelPage() {
             style={{ border: '1px solid var(--border)' }}
           >
             <Image
-              src="/Death Cap vs Destroying Angel.webp"
+              src="/death-cap-vs-destroying-angel-comparison.webp"
               alt="Death Cap vs Destroying Angel mushroom comparison guide"
               width={900}
               height={520}
+              sizes="(max-width: 768px) 100vw, 900px"
               className="w-full object-cover"
               priority
               style={{ display: 'block' }}

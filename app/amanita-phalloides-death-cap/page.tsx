@@ -205,6 +205,7 @@ export default function DeathCapPage() {
                 alt="Amanita phalloides death cap identification — three specimens in forest"
                 width={820}
                 height={615}
+                sizes="(max-width: 768px) 100vw, 820px"
                 className="w-full object-cover"
                 style={{ maxHeight: '480px', objectFit: 'cover', objectPosition: 'center' }}
                 priority
