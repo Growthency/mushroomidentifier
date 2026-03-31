@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://mushroomidentifiers.com/mushroom-fungi-identifier.webp',
         width: 1200,
         height: 630,
         alt: 'Mushroom Identifier - Free AI Fungi Identification Tool',
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Mushroom Identifier - Free Fungi Identification Tool By Picture',
     description: 'Free Mushroom Identifier tool to identify wild fungi by picture. Upload a photo to detect mushroom species using AI image recognition and a detailed mushroom ID chart.',
-    images: ['/og-image.png'],
+    images: ['https://mushroomidentifiers.com/mushroom-fungi-identifier.webp'],
   },
   alternates: {
     canonical: 'https://mushroomidentifiers.com',
