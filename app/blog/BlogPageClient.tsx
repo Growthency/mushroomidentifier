@@ -418,6 +418,11 @@ function ArticleCard({ article }: { article: Article }) {
           <span>{article.date}</span>
           <span>{article.readTime} read</span>
         </div>
+
+        {/* Read More */}
+        <div className="mt-3 flex items-center gap-1 text-sm font-semibold transition-opacity group-hover:opacity-80" style={{ color: 'var(--accent)' }}>
+          Read More <span className="transition-transform group-hover:translate-x-1 inline-block">→</span>
+        </div>
       </div>
     </Link>
   )

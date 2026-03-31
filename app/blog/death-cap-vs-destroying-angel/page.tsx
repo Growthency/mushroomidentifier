@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'Death Cap vs Destroying Angel Identification: Full Guide 2026',
@@ -703,6 +704,30 @@ export default function DeathCapVsDestroyingAngelPage() {
                 </details>
               ))}
             </div>
+          </Section>
+
+          <Divider />
+
+          {/* ── Instagram Embed ───────────────────────────── */}
+          <Section>
+            <H2>See It in the Wild</H2>
+            <p>A real-world look at these deadly mushrooms — shared on Instagram to help foragers recognize the danger in the field.</p>
+            <div className="flex justify-center my-6">
+              <blockquote
+                className="instagram-media"
+                data-instgrm-permalink="https://www.instagram.com/p/CUFMyzPoRda/"
+                data-instgrm-version="14"
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '16px',
+                  maxWidth: '540px',
+                  width: '100%',
+                  minWidth: '326px',
+                }}
+              />
+            </div>
+            <Script src="//www.instagram.com/embed.js" strategy="lazyOnload" />
           </Section>
 
           <Divider />
