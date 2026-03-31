@@ -26,8 +26,14 @@ export default function Footer() {
                 Mushroom<span style={{ color: 'var(--accent)' }}>Identifiers</span>
               </span>
             </Link>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--text-muted)' }}>
               AI-powered mushroom identification for safe foraging — instant species ID, toxicity warnings, and look-alike alerts.
+            </p>
+            <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--text-muted)' }}>
+              Trusted by foragers, hikers, and mycology enthusiasts worldwide. Upload a photo and get expert-level analysis in seconds.
+            </p>
+            <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--text-muted)' }}>
+              Free to start — no signup required.
             </p>
             <a
               href="mailto:support@mushroomidentifiers.com"
