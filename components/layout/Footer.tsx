@@ -125,13 +125,18 @@ export default function Footer() {
               {/* Visa */}
               <PaymentBadge bg="#1A1F71" color="#fff">VISA</PaymentBadge>
               {/* Mastercard */}
-              <div className="flex items-center justify-center px-2 py-1 rounded-md" style={{ background: '#252525', minWidth: 52, border: '1px solid rgba(255,255,255,0.08)' }}>
-                <span className="text-base select-none">🔴🟡</span>
+              <div className="flex items-center justify-center px-2 py-1.5 rounded-md gap-0.5" style={{ background: '#252525', minWidth: 52, border: '1px solid rgba(255,255,255,0.08)' }}>
+                <span className="w-4 h-4 rounded-full inline-block" style={{ background: '#EB001B' }} />
+                <span className="w-4 h-4 rounded-full inline-block -ml-2" style={{ background: '#F79E1B', opacity: 0.9 }} />
               </div>
-              {/* bKash */}
-              <PaymentBadge bg="#E2136E" color="#fff">bKash</PaymentBadge>
-              {/* Nagad */}
-              <PaymentBadge bg="#F6821F" color="#fff">Nagad</PaymentBadge>
+              {/* PayPal */}
+              <PaymentBadge bg="#003087" color="#fff">Pay<span style={{ color: '#009CDE' }}>Pal</span></PaymentBadge>
+              {/* Amex */}
+              <PaymentBadge bg="#2E77BC" color="#fff">AMEX</PaymentBadge>
+              {/* Apple Pay */}
+              <PaymentBadge bg="#000" color="#fff">⌘ Pay</PaymentBadge>
+              {/* Google Pay */}
+              <PaymentBadge bg="#fff" color="#3c4043">G Pay</PaymentBadge>
             </div>
 
             <Link
