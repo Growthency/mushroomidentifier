@@ -74,6 +74,7 @@ export default function Home() {
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light'
 
       particlesRef.current.forEach((particle) => {
         particle.x += particle.vx
@@ -84,7 +85,7 @@ export default function Home() {
 
         ctx.beginPath()
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2)
-        ctx.fillStyle = 'rgba(126, 200, 138, 0.6)'
+        ctx.fillStyle = isLight ? 'rgba(30, 80, 45, 0.5)' : 'rgba(126, 200, 138, 0.6)'
         ctx.fill()
       })
 
@@ -98,7 +99,9 @@ export default function Home() {
             ctx.beginPath()
             ctx.moveTo(particlesRef.current[i].x, particlesRef.current[i].y)
             ctx.lineTo(particlesRef.current[j].x, particlesRef.current[j].y)
-            ctx.strokeStyle = `rgba(126, 200, 138, ${0.2 * (1 - distance / CONNECTION_DISTANCE)})`
+            ctx.strokeStyle = isLight
+              ? `rgba(30, 80, 45, ${0.35 * (1 - distance / CONNECTION_DISTANCE)})`
+              : `rgba(126, 200, 138, ${0.2 * (1 - distance / CONNECTION_DISTANCE)})`
             ctx.lineWidth = 1
             ctx.stroke()
           }

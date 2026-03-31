@@ -73,23 +73,25 @@ export default function PricingPage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-24">
+        <div className="grid md:grid-cols-3 gap-8 mb-24 items-start">
           {PACKS.map((pack) => (
+            <div key={pack.id} className={`relative ${pack.popular ? 'pt-6' : ''}`}>
+              {pack.popular && (
+                <div
+                  className="absolute top-0 left-1/2 -translate-x-1/2 z-10 px-5 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg whitespace-nowrap"
+                  style={{ background: 'var(--accent)', color: '#fff' }}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span className="text-xs font-bold tracking-wide">MOST POPULAR</span>
+                </div>
+              )}
             <div
-              key={pack.id}
-              className="relative p-8 rounded-2xl card-lift card-glow"
+              className="relative p-8 rounded-2xl card-lift card-glow h-full"
               style={{
                 background: 'var(--bg-card)',
                 border: pack.popular ? '2px solid var(--accent)' : '1px solid var(--border)',
               }}
             >
-              {pack.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full flex items-center gap-1" style={{ background: 'var(--accent)', color: '#fff' }}>
-                  <Sparkles className="w-4 h-4" />
-                  <span className="text-xs font-semibold">MOST POPULAR</span>
-                </div>
-              )}
-
               <h3 className="font-playfair text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 {pack.name}
               </h3>
@@ -113,6 +115,7 @@ export default function PricingPage() {
               >
                 Buy {pack.name}
               </button>
+            </div>
             </div>
           ))}
         </div>
