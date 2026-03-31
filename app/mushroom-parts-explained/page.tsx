@@ -640,11 +640,11 @@ function Section({ children }: { children: React.ReactNode }) {
 function Divider() {
   return <hr className="my-10 border-0 h-px" style={{ background: 'var(--border)' }} />
 }
-function H2({ children }: { children: React.ReactNode }) {
-  return <h2 className="font-playfair text-2xl md:text-3xl font-bold mt-8 mb-3" style={{ color: 'var(--text-primary)' }}>{children}</h2>
+function H2({ id, children }: { id?: string; children: React.ReactNode }) {
+  return <h2 id={id} className="font-playfair text-2xl md:text-3xl font-bold mt-8 mb-3" style={{ color: 'var(--text-primary)' }}>{children}</h2>
 }
-function H3({ children }: { children: React.ReactNode }) {
-  return <h3 className="font-playfair text-xl font-semibold mt-5 mb-2" style={{ color: 'var(--text-primary)' }}>{children}</h3>
+function H3({ id, children }: { id?: string; children: React.ReactNode }) {
+  return <h3 id={id} className="font-playfair text-xl font-semibold mt-5 mb-2" style={{ color: 'var(--text-primary)' }}>{children}</h3>
 }
 function WarningBox({ children }: { children: React.ReactNode }) {
   return <div className="p-5 rounded-xl my-5 text-sm leading-relaxed" style={{ background: '#f9731615', border: '1px solid #f9731640', color: 'var(--text-primary)' }}>{children}</div>

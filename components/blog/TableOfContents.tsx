@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react'
+import { List, ChevronDown } from 'lucide-react'
 
 export interface TocHeading {
   id: string
@@ -18,8 +18,7 @@ export default function TableOfContents({ headings }: Props) {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)
     if (!el) return
-    const top = el.getBoundingClientRect().top + window.scrollY - 96
-    window.scrollTo({ top, behavior: 'smooth' })
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   const h2Count = headings.filter(h => h.level === 2).length
@@ -27,87 +26,84 @@ export default function TableOfContents({ headings }: Props) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden my-10 not-prose"
-      style={{ background: 'var(--accent-bg)', border: '1px solid var(--border-hover)' }}
+      className="rounded-xl overflow-hidden my-8 not-prose text-sm"
+      style={{
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-hover)',
+      }}
     >
-      {/* Header */}
+      {/* ── Header ── */}
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between px-5 py-4 transition-opacity hover:opacity-80"
+        className="w-full flex items-center justify-between px-4 py-3"
         aria-expanded={open}
+        style={{ borderBottom: open ? '1px solid var(--border)' : 'none' }}
       >
-        <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'var(--accent)' }}
-          >
-            <BookOpen className="w-4 h-4 text-white" />
-          </div>
-          <span
-            className="font-playfair text-lg font-bold"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Table of Contents
+        <div className="flex items-center gap-2">
+          <List className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--accent)' }} />
+          <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+            Contents
           </span>
           <span
-            className="hidden sm:inline text-xs px-2.5 py-0.5 rounded-full font-medium"
-            style={{
-              background: 'var(--bg-card)',
-              color: 'var(--text-muted)',
-              border: '1px solid var(--border)',
-            }}
+            className="text-xs px-1.5 py-0.5 rounded font-medium"
+            style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}
           >
-            {h2Count} sections
+            {h2Count}
           </span>
         </div>
-        {open
-          ? <ChevronUp className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-          : <ChevronDown className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-        }
+        <ChevronDown
+          className="w-4 h-4 transition-transform duration-200"
+          style={{
+            color: 'var(--text-muted)',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        />
       </button>
 
-      {/* List */}
+      {/* ── List ── */}
       {open && (
-        <div
-          className="px-5 pb-5 pt-1"
-          style={{ borderTop: '1px solid var(--border)' }}
-        >
-          <ol className="mt-3 space-y-0.5">
+        <div className="px-4 py-3">
+          <ol className="space-y-0">
             {headings.map((h) => {
               if (h.level === 2) h2Idx++
               const num = h2Idx
+              const isH2 = h.level === 2
 
               return (
-                <li key={h.id}>
+                <li key={h.id} style={{ paddingLeft: isH2 ? 0 : '1.25rem' }}>
                   <button
                     onClick={() => scrollTo(h.id)}
-                    className="flex items-start gap-2.5 text-left w-full group rounded-lg px-2 py-1.5 transition-all"
-                    style={{ paddingLeft: h.level === 3 ? '2rem' : '0.5rem' }}
+                    className="flex items-baseline gap-2 w-full text-left py-1 group"
+                    style={{ lineHeight: 1.4 }}
                   >
-                    {h.level === 2 ? (
+                    {isH2 ? (
                       <span
-                        className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5"
-                        style={{ background: 'var(--accent)', color: '#fff', fontSize: '10px' }}
+                        className="flex-shrink-0 text-xs font-bold tabular-nums"
+                        style={{ color: 'var(--accent)', minWidth: '1.2rem' }}
                       >
-                        {num}
+                        {num}.
                       </span>
                     ) : (
                       <span
-                        className="flex-shrink-0 mt-2.5 ml-1"
+                        className="flex-shrink-0"
                         style={{
-                          width: '5px',
-                          height: '5px',
+                          width: '4px',
+                          height: '4px',
                           borderRadius: '50%',
-                          background: 'var(--accent)',
-                          opacity: 0.45,
+                          background: 'var(--text-faint)',
+                          marginTop: '6px',
+                          flexShrink: 0,
+                          display: 'inline-block',
+                          minWidth: '4px',
                         }}
                       />
                     )}
                     <span
-                      className="text-sm leading-snug group-hover:underline underline-offset-2"
+                      className="group-hover:underline underline-offset-2 decoration-1"
                       style={{
-                        color: h.level === 2 ? 'var(--text-primary)' : 'var(--text-muted)',
-                        fontWeight: h.level === 2 ? 600 : 400,
+                        color: isH2 ? 'var(--text-primary)' : 'var(--text-muted)',
+                        fontWeight: isH2 ? 500 : 400,
+                        fontSize: isH2 ? '0.8125rem' : '0.75rem',
                       }}
                     >
                       {h.text}

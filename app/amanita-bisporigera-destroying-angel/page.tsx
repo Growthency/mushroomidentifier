@@ -40,11 +40,11 @@ const schemaData = {
 /* ── Layout primitives ── */
 const Section = ({ children }: { children: React.ReactNode }) => <section className="mb-10">{children}</section>
 const Divider = () => <hr className="my-10 border-0 border-t" style={{ borderColor: 'var(--border)' }} />
-const H2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-4 mt-2" style={{ color: 'var(--text-primary)' }}>{children}</h2>
+const H2 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <h2 id={id} className="font-playfair text-2xl md:text-3xl font-bold mb-4 mt-2" style={{ color: 'var(--text-primary)' }}>{children}</h2>
 )
-const H3 = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="font-playfair text-xl font-bold mb-3 mt-6" style={{ color: 'var(--text-primary)' }}>{children}</h3>
+const H3 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <h3 id={id} className="font-playfair text-xl font-bold mb-3 mt-6" style={{ color: 'var(--text-primary)' }}>{children}</h3>
 )
 const WarningBox = ({ children }: { children: React.ReactNode }) => (
   <div className="flex gap-3 p-4 rounded-xl my-5" style={{ background: '#ef444415', border: '1px solid #ef444440' }}>
