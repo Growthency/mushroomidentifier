@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import TableOfContents, { TocHeading } from '@/components/blog/TableOfContents'
+import RelatedPosts from '@/components/blog/RelatedPosts'
 
 export const metadata: Metadata = {
   title: 'Amanita bisporigera (destroying angel identification) - Mushroom Identifier',
@@ -55,6 +57,33 @@ const InfoBox = ({ children }: { children: React.ReactNode }) => (
     <div style={{ color: 'var(--text-muted)' }}>{children}</div>
   </div>
 )
+
+const TOC_HEADINGS: TocHeading[] = [
+  { id: 'quick-id-summary', text: 'Quick Identification Summary', level: 2 },
+  { id: 'family-species', text: 'Family and Species', level: 2 },
+  { id: 'dimensions', text: 'Dimensions', level: 2 },
+  { id: 'key-features', text: 'Key Features (Identification Characteristics)', level: 2 },
+  { id: 'cap', text: 'Cap (Pileus)', level: 3 },
+  { id: 'gills', text: 'Gills (Lamellae)', level: 3 },
+  { id: 'stem', text: 'Stem (Stipe)', level: 3 },
+  { id: 'ring', text: 'Ring (Annulus)', level: 3 },
+  { id: 'volva', text: 'Volva (Basal Cup)', level: 3 },
+  { id: 'color-smell-taste', text: 'Color, Smell, and Taste', level: 2 },
+  { id: 'growth-pattern', text: 'Growth Pattern and Seasonality', level: 2 },
+  { id: 'habitat', text: 'Habitat, Environment & Distribution', level: 2 },
+  { id: 'distribution', text: 'Geographic Distribution', level: 3 },
+  { id: 'edibility-safety', text: 'Edibility, Safety & Risk Level', level: 2 },
+  { id: 'toxicity', text: 'Toxicity', level: 3 },
+  { id: 'symptoms', text: 'Symptoms', level: 3 },
+  { id: 'similar-species', text: 'Similar Species (Look-Alikes Comparison)', level: 2 },
+  { id: 'common-confusions', text: 'Common Confusions', level: 3 },
+  { id: 'benefits', text: 'Benefits and Value', level: 2 },
+  { id: 'scientific-importance', text: 'Scientific Importance', level: 3 },
+  { id: 'pros-cons', text: 'Pros and Cons', level: 2 },
+  { id: 'ai-identifier', text: 'How Our Mushroom Identifier Helps Identify Destroying Angel', level: 2 },
+  { id: 'faq', text: 'Frequently Asked Questions', level: 2 },
+  { id: 'final-thoughts', text: 'Final Thoughts', level: 2 },
+]
 
 export default function DestroyingAngelPage() {
   return (
@@ -111,9 +140,11 @@ export default function DestroyingAngelPage() {
 
           <Divider />
 
+          <TableOfContents headings={TOC_HEADINGS} />
+
           {/* Quick ID Summary */}
           <Section>
-            <H2>Quick Identification Summary</H2>
+            <H2 id="quick-id-summary">Quick Identification Summary</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 ['Scientific Name', 'Amanita bisporigera'],
@@ -536,6 +567,8 @@ export default function DestroyingAngelPage() {
               </p>
             </InfoBox>
           </Section>
+
+          <RelatedPosts currentSlug="/amanita-bisporigera-destroying-angel" />
 
         </article>
       </div>

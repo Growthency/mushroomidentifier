@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import TableOfContents, { TocHeading } from '@/components/blog/TableOfContents'
+import RelatedPosts from '@/components/blog/RelatedPosts'
 
 export const metadata: Metadata = {
   title: 'Horse Mushroom (Agaricus arvensis) - Mushroom Identifier',
@@ -31,6 +33,34 @@ const schemaData = {
     },
   ],
 }
+
+const TOC_HEADINGS: TocHeading[] = [
+  { id: 'family-species', text: 'Family and Species', level: 2 },
+  { id: 'dimensions', text: 'Dimensions', level: 2 },
+  { id: 'key-features', text: 'Key Features (Identification Characteristics)', level: 2 },
+  { id: 'cap', text: 'Cap (Pileus)', level: 3 },
+  { id: 'gills', text: 'Gills (Lamellae)', level: 3 },
+  { id: 'stem', text: 'Stem (Stipe)', level: 3 },
+  { id: 'ring', text: 'Ring (Annulus)', level: 3 },
+  { id: 'volva', text: 'Volva (Basal Cup)', level: 3 },
+  { id: 'color-smell-taste', text: 'Color, Smell, and Taste', level: 2 },
+  { id: 'growth-pattern', text: 'Growth Pattern and Seasonality', level: 2 },
+  { id: 'growth-detail', text: 'Growth Pattern', level: 3 },
+  { id: 'seasonality', text: 'Seasonality', level: 3 },
+  { id: 'habitat', text: 'Habitat, Environment & Distribution', level: 2 },
+  { id: 'edibility-safety', text: 'Edibility, Safety & Risk Level', level: 2 },
+  { id: 'is-edible', text: 'Is it Edible?', level: 3 },
+  { id: 'who-avoid', text: 'Who Should Avoid It', level: 3 },
+  { id: 'similar-species', text: 'Similar Species (Look-Alikes Comparison)', level: 2 },
+  { id: 'benefits', text: 'Benefits and Value', level: 2 },
+  { id: 'nutritional-benefits', text: 'Nutritional and Practical Benefits', level: 3 },
+  { id: 'ecological-benefits', text: 'Ecological Benefits', level: 3 },
+  { id: 'economic-value', text: 'Economic Value and Uses', level: 3 },
+  { id: 'pros-cons', text: 'Pros and Cons', level: 2 },
+  { id: 'ai-identifier', text: 'How Our Mushroom Identifier Helps Identify This Species', level: 2 },
+  { id: 'faq', text: 'Frequently Asked Questions', level: 2 },
+  { id: 'final-thoughts', text: 'Final Thoughts', level: 2 },
+]
 
 export default function HorseMushroomPage() {
   return (
@@ -106,9 +136,11 @@ export default function HorseMushroomPage() {
 
           <Divider />
 
+          <TableOfContents headings={TOC_HEADINGS} />
+
           {/* ── Taxonomy ── */}
           <Section>
-            <H2>Family and Species</H2>
+            <H2 id="family-species">Family and Species</H2>
             <div className="grid md:grid-cols-2 gap-4 my-5">
               <ComparisonTable
                 headers={['Rank', 'Classification']}
@@ -456,12 +488,7 @@ export default function HorseMushroomPage() {
             <WarningBox>⚠️ <strong>Golden Rule:</strong> If you are not 100% sure of your identification, never consume a wild mushroom.</WarningBox>
           </Section>
 
-          {/* Back to Blog */}
-          <div className="mt-14 pt-8" style={{ borderTop: '1px solid var(--border)' }}>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity" style={{ color: 'var(--accent)' }}>
-              ← Back to Blog
-            </Link>
-          </div>
+          <RelatedPosts currentSlug="/agaricus-arvensis-horse-mushroom" />
 
         </article>
       </div>
@@ -476,12 +503,16 @@ function Section({ children }: { children: React.ReactNode }) {
 function Divider() {
   return <hr className="my-10 border-0 h-px" style={{ background: 'var(--border)' }} />
 }
-function H2({ children }: { children: React.ReactNode }) {
-  return <h2 className="font-playfair text-2xl md:text-3xl font-bold mt-8 mb-3" style={{ color: 'var(--text-primary)' }}>{children}</h2>
-}
-function H3({ children }: { children: React.ReactNode }) {
-  return <h3 className="font-playfair text-xl font-semibold mt-5 mb-2" style={{ color: 'var(--text-primary)' }}>{children}</h3>
-}
+const H2 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <h2 id={id} className="font-playfair text-2xl md:text-3xl font-bold mb-4 mt-2" style={{ color: 'var(--text-primary)' }}>
+    {children}
+  </h2>
+)
+const H3 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <h3 id={id} className="font-playfair text-xl font-bold mb-3 mt-6" style={{ color: 'var(--text-primary)' }}>
+    {children}
+  </h3>
+)
 function WarningBox({ children }: { children: React.ReactNode }) {
   return <div className="p-5 rounded-xl my-5 text-sm leading-relaxed" style={{ background: '#f9731615', border: '1px solid #f9731640', color: 'var(--text-primary)' }}>{children}</div>
 }

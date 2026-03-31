@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/#identifier', label: 'Identifiers' },
   { href: '/pricing', label: 'Pricing' },
-  { href: '/blog', label: 'Blog' },
+  { href: '/blog', label: 'Mushrooms' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ]
@@ -81,7 +81,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2.5 group">
             <span className="text-3xl transition-transform duration-300 group-hover:scale-110 select-none">🍄</span>
             <span className="font-playfair text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-              Mushroom<span style={{ color: 'var(--accent)' }}>s</span>
+              Mushroom<span style={{ color: 'var(--accent)' }}>Identifiers</span>
             </span>
           </Link>
 

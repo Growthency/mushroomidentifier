@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import TableOfContents, { TocHeading } from '@/components/blog/TableOfContents'
+import RelatedPosts from '@/components/blog/RelatedPosts'
 
 export const metadata: Metadata = {
   title: 'Amanita phalloides (death cap identification) - Mushroom Identifier',
@@ -108,13 +110,13 @@ const Section = ({ children }: { children: React.ReactNode }) => (
 const Divider = () => (
   <hr className="my-10 border-0 border-t" style={{ borderColor: 'var(--border)' }} />
 )
-const H2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-4 mt-2" style={{ color: 'var(--text-primary)' }}>
+const H2 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <h2 id={id} className="font-playfair text-2xl md:text-3xl font-bold mb-4 mt-2" style={{ color: 'var(--text-primary)' }}>
     {children}
   </h2>
 )
-const H3 = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="font-playfair text-xl font-bold mb-3 mt-6" style={{ color: 'var(--text-primary)' }}>
+const H3 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <h3 id={id} className="font-playfair text-xl font-bold mb-3 mt-6" style={{ color: 'var(--text-primary)' }}>
     {children}
   </h3>
 )
@@ -129,6 +131,33 @@ const InfoBox = ({ children }: { children: React.ReactNode }) => (
     <div style={{ color: 'var(--text-muted)' }}>{children}</div>
   </div>
 )
+
+const TOC_HEADINGS: TocHeading[] = [
+  { id: 'quick-id-summary', text: 'Quick Identification Summary', level: 2 },
+  { id: 'family-species', text: 'Family and Species', level: 2 },
+  { id: 'dimensions', text: 'Dimensions', level: 2 },
+  { id: 'key-features', text: 'Key Features (Identification Characteristics)', level: 2 },
+  { id: 'cap', text: 'Cap (Pileus)', level: 3 },
+  { id: 'gills', text: 'Gills (Lamellae)', level: 3 },
+  { id: 'stem', text: 'Stem (Stipe)', level: 3 },
+  { id: 'ring', text: 'Ring (Annulus)', level: 3 },
+  { id: 'volva', text: 'Volva (Basal Cup)', level: 3 },
+  { id: 'color-smell-taste', text: 'Color, Smell, and Taste', level: 2 },
+  { id: 'growth-pattern', text: 'Growth Pattern and Seasonality', level: 2 },
+  { id: 'habitat', text: 'Habitat, Environment & Distribution', level: 2 },
+  { id: 'distribution', text: 'Geographic Distribution', level: 3 },
+  { id: 'edibility-safety', text: 'Edibility, Safety & Risk Level', level: 2 },
+  { id: 'toxicity', text: 'Toxicity', level: 3 },
+  { id: 'symptoms', text: 'Symptoms (Important for Awareness)', level: 3 },
+  { id: 'similar-species', text: 'Similar Species (Look-Alikes Comparison)', level: 2 },
+  { id: 'common-confusions', text: 'Common Confusions', level: 3 },
+  { id: 'benefits', text: 'Benefits and Value', level: 2 },
+  { id: 'scientific-importance', text: 'Scientific Importance', level: 3 },
+  { id: 'pros-cons', text: 'Pros and Cons', level: 2 },
+  { id: 'ai-identifier', text: 'How Our Mushroom Identifier Helps Identify Death Cap', level: 2 },
+  { id: 'faq', text: 'Frequently Asked Questions', level: 2 },
+  { id: 'final-thoughts', text: 'Final Thoughts', level: 2 },
+]
 
 export default function DeathCapPage() {
   return (
@@ -188,9 +217,11 @@ export default function DeathCapPage() {
 
           <Divider />
 
+          <TableOfContents headings={TOC_HEADINGS} />
+
           {/* Quick ID Summary */}
           <Section>
-            <H2>Quick Identification Summary</H2>
+            <H2 id="quick-id-summary">Quick Identification Summary</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 ['Scientific Name', 'Amanita phalloides'],
@@ -213,7 +244,7 @@ export default function DeathCapPage() {
 
           {/* Taxonomy */}
           <Section>
-            <H2>Family and Species</H2>
+            <H2 id="family-species">Family and Species</H2>
             <div className="overflow-x-auto rounded-xl" style={{ border: '1px solid var(--border)' }}>
               <table className="w-full text-sm">
                 <tbody>
@@ -245,7 +276,7 @@ export default function DeathCapPage() {
 
           {/* Dimensions */}
           <Section>
-            <H2>Dimensions</H2>
+            <H2 id="dimensions">Dimensions</H2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 ['Cap Diameter', '5–15 cm'],
@@ -269,9 +300,9 @@ export default function DeathCapPage() {
 
           {/* Key Features */}
           <Section>
-            <H2>Key Features (Identification Characteristics)</H2>
+            <H2 id="key-features">Key Features (Identification Characteristics)</H2>
 
-            <H3>Cap (Pileus)</H3>
+            <H3 id="cap">Cap (Pileus)</H3>
             <ul>
               <li><strong>Shape:</strong> Convex when young, flattening at maturity</li>
               <li><strong>Color:</strong> Greenish, olive, yellow-green, sometimes pale</li>
@@ -279,7 +310,7 @@ export default function DeathCapPage() {
             </ul>
             <p className="mt-2">Cap color can vary, making it unreliable as a standalone feature.</p>
 
-            <H3>Gills (Lamellae)</H3>
+            <H3 id="gills">Gills (Lamellae)</H3>
             <ul>
               <li><strong>Color:</strong> Pure white</li>
               <li><strong>Attachment:</strong> Free gills</li>
@@ -287,21 +318,21 @@ export default function DeathCapPage() {
             </ul>
             <p className="mt-2">White gills are a critical warning sign when combined with other features.</p>
 
-            <H3>Stem (Stipe)</H3>
+            <H3 id="stem">Stem (Stipe)</H3>
             <ul>
               <li><strong>Color:</strong> White</li>
               <li><strong>Structure:</strong> Smooth, slender</li>
               <li><strong>Base:</strong> Bulbous and enclosed in a volva</li>
             </ul>
 
-            <H3>Ring (Annulus)</H3>
+            <H3 id="ring">Ring (Annulus)</H3>
             <ul>
               <li>Present on the upper stem</li>
               <li>Thin, skirt-like</li>
               <li>May become fragile with age</li>
             </ul>
 
-            <H3>Volva (Basal Cup)</H3>
+            <H3 id="volva">Volva (Basal Cup)</H3>
             <ul>
               <li>Large, cup-like structure at base</li>
               <li>Often partially buried underground</li>
@@ -333,7 +364,7 @@ export default function DeathCapPage() {
 
           {/* Color, Smell, Taste */}
           <Section>
-            <H2>Color, Smell, and Taste</H2>
+            <H2 id="color-smell-taste">Color, Smell, and Taste</H2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
                 { title: 'Color', items: ['Cap: Greenish to pale yellow', 'Gills: Pure white', 'Stem: White'] },
@@ -356,7 +387,7 @@ export default function DeathCapPage() {
 
           {/* Growth Pattern */}
           <Section>
-            <H2>Growth Pattern and Seasonality</H2>
+            <H2 id="growth-pattern">Growth Pattern and Seasonality</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                 <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h4>
@@ -634,6 +665,8 @@ export default function DeathCapPage() {
               </p>
             </InfoBox>
           </Section>
+
+          <RelatedPosts currentSlug="/amanita-phalloides-death-cap" />
 
         </article>
       </div>

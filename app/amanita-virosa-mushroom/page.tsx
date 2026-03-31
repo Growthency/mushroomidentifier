@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import TableOfContents, { TocHeading } from '@/components/blog/TableOfContents'
+import RelatedPosts from '@/components/blog/RelatedPosts'
 
 export const metadata: Metadata = {
   title: 'Amanita virosa (Destroying Angel) - Mushroom Identifier',
@@ -38,12 +40,39 @@ const schemaData = {
 /* ── Layout primitives ── */
 const Section = ({ children }: { children: React.ReactNode }) => <section className="mb-10">{children}</section>
 const Divider = () => <hr className="my-10 border-0 border-t" style={{ borderColor: 'var(--border)' }} />
-const H2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-4 mt-2" style={{ color: 'var(--text-primary)' }}>{children}</h2>
+const H2 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <h2 id={id} className="font-playfair text-2xl md:text-3xl font-bold mb-4 mt-2" style={{ color: 'var(--text-primary)' }}>{children}</h2>
 )
-const H3 = ({ children }: { children: React.ReactNode }) => (
-  <h3 className="font-playfair text-xl font-bold mb-3 mt-6" style={{ color: 'var(--text-primary)' }}>{children}</h3>
+const H3 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
+  <h3 id={id} className="font-playfair text-xl font-bold mb-3 mt-6" style={{ color: 'var(--text-primary)' }}>{children}</h3>
 )
+
+const TOC_HEADINGS: TocHeading[] = [
+  { id: 'quick-id-summary', text: 'Quick Identification Summary', level: 2 },
+  { id: 'family-species', text: 'Family and Species', level: 2 },
+  { id: 'dimensions', text: 'Dimensions', level: 2 },
+  { id: 'key-features', text: 'Key Features (Identification Characteristics)', level: 2 },
+  { id: 'cap', text: 'Cap (Pileus)', level: 3 },
+  { id: 'gills', text: 'Gills (Lamellae)', level: 3 },
+  { id: 'stem', text: 'Stem (Stipe)', level: 3 },
+  { id: 'ring', text: 'Ring (Annulus)', level: 3 },
+  { id: 'volva', text: 'Volva (Basal Cup)', level: 3 },
+  { id: 'color-smell-taste', text: 'Color, Smell, and Taste', level: 2 },
+  { id: 'growth-pattern', text: 'Growth Pattern and Seasonality', level: 2 },
+  { id: 'habitat', text: 'Habitat, Environment & Distribution', level: 2 },
+  { id: 'distribution', text: 'Geographic Distribution', level: 3 },
+  { id: 'edibility-safety', text: 'Edibility, Safety & Risk Level', level: 2 },
+  { id: 'toxicity', text: 'Toxicity', level: 3 },
+  { id: 'symptoms', text: 'Symptoms', level: 3 },
+  { id: 'similar-species', text: 'Similar Species (Look-Alikes Comparison)', level: 2 },
+  { id: 'common-confusions', text: 'Common Confusions', level: 3 },
+  { id: 'benefits', text: 'Benefits and Value', level: 2 },
+  { id: 'scientific-importance', text: 'Scientific Importance', level: 3 },
+  { id: 'pros-cons', text: 'Pros and Cons', level: 2 },
+  { id: 'ai-identifier', text: 'How Our Mushroom Identifier Helps Identify Destroying Angel', level: 2 },
+  { id: 'faq', text: 'Frequently Asked Questions', level: 2 },
+  { id: 'final-thoughts', text: 'Final Thoughts', level: 2 },
+]
 const WarningBox = ({ children }: { children: React.ReactNode }) => (
   <div className="flex gap-3 p-4 rounded-xl my-5" style={{ background: '#ef444415', border: '1px solid #ef444440' }}>
     <span className="text-xl flex-shrink-0">⚠️</span>
@@ -112,9 +141,11 @@ export default function AmanitaVirosaPage() {
 
           <Divider />
 
+          <TableOfContents headings={TOC_HEADINGS} />
+
           {/* Quick ID Summary */}
           <Section>
-            <H2>Quick Identification Summary</H2>
+            <H2 id="quick-id-summary">Quick Identification Summary</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 ['Scientific Name', 'Amanita virosa'],
@@ -137,7 +168,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Taxonomy */}
           <Section>
-            <H2>Family and Species</H2>
+            <H2 id="family-species">Family and Species</H2>
             <div className="overflow-x-auto rounded-xl" style={{ border: '1px solid var(--border)' }}>
               <table className="w-full text-sm">
                 <tbody>
@@ -169,7 +200,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Dimensions */}
           <Section>
-            <H2>Dimensions</H2>
+            <H2 id="dimensions">Dimensions</H2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 ['Cap Diameter', '5–10 cm'],
@@ -193,9 +224,9 @@ export default function AmanitaVirosaPage() {
 
           {/* Key Features */}
           <Section>
-            <H2>Key Features (Identification Characteristics)</H2>
+            <H2 id="key-features">Key Features (Identification Characteristics)</H2>
 
-            <H3>Cap (Pileus)</H3>
+            <H3 id="cap">Cap (Pileus)</H3>
             <ul>
               <li><strong>Shape:</strong> Convex when young, flattening at maturity</li>
               <li><strong>Color:</strong> Pure white</li>
@@ -203,7 +234,7 @@ export default function AmanitaVirosaPage() {
             </ul>
             <p className="mt-2">The clean white cap is one of its most noticeable and deceptive features.</p>
 
-            <H3>Gills (Lamellae)</H3>
+            <H3 id="gills">Gills (Lamellae)</H3>
             <ul>
               <li><strong>Color:</strong> Pure white — does not change with age</li>
               <li><strong>Attachment:</strong> Free gills</li>
@@ -211,21 +242,21 @@ export default function AmanitaVirosaPage() {
             </ul>
             <p className="mt-2">Unlike edible mushrooms, the gills remain white throughout maturity.</p>
 
-            <H3>Stem (Stipe)</H3>
+            <H3 id="stem">Stem (Stipe)</H3>
             <ul>
               <li><strong>Color:</strong> White</li>
               <li><strong>Structure:</strong> Slender, smooth</li>
               <li><strong>Base:</strong> Bulbous and enclosed in a volva</li>
             </ul>
 
-            <H3>Ring (Annulus)</H3>
+            <H3 id="ring">Ring (Annulus)</H3>
             <ul>
               <li>Present on upper stem</li>
               <li>Thin, skirt-like</li>
               <li>May disappear with age</li>
             </ul>
 
-            <H3>Volva (Basal Cup)</H3>
+            <H3 id="volva">Volva (Basal Cup)</H3>
             <ul>
               <li>Large, sac-like structure</li>
               <li>Found at the base of the stem</li>
@@ -257,7 +288,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Color, Smell, Taste */}
           <Section>
-            <H2>Color, Smell, and Taste</H2>
+            <H2 id="color-smell-taste">Color, Smell, and Taste</H2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
                 { title: 'Color', items: ['Cap: Pure white', 'Gills: White', 'Stem: White'] },
@@ -280,7 +311,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Growth Pattern */}
           <Section>
-            <H2>Growth Pattern and Seasonality</H2>
+            <H2 id="growth-pattern">Growth Pattern and Seasonality</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                 <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h4>
@@ -303,7 +334,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Habitat */}
           <Section>
-            <H2>Habitat, Environment &amp; Distribution</H2>
+            <H2 id="habitat">Habitat, Environment &amp; Distribution</H2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               {[
                 { title: 'Habitat', items: ['Forests and woodland areas', 'Moist soil'] },
@@ -320,7 +351,7 @@ export default function AmanitaVirosaPage() {
             </div>
             <p className="mb-4">Forms mycorrhizal relationships with tree roots.</p>
 
-            <H3>Geographic Distribution</H3>
+            <H3 id="distribution">Geographic Distribution</H3>
             <ul>
               <li>Primarily found across Europe</li>
               <li>Common in Scotland and northern European regions</li>
@@ -349,7 +380,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Edibility & Risk */}
           <Section>
-            <H2>Edibility, Safety &amp; Risk Level</H2>
+            <H2 id="edibility-safety">Edibility, Safety &amp; Risk Level</H2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
               {[
                 { icon: '❌', label: 'Not Edible', sub: 'Extremely poisonous', color: '#ef4444' },
@@ -364,7 +395,7 @@ export default function AmanitaVirosaPage() {
               ))}
             </div>
 
-            <H3>Toxicity</H3>
+            <H3 id="toxicity">Toxicity</H3>
             <p className="mb-3">Contains amatoxins, which:</p>
             <ul>
               <li>Destroy liver cells</li>
@@ -372,7 +403,7 @@ export default function AmanitaVirosaPage() {
               <li>Lead to organ failure — often fatal</li>
             </ul>
 
-            <H3>Symptoms</H3>
+            <H3 id="symptoms">Symptoms</H3>
             <ul>
               <li>Delayed onset: 6–24 hours after ingestion</li>
               <li>Vomiting and diarrhea</li>
@@ -387,7 +418,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Look-alikes */}
           <Section>
-            <H2>Similar Species (Look-Alikes Comparison)</H2>
+            <H2 id="similar-species">Similar Species (Look-Alikes Comparison)</H2>
             <div className="overflow-x-auto rounded-xl mb-5" style={{ border: '1px solid var(--border)' }}>
               <table className="w-full text-sm">
                 <thead>
@@ -415,7 +446,7 @@ export default function AmanitaVirosaPage() {
               </table>
             </div>
 
-            <H3>Common Confusions</H3>
+            <H3 id="common-confusions">Common Confusions</H3>
             <ul>
               <li>Young <em>Agaricus</em> species</li>
               <li>White field mushrooms</li>
@@ -427,9 +458,9 @@ export default function AmanitaVirosaPage() {
 
           {/* Benefits */}
           <Section>
-            <H2>Benefits and Value</H2>
+            <H2 id="benefits">Benefits and Value</H2>
             <WarningBox>No Edible Benefits — <em>Amanita virosa</em> has no safe culinary or medicinal use.</WarningBox>
-            <H3>Scientific Importance</H3>
+            <H3 id="scientific-importance">Scientific Importance</H3>
             <ul>
               <li>Important in toxicology research</li>
               <li>Used to study amatoxin poisoning mechanisms</li>
@@ -441,7 +472,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Pros & Cons */}
           <Section>
-            <H2>Pros and Cons</H2>
+            <H2 id="pros-cons">Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
                 <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
@@ -470,7 +501,7 @@ export default function AmanitaVirosaPage() {
 
           {/* AI Identifier */}
           <Section>
-            <H2>How Our Mushroom Identifier Helps Identify Destroying Angel</H2>
+            <H2 id="ai-identifier">How Our Mushroom Identifier Helps Identify Destroying Angel</H2>
             <p className="mb-4">Our <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">fungal species recognition tool</Link> uses AI and image recognition to analyze:</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
               {[
@@ -496,7 +527,7 @@ export default function AmanitaVirosaPage() {
 
           {/* FAQ */}
           <Section>
-            <H2>Frequently Asked Questions</H2>
+            <H2 id="faq">Frequently Asked Questions</H2>
             <div className="space-y-4">
               {[
                 { q: 'How to identify Amanita virosa?', a: 'Look for a pure white mushroom with white gills that do not change color, a ring on the stem, and a sac-like volva at the base. Always dig up the base — the volva is the most critical identifying feature.' },
@@ -522,7 +553,7 @@ export default function AmanitaVirosaPage() {
 
           {/* Final Thoughts */}
           <Section>
-            <H2>Final Thoughts</H2>
+            <H2 id="final-thoughts">Final Thoughts</H2>
             <InfoBox>
               <p>
                 <em>Amanita virosa</em>, the European Destroying Angel, is one of the most dangerous mushrooms
@@ -537,6 +568,8 @@ export default function AmanitaVirosaPage() {
               </p>
             </InfoBox>
           </Section>
+
+          <RelatedPosts currentSlug="/amanita-virosa-mushroom" />
 
         </article>
       </div>

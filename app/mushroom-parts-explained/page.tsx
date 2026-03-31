@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import TableOfContents, { TocHeading } from '@/components/blog/TableOfContents'
+import RelatedPosts from '@/components/blog/RelatedPosts'
 
 export const metadata: Metadata = {
   title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
@@ -35,6 +37,43 @@ const schemaData = {
     },
   ],
 }
+
+const TOC_HEADINGS: TocHeading[] = [
+  { id: 'intro-anatomy', text: 'Introduction to Mushroom Anatomy and Fungal Structure', level: 2 },
+  { id: 'why-parts-matter', text: 'Why Mushroom Parts Matter in Identification', level: 3 },
+  { id: 'safety-importance', text: 'Safety and Identification Importance', level: 3 },
+  { id: 'complete-overview', text: 'Complete Overview of Mushroom Parts', level: 2 },
+  { id: 'five-key-parts', text: 'The Five Key Mushroom Parts', level: 3 },
+  { id: 'how-parts-work', text: 'How These Parts Work Together', level: 3 },
+  { id: 'veil-structures', text: 'Veil Structures Explained', level: 3 },
+  { id: 'cap-section', text: 'Mushroom Cap (Pileus): Shape, Surface Texture, and Identification Features', level: 2 },
+  { id: 'cap-shapes', text: 'Cap Shapes and Growth Stages', level: 3 },
+  { id: 'cap-surface', text: 'Cap Surface and Texture', level: 3 },
+  { id: 'cap-color', text: 'Cap Color and Its Limitations', level: 3 },
+  { id: 'gills-section', text: 'Mushroom Gills (Lamellae): Spore Production and Variations', level: 2 },
+  { id: 'gill-function', text: 'Function of Gills', level: 3 },
+  { id: 'gill-types', text: 'Types of Gill Attachment', level: 3 },
+  { id: 'gills-vs-pores', text: 'Gills vs Pores vs Teeth', level: 3 },
+  { id: 'stem-section', text: 'Mushroom Stem (Stipe): Structure, Function, and Identification Clues', level: 2 },
+  { id: 'stem-variations', text: 'Stem Structure Variations', level: 3 },
+  { id: 'stem-base', text: 'Stem and Base Connection', level: 3 },
+  { id: 'ring-section', text: 'Mushroom Ring (Annulus): Veil Remnants and Identification Importance', level: 2 },
+  { id: 'ring-forms', text: 'How the Ring Forms', level: 3 },
+  { id: 'ring-types', text: 'Types of Mushroom Rings', level: 3 },
+  { id: 'volva-section', text: 'Mushroom Volva (Basal Cup): The Most Important Safety Feature', level: 2 },
+  { id: 'volva-forms', text: 'How the Volva Forms', level: 3 },
+  { id: 'volva-types', text: 'Types of Volva Structures', level: 3 },
+  { id: 'volva-critical', text: 'Why the Volva is Critical for Identification', level: 3 },
+  { id: 'additional-structures', text: 'Additional Mushroom Structures (Advanced Mycology)', level: 2 },
+  { id: 'mycelium', text: 'Mycelium and Hyphae', level: 3 },
+  { id: 'spore-print', text: 'Spore Print', level: 3 },
+  { id: 'accurate-id', text: 'How Mushroom Parts Help in Accurate Identification', level: 2 },
+  { id: 'common-mistakes', text: 'Common Mistakes When Identifying Mushroom Parts', level: 2 },
+  { id: 'dangerous-lookalikes', text: 'Dangerous Look-Alikes Based on Mushroom Structure', level: 2 },
+  { id: 'field-checklist', text: 'Beginner Field Checklist for Mushroom Parts', level: 2 },
+  { id: 'faq', text: 'FAQ: Mushroom Parts Explained', level: 2 },
+  { id: 'final-thoughts', text: 'Final Thoughts', level: 2 },
+]
 
 export default function MushroomPartsExplainedPage() {
   return (
@@ -106,6 +145,8 @@ export default function MushroomPartsExplainedPage() {
           </Section>
 
           <Divider />
+
+          <TableOfContents headings={TOC_HEADINGS} />
 
           {/* ── SECTION 2: Complete Overview Table ── */}
           <Section>
@@ -583,12 +624,7 @@ export default function MushroomPartsExplainedPage() {
             <InfoBox>Always remember: use identification tools as guidance, not final proof, especially when dealing with wild mushrooms.</InfoBox>
           </Section>
 
-          {/* Back to Blog */}
-          <div className="mt-14 pt-8" style={{ borderTop: '1px solid var(--border)' }}>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity" style={{ color: 'var(--accent)' }}>
-              ← Back to Blog
-            </Link>
-          </div>
+          <RelatedPosts currentSlug="/mushroom-parts-explained" />
 
         </article>
       </div>
