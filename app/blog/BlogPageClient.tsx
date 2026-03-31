@@ -37,6 +37,19 @@ const articles: Article[] = [
     image: '/Death Cap vs Destroying Angel.webp',
   },
   {
+    id: 3,
+    title: 'Horse Mushroom (Agaricus arvensis): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'The Horse Mushroom (Agaricus arvensis) is a large, edible mushroom found in grasslands. Learn its cap, gills, ring, anise smell, and how to avoid toxic look-alikes like Yellow Stainer.',
+    category: 'Species Guide',
+    riskLevel: 'High Risk',
+    region: 'Worldwide',
+    date: 'Mar 31, 2026',
+    readTime: '11 min',
+    slug: '/agaricus-arvensis-horse-mushroom',
+    image: '/agaricus-arvensis-horse-mushroom.webp',
+  },
+  {
     id: 2,
     title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
     excerpt:
