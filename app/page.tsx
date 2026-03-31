@@ -27,8 +27,8 @@ const REVIEWS = [
 export default function Home() {
   const [userId, setUserId] = useState<string | null>(null)
   const [hasUsedFreeScan, setHasUsedFreeScan] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [analyzing, setAnalyzing] = useState(false)
   const [result, setResult] = useState<any | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -134,10 +134,16 @@ export default function Home() {
   }, [])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setSelectedFile(file)
-      setPreviewUrl(URL.createObjectURL(file))
+    const files = Array.from(e.target.files || []).slice(0, 4)
+    if (files.length > 0) {
+      setSelectedFiles(prev => {
+        const combined = [...prev, ...files].slice(0, 4)
+        return combined
+      })
+      setPreviewUrls(prev => {
+        const newUrls = files.map(f => URL.createObjectURL(f))
+        return [...prev, ...newUrls].slice(0, 4)
+      })
       setResult(null)
       setError(null)
     }
@@ -184,19 +190,19 @@ export default function Home() {
   }
 
   const analyzeImage = async () => {
-    if (!selectedFile) return
+    if (selectedFiles.length === 0) return
 
     setAnalyzing(true)
     setError(null)
 
     try {
-      const imageBase64 = await resizeImage(selectedFile)
-      const imageHash = await hashImage(imageBase64)
+      const imagesBase64 = await Promise.all(selectedFiles.map(f => resizeImage(f)))
+      const imageHash = await hashImage(imagesBase64[0])
 
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64, imageHash, userId }),
+        body: JSON.stringify({ imagesBase64, imageHash, userId }),
       })
 
       const data = await response.json()
@@ -226,8 +232,8 @@ export default function Home() {
   }
 
   const reset = () => {
-    setSelectedFile(null)
-    setPreviewUrl(null)
+    setSelectedFiles([])
+    setPreviewUrls([])
     setResult(null)
     setError(null)
   }
@@ -312,37 +318,106 @@ export default function Home() {
             </div>
           )}
 
-          {!selectedFile ? (
-            <div>
-              <label className="block cursor-pointer">
-                <div className="border-2 border-dashed rounded-xl p-16 text-center hover:border-opacity-50 transition-all card-lift" style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}>
-                  <Upload className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--accent)' }} />
-                  <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Drop an image or click to browse</p>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>For best results, photograph: cap top, side view, gills, stem base</p>
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* Left — Upload panel */}
+            <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--accent)', color: '#fff' }}>
+                    <Camera className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Upload Mushroom Photos</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Multi-angle analysis</p>
+                  </div>
                 </div>
-                <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
-              </label>
+                <span className="px-3 py-1 rounded-full text-xs font-semibold" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--border)' }}>
+                  📷 Up to 4
+                </span>
+              </div>
+
+              {selectedFiles.length < 4 && !result && (
+                <label className="block cursor-pointer mb-4">
+                  <div className="border-2 border-dashed rounded-xl p-8 text-center transition-all hover:opacity-80" style={{ borderColor: 'var(--border)' }}>
+                    <Camera className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--accent)' }} />
+                    <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Tap to upload photos</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{selectedFiles.length}/4 photos • JPG, PNG • Max 10MB each</p>
+                  </div>
+                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileSelect} />
+                </label>
+              )}
+
+              {previewUrls.length > 0 && !result && (
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {previewUrls.map((url, i) => (
+                    <div key={i} className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '1' }}>
+                      <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => {
+                          setPreviewUrls(prev => prev.filter((_, idx) => idx !== i))
+                          setSelectedFiles(prev => prev.filter((_, idx) => idx !== i))
+                        }}
+                        className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+                        style={{ background: 'rgba(0,0,0,0.7)', color: '#fff' }}
+                      >✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!result && (
+                <div className="mt-2">
+                  <p className="text-xs font-semibold mb-2" style={{ color: 'var(--accent)' }}>
+                    📷 For best results, capture these angles:
+                  </p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[
+                      { src: '/mushroom-top-view-cap-surface-1.webp', label: 'Cap' },
+                      { src: '/mushroom-side-profile-stem-view-2.webp', label: 'Stipe' },
+                      { src: '/mushroom-underside-gills-spores-3.webp', label: 'Gills' },
+                      { src: '/mushroom-base-root-volva-bottom-4.webp', label: 'Volva' },
+                    ].map(({ src, label }) => (
+                      <div key={label} className="flex flex-col items-center gap-1">
+                        <div className="w-full rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
+                          <img src={src} alt={label} className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!result && !analyzing && selectedFiles.length > 0 && (
+                <div className="flex gap-3 mt-4">
+                  <button onClick={reset} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
+                    Clear
+                  </button>
+                  <button onClick={analyzeImage} className="flex-1 py-2.5 rounded-xl text-sm font-semibold glow-green" style={{ background: 'var(--btn-primary)', color: '#fff' }}>
+                    Analyze {selectedFiles.length} Photo{selectedFiles.length > 1 ? 's' : ''}
+                  </button>
+                </div>
+              )}
             </div>
-          ) : (
-            <div>
-              {previewUrl && !result && (
-                <div className="mb-6">
-                  <img src={previewUrl} alt="Selected mushroom" className="w-full max-w-lg mx-auto rounded-xl" />
-                </div>
-              )}
 
-              {!result && !analyzing && (
-                <div className="flex gap-4 justify-center">
-                  <button onClick={reset} className="px-6 py-3 rounded-lg font-medium" style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
-                    Cancel
-                  </button>
-                  <button onClick={analyzeImage} className="px-6 py-3 rounded-lg font-medium glow-green" style={{ background: 'var(--btn-primary)', color: '#fff' }}>
-                    Analyze Mushroom
-                  </button>
-                </div>
-              )}
+            {/* Right — Mushroom guide diagram */}
+            <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <div className="flex-1 flex items-center justify-center p-4">
+                <img
+                  src="/mushroom-fungi-identifier.webp"
+                  alt="Mushroom anatomy guide showing Cap, Gills, Ring, Stipe and Volva for identification"
+                  className="w-full h-auto"
+                  style={{ maxHeight: '320px', objectFit: 'contain' }}
+                />
+              </div>
+              <div className="px-6 py-4" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
+                <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Mushroom Profile</p>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Photograph each labelled part for highest AI accuracy</p>
+              </div>
+            </div>
+          </div>
 
-              {analyzing && (
+          {analyzing && (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
                   <p className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>Analyzing your mushroom with AI...</p>
@@ -460,8 +535,6 @@ export default function Home() {
                   </button>
                 </div>
               )}
-            </div>
-          )}
         </div>
       </section>
 
@@ -1104,12 +1177,21 @@ export default function Home() {
           </div>
 
           <div className="grid sm:grid-cols-2 gap-6 mb-12">
-            <div className="relative overflow-hidden rounded-xl" style={{ height: '300px' }}>
-              <img
-                src="https://images.pexels.com/photos/531756/pexels-photo-531756.jpeg?auto=compress&cs=tinysrgb&w=800"
-                alt="Mushroom identifier expert examining wild mushrooms in forest"
-                className="w-full h-full object-cover"
-              />
+            <div className="p-6 sm:p-8 rounded-2xl flex flex-col justify-center gap-4" style={{ background: 'linear-gradient(135deg, var(--accent-bg) 0%, var(--bg-card) 100%)', border: '1px solid var(--border)' }}>
+              {[
+                { emoji: '🔬', title: 'When the species is unknown', desc: 'Never guess with an unfamiliar find' },
+                { emoji: '⚠️', title: 'When toxicity is suspected', desc: 'Seek immediate medical help if ingested' },
+                { emoji: '🌿', title: 'Before your first forage', desc: 'Go with an experienced guide first' },
+                { emoji: '📍', title: 'For local regional species', desc: 'Regional experts know local variations' },
+              ].map(({ emoji, title, desc }) => (
+                <div key={title} className="flex items-start gap-3">
+                  <span className="text-2xl">{emoji}</span>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{title}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
             <div className="p-6 sm:p-8 rounded-xl flex flex-col justify-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <h3 className="font-semibold text-xl mb-6" style={{ color: 'var(--text-primary)' }}>
@@ -1144,8 +1226,8 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
-                <img src="/Death%20Cap%20vs%20Paddy%20Straw%20Mushroom.webp" alt="Death Cap vs Paddy Straw Mushroom comparison" className="w-full h-full object-cover" />
+              <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <img src="/death-cap-vs-paddy-straw-mushroom.webp" alt="Death Cap vs Paddy Straw Mushroom comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 1. Death Cap vs Paddy Straw Mushroom
@@ -1194,8 +1276,8 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
-                <img src="/Destroying%20Angel%20vs%20Button%20Mushroom.webp" alt="Destroying Angel vs Button Mushroom comparison" className="w-full h-full object-cover" />
+              <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <img src="/destroying-angel-vs-button-mushroom.webp" alt="Destroying Angel vs Button Mushroom comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 2. Destroying Angel vs Button Mushroom
@@ -1258,8 +1340,8 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
-                <img src="/Chanterelle%20vs%20False%20Chanterelle.webp" alt="Chanterelle vs False Chanterelle comparison" className="w-full h-full object-cover" />
+              <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <img src="/chanterelle-vs-false-chanterelle.webp" alt="Chanterelle vs False Chanterelle comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 3. Chanterelle vs False Chanterelle
@@ -1308,8 +1390,8 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
-                <img src="/Oyster%20Mushroom%20vs%20Angel%20Wings.webp" alt="Oyster Mushroom vs Angel Wings comparison" className="w-full h-full object-cover" />
+              <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <img src="/oyster-mushroom-vs-angel-wings.webp" alt="Oyster Mushroom vs Angel Wings comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 4. Oyster Mushroom vs Angel Wings
@@ -1360,8 +1442,8 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
-                <img src="/Morel%20vs%20False%20Morel.webp" alt="Morel vs False Morel comparison" className="w-full h-full object-cover" />
+              <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <img src="/morel-vs-false-morel.webp" alt="Morel vs False Morel comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 5. Morel vs False Morel
@@ -1410,8 +1492,8 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
-                <img src="/Puffball%20vs%20Young%20Amanita.webp" alt="Puffball vs Young Amanita comparison" className="w-full h-full object-cover" />
+              <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <img src="/puffball-vs-young-amanita.webp" alt="Puffball vs Young Amanita comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 6. Puffball vs Young Amanita
@@ -1474,8 +1556,8 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
-                <img src="/King%20Bolete%20vs%20Bitter%20Bolete.webp" alt="King Bolete vs Bitter Bolete comparison" className="w-full h-full object-cover" />
+              <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <img src="/king-bolete-vs-bitter-bolete.webp" alt="King Bolete vs Bitter Bolete comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 7. King Bolete vs Bitter Bolete
@@ -1524,8 +1606,8 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="relative w-full h-48 rounded-xl overflow-hidden mb-5 -mx-0" style={{ margin: '-1.5rem -1.5rem 1.25rem -1.5rem', width: 'calc(100% + 3rem)' }}>
-                <img src="/Shaggy%20Ink%20Cap%20vs%20Common%20Ink%20Cap.webp" alt="Shaggy Ink Cap vs Common Ink Cap comparison" className="w-full h-full object-cover" />
+              <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <img src="/shaggy-ink-cap-vs-common-ink-cap.webp" alt="Shaggy Ink Cap vs Common Ink Cap comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 8. Shaggy Ink Cap vs Common Ink Cap

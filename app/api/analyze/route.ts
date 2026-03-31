@@ -11,7 +11,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || 'placeholder-key',
 })
 
-const MUSHROOM_PROMPT = `You are an expert mycologist. Analyze this mushroom image carefully.
+const MUSHROOM_PROMPT = `You are an expert mycologist. Analyze the provided mushroom image(s) carefully. Multiple images may show different angles (cap, gills, stem, base) of the same specimen — use all of them together for a more accurate identification.
 Respond ONLY with a valid JSON object. No markdown, no backticks, no text outside the JSON.
 
 {
@@ -44,9 +44,9 @@ If the image does not show a mushroom, set commonName to "Not a mushroom" and ri
 
 export async function POST(request: NextRequest) {
   try {
-    const { imageBase64, imageHash, userId } = await request.json()
+    const { imagesBase64, imageHash, userId } = await request.json()
 
-    if (!imageBase64 || !imageHash) {
+    if (!imagesBase64 || !Array.isArray(imagesBase64) || imagesBase64.length === 0 || !imageHash) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -100,16 +100,16 @@ export async function POST(request: NextRequest) {
         {
           role: 'user',
           content: [
-            {
-              type: 'image',
+            ...imagesBase64.map((img: string) => ({
+              type: 'image' as const,
               source: {
-                type: 'base64',
-                media_type: 'image/jpeg',
-                data: imageBase64,
+                type: 'base64' as const,
+                media_type: 'image/jpeg' as const,
+                data: img,
               },
-            },
+            })),
             {
-              type: 'text',
+              type: 'text' as const,
               text: MUSHROOM_PROMPT,
             },
           ],
