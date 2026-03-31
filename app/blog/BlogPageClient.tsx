@@ -33,7 +33,7 @@ const articles: Article[] = [
     region: 'Worldwide',
     date: 'Mar 31, 2026',
     readTime: '12 min',
-    slug: 'death-cap-vs-destroying-angel',
+    slug: '/death-cap-vs-destroying-angel',
     image: '/Death Cap vs Destroying Angel.webp',
   },
 ]
@@ -353,7 +353,7 @@ function ArticleCard({ article }: { article: Article }) {
 
   return (
     <Link
-      href={`/blog/${article.slug}`}
+      href={article.slug.startsWith('/') ? article.slug : `/blog/${article.slug}`}
       className="rounded-2xl overflow-hidden card-lift card-glow cursor-pointer group flex flex-col"
       style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', textDecoration: 'none' }}
     >
