@@ -137,6 +137,8 @@ export default function Footer() {
               <PaymentBadge bg="#000" color="#fff">⌘ Pay</PaymentBadge>
               {/* Google Pay */}
               <PaymentBadge bg="#fff" color="#3c4043">G Pay</PaymentBadge>
+              {/* Stripe */}
+              <PaymentBadge bg="#635BFF" color="#fff">stripe</PaymentBadge>
             </div>
 
             <Link
