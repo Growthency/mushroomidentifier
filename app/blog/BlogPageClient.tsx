@@ -24,6 +24,19 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 6,
+    title: 'Amanita virosa (Destroying Angel): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Amanita virosa, the European Destroying Angel, is one of the deadliest mushrooms in Europe. Learn how to identify it by its pure white cap, gills, ring, and volva before it is too late.',
+    category: 'Safety',
+    riskLevel: 'Toxic',
+    region: 'EU Europe',
+    date: 'Mar 31, 2026',
+    readTime: '12 min',
+    slug: '/amanita-virosa-mushroom',
+    image: '/amanita-virosa-mushroom-destroying-angel.webp',
+  },
+  {
     id: 5,
     title: 'Amanita bisporigera (Destroying Angel): Identification, Features, Habitat & Safety Guide',
     excerpt:
