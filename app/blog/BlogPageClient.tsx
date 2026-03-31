@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Link from 'next/link'
 import { Search, ChevronDown, Globe, Shield, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type RiskLevel = 'All Levels' | 'Toxic' | 'High Risk' | 'Low Risk' | 'General'
@@ -21,8 +22,21 @@ interface Article {
 
 const ARTICLES_PER_PAGE = 9
 
-// Real articles will be added here later
-const articles: Article[] = []
+const articles: Article[] = [
+  {
+    id: 1,
+    title: 'Death Cap vs Destroying Angel: Key Differences, Identification & Safety Guide',
+    excerpt:
+      'Compare Death Cap and Destroying Angel mushrooms by cap color, gills, ring, volva, habitat, toxicity, and look-alikes. Learn safe identification differences to avoid these deadly fungi.',
+    category: 'Safety',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Mar 31, 2026',
+    readTime: '12 min',
+    slug: 'death-cap-vs-destroying-angel',
+    image: '/Death Cap vs Destroying Angel.webp',
+  },
+]
 
 const riskLevelColors: Record<string, string> = {
   Toxic: '#ef4444',
@@ -338,9 +352,10 @@ function ArticleCard({ article }: { article: Article }) {
   const region    = regionMeta[article.region]
 
   return (
-    <div
+    <Link
+      href={`/blog/${article.slug}`}
       className="rounded-2xl overflow-hidden card-lift card-glow cursor-pointer group flex flex-col"
-      style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+      style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', textDecoration: 'none' }}
     >
       {/* Thumbnail */}
       <div className="relative h-48 flex-shrink-0 overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
@@ -404,7 +419,7 @@ function ArticleCard({ article }: { article: Article }) {
           <span>{article.readTime} read</span>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 

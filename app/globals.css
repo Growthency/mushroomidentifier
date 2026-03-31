@@ -97,3 +97,14 @@ body {
 .card-glow::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent-glow),transparent); opacity:0; transition:opacity 0.3s; }
 .card-glow:hover::before { opacity: 0.5; }
 .font-playfair { font-family: 'Playfair Display', serif; }
+
+/* ── Article / Blog Post prose styles ── */
+article p { color: var(--text-muted); line-height: 1.8; font-size: 1rem; }
+article ul, article ol { color: var(--text-muted); line-height: 1.8; padding-left: 1.4rem; }
+article ul { list-style-type: disc; }
+article ol { list-style-type: decimal; }
+article li { margin-bottom: 0.35rem; }
+article strong { color: var(--text-primary); }
+article em { color: var(--text-muted); }
+article details summary::-webkit-details-marker { display: none; }
+article details[open] summary span:last-child { transform: rotate(45deg); display: inline-block; }
