@@ -86,7 +86,7 @@ const articles: Article[] = [
     date: 'Mar 31, 2026',
     readTime: '12 min',
     slug: '/death-cap-vs-destroying-angel',
-    image: '/Death Cap vs Destroying Angel.webp',
+    image: '/death-cap-vs-destroying-angel-comparison.webp',
   },
   {
     id: 3,
@@ -112,7 +112,7 @@ const articles: Article[] = [
     date: 'Mar 31, 2026',
     readTime: '14 min',
     slug: '/mushroom-parts-explained',
-    image: '/parts of mushrooms.webp',
+    image: '/parts-of-mushrooms.webp',
   },
 ]
 

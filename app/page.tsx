@@ -336,7 +336,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="identifier" className="py-24 px-6" style={{ background: 'var(--bg-primary)' }}>
+      <section id="identifier" className="py-12 sm:py-16 px-6" style={{ background: 'var(--bg-primary)' }}>
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-center mb-6 gradient-text">
             Upload Photo & Identify Mushrooms
@@ -396,7 +396,7 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   {previewUrls.map((url, i) => (
                     <div key={i} className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '1' }}>
-                      <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                      <img src={url} alt="AI mushroom identifier - Fungi Finder" className="w-full h-full object-cover" />
                       <button
                         onClick={() => {
                           setPreviewUrls(prev => prev.filter((_, idx) => idx !== i))
@@ -424,7 +424,7 @@ export default function Home() {
                     ].map(({ src, label }) => (
                       <div key={label} className="flex flex-col items-center gap-1">
                         <div className="w-full rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
-                          <img src={src} alt={label} className="w-full h-full object-cover" />
+                          <img src={src} alt={`AI mushroom identifier - Fungi Finder - ${label} view`} className="w-full h-full object-cover" />
                         </div>
                         <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span>
                       </div>
@@ -450,7 +450,7 @@ export default function Home() {
               <div className="flex-1 flex items-center justify-center p-4">
                 <img
                   src="/mushroom-fungi-identifier.webp"
-                  alt="Mushroom anatomy guide showing Cap, Gills, Ring, Stipe and Volva for identification"
+                  alt="AI mushroom identifier - Fungi Finder anatomy guide showing Cap, Gills, Ring, Stipe and Volva"
                   className="w-full h-auto"
                   style={{ maxHeight: '320px', objectFit: 'contain' }}
                 />
@@ -583,7 +583,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-4xl mx-auto">
           <div className="space-y-6 text-base sm:text-lg leading-relaxed mb-12" style={{ color: 'var(--text-muted)' }}>
             <p>
@@ -599,7 +599,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-primary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-primary)' }}>
         <div className="max-w-4xl mx-auto">
           <div className="p-6 sm:p-8 rounded-xl mb-12" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)' }}>
             <div className="flex items-start gap-4">
@@ -654,7 +654,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" className="py-24 px-6">
+      <section id="how-it-works" className="py-12 sm:py-16 px-6">
         <div className="max-w-6xl mx-auto">
           <h2 className="font-playfair text-4xl md:text-5xl font-bold text-center mb-16" style={{ color: 'var(--text-primary)' }}>How to Use the Mushroom Identifier</h2>
           <p className="text-center text-lg mb-12 max-w-3xl mx-auto" style={{ color: 'var(--text-muted)' }}>
@@ -686,7 +686,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-6" style={{ color: 'var(--text-primary)' }}>
             Who This Mushroom Identifier Is For
@@ -723,7 +723,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6">
+      <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             How AI Helps Identify Mushrooms
@@ -750,7 +750,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             Why Mushroom Identification Requires Caution
@@ -774,7 +774,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-5xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             When You Should Not Rely Only on a Mushroom Identifier?
@@ -818,7 +818,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6">
+      <section className="py-10 sm:py-14 px-6">
         <div className="max-w-5xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             Best Practices for Safer Mushroom Identification
@@ -908,7 +908,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-6xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-6" style={{ color: 'var(--text-primary)' }}>
             Mushroom Identification in Different Habitats
@@ -935,7 +935,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6">
+      <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             Can This Tool Identify Mushrooms Growing on Wood?
@@ -979,7 +979,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-5xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             Mushroom Identification Accuracy: What Affects It Most
@@ -1032,7 +1032,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6">
+      <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             Mushroom Identification for Beginners
@@ -1103,7 +1103,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             Why This Mushroom Identifier Is Useful as a Web-Based Tool?
@@ -1146,7 +1146,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6">
+      <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8" style={{ color: 'var(--text-primary)' }}>
             Mushroom ID Chart: Common Types
@@ -1186,7 +1186,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6">
+      <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-12" style={{ color: 'var(--text-primary)' }}>
             Key Benefits of Using This Free Mushroom Identifier
@@ -1209,7 +1209,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6">
+      <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-12" style={{ color: 'var(--text-primary)' }}>
             When to Consult a Local Expert
@@ -1260,7 +1260,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-6xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-6" style={{ color: 'var(--text-primary)' }}>
             Common Similar Species Our Mushroom Identifier Distinguishes
@@ -1703,7 +1703,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-4xl mx-auto">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-12" style={{ color: 'var(--text-primary)' }}>
             Frequently Asked Questions
@@ -1728,7 +1728,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6">
+      <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="p-8 sm:p-12 rounded-2xl text-center" style={{ background: 'var(--accent-bg)', border: '2px solid var(--accent)' }}>
             <h2 className="font-playfair text-3xl sm:text-4xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
@@ -1766,7 +1766,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 px-6 overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
+      <section className="py-12 sm:py-16 px-6 overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-xs font-semibold tracking-widest mb-3" style={{ color: 'var(--accent)' }}>REVIEWS</p>
@@ -1813,7 +1813,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 px-6 relative overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
+      <section className="py-12 sm:py-16 px-6 relative overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
         <div className="absolute inset-0 flex items-center justify-center opacity-20">
           <div className="w-96 h-96 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)' }} />
         </div>

@@ -9,6 +9,7 @@ import type { User } from '@supabase/supabase-js'
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
+  { href: '/#identifier', label: 'Identifiers' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/blog', label: 'Blog' },
   { href: '/about', label: 'About' },
@@ -25,6 +26,7 @@ export default function Navbar() {
   const supabase = createClient()
 
   const isActive = (href: string) => {
+    if (href.includes('#')) return false
     if (href === '/') return pathname === '/'
     return pathname.startsWith(href)
   }
@@ -79,7 +81,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2.5 group">
             <span className="text-3xl transition-transform duration-300 group-hover:scale-110 select-none">🍄</span>
             <span className="font-playfair text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-              Mushroom<span style={{ color: 'var(--accent)' }}>Identifiers</span>
+              Mushroom<span style={{ color: 'var(--accent)' }}>s</span>
             </span>
           </Link>
 
