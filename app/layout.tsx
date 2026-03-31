@@ -53,6 +53,7 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Site-wide identity schema only — page-specific schemas live in each page component */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -64,7 +65,13 @@ export default function RootLayout({
                   "@id": "https://mushroomidentifiers.com/#organization",
                   "name": "Mushroom Identifier",
                   "url": "https://mushroomidentifiers.com/",
-                  "email": "support@mushroomidentifiers.com"
+                  "email": "support@mushroomidentifiers.com",
+                  "sameAs": [
+                    "https://www.instagram.com/mushroomidentifiers/",
+                    "https://x.com/MIdentifiers",
+                    "https://www.facebook.com/mushroomidentifiers/",
+                    "https://www.linkedin.com/company/mushroom-identifiers/"
+                  ]
                 },
                 {
                   "@type": "WebSite",
@@ -73,127 +80,6 @@ export default function RootLayout({
                   "name": "Mushroom Identifier",
                   "description": "Free mushroom identifier tool to identify fungi by picture using AI and image recognition.",
                   "publisher": { "@id": "https://mushroomidentifiers.com/#organization" }
-                },
-                {
-                  "@type": "WebApplication",
-                  "@id": "https://mushroomidentifiers.com/#app",
-                  "name": "Mushroom Identifier",
-                  "url": "https://mushroomidentifiers.com/",
-                  "applicationCategory": "EducationalApplication",
-                  "operatingSystem": "All",
-                  "description": "AI mushroom identifier to identify wild mushrooms by picture using computer vision, cap, gills, pores, stem, and habitat analysis.",
-                  "offers": {
-                    "@type": "Offer",
-                    "price": "0",
-                    "priceCurrency": "USD"
-                  },
-                  "aggregateRating": {
-                    "@type": "AggregateRating",
-                    "ratingValue": "4.9",
-                    "ratingCount": "128"
-                  },
-                  "publisher": { "@id": "https://mushroomidentifiers.com/#organization" }
-                },
-                {
-                  "@type": "Article",
-                  "@id": "https://mushroomidentifiers.com/#article",
-                  "headline": "Mushroom Identifier - Free Fungi Identification Tool by Picture",
-                  "description": "Identify mushrooms by picture using AI. Upload photos to detect fungal species, gills, pores, and habitat instantly.",
-                  "author": {
-                    "@type": "Organization",
-                    "name": "Mushroom Identifier",
-                    "url": "https://mushroomidentifiers.com/"
-                  },
-                  "publisher": { "@id": "https://mushroomidentifiers.com/#organization" },
-                  "mainEntityOfPage": "https://mushroomidentifiers.com/"
-                },
-                {
-                  "@type": "BreadcrumbList",
-                  "@id": "https://mushroomidentifiers.com/#breadcrumbs",
-                  "itemListElement": [
-                    {
-                      "@type": "ListItem",
-                      "position": 1,
-                      "name": "Home",
-                      "item": "https://mushroomidentifiers.com/"
-                    },
-                    {
-                      "@type": "ListItem",
-                      "position": 2,
-                      "name": "Mushroom Identifier",
-                      "item": "https://mushroomidentifiers.com/mushrooms/"
-                    }
-                  ]
-                },
-                {
-                  "@type": "FAQPage",
-                  "@id": "https://mushroomidentifiers.com/#faq",
-                  "mainEntity": [
-                    {
-                      "@type": "Question",
-                      "name": "What type of mushroom is this?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Observe cap shape, gills, pores, stem, and habitat. A mushroom identifier uses AI to compare these traits with fungal species."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "How does a mushroom identifier work?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "It uses AI and computer vision to analyze mushroom images and match cap, gills, pores, and stem with labeled fungal databases."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Is there a free mushroom identifier app?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes, this is a free web-based mushroom identifier that works in your browser without installation."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Can a wild mushroom be identified from a picture?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes, AI analyzes cap texture, gill pattern, stem, and habitat, but results should be verified by a mycologist."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Can a mushroom identifier tell if a mushroom is edible?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "No, it suggests species only. Toxic mushrooms like Amanita phalloides can resemble edible ones."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Why does habitat matter in mushroom identification?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Fungi grow in specific environments like soil, moss, hardwood, or conifer wood, helping narrow species identification."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Do I need to create an account?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "No, the tool works instantly without signup."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "How does the AI identify mushrooms?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "It uses machine learning on fungal images to analyze cap, gills, stem, and habitat for species matching."
-                      }
-                    }
-                  ]
                 }
               ]
             })
