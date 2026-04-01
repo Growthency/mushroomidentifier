@@ -108,9 +108,9 @@ body.theme-ready {
   100% { background-position: 200% center; }
 }
 
-/* ── Buttons & glow ── */
-.glow-green { box-shadow: 0 0 36px rgba(74,140,85,0.32); }
-.glow-green:hover { box-shadow: 0 0 56px rgba(74,140,85,0.52); }
+/* ── Buttons & glow — use filter:drop-shadow (GPU composited, avoids forced paint) ── */
+.glow-green { filter: drop-shadow(0 0 14px rgba(74,140,85,0.45)); will-change: filter; }
+.glow-green:hover { filter: drop-shadow(0 0 22px rgba(74,140,85,0.65)); }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }
@@ -122,7 +122,7 @@ body.theme-ready {
 .animate-fade-up { animation: fadeUp 0.8s ease both; }
 @keyframes floatUp { 0% { opacity:0; transform:translateY(100vh); } 10% { opacity:0.5; } 90% { opacity:0.2; } 100% { opacity:0; transform:translateY(-10vh); } }
 @keyframes pulseDot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(1.7); } }
-.pulse-dot { animation: pulseDot 2s ease-in-out infinite; }
+.pulse-dot { animation: pulseDot 2s ease-in-out infinite; will-change: transform, opacity; }
 @keyframes scrollBounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(9px); } }
 .animate-scroll-bounce { animation: scrollBounce 2s ease-in-out infinite; }
 
