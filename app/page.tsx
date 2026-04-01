@@ -1,311 +1,62 @@
-'use client'
-import { useEffect, useState, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import NextImage from 'next/image'
-import { Upload, Shield, Microscope, Globe, Clock, BookOpen, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Camera, TreeDeciduous, Leaf, Mountain } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { Shield, Microscope, Globe, Clock, BookOpen, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Camera, TreeDeciduous, Leaf, Mountain } from 'lucide-react'
 
-interface Particle {
-  x: number
-  y: number
-  vx: number
-  vy: number
-  radius: number
+const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false })
+const HomeIdentifier = dynamic(() => import('./HomeIdentifier'), { ssr: false })
+const HomeReviews = dynamic(() => import('./HomeReviews'), { ssr: false })
+
+const homepageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://mushroomidentifiers.com/#app",
+      "name": "Mushroom Identifier",
+      "url": "https://mushroomidentifiers.com/",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "description": "AI mushroom identifier to identify wild mushrooms by picture using computer vision, cap, gills, pores, stem, and habitat analysis.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "128" },
+      "publisher": { "@id": "https://mushroomidentifiers.com/#organization" }
+    },
+    {
+      "@type": "Article",
+      "@id": "https://mushroomidentifiers.com/#article",
+      "headline": "Mushroom Identifier - Free Fungi Identification Tool by Picture",
+      "description": "Identify mushrooms by picture using AI. Upload photos to detect fungal species, gills, pores, and habitat instantly.",
+      "author": { "@type": "Organization", "name": "Mushroom Identifier", "url": "https://mushroomidentifiers.com/" },
+      "publisher": { "@id": "https://mushroomidentifiers.com/#organization" },
+      "mainEntityOfPage": "https://mushroomidentifiers.com/"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://mushroomidentifiers.com/" }]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "What type of mushroom is this?", "acceptedAnswer": { "@type": "Answer", "text": "Observe cap shape, gills, pores, stem, and habitat. A mushroom identifier uses AI to compare these traits with fungal species." } },
+        { "@type": "Question", "name": "How does a mushroom identifier work?", "acceptedAnswer": { "@type": "Answer", "text": "It uses AI and computer vision to analyze mushroom images and match cap, gills, pores, and stem with labeled fungal databases." } },
+        { "@type": "Question", "name": "Is there a free mushroom identifier app?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, this is a free web-based mushroom identifier that works in your browser without installation." } },
+        { "@type": "Question", "name": "Can a wild mushroom be identified from a picture?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, AI analyzes cap texture, gill pattern, stem, and habitat, but results should be verified by a mycologist." } },
+        { "@type": "Question", "name": "Can a mushroom identifier tell if a mushroom is edible?", "acceptedAnswer": { "@type": "Answer", "text": "No, it suggests species only. Toxic mushrooms like Amanita phalloides can resemble edible ones." } },
+        { "@type": "Question", "name": "Why does habitat matter in mushroom identification?", "acceptedAnswer": { "@type": "Answer", "text": "Fungi grow in specific environments like soil, moss, hardwood, or conifer wood, helping narrow species identification." } },
+        { "@type": "Question", "name": "Do I need to create an account?", "acceptedAnswer": { "@type": "Answer", "text": "No, the tool works instantly without signup." } },
+        { "@type": "Question", "name": "How does the AI identify mushrooms?", "acceptedAnswer": { "@type": "Answer", "text": "It uses machine learning on fungal images to analyze cap, gills, stem, and habitat for species matching." } }
+      ]
+    }
+  ]
 }
 
-const PARTICLE_COUNT = 40
-const CONNECTION_DISTANCE = 120
-
-const REVIEWS = [
-  { text: "This is genuinely the best mushroom identification tool I have used. The look-alike warnings saved me from a dangerous mistake on my last foray.", name: "Marcus K.", role: "Professional Forager, Germany", avatar: "https://i.pravatar.cc/80?img=11" },
-  { text: "The UI is stunning and the results are incredibly detailed. I use it every weekend. Worth every penny of the Pro subscription.", name: "Sophie L.", role: "Mycology Enthusiast, France", avatar: "https://i.pravatar.cc/80?img=5" },
-  { text: "As a mycologist I was skeptical — but the accuracy is remarkable. The critical features section is exactly what beginners need to stay safe.", name: "Dr. R. Tanaka", role: "Mycologist, Japan", avatar: "https://i.pravatar.cc/80?img=12" },
-  { text: "I found a rare species on my first hike using this tool. The habitat analysis feature is something no other app offers.", name: "Elena V.", role: "Nature Photographer, Italy", avatar: "https://i.pravatar.cc/80?img=47" },
-  { text: "Incredibly fast results. I showed it to my foraging club and everyone was blown away. We now use it as a first check on every find.", name: "James O.", role: "Hiking Guide, USA", avatar: "https://i.pravatar.cc/80?img=33" },
-  { text: "The toxicity warnings are a lifesaver — literally. Clear, detailed and the look-alike comparisons helped me teach my students mushroom safety.", name: "Priya M.", role: "Botanist, India", avatar: "https://i.pravatar.cc/80?img=44" },
-]
-
 export default function Home() {
-  const [userId, setUserId] = useState<string | null>(null)
-  const [hasUsedFreeScan, setHasUsedFreeScan] = useState(false)
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [previewUrls, setPreviewUrls] = useState<string[]>([])
-  const [analyzing, setAnalyzing] = useState(false)
-  const [result, setResult] = useState<any | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [reviewIdx, setReviewIdx] = useState(0)
-
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const particlesRef = useRef<Particle[]>([])
-
-  const supabase = createClient()
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUserId(user?.id || null)
-
-      if (!user) {
-        const hasUsed = localStorage.getItem('mushroom_free_scan_used')
-        setHasUsedFreeScan(!!hasUsed)
-      }
-    }
-    getUser()
-  }, [supabase])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    // Use ResizeObserver to avoid forced layout (no offsetWidth/Height read in handler)
-    const resizeCanvas = (entries: ResizeObserverEntry[]) => {
-      const entry = entries[0]
-      if (entry) {
-        canvas.width = entry.contentRect.width
-        canvas.height = entry.contentRect.height
-      }
-    }
-    const ro = new ResizeObserver(resizeCanvas)
-    ro.observe(canvas)
-
-    const initParticles = () => {
-      particlesRef.current = []
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        particlesRef.current.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          radius: Math.random() * 2 + 1,
-        })
-      }
-    }
-
-    initParticles()
-
-    // Cache theme to avoid forced style recalc inside the 60fps animation loop
-    let isLight = document.documentElement.getAttribute('data-theme') === 'light'
-    const themeObserver = new MutationObserver(() => {
-      isLight = document.documentElement.getAttribute('data-theme') === 'light'
-    })
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-
-    let animId: number
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      particlesRef.current.forEach((particle) => {
-        particle.x += particle.vx
-        particle.y += particle.vy
-
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1
-
-        ctx.beginPath()
-        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2)
-        ctx.fillStyle = isLight ? 'rgba(30, 80, 45, 0.5)' : 'rgba(126, 200, 138, 0.6)'
-        ctx.fill()
-      })
-
-      for (let i = 0; i < particlesRef.current.length; i++) {
-        for (let j = i + 1; j < particlesRef.current.length; j++) {
-          const dx = particlesRef.current[i].x - particlesRef.current[j].x
-          const dy = particlesRef.current[i].y - particlesRef.current[j].y
-          const distance = Math.sqrt(dx * dx + dy * dy)
-
-          if (distance < CONNECTION_DISTANCE) {
-            ctx.beginPath()
-            ctx.moveTo(particlesRef.current[i].x, particlesRef.current[i].y)
-            ctx.lineTo(particlesRef.current[j].x, particlesRef.current[j].y)
-            ctx.strokeStyle = isLight
-              ? `rgba(30, 80, 45, ${0.35 * (1 - distance / CONNECTION_DISTANCE)})`
-              : `rgba(126, 200, 138, ${0.2 * (1 - distance / CONNECTION_DISTANCE)})`
-            ctx.lineWidth = 1
-            ctx.stroke()
-          }
-        }
-      }
-
-      animId = requestAnimationFrame(animate)
-    }
-
-    // Defer canvas animation by 2.5s so LCP can paint unblocked
-    const startTimer = setTimeout(() => { animate() }, 2500)
-
-    return () => {
-      clearTimeout(startTimer)
-      cancelAnimationFrame(animId)
-      themeObserver.disconnect()
-      ro.disconnect()
-    }
-  }, [])
-
-  useEffect(() => {
-    const t = setInterval(() => setReviewIdx(i => (i + 1) % 6), 4000)
-    return () => clearInterval(t)
-  }, [])
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).slice(0, 4)
-    if (files.length > 0) {
-      setSelectedFiles(prev => {
-        const combined = [...prev, ...files].slice(0, 4)
-        return combined
-      })
-      setPreviewUrls(prev => {
-        const newUrls = files.map(f => URL.createObjectURL(f))
-        return [...prev, ...newUrls].slice(0, 4)
-      })
-      setResult(null)
-      setError(null)
-    }
-  }
-
-  const resizeImage = (file: File): Promise<string> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const img = new Image()
-        img.onload = () => {
-          const canvas = document.createElement('canvas')
-          let width = img.width
-          let height = img.height
-
-          if (width > 800 || height > 800) {
-            if (width > height) {
-              height = (height / width) * 800
-              width = 800
-            } else {
-              width = (width / height) * 800
-              height = 800
-            }
-          }
-
-          canvas.width = width
-          canvas.height = height
-          const ctx = canvas.getContext('2d')!
-          ctx.drawImage(img, 0, 0, width, height)
-          resolve(canvas.toDataURL('image/jpeg', 0.8).split(',')[1])
-        }
-        img.src = e.target?.result as string
-      }
-      reader.readAsDataURL(file)
-    })
-  }
-
-  const hashImage = async (base64: string): Promise<string> => {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(base64)
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  }
-
-  const analyzeImage = async () => {
-    if (selectedFiles.length === 0) return
-
-    setAnalyzing(true)
-    setError(null)
-
-    try {
-      const imagesBase64 = await Promise.all(selectedFiles.map(f => resizeImage(f)))
-      const imageHash = await hashImage(imagesBase64[0])
-
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imagesBase64, imageHash, userId }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        if (data.error === 'free_limit_reached') {
-          setError('You\'ve used your 3 lifetime free scans. Create an account to unlock unlimited identifications.')
-        } else if (data.error === 'insufficient_credits') {
-          setError('Insufficient credits. Please purchase more to continue.')
-        } else {
-          setError(data.error || 'Analysis failed')
-        }
-        setAnalyzing(false)
-        return
-      }
-
-      setResult(data.result)
-      if (!userId && !hasUsedFreeScan) {
-        localStorage.setItem('mushroom_free_scan_used', 'true')
-        setHasUsedFreeScan(true)
-      }
-    } catch (err) {
-      setError('Network error. Please try again.')
-    } finally {
-      setAnalyzing(false)
-    }
-  }
-
-  const reset = () => {
-    setSelectedFiles([])
-    setPreviewUrls([])
-    setResult(null)
-    setError(null)
-  }
-
-  const homepageSchema = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebApplication",
-        "@id": "https://mushroomidentifiers.com/#app",
-        "name": "Mushroom Identifier",
-        "url": "https://mushroomidentifiers.com/",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "All",
-        "description": "AI mushroom identifier to identify wild mushrooms by picture using computer vision, cap, gills, pores, stem, and habitat analysis.",
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "128" },
-        "publisher": { "@id": "https://mushroomidentifiers.com/#organization" }
-      },
-      {
-        "@type": "Article",
-        "@id": "https://mushroomidentifiers.com/#article",
-        "headline": "Mushroom Identifier - Free Fungi Identification Tool by Picture",
-        "description": "Identify mushrooms by picture using AI. Upload photos to detect fungal species, gills, pores, and habitat instantly.",
-        "author": { "@type": "Organization", "name": "Mushroom Identifier", "url": "https://mushroomidentifiers.com/" },
-        "publisher": { "@id": "https://mushroomidentifiers.com/#organization" },
-        "mainEntityOfPage": "https://mushroomidentifiers.com/"
-      },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://mushroomidentifiers.com/" }]
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          { "@type": "Question", "name": "What type of mushroom is this?", "acceptedAnswer": { "@type": "Answer", "text": "Observe cap shape, gills, pores, stem, and habitat. A mushroom identifier uses AI to compare these traits with fungal species." } },
-          { "@type": "Question", "name": "How does a mushroom identifier work?", "acceptedAnswer": { "@type": "Answer", "text": "It uses AI and computer vision to analyze mushroom images and match cap, gills, pores, and stem with labeled fungal databases." } },
-          { "@type": "Question", "name": "Is there a free mushroom identifier app?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, this is a free web-based mushroom identifier that works in your browser without installation." } },
-          { "@type": "Question", "name": "Can a wild mushroom be identified from a picture?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, AI analyzes cap texture, gill pattern, stem, and habitat, but results should be verified by a mycologist." } },
-          { "@type": "Question", "name": "Can a mushroom identifier tell if a mushroom is edible?", "acceptedAnswer": { "@type": "Answer", "text": "No, it suggests species only. Toxic mushrooms like Amanita phalloides can resemble edible ones." } },
-          { "@type": "Question", "name": "Why does habitat matter in mushroom identification?", "acceptedAnswer": { "@type": "Answer", "text": "Fungi grow in specific environments like soil, moss, hardwood, or conifer wood, helping narrow species identification." } },
-          { "@type": "Question", "name": "Do I need to create an account?", "acceptedAnswer": { "@type": "Answer", "text": "No, the tool works instantly without signup." } },
-          { "@type": "Question", "name": "How does the AI identify mushrooms?", "acceptedAnswer": { "@type": "Answer", "text": "It uses machine learning on fungal images to analyze cap, gills, stem, and habitat for species matching." } }
-        ]
-      }
-    ]
-  }
-
   return (
     <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }} />
       <section className="min-h-screen relative flex items-center justify-center overflow-hidden pt-20" style={{ background: 'var(--bg-primary)' }}>
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full opacity-40"
-          style={{ pointerEvents: 'none' }}
-        />
+        <HeroCanvas />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-xs font-medium" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
@@ -313,15 +64,15 @@ export default function Home() {
             AI-POWERED · 10,000+ SPECIES · 3 FREE SCANS
           </div>
 
-          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 gradient-text">
-            Free AI mushroom & Fungi identifier from Photos
+          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6" style={{ color: 'var(--accent)' }}>
+            Free AI mushroom &amp; Fungi identifier from Photos
           </h1>
 
           <p className="text-lg sm:text-xl mb-12 max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--text-muted)' }}>
             A mushroom identifier helps answer the common question many people ask when discovering fungi in nature: "what type of mushroom is this?" Modern tools use artificial intelligence, computer vision, and image recognition to analyze mushroom photos and compare them with a large database of labeled fungal species.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-fade-up">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
             <a href="#identifier" className="px-8 py-4 rounded-full text-lg font-semibold glow-green transition-all" style={{ background: 'var(--btn-primary)', color: '#fff' }}>
               Identify a Mushroom →
             </a>
@@ -330,7 +81,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto animate-fade-up">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
             {[
               { label: '10K+ Species', icon: Globe },
               { label: '95% Accuracy', icon: CheckCircle },
@@ -351,257 +102,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="identifier" className="py-12 sm:py-16 px-6" style={{ background: 'var(--bg-primary)' }}>
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-center mb-6 gradient-text-animate">
-            Upload Photo & Identify Mushrooms
-          </h2>
-
-          {!userId && !hasUsedFreeScan && (
-            <div className="flex items-center justify-center gap-2 mb-6 text-sm font-medium" style={{ color: 'var(--accent)' }}>
-              <div className="w-3 h-3 rounded-full pulse-dot" style={{ background: 'var(--accent)' }} />
-              Try your FREE scan now — No signup required
-            </div>
-          )}
-
-          {error && (
-            <div className="mb-6 p-4 rounded-lg flex items-start gap-3" style={{ background: 'rgba(251, 146, 60, 0.1)', border: '1px solid rgba(251, 146, 60, 0.3)' }}>
-              <AlertTriangle className="w-5 h-5 mt-0.5" style={{ color: '#fb923c' }} />
-              <div>
-                <p className="font-medium" style={{ color: '#fb923c' }}>{error}</p>
-                {error.includes('Buy credits') && (
-                  <Link href="/pricing" className="underline text-sm mt-1 inline-block" style={{ color: '#fb923c' }}>
-                    View Pricing →
-                  </Link>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            {/* Left — Upload panel */}
-            <div className="rounded-2xl p-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--accent)', color: '#fff' }}>
-                    <Camera className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Upload Mushroom Photos</p>
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Multi-angle analysis</p>
-                  </div>
-                </div>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--border)' }}>
-                  📷 Up to 4
-                </span>
-              </div>
-
-              {selectedFiles.length < 4 && !result && (
-                <label className="block cursor-pointer mb-4">
-                  <div className="border-2 border-dashed rounded-xl p-8 text-center transition-all hover:opacity-80" style={{ borderColor: 'var(--border)' }}>
-                    <Camera className="w-8 h-8 mx-auto mb-2" style={{ color: 'var(--accent)' }} />
-                    <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Tap to upload photos</p>
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{selectedFiles.length}/4 photos • JPG, PNG • Max 10MB each</p>
-                  </div>
-                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileSelect} />
-                </label>
-              )}
-
-              {previewUrls.length > 0 && !result && (
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {previewUrls.map((url, i) => (
-                    <div key={i} className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '1' }}>
-                      <img src={url} alt="AI mushroom identifier - Fungi Finder" className="w-full h-full object-cover" />
-                      <button
-                        onClick={() => {
-                          setPreviewUrls(prev => prev.filter((_, idx) => idx !== i))
-                          setSelectedFiles(prev => prev.filter((_, idx) => idx !== i))
-                        }}
-                        className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                        style={{ background: 'rgba(0,0,0,0.7)', color: '#fff' }}
-                      >✕</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {!result && (
-                <div className="mt-2">
-                  <p className="text-xs font-semibold mb-2" style={{ color: 'var(--accent)' }}>
-                    📷 For best results, capture these angles:
-                  </p>
-                  <div className="grid grid-cols-4 gap-2">
-                    {[
-                      { src: '/mushroom-top-view-cap-surface-1.webp', label: 'Cap' },
-                      { src: '/mushroom-side-profile-stem-view-2.webp', label: 'Stipe' },
-                      { src: '/mushroom-underside-gills-spores-3.webp', label: 'Gills' },
-                      { src: '/mushroom-base-root-volva-bottom-4.webp', label: 'Volva' },
-                    ].map(({ src, label }) => (
-                      <div key={label} className="flex flex-col items-center gap-1">
-                        <div className="w-full rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
-                          <NextImage src={src} alt={`AI mushroom identifier - Fungi Finder - ${label} view`} width={120} height={120} sizes="96px" loading="lazy" className="w-full h-full object-cover" />
-                        </div>
-                        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {!result && !analyzing && selectedFiles.length > 0 && (
-                <div className="flex gap-3 mt-4">
-                  <button onClick={reset} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
-                    Clear
-                  </button>
-                  <button onClick={analyzeImage} className="flex-1 py-2.5 rounded-xl text-sm font-semibold glow-green" style={{ background: 'var(--btn-primary)', color: '#fff' }}>
-                    Analyze {selectedFiles.length} Photo{selectedFiles.length > 1 ? 's' : ''}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Right — Mushroom guide diagram */}
-            <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-              <div className="flex-1 flex items-center justify-center p-4">
-                <NextImage
-                  src="/mushroom-fungi-identifier.webp"
-                  alt="AI mushroom identifier - Fungi Finder anatomy guide showing Cap, Gills, Ring, Stipe and Volva"
-                  width={600}
-                  height={400}
-                  loading="lazy"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="w-full h-auto"
-                  style={{ maxHeight: '320px', objectFit: 'contain' }}
-                />
-
-              </div>
-              <div className="px-6 py-4" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
-                <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Mushroom Profile</p>
-                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Photograph each labelled part for highest AI accuracy</p>
-              </div>
-            </div>
-          </div>
-
-          {analyzing && (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
-                  <p className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>Analyzing your mushroom with AI...</p>
-                </div>
-              )}
-
-              {result && (
-                <div className="space-y-6">
-                  <div className="p-6 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                    <div className="flex items-start justify-between mb-4 flex-wrap gap-4">
-                      <div>
-                        <h3 className="font-playfair text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{result.commonName}</h3>
-                        <p className="italic" style={{ color: 'var(--text-muted)' }}>{result.scientificName}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${result.riskLevel === 'HIGH' ? 'bg-red-500/20 text-red-500' : result.riskLevel === 'MEDIUM' ? 'bg-amber-500/20 text-amber-500' : 'bg-green-500/20 text-green-500'}`}>
-                          {result.riskLevel} RISK
-                        </span>
-                        <span className="px-3 py-1 rounded-full text-sm font-semibold" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
-                          {result.confidence} Confidence
-                        </span>
-                      </div>
-                    </div>
-                    {result.funFact && (
-                      <p className="text-sm p-3 rounded-lg" style={{ background: 'var(--accent-bg)', color: 'var(--text-primary)' }}>
-                        💡 {result.funFact}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="p-6 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                      <h3 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Key Features</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {result.keyFeatures?.map((feature: string, i: number) => (
-                          <span key={i} className="px-3 py-1 rounded-full text-sm" style={{ background: 'var(--accent-bg)', color: 'var(--text-primary)' }}>
-                            {feature}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="p-6 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                      <h3 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Habitat & Distribution</h3>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Habitat</p>
-                          <p style={{ color: 'var(--text-primary)' }}>{result.habitat}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Distribution</p>
-                          <p style={{ color: 'var(--text-primary)' }}>{result.distribution}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Season</p>
-                          <p style={{ color: 'var(--text-primary)' }}>{result.seasonality}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Color</p>
-                          <p style={{ color: 'var(--text-primary)' }}>{result.color}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {result.criticalFeatures && result.criticalFeatures.length > 0 && (
-                    <div className="p-6 rounded-xl" style={{ background: 'rgba(251, 146, 60, 0.1)', border: '2px solid rgba(251, 146, 60, 0.3)' }}>
-                      <div className="flex items-start gap-3">
-                        <AlertTriangle className="w-6 h-6 mt-1 flex-shrink-0" style={{ color: '#fb923c' }} />
-                        <div>
-                          <h3 className="font-semibold mb-3" style={{ color: '#fb923c' }}>Critical Features</h3>
-                          <ul className="space-y-2">
-                            {result.criticalFeatures.map((feature: string, i: number) => (
-                              <li key={i} className="text-sm" style={{ color: 'var(--text-primary)' }}>• {feature}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {result.similarSpecies && result.similarSpecies.length > 0 && (
-                    <div className="p-6 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                      <h3 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Similar Species</h3>
-                      <div className="space-y-4">
-                        {result.similarSpecies.map((species: any, i: number) => (
-                          <div key={i} className="p-4 rounded-lg" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                            <div className="flex items-start justify-between mb-2 flex-wrap gap-2">
-                              <div>
-                                <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{species.name}</p>
-                                <p className="text-sm italic" style={{ color: 'var(--text-muted)' }}>{species.scientificName}</p>
-                              </div>
-                              <span className={`px-2 py-1 rounded text-xs font-semibold ${species.toxicity === 'DEADLY' ? 'bg-red-500/20 text-red-500' : species.toxicity === 'TOXIC' ? 'bg-amber-500/20 text-amber-500' : 'bg-green-500/20 text-green-500'}`}>
-                                {species.toxicity}
-                              </span>
-                            </div>
-                            <ul className="space-y-1">
-                              {species.differences?.map((diff: string, j: number) => (
-                                <li key={j} className="text-sm" style={{ color: 'var(--text-muted)' }}>• {diff}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className={`p-6 rounded-xl ${result.riskLevel === 'HIGH' ? 'bg-red-500/10' : result.riskLevel === 'MEDIUM' ? 'bg-amber-500/10' : 'bg-green-500/10'}`} style={{ border: `2px solid ${result.riskLevel === 'HIGH' ? 'rgba(239, 68, 68, 0.3)' : result.riskLevel === 'MEDIUM' ? 'rgba(251, 146, 60, 0.3)' : 'rgba(34, 197, 94, 0.3)'}` }}>
-                    <h3 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Recommended Action</h3>
-                    <p style={{ color: 'var(--text-primary)' }}>{result.recommendedAction}</p>
-                  </div>
-
-                  <button onClick={reset} className="w-full px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity" style={{ background: 'var(--btn-primary)', color: '#fff' }}>
-                    Identify Another Mushroom
-                  </button>
-                </div>
-              )}
-        </div>
-      </section>
+      <HomeIdentifier />
 
       <section className="py-10 sm:py-14 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-4xl mx-auto">
@@ -1292,7 +793,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <img src="/death-cap-vs-paddy-straw-mushroom.webp" alt="Death Cap vs Paddy Straw Mushroom comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
+                <NextImage src="/death-cap-vs-paddy-straw-mushroom.webp" alt="Death Cap vs Paddy Straw Mushroom comparison" width={800} height={320} loading="lazy" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 1. Death Cap vs Paddy Straw Mushroom
@@ -1342,7 +843,7 @@ export default function Home() {
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <img src="/destroying-angel-vs-button-mushroom.webp" alt="Destroying Angel vs Button Mushroom comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
+                <NextImage src="/destroying-angel-vs-button-mushroom.webp" alt="Destroying Angel vs Button Mushroom comparison" width={800} height={320} loading="lazy" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 2. Destroying Angel vs Button Mushroom
@@ -1406,7 +907,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <img src="/chanterelle-vs-false-chanterelle.webp" alt="Chanterelle vs False Chanterelle comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
+                <NextImage src="/chanterelle-vs-false-chanterelle.webp" alt="Chanterelle vs False Chanterelle comparison" width={800} height={320} loading="lazy" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 3. Chanterelle vs False Chanterelle
@@ -1456,7 +957,7 @@ export default function Home() {
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <img src="/oyster-mushroom-vs-angel-wings.webp" alt="Oyster Mushroom vs Angel Wings comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
+                <NextImage src="/oyster-mushroom-vs-angel-wings.webp" alt="Oyster Mushroom vs Angel Wings comparison" width={800} height={320} loading="lazy" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 4. Oyster Mushroom vs Angel Wings
@@ -1508,7 +1009,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <img src="/morel-vs-false-morel.webp" alt="Morel vs False Morel comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
+                <NextImage src="/morel-vs-false-morel.webp" alt="Morel vs False Morel comparison" width={800} height={320} loading="lazy" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 5. Morel vs False Morel
@@ -1558,7 +1059,7 @@ export default function Home() {
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <img src="/puffball-vs-young-amanita.webp" alt="Puffball vs Young Amanita comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
+                <NextImage src="/puffball-vs-young-amanita.webp" alt="Puffball vs Young Amanita comparison" width={800} height={320} loading="lazy" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 6. Puffball vs Young Amanita
@@ -1622,7 +1123,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <img src="/king-bolete-vs-bitter-bolete.webp" alt="King Bolete vs Bitter Bolete comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
+                <NextImage src="/king-bolete-vs-bitter-bolete.webp" alt="King Bolete vs Bitter Bolete comparison" width={800} height={320} loading="lazy" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 7. King Bolete vs Bitter Bolete
@@ -1672,7 +1173,7 @@ export default function Home() {
 
             <div className="p-6 sm:p-8 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="w-full mb-5 rounded-xl overflow-hidden" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <img src="/shaggy-ink-cap-vs-common-ink-cap.webp" alt="Shaggy Ink Cap vs Common Ink Cap comparison" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
+                <NextImage src="/shaggy-ink-cap-vs-common-ink-cap.webp" alt="Shaggy Ink Cap vs Common Ink Cap comparison" width={800} height={320} loading="lazy" className="w-full h-auto" style={{ display: 'block', maxHeight: '320px', objectFit: 'contain' }} />
               </div>
               <h3 className="font-playfair text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
                 8. Shaggy Ink Cap vs Common Ink Cap
@@ -1786,52 +1287,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 px-6 overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-xs font-semibold tracking-widest mb-3" style={{ color: 'var(--accent)' }}>REVIEWS</p>
-            <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-              Trusted by Foragers <span className="italic" style={{ color: 'var(--accent)' }}>Worldwide</span>
-            </h2>
-          </div>
-
-          {/* Slider */}
-          <div className="relative">
-            <div className="grid md:grid-cols-3 gap-8">
-              {[0, 1, 2].map(offset => {
-                const review = REVIEWS[(reviewIdx + offset) % REVIEWS.length]
-                return (
-                  <div key={offset} className="p-8 rounded-2xl card-lift transition-all duration-500" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                    <div className="flex gap-1 mb-5">
-                      {[...Array(5)].map((_, i) => <span key={i} className="text-amber-400 text-xl">★</span>)}
-                    </div>
-                    <p className="text-base leading-relaxed mb-6 italic" style={{ color: 'var(--text-muted)' }}>
-                      "{review.text}"
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full object-cover" style={{ border: '2px solid var(--accent-bg)' }} />
-                      <div>
-                        <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{review.name}</p>
-                        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{review.role}</p>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-            {/* Dots */}
-            <div className="flex justify-center gap-2 mt-10">
-              {REVIEWS.map((_, i) => (
-                <button key={i} onClick={() => setReviewIdx(i)}
-                  className="w-2 h-2 rounded-full transition-all"
-                  style={{ background: i === reviewIdx ? 'var(--accent)' : 'var(--border)', transform: i === reviewIdx ? 'scale(1.4)' : 'scale(1)' }}
-                  aria-label={`Review ${i + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeReviews />
 
       <section className="py-12 sm:py-16 px-6 relative overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
         <div className="absolute inset-0 flex items-center justify-center opacity-20">

@@ -7,6 +7,12 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   compress: true,
+  swcMinify: true,
+  experimental: {
+    // Tell Next.js SWC compiler to respect browserslist for modern-only output
+    browsersListForSwc: true,
+    legacyBrowsers: false,
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,
