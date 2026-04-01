@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import Script from 'next/script'
-import TableOfContents, { TocHeading } from '@/components/blog/TableOfContents'
+import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 
 export const metadata: Metadata = {
@@ -105,33 +105,6 @@ const schemaData = {
   ],
 }
 
-const TOC_HEADINGS: TocHeading[] = [
-  { id: 'introduction', text: 'Introduction: Why Comparing Death Cap and Destroying Angel Matters', level: 2 },
-  { id: 'what-are-they', text: 'What Are Death Cap and Destroying Angel Mushrooms?', level: 3 },
-  { id: 'most-dangerous', text: 'Why These Are the Most Dangerous Toxic Mushrooms', level: 3 },
-  { id: 'common-confusion', text: 'Common Confusion Between Amanita Species', level: 3 },
-  { id: 'importance-id', text: 'Importance of Correct Mushroom Identification', level: 3 },
-  { id: 'comparison-table', text: 'Quick Comparison Table: Death Cap vs Destroying Angel', level: 2 },
-  { id: 'taxonomy', text: 'Scientific Classification and Taxonomy', level: 2 },
-  { id: 'key-differences', text: 'Key Identification Differences (Cap, Gills, Stem, Ring, Volva)', level: 2 },
-  { id: 'cap-shape', text: 'Cap Color and Shape', level: 3 },
-  { id: 'gills', text: 'Gills (Lamellae)', level: 3 },
-  { id: 'stem', text: 'Stem (Stipe) and Base', level: 3 },
-  { id: 'ring', text: 'Ring (Annulus)', level: 3 },
-  { id: 'volva', text: 'Volva (Basal Cup) — Most Important Feature', level: 3 },
-  { id: 'color-smell', text: 'Color, Smell, and Visual Differences', level: 2 },
-  { id: 'habitat-distribution', text: 'Habitat, Environment & Geographic Distribution', level: 2 },
-  { id: 'growth-seasonality', text: 'Growth Pattern and Seasonality', level: 2 },
-  { id: 'toxicity-comparison', text: 'Toxicity Comparison: Which Is More Dangerous?', level: 2 },
-  { id: 'look-alikes', text: 'Similar Edible Look-Alikes and Misidentification Risks', level: 2 },
-  { id: 'safe-identification', text: 'How to Safely Identify Death Cap vs Destroying Angel', level: 2 },
-  { id: 'ai-identifier', text: 'How a Mushroom Identifier Helps Distinguish Them', level: 2 },
-  { id: 'if-poisoning', text: 'What to Do If You Suspect Poisoning', level: 2 },
-  { id: 'faq', text: 'FAQ: Death Cap vs Destroying Angel', level: 2 },
-  { id: 'see-wild', text: 'See It in the Wild', level: 2 },
-  { id: 'final-thoughts', text: 'Final Thoughts', level: 2 },
-]
-
 export default function DeathCapVsDestroyingAngelPage() {
   return (
     <>
@@ -208,7 +181,7 @@ export default function DeathCapVsDestroyingAngelPage() {
 
           <Divider />
 
-          <TableOfContents headings={TOC_HEADINGS} />
+          <TableOfContents />
 
           {/* ── Introduction ───────────────────────────────── */}
           <Section>

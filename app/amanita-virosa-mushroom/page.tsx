@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import TableOfContents, { TocHeading } from '@/components/blog/TableOfContents'
+import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 
 export const metadata: Metadata = {
@@ -47,32 +47,6 @@ const H3 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
   <h3 id={id} className="font-playfair text-xl font-bold mb-3 mt-6" style={{ color: 'var(--text-primary)' }}>{children}</h3>
 )
 
-const TOC_HEADINGS: TocHeading[] = [
-  { id: 'quick-id-summary', text: 'Quick Identification Summary', level: 2 },
-  { id: 'family-species', text: 'Family and Species', level: 2 },
-  { id: 'dimensions', text: 'Dimensions', level: 2 },
-  { id: 'key-features', text: 'Key Features (Identification Characteristics)', level: 2 },
-  { id: 'cap', text: 'Cap (Pileus)', level: 3 },
-  { id: 'gills', text: 'Gills (Lamellae)', level: 3 },
-  { id: 'stem', text: 'Stem (Stipe)', level: 3 },
-  { id: 'ring', text: 'Ring (Annulus)', level: 3 },
-  { id: 'volva', text: 'Volva (Basal Cup)', level: 3 },
-  { id: 'color-smell-taste', text: 'Color, Smell, and Taste', level: 2 },
-  { id: 'growth-pattern', text: 'Growth Pattern and Seasonality', level: 2 },
-  { id: 'habitat', text: 'Habitat, Environment & Distribution', level: 2 },
-  { id: 'distribution', text: 'Geographic Distribution', level: 3 },
-  { id: 'edibility-safety', text: 'Edibility, Safety & Risk Level', level: 2 },
-  { id: 'toxicity', text: 'Toxicity', level: 3 },
-  { id: 'symptoms', text: 'Symptoms', level: 3 },
-  { id: 'similar-species', text: 'Similar Species (Look-Alikes Comparison)', level: 2 },
-  { id: 'common-confusions', text: 'Common Confusions', level: 3 },
-  { id: 'benefits', text: 'Benefits and Value', level: 2 },
-  { id: 'scientific-importance', text: 'Scientific Importance', level: 3 },
-  { id: 'pros-cons', text: 'Pros and Cons', level: 2 },
-  { id: 'ai-identifier', text: 'How Our Mushroom Identifier Helps Identify Destroying Angel', level: 2 },
-  { id: 'faq', text: 'Frequently Asked Questions', level: 2 },
-  { id: 'final-thoughts', text: 'Final Thoughts', level: 2 },
-]
 const WarningBox = ({ children }: { children: React.ReactNode }) => (
   <div className="flex gap-3 p-4 rounded-xl my-5" style={{ background: '#ef444415', border: '1px solid #ef444440' }}>
     <span className="text-xl flex-shrink-0">⚠️</span>
@@ -142,7 +116,7 @@ export default function AmanitaVirosaPage() {
 
           <Divider />
 
-          <TableOfContents headings={TOC_HEADINGS} />
+          <TableOfContents />
 
           {/* Quick ID Summary */}
           <Section>

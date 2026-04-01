@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import TableOfContents, { TocHeading } from '@/components/blog/TableOfContents'
+import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 
 export const metadata: Metadata = {
@@ -33,34 +33,6 @@ const schemaData = {
     },
   ],
 }
-
-const TOC_HEADINGS: TocHeading[] = [
-  { id: 'family-species', text: 'Family and Species', level: 2 },
-  { id: 'dimensions', text: 'Dimensions', level: 2 },
-  { id: 'key-features', text: 'Key Features (Identification Characteristics)', level: 2 },
-  { id: 'cap', text: 'Cap (Pileus)', level: 3 },
-  { id: 'gills', text: 'Gills (Lamellae)', level: 3 },
-  { id: 'stem', text: 'Stem (Stipe)', level: 3 },
-  { id: 'ring', text: 'Ring (Annulus)', level: 3 },
-  { id: 'volva', text: 'Volva (Basal Cup)', level: 3 },
-  { id: 'color-smell-taste', text: 'Color, Smell, and Taste', level: 2 },
-  { id: 'growth-pattern', text: 'Growth Pattern and Seasonality', level: 2 },
-  { id: 'growth-detail', text: 'Growth Pattern', level: 3 },
-  { id: 'seasonality', text: 'Seasonality', level: 3 },
-  { id: 'habitat', text: 'Habitat, Environment & Distribution', level: 2 },
-  { id: 'edibility-safety', text: 'Edibility, Safety & Risk Level', level: 2 },
-  { id: 'is-edible', text: 'Is it Edible?', level: 3 },
-  { id: 'who-avoid', text: 'Who Should Avoid It', level: 3 },
-  { id: 'similar-species', text: 'Similar Species (Look-Alikes Comparison)', level: 2 },
-  { id: 'benefits', text: 'Benefits and Value', level: 2 },
-  { id: 'nutritional-benefits', text: 'Nutritional and Practical Benefits', level: 3 },
-  { id: 'ecological-benefits', text: 'Ecological Benefits', level: 3 },
-  { id: 'economic-value', text: 'Economic Value and Uses', level: 3 },
-  { id: 'pros-cons', text: 'Pros and Cons', level: 2 },
-  { id: 'ai-identifier', text: 'How Our Mushroom Identifier Helps Identify This Species', level: 2 },
-  { id: 'faq', text: 'Frequently Asked Questions', level: 2 },
-  { id: 'final-thoughts', text: 'Final Thoughts', level: 2 },
-]
 
 export default function HorseMushroomPage() {
   return (
@@ -137,7 +109,7 @@ export default function HorseMushroomPage() {
 
           <Divider />
 
-          <TableOfContents headings={TOC_HEADINGS} />
+          <TableOfContents />
 
           {/* ── Taxonomy ── */}
           <Section>
