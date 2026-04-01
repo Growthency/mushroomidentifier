@@ -1,124 +1,108 @@
-'use client'
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import ContactPageClient from './ContactPageClient'
+
+export const metadata: Metadata = {
+  title: 'Contact MushroomIdentifiers – Support & Inquiries',
+  description: 'Contact the MushroomIdentifiers team for support, bug reports, feature requests, or partnership inquiries. We respond within 24 hours. Includes poison emergency contacts.',
+  openGraph: {
+    title: 'Contact MushroomIdentifiers – We\'re Here to Help',
+    description: 'Reach our support team, find poison emergency contacts, and browse our FAQ. Response within 24 hours.',
+    url: 'https://mushroomidentifiers.com/contact',
+  },
+}
+
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'ContactPage',
+      '@id': 'https://mushroomidentifiers.com/contact',
+      url: 'https://mushroomidentifiers.com/contact',
+      name: 'Contact MushroomIdentifiers',
+      description: 'Contact our support team for questions, bug reports, and inquiries about the AI mushroom identification platform.',
+      isPartOf: { '@id': 'https://mushroomidentifiers.com/#website' },
+      breadcrumb: {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://mushroomidentifiers.com' },
+          { '@type': 'ListItem', position: 2, name: 'Contact', item: 'https://mushroomidentifiers.com/contact' },
+        ],
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How accurate is the mushroom identifier?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Our AI achieves approximately 95% accuracy across 10,000+ species in controlled tests. Accuracy depends on photo quality and angle coverage. Always verify with a professional mycologist before consuming any wild mushroom.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is the mushroom identifier free to use?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. Every user receives 3 free identification scans per day with no account required. Premium plans offer unlimited scans and advanced features.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I use the identifier for foraging decisions?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Our tool is designed as a research and educational aid, not a sole identification authority. Never eat a mushroom identified only by AI. Always consult a qualified mycologist or mycological society.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What should I do if I think I ate a poisonous mushroom?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Call emergency services immediately (911 in US, 999 in UK, 112 in EU). Contact Poison Control: US 1-800-222-1222, UK 0344 892 0111. Do not wait for symptoms. Bring a sample of the mushroom to the hospital if possible.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How do I get the best identification results?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Upload 3–4 photos from different angles: top of the cap, underside showing gills, full stem including base, and the surrounding habitat. Good lighting and focus dramatically improve accuracy.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How long does it take to get a response from support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'We aim to respond to all support enquiries within 24 hours on business days (Monday–Friday). For technical issues or safety concerns, responses are prioritised.',
+          },
+        },
+      ],
+    },
+  ],
+}
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', subject: 'General', message: '' })
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    const supabase = createClient()
-    await supabase.from('contact_requests').insert([formData])
-
-    setSubmitted(true)
-    setLoading(false)
-    setFormData({ name: '', email: '', subject: 'General', message: '' })
-  }
-
   return (
-    <div className="min-h-screen pt-24 pb-16 px-6" style={{ background: 'var(--bg-primary)' }}>
-      <div className="max-w-5xl mx-auto">
-        <h1 className="font-playfair text-5xl md:text-6xl font-bold text-center mb-6" style={{ color: 'var(--text-primary)' }}>
-          Get in Touch
-        </h1>
-        <p className="text-xl text-center mb-16" style={{ color: 'var(--text-muted)' }}>
-          Have questions? We're here to help.
-        </p>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
+      <div className="min-h-screen pt-24 pb-20" style={{ background: 'var(--bg-primary)' }}>
+        <div className="max-w-5xl mx-auto px-5 md:px-6">
 
-        <div className="grid md:grid-cols-2 gap-12">
-          <div>
-            <h2 className="font-semibold text-2xl mb-6" style={{ color: 'var(--text-primary)' }}>Contact Information</h2>
-            <div className="space-y-4">
-              <div>
-                <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Email</p>
-                <p style={{ color: 'var(--text-muted)' }}>support@mushroomidentifiers.com</p>
-              </div>
-              <div>
-                <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Response Time</p>
-                <p style={{ color: 'var(--text-muted)' }}>Within 24 hours</p>
-              </div>
-            </div>
-          </div>
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-xs mb-10" style={{ color: 'var(--text-faint)' }}>
+            <Link href="/" className="hover:underline" style={{ color: 'var(--accent)' }}>Home</Link>
+            <span>/</span>
+            <span>Contact</span>
+          </nav>
 
-          <div>
-            {submitted ? (
-              <div className="p-8 rounded-xl text-center" style={{ background: 'var(--accent-bg)', border: '1px solid var(--accent)' }}>
-                <p className="text-lg font-semibold" style={{ color: 'var(--accent)' }}>Message sent successfully!</p>
-                <p className="mt-2" style={{ color: 'var(--text-muted)' }}>We'll get back to you within 24 hours.</p>
-                <button onClick={() => setSubmitted(false)} className="mt-4 px-6 py-2 rounded-lg" style={{ background: 'var(--btn-primary)', color: '#fff' }}>
-                  Send Another Message
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block mb-2 font-medium" style={{ color: 'var(--text-primary)' }}>Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg"
-                    style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-2 font-medium" style={{ color: 'var(--text-primary)' }}>Email</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg"
-                    style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-2 font-medium" style={{ color: 'var(--text-primary)' }}>Subject</label>
-                  <select
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg"
-                    style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                  >
-                    <option>General</option>
-                    <option>Bug Report</option>
-                    <option>Feature Request</option>
-                    <option>Safety Concern</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block mb-2 font-medium" style={{ color: 'var(--text-primary)' }}>Message</label>
-                  <textarea
-                    required
-                    rows={6}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg"
-                    style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full px-6 py-3 rounded-lg font-semibold glow-green hover:opacity-90 transition-opacity"
-                  style={{ background: 'var(--btn-primary)', color: '#fff' }}
-                >
-                  {loading ? 'Sending...' : 'Send Message'}
-                </button>
-              </form>
-            )}
-          </div>
+          <ContactPageClient />
         </div>
       </div>
-    </div>
+    </>
   )
 }
