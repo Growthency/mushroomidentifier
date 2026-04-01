@@ -27,7 +27,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (mounted) {
-      document.documentElement.setAttribute('data-theme', theme)
+      // Only write to DOM if value actually changed (inline script may have already set it)
+      if (document.documentElement.getAttribute('data-theme') !== theme) {
+        document.documentElement.setAttribute('data-theme', theme)
+      }
       localStorage.setItem('mi-theme', theme)
     }
   }, [theme, mounted])

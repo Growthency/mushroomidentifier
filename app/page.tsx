@@ -60,13 +60,16 @@ export default function Home() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const resizeCanvas = () => {
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
+    // Use ResizeObserver to avoid forced layout (no offsetWidth/Height read in handler)
+    const resizeCanvas = (entries: ResizeObserverEntry[]) => {
+      const entry = entries[0]
+      if (entry) {
+        canvas.width = entry.contentRect.width
+        canvas.height = entry.contentRect.height
+      }
     }
-
-    resizeCanvas()
-    window.addEventListener('resize', resizeCanvas)
+    const ro = new ResizeObserver(resizeCanvas)
+    ro.observe(canvas)
 
     const initParticles = () => {
       particlesRef.current = []
@@ -136,7 +139,7 @@ export default function Home() {
       clearTimeout(startTimer)
       cancelAnimationFrame(animId)
       themeObserver.disconnect()
-      window.removeEventListener('resize', resizeCanvas)
+      ro.disconnect()
     }
   }, [])
 
@@ -436,7 +439,7 @@ export default function Home() {
                     ].map(({ src, label }) => (
                       <div key={label} className="flex flex-col items-center gap-1">
                         <div className="w-full rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
-                          <NextImage src={src} alt={`AI mushroom identifier - Fungi Finder - ${label} view`} width={120} height={120} className="w-full h-full object-cover" />
+                          <NextImage src={src} alt={`AI mushroom identifier - Fungi Finder - ${label} view`} width={120} height={120} sizes="96px" loading="lazy" className="w-full h-full object-cover" />
                         </div>
                         <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span>
                       </div>
@@ -465,7 +468,8 @@ export default function Home() {
                   alt="AI mushroom identifier - Fungi Finder anatomy guide showing Cap, Gills, Ring, Stipe and Volva"
                   width={600}
                   height={400}
-                  priority
+                  loading="lazy"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="w-full h-auto"
                   style={{ maxHeight: '320px', objectFit: 'contain' }}
                 />

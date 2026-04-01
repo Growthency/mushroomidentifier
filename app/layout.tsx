@@ -18,7 +18,7 @@ const playfair = Playfair_Display({
   variable: '--font-playfair',
   display: 'swap',
   style: ['normal', 'italic'],
-  weight: ['400', '700', '900'],
+  weight: ['700'],          // only weight used in headings — 2 files instead of 6
 })
 
 export const metadata: Metadata = {
@@ -64,9 +64,6 @@ export default function RootLayout({
       <head>
         <meta name="google-site-verification" content="dipMWRMeOiWrrLH32OCvAQS-wR14IzCVSCLFUt9mH-0" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>" />
-        {/* Preconnect to external origins used on the page */}
-        <link rel="preconnect" href="https://i.pravatar.cc" />
-        <link rel="dns-prefetch" href="https://i.pravatar.cc" />
         {/* Inline theme script — runs synchronously before any paint to prevent flash of wrong theme */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('mi-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();` }} />
         {/* Site-wide identity schema only — page-specific schemas live in each page component */}
