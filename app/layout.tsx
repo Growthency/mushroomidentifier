@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
 import Script from 'next/script'
+import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
@@ -122,6 +123,7 @@ export default function RootLayout({
             gtag('config', 'G-X00VE6WCX6');
           `}
         </Script>
+        <Analytics />
       </body>
     </html>
   )
