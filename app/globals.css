@@ -72,7 +72,24 @@ body {
 }
 
 /* ── Gradient text ── */
+/* Static gradient — no animation on H1 so LCP paints immediately */
 .gradient-text {
+  background: linear-gradient(135deg, #7ec88a, #a8f5b5, #e8c06a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+[data-theme="light"] .gradient-text {
+  background: linear-gradient(135deg, #2d5a35, #4a8c55, #c9a84c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+/* Shimmer only for non-H1 gradient elements */
+.gradient-text-animate {
   background: linear-gradient(135deg, #7ec88a, #a8f5b5, #e8c06a, #7ec88a);
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -81,14 +98,6 @@ body {
   color: transparent;
   animation: shimmer 4s linear infinite;
   display: inline-block;
-}
-[data-theme="light"] .gradient-text {
-  background: linear-gradient(135deg, #2d5a35, #4a8c55, #c9a84c, #2d5a35);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
 }
 @keyframes shimmer {
   0% { background-position: 0% center; }

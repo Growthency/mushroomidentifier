@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
+import NextImage from 'next/image'
 import { Upload, Shield, Microscope, Globe, Clock, BookOpen, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Camera, TreeDeciduous, Leaf, Mountain } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -12,8 +13,8 @@ interface Particle {
   radius: number
 }
 
-const PARTICLE_COUNT = 80
-const CONNECTION_DISTANCE = 150
+const PARTICLE_COUNT = 40
+const CONNECTION_DISTANCE = 120
 
 const REVIEWS = [
   { text: "This is genuinely the best mushroom identification tool I have used. The look-alike warnings saved me from a dangerous mistake on my last foray.", name: "Marcus K.", role: "Professional Forager, Germany", avatar: "https://i.pravatar.cc/80?img=11" },
@@ -82,9 +83,16 @@ export default function Home() {
 
     initParticles()
 
+    // Cache theme to avoid forced style recalc inside the 60fps animation loop
+    let isLight = document.documentElement.getAttribute('data-theme') === 'light'
+    const themeObserver = new MutationObserver(() => {
+      isLight = document.documentElement.getAttribute('data-theme') === 'light'
+    })
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+
+    let animId: number
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      const isLight = document.documentElement.getAttribute('data-theme') === 'light'
 
       particlesRef.current.forEach((particle) => {
         particle.x += particle.vx
@@ -118,12 +126,16 @@ export default function Home() {
         }
       }
 
-      requestAnimationFrame(animate)
+      animId = requestAnimationFrame(animate)
     }
 
-    animate()
+    // Defer canvas animation by 2.5s so LCP can paint unblocked
+    const startTimer = setTimeout(() => { animate() }, 2500)
 
     return () => {
+      clearTimeout(startTimer)
+      cancelAnimationFrame(animId)
+      themeObserver.disconnect()
       window.removeEventListener('resize', resizeCanvas)
     }
   }, [])
@@ -298,7 +310,7 @@ export default function Home() {
             AI-POWERED · 10,000+ SPECIES · 3 FREE SCANS
           </div>
 
-          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fade-up gradient-text">
+          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 gradient-text">
             Free AI mushroom & Fungi identifier from Photos
           </h1>
 
@@ -338,7 +350,7 @@ export default function Home() {
 
       <section id="identifier" className="py-12 sm:py-16 px-6" style={{ background: 'var(--bg-primary)' }}>
         <div className="max-w-4xl mx-auto">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-center mb-6 gradient-text">
+          <h2 className="font-playfair text-4xl md:text-5xl font-bold text-center mb-6 gradient-text-animate">
             Upload Photo & Identify Mushrooms
           </h2>
 
@@ -424,7 +436,7 @@ export default function Home() {
                     ].map(({ src, label }) => (
                       <div key={label} className="flex flex-col items-center gap-1">
                         <div className="w-full rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
-                          <img src={src} alt={`AI mushroom identifier - Fungi Finder - ${label} view`} className="w-full h-full object-cover" />
+                          <NextImage src={src} alt={`AI mushroom identifier - Fungi Finder - ${label} view`} width={120} height={120} className="w-full h-full object-cover" />
                         </div>
                         <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span>
                       </div>
@@ -448,12 +460,16 @@ export default function Home() {
             {/* Right — Mushroom guide diagram */}
             <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <div className="flex-1 flex items-center justify-center p-4">
-                <img
+                <NextImage
                   src="/mushroom-fungi-identifier.webp"
                   alt="AI mushroom identifier - Fungi Finder anatomy guide showing Cap, Gills, Ring, Stipe and Volva"
+                  width={600}
+                  height={400}
+                  priority
                   className="w-full h-auto"
                   style={{ maxHeight: '320px', objectFit: 'contain' }}
                 />
+
               </div>
               <div className="px-6 py-4" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
                 <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Mushroom Profile</p>
