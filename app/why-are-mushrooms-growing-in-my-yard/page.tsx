@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
+import AuthorBlock from '@/components/blog/AuthorBlock'
 
 export const metadata: Metadata = {
   title: 'Why Are Mushrooms Growing in My Yard?',
@@ -191,6 +192,7 @@ export default function WhyMushroomsInYardPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               Why Are Mushrooms Growing in My Yard? (Expert Investigation Guide)
             </h1>
+            <AuthorBlock />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Mushrooms grow in your yard because underground fungi (mycelium) are actively breaking down organic matter in moist, shaded soil. When conditions like high moisture, decaying roots, and low sunlight are present, fungi produce visible mushrooms (fruiting bodies). They are not random—they&apos;re a sign your soil ecosystem is active, but sometimes unbalanced.
             </p>

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
+import AuthorBlock from '@/components/blog/AuthorBlock'
 
 export const metadata: Metadata = {
   title: 'Horse Mushroom (Agaricus arvensis) - Mushroom Identifier',
@@ -61,6 +62,7 @@ export default function HorseMushroomPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               Horse Mushroom (<em>Agaricus arvensis</em>): Identification, Features, Habitat &amp; Safety Guide
             </h1>
+            <AuthorBlock />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               The <strong style={{ color: 'var(--text-primary)' }}>Horse Mushroom (<em>Agaricus arvensis</em>)</strong> is a large, edible mushroom commonly found in grasslands and pastures. It is known for its white cap, pink-to-brown gills, strong anise-like smell, and prominent ring on the stem. While it is considered edible and popular among foragers, it closely resembles toxic look-alikes such as <em>Agaricus xanthodermus</em>. Correct identification requires examining cap, gills, stem, smell, habitat, and growth pattern, which tools like a{' '}
               <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> can help analyze using AI and image recognition.

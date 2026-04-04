@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
+import AuthorBlock from '@/components/blog/AuthorBlock'
 
 export const metadata: Metadata = {
   title: 'Mushroom Identifier Book - Fungi Identification Guidebooks Review',
@@ -278,6 +279,7 @@ export default function MushroomIdentifierBookPage() {
             >
               Mushroom Identifier Book: Best Field Guides, Edible Mushroom Books &amp; Foraging Resources
             </h1>
+            <AuthorBlock />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               A mushroom identifier book helps you recognize fungi by combining photos or illustrations with key traits such as cap shape, gills, stem structure, habitat, season, and spore print. The best book for you depends on your goal: a beginner usually needs a visual field guide, a forager needs a safety-focused reference, a cook may want edible species coverage, and a grower benefits from cultivation books. A strong guide does not replace expert confirmation, but it can make mushroom identification more structured, safer, and far more accurate.
             </p>

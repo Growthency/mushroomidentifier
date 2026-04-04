@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
+import AuthorBlock from '@/components/blog/AuthorBlock'
 
 export const metadata: Metadata = {
   title: 'How to Get Rid of Mushrooms in Grass (Easy Lawn Fix Guide)',
@@ -186,6 +187,7 @@ export default function MushroomsInGrassPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               How Do I Get Rid of Mushrooms in My Grass? (Complete Lawn Guide)
             </h1>
+            <AuthorBlock />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Mushrooms in grass are caused by underground fungal networks called mycelium, which thrive in moist soil rich in organic matter. To get rid of them effectively, you need to remove visible mushrooms, reduce moisture, improve soil drainage, and eliminate decaying material like roots and thatch. Simply removing mushrooms is not enough—long-term control comes from changing the lawn conditions that allow fungi to grow.
             </p>

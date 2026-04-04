@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
+import AuthorBlock from '@/components/blog/AuthorBlock'
 
 export const metadata: Metadata = {
   title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
@@ -63,6 +64,7 @@ export default function MushroomPartsExplainedPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               Mushroom Parts Explained: Cap, Gills, Stem, Ring &amp; Volva
             </h1>
+            <AuthorBlock />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Understanding mushroom anatomy is the foundation of accurate mushroom identification. A mushroom is not the entire organism — it is the visible <strong style={{ color: 'var(--text-primary)' }}>fruiting body</strong> of fungi within the Kingdom Fungi.
             </p>

@@ -49,6 +49,10 @@ export const metadata: Metadata = {
     description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
     images: ['https://mushroomidentifiers.com/mushroom-fungi-identifier.webp'],
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
   alternates: {
     canonical: 'https://mushroomidentifiers.com',
   },

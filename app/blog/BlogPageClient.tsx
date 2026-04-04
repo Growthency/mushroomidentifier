@@ -530,10 +530,20 @@ function ArticleCard({ article }: { article: Article }) {
         {/* Footer meta */}
         <div
           className="flex items-center justify-between text-xs pt-3"
-          style={{ borderTop: '1px solid var(--border)', color: 'var(--text-faint)' }}
+          style={{ borderTop: '1px solid var(--border)' }}
         >
-          <span>{article.date}</span>
-          <span>{article.readTime} read</span>
+          <div className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/author-paul-stamets.webp"
+              alt="Paul Stamets"
+              width={22}
+              height={22}
+              className="rounded-full object-cover flex-shrink-0"
+            />
+            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Paul Stamets</span>
+          </div>
+          <span style={{ color: 'var(--text-faint)' }}>{article.readTime} read</span>
         </div>
 
         {/* Read More */}

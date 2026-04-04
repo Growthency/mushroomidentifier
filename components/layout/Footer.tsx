@@ -166,20 +166,23 @@ export default function Footer() {
 
           {/* ── Explore ── */}
           <div>
-            <h4
-              className="font-semibold mb-5 text-sm uppercase tracking-widest"
-              style={{ color: "var(--accent)" }}
+            <div
+              className="font-semibold mb-5 uppercase tracking-widest"
+              style={{ color: "var(--accent)", fontSize: '0.875rem' }}
             >
               Explore
-            </h4>
+            </div>
             <ul className="space-y-3 mb-6">
               {[
                 { href: "/#identifier", label: "Mushroom Identifier" },
-                { href: "/#features", label: "Toxicity Warnings" },
-                { href: "/#lookalikes", label: "Similar Species" },
+                { href: "/mushroom-parts-explained", label: "Mushroom Parts" },
+                {
+                  href: "/mushroom-identifier-book",
+                  label: "Mushroom Identifier Book",
+                },
                 { href: "/mushroom-identification-quiz", label: "ID Quiz" },
-                { href: "/blog", label: "Species Blog" },
-                { href: "/dashboard", label: "Field Journal" },
+                { href: "/blog", label: "Mushrooms Blog" },
+                { href: "/pricing", label: "Mushroom Identification Price" },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link
@@ -213,12 +216,12 @@ export default function Footer() {
 
           {/* ── Company ── */}
           <div>
-            <h4
-              className="font-semibold mb-5 text-sm uppercase tracking-widest"
-              style={{ color: "var(--accent)" }}
+            <div
+              className="font-semibold mb-5 uppercase tracking-widest"
+              style={{ color: "var(--accent)", fontSize: '0.875rem' }}
             >
               Company
-            </h4>
+            </div>
             <ul className="space-y-3 mb-6">
               {[
                 { href: "/about", label: "About Us" },
@@ -259,12 +262,12 @@ export default function Footer() {
 
           {/* ── Secure Payment ── */}
           <div>
-            <h4
-              className="font-semibold mb-5 text-sm uppercase tracking-widest"
-              style={{ color: "var(--accent)" }}
+            <div
+              className="font-semibold mb-5 uppercase tracking-widest"
+              style={{ color: "var(--accent)", fontSize: '0.875rem' }}
             >
               Secure Payment
-            </h4>
+            </div>
 
             <div
               className="p-4 rounded-xl mb-4"

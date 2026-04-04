@@ -81,7 +81,6 @@ body.theme-ready {
   -webkit-backdrop-filter: blur(28px) saturate(180%);
 }
 .nav-scrolled {
-  border-bottom: 1px solid var(--border-hover);
   box-shadow: 0 4px 28px var(--shadow);
 }
 

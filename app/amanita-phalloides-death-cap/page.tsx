@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
+import AuthorBlock from '@/components/blog/AuthorBlock'
 
 export const metadata: Metadata = {
   title: 'Amanita phalloides (death cap identification) - Mushroom Identifier',
@@ -162,6 +163,7 @@ export default function DeathCapPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               <em>Amanita phalloides</em> (Death Cap): Identification, Features, Habitat &amp; Safety Guide
             </h1>
+            <AuthorBlock />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita phalloides</em>, commonly known as the Death Cap, is one of the most dangerous toxic
               mushrooms in the world. It is responsible for the majority of fatal mushroom poisonings due to its
