@@ -83,16 +83,7 @@ export default function BlogSidebar() {
   const visible = showAll ? filtered : filtered.slice(0, 5)
 
   return (
-    /* aside is sticky — sticks at top-24, constrained to viewport height */
-    <aside
-      className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0 sticky self-start"
-      style={{
-        top: '6rem',
-        maxHeight: 'calc(100vh - 7rem)',
-        overflowY: 'auto',
-        scrollbarWidth: 'thin',
-      }}
-    >
+    <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0">
 
       {/* ── Search ── */}
       <div className="relative mb-4">
