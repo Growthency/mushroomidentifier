@@ -4,6 +4,8 @@ import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
+import BlogSidebar from '@/components/blog/BlogSidebar'
+import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
   title: 'Amanita bisporigera (destroying angel identification) - Mushroom Identifier',
@@ -65,7 +67,9 @@ export default function DestroyingAngelPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
       <div className="min-h-screen pt-24 pb-20" style={{ background: 'var(--bg-primary)' }}>
-        <article className="max-w-4xl mx-auto px-5 md:px-6">
+        <div className="max-w-[1380px] mx-auto px-5 md:px-8">
+          <div className="flex gap-10 items-start">
+            <article className="min-w-0 flex-1 max-w-4xl">
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs mb-8 flex-wrap" style={{ color: 'var(--text-faint)' }}>
@@ -87,6 +91,7 @@ export default function DestroyingAngelPage() {
               <em>Amanita bisporigera</em> (Destroying Angel): Identification, Features, Habitat &amp; Safety Guide
             </h1>
             <AuthorBlock updatedAt="Mar 31, 2026" />
+            <ArticleViewCount views={3450} className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita bisporigera</em>, commonly known as the Destroying Angel, is one of the most dangerous
               toxic mushrooms in North America. It is responsible for many fatal poisonings due to its potent
@@ -116,7 +121,7 @@ export default function DestroyingAngelPage() {
 
           <Divider />
 
-          <TableOfContents />
+          <div className="lg:hidden"><TableOfContents /></div>
 
           {/* Quick ID Summary */}
           <Section>
@@ -546,7 +551,10 @@ export default function DestroyingAngelPage() {
 
           <RelatedPosts currentSlug="/amanita-bisporigera-destroying-angel" />
 
-        </article>
+            </article>
+            <BlogSidebar />
+          </div>
+        </div>
       </div>
     </>
   )

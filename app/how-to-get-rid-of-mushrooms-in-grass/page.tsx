@@ -4,6 +4,8 @@ import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
+import BlogSidebar from '@/components/blog/BlogSidebar'
+import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
   title: 'How to Get Rid of Mushrooms in Grass (Easy Lawn Fix Guide)',
@@ -167,7 +169,9 @@ export default function MushroomsInGrassPage() {
       />
 
       <div className="min-h-screen pt-24 pb-20" style={{ background: 'var(--bg-primary)' }}>
-        <article className="max-w-4xl mx-auto px-5 md:px-6">
+        <div className="max-w-[1380px] mx-auto px-5 md:px-8">
+          <div className="flex gap-10 items-start">
+            <article className="min-w-0 flex-1 max-w-4xl">
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs mb-8 flex-wrap" style={{ color: 'var(--text-faint)' }}>
@@ -188,6 +192,7 @@ export default function MushroomsInGrassPage() {
               How Do I Get Rid of Mushrooms in My Grass? (Complete Lawn Guide)
             </h1>
             <AuthorBlock updatedAt="Apr 4, 2026" />
+            <ArticleViewCount views={2740} className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Mushrooms in grass are caused by underground fungal networks called mycelium, which thrive in moist soil rich in organic matter. To get rid of them effectively, you need to remove visible mushrooms, reduce moisture, improve soil drainage, and eliminate decaying material like roots and thatch. Simply removing mushrooms is not enough—long-term control comes from changing the lawn conditions that allow fungi to grow.
             </p>
@@ -205,7 +210,7 @@ export default function MushroomsInGrassPage() {
           />
 
           <Divider />
-          <TableOfContents />
+          <div className="lg:hidden"><TableOfContents /></div>
 
           {/* ── Why Mushrooms Grow ── */}
           <Section>
@@ -541,7 +546,10 @@ export default function MushroomsInGrassPage() {
           </Section>
 
           <RelatedPosts currentSlug="/how-to-get-rid-of-mushrooms-in-grass" />
-        </article>
+            </article>
+            <BlogSidebar />
+          </div>
+        </div>
       </div>
     </>
   )

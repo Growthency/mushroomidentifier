@@ -4,6 +4,8 @@ import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
+import BlogSidebar from '@/components/blog/BlogSidebar'
+import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
   title: 'Why Are Mushrooms Growing in My Yard?',
@@ -172,7 +174,9 @@ export default function WhyMushroomsInYardPage() {
       />
 
       <div className="min-h-screen pt-24 pb-20" style={{ background: 'var(--bg-primary)' }}>
-        <article className="max-w-4xl mx-auto px-5 md:px-6">
+        <div className="max-w-[1380px] mx-auto px-5 md:px-8">
+          <div className="flex gap-10 items-start">
+            <article className="min-w-0 flex-1 max-w-4xl">
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs mb-8 flex-wrap" style={{ color: 'var(--text-faint)' }}>
@@ -193,6 +197,7 @@ export default function WhyMushroomsInYardPage() {
               Why Are Mushrooms Growing in My Yard? (Expert Investigation Guide)
             </h1>
             <AuthorBlock updatedAt="Apr 4, 2026" />
+            <ArticleViewCount views={2510} className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Mushrooms grow in your yard because underground fungi (mycelium) are actively breaking down organic matter in moist, shaded soil. When conditions like high moisture, decaying roots, and low sunlight are present, fungi produce visible mushrooms (fruiting bodies). They are not random—they&apos;re a sign your soil ecosystem is active, but sometimes unbalanced.
             </p>
@@ -210,7 +215,7 @@ export default function WhyMushroomsInYardPage() {
           />
 
           <Divider />
-          <TableOfContents />
+          <div className="lg:hidden"><TableOfContents /></div>
 
           {/* ── What Mushrooms Mean ── */}
           <Section>
@@ -486,7 +491,10 @@ export default function WhyMushroomsInYardPage() {
           </Section>
 
           <RelatedPosts currentSlug="/why-are-mushrooms-growing-in-my-yard" />
-        </article>
+            </article>
+            <BlogSidebar />
+          </div>
+        </div>
       </div>
     </>
   )

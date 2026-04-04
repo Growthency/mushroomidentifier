@@ -4,6 +4,8 @@ import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
+import BlogSidebar from '@/components/blog/BlogSidebar'
+import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
   title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
@@ -45,7 +47,9 @@ export default function MushroomPartsExplainedPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
       <div className="min-h-screen pt-24 pb-20" style={{ background: 'var(--bg-primary)' }}>
-        <article className="max-w-4xl mx-auto px-5 md:px-6">
+        <div className="max-w-[1380px] mx-auto px-5 md:px-8">
+          <div className="flex gap-10 items-start">
+            <article className="min-w-0 flex-1 max-w-4xl">
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs mb-8 flex-wrap" style={{ color: 'var(--text-faint)' }}>
@@ -65,6 +69,7 @@ export default function MushroomPartsExplainedPage() {
               Mushroom Parts Explained: Cap, Gills, Stem, Ring &amp; Volva
             </h1>
             <AuthorBlock updatedAt="Mar 31, 2026" />
+            <ArticleViewCount views={2180} className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Understanding mushroom anatomy is the foundation of accurate mushroom identification. A mushroom is not the entire organism — it is the visible <strong style={{ color: 'var(--text-primary)' }}>fruiting body</strong> of fungi within the Kingdom Fungi.
             </p>
@@ -112,7 +117,7 @@ export default function MushroomPartsExplainedPage() {
 
           <Divider />
 
-          <TableOfContents />
+          <div className="lg:hidden"><TableOfContents /></div>
 
           {/* ── SECTION 2: Complete Overview Table ── */}
           <Section>
@@ -592,7 +597,10 @@ export default function MushroomPartsExplainedPage() {
 
           <RelatedPosts currentSlug="/mushroom-parts-explained" />
 
-        </article>
+            </article>
+            <BlogSidebar />
+          </div>
+        </div>
       </div>
     </>
   )

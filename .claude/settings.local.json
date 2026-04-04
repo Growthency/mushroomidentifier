@@ -77,7 +77,10 @@
       "Bash(do)",
       "Bash(perl -0777 -i -pe 's|\\(<\\\\/h1>\\\\n            \\)<p className=\"\"text-base leading-relaxed\"\"|$1<AuthorBlock />\\\\n            <p className=\"\"text-base leading-relaxed\"\"|g' \"$f\")",
       "Bash(echo \"done: $f\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(perl -0777 -i -pe 's/<AuthorBlock \\\\/>/<AuthorBlock updatedAt=\"\"Apr 4, 2026\"\" \\\\/>/g' \"app/why-are-mushrooms-growing-in-my-yard/page.tsx\" \"app/how-to-get-rid-of-mushrooms-in-grass/page.tsx\" \"app/mushroom-identifier-book/page.tsx\")",
+      "Bash(perl -0777 -i -pe 's/<AuthorBlock \\\\/>/<AuthorBlock updatedAt=\"\"Mar 31, 2026\"\" \\\\/>/g' \"app/mushroom-identification-quiz/page.tsx\" \"app/amanita-virosa-mushroom/page.tsx\" \"app/amanita-bisporigera-destroying-angel/page.tsx\" \"app/amanita-phalloides-death-cap/page.tsx\" \"app/death-cap-vs-destroying-angel/page.tsx\" \"app/agaricus-arvensis-horse-mushroom/page.tsx\" \"app/mushroom-parts-explained/page.tsx\")",
+      "Bash(find /e/mushroomidentifiers -name *supabase* -type f)"
     ]
   }
 }

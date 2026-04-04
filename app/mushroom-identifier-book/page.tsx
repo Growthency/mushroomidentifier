@@ -4,6 +4,8 @@ import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
+import BlogSidebar from '@/components/blog/BlogSidebar'
+import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
   title: 'Mushroom Identifier Book - Fungi Identification Guidebooks Review',
@@ -243,7 +245,9 @@ export default function MushroomIdentifierBookPage() {
       />
 
       <div className="min-h-screen pt-24 pb-20" style={{ background: 'var(--bg-primary)' }}>
-        <article className="max-w-4xl mx-auto px-5 md:px-6">
+        <div className="max-w-[1380px] mx-auto px-5 md:px-8">
+          <div className="flex gap-10 items-start">
+            <article className="min-w-0 flex-1 max-w-4xl">
 
           {/* Breadcrumb */}
           <nav
@@ -280,6 +284,7 @@ export default function MushroomIdentifierBookPage() {
               Mushroom Identifier Book: Best Field Guides, Edible Mushroom Books &amp; Foraging Resources
             </h1>
             <AuthorBlock updatedAt="Apr 4, 2026" />
+            <ArticleViewCount views={2230} className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               A mushroom identifier book helps you recognize fungi by combining photos or illustrations with key traits such as cap shape, gills, stem structure, habitat, season, and spore print. The best book for you depends on your goal: a beginner usually needs a visual field guide, a forager needs a safety-focused reference, a cook may want edible species coverage, and a grower benefits from cultivation books. A strong guide does not replace expert confirmation, but it can make mushroom identification more structured, safer, and far more accurate.
             </p>
@@ -297,7 +302,7 @@ export default function MushroomIdentifierBookPage() {
           />
 
           <Divider />
-          <TableOfContents />
+          <div className="lg:hidden"><TableOfContents /></div>
 
           {/* ── Section 1 ── */}
           <Section>
@@ -935,7 +940,10 @@ export default function MushroomIdentifierBookPage() {
           </Section>
 
           <RelatedPosts currentSlug="/mushroom-identifier-book" />
-        </article>
+            </article>
+            <BlogSidebar />
+          </div>
+        </div>
       </div>
     </>
   )

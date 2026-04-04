@@ -4,6 +4,8 @@ import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
+import BlogSidebar from '@/components/blog/BlogSidebar'
+import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
   title: 'Horse Mushroom (Agaricus arvensis) - Mushroom Identifier',
@@ -41,7 +43,9 @@ export default function HorseMushroomPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
       <div className="min-h-screen pt-24 pb-20" style={{ background: 'var(--bg-primary)' }}>
-        <article className="max-w-4xl mx-auto px-5 md:px-6">
+        <div className="max-w-[1380px] mx-auto px-5 md:px-8">
+          <div className="flex gap-10 items-start">
+            <article className="min-w-0 flex-1 max-w-4xl">
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs mb-8 flex-wrap" style={{ color: 'var(--text-faint)' }}>
@@ -63,6 +67,7 @@ export default function HorseMushroomPage() {
               Horse Mushroom (<em>Agaricus arvensis</em>): Identification, Features, Habitat &amp; Safety Guide
             </h1>
             <AuthorBlock updatedAt="Mar 31, 2026" />
+            <ArticleViewCount views={1860} className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               The <strong style={{ color: 'var(--text-primary)' }}>Horse Mushroom (<em>Agaricus arvensis</em>)</strong> is a large, edible mushroom commonly found in grasslands and pastures. It is known for its white cap, pink-to-brown gills, strong anise-like smell, and prominent ring on the stem. While it is considered edible and popular among foragers, it closely resembles toxic look-alikes such as <em>Agaricus xanthodermus</em>. Correct identification requires examining cap, gills, stem, smell, habitat, and growth pattern, which tools like a{' '}
               <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> can help analyze using AI and image recognition.
@@ -111,7 +116,7 @@ export default function HorseMushroomPage() {
 
           <Divider />
 
-          <TableOfContents />
+          <div className="lg:hidden"><TableOfContents /></div>
 
           {/* ── Taxonomy ── */}
           <Section>
@@ -465,7 +470,10 @@ export default function HorseMushroomPage() {
 
           <RelatedPosts currentSlug="/agaricus-arvensis-horse-mushroom" />
 
-        </article>
+            </article>
+            <BlogSidebar />
+          </div>
+        </div>
       </div>
     </>
   )

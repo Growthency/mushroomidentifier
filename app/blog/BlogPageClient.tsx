@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Search, ChevronDown, Globe, Shield, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, ChevronDown, Globe, Shield, BookOpen, ChevronLeft, ChevronRight, Eye } from 'lucide-react'
 
 type RiskLevel = 'All Levels' | 'Toxic' | 'High Risk' | 'Low Risk' | 'General'
 type Region = 'All Regions' | 'US North America' | 'EU Europe' | 'Worldwide' | 'Temperate' | 'Others'
@@ -18,6 +18,7 @@ interface Article {
   readTime: string
   slug: string
   image?: string
+  views: number
 }
 
 const ARTICLES_PER_PAGE = 9
@@ -35,6 +36,7 @@ const articles: Article[] = [
     readTime: '7 min',
     slug: '/why-are-mushrooms-growing-in-my-yard',
     image: '/why-are-mushrooms-growing-in-my-yard-fairy-ring-lawn.webp',
+    views: 2510,
   },
   {
     id: 9,
@@ -48,6 +50,7 @@ const articles: Article[] = [
     readTime: '8 min',
     slug: '/how-to-get-rid-of-mushrooms-in-grass',
     image: '/how-to-get-rid-of-mushrooms-in-grass-fairy-ring-lawn.webp',
+    views: 2740,
   },
   {
     id: 8,
@@ -61,6 +64,7 @@ const articles: Article[] = [
     readTime: '15 min',
     slug: '/mushroom-identifier-book',
     image: '/mushroom-identifier-book-chanterelle-cantharellus-cibarius.webp',
+    views: 2230,
   },
   {
     id: 7,
@@ -74,6 +78,7 @@ const articles: Article[] = [
     readTime: '10 min',
     slug: '/mushroom-identification-quiz',
     image: '/mushroom-identification-quiz-various-species.webp',
+    views: 1540,
   },
   {
     id: 6,
@@ -87,6 +92,7 @@ const articles: Article[] = [
     readTime: '12 min',
     slug: '/amanita-virosa-mushroom',
     image: '/amanita-virosa-mushroom-destroying-angel.webp',
+    views: 2980,
   },
   {
     id: 5,
@@ -100,6 +106,7 @@ const articles: Article[] = [
     readTime: '12 min',
     slug: '/amanita-bisporigera-destroying-angel',
     image: '/amanita-bisporigera-destroying-angel-identification.webp',
+    views: 3450,
   },
   {
     id: 4,
@@ -113,6 +120,7 @@ const articles: Article[] = [
     readTime: '13 min',
     slug: '/amanita-phalloides-death-cap',
     image: '/amanita-phalloides-death-cap-identification.webp',
+    views: 4821,
   },
   {
     id: 1,
@@ -126,6 +134,7 @@ const articles: Article[] = [
     readTime: '12 min',
     slug: '/death-cap-vs-destroying-angel',
     image: '/death-cap-vs-destroying-angel-comparison.webp',
+    views: 3920,
   },
   {
     id: 3,
@@ -139,6 +148,7 @@ const articles: Article[] = [
     readTime: '11 min',
     slug: '/agaricus-arvensis-horse-mushroom',
     image: '/agaricus-arvensis-horse-mushroom.webp',
+    views: 1860,
   },
   {
     id: 2,
@@ -152,6 +162,7 @@ const articles: Article[] = [
     readTime: '14 min',
     slug: '/mushroom-parts-explained',
     image: '/parts-of-mushrooms.webp',
+    views: 2180,
   },
 ]
 
@@ -536,17 +547,22 @@ function ArticleCard({ article }: { article: Article }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/author-avatar.webp"
-              alt="Dr. Didier Borgarino"
+              alt="Paul Stamets"
               width={22}
               height={22}
               className="rounded-full object-cover flex-shrink-0"
             />
             <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Paul Stamets</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span style={{ color: 'var(--text-faint)' }}>{article.date}</span>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <span className="flex items-center gap-1">
+              <Eye className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
+              <span style={{ color: 'var(--text-faint)' }}>
+                {article.views >= 1000 ? `${(article.views / 1000).toFixed(1)}k` : article.views}
+              </span>
+            </span>
             <span style={{ color: 'var(--text-faint)' }}>·</span>
-            <span style={{ color: 'var(--text-faint)' }}>{article.readTime} read</span>
+            <span style={{ color: 'var(--text-faint)' }}>{article.date}</span>
           </div>
         </div>
 
