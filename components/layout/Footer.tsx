@@ -168,7 +168,7 @@ export default function Footer() {
           <div>
             <div
               className="font-semibold mb-5 uppercase tracking-widest"
-              style={{ color: "var(--accent)", fontSize: '0.875rem' }}
+              style={{ color: "var(--accent)", fontSize: "0.875rem" }}
             >
               Explore
             </div>
@@ -180,7 +180,10 @@ export default function Footer() {
                   href: "/mushroom-identifier-book",
                   label: "Mushroom Identifier Book",
                 },
-                { href: "/mushroom-identification-quiz", label: "ID Quiz" },
+                {
+                  href: "/mushroom-identification-quiz",
+                  label: "Mushroom identification Quiz",
+                },
                 { href: "/blog", label: "Mushrooms Blog" },
                 { href: "/pricing", label: "Mushroom Identification Price" },
               ].map(({ href, label }) => (
@@ -218,7 +221,7 @@ export default function Footer() {
           <div>
             <div
               className="font-semibold mb-5 uppercase tracking-widest"
-              style={{ color: "var(--accent)", fontSize: '0.875rem' }}
+              style={{ color: "var(--accent)", fontSize: "0.875rem" }}
             >
               Company
             </div>
@@ -264,7 +267,7 @@ export default function Footer() {
           <div>
             <div
               className="font-semibold mb-5 uppercase tracking-widest"
-              style={{ color: "var(--accent)", fontSize: '0.875rem' }}
+              style={{ color: "var(--accent)", fontSize: "0.875rem" }}
             >
               Secure Payment
             </div>

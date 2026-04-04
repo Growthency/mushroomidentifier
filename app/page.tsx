@@ -1015,9 +1015,29 @@ export default function Home() {
             className="text-center text-lg mb-12 max-w-3xl mx-auto"
             style={{ color: "var(--text-muted)" }}
           >
-            Habitat is one of the most important clues in mushroom
-            identification. Most fungi grow in very specific environments and
-            form relationships with certain trees, soil types, or decaying wood.
+            Habitat is one of the most important clues in accurate mushroom
+            identification, and it plays a critical role in how a mushroom
+            identifier app or mushroom identifier AI delivers results. Most
+            fungi grow in very specific environments and form relationships with
+            certain trees, soil types, grasslands, or decaying wood. When you
+            use a mushroom identifier by photo or mushroom identifier online,
+            including the surrounding habitat in your images can significantly
+            improve identification accuracy and help the system detect whether a
+            species may be harmful or safe.
+          </p>
+          <p
+            className="text-center text-lg mb-12 max-w-3xl mx-auto"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Our free mushroom identifier app is designed to go beyond just
+            visual recognition—it also considers environmental context. For
+            example, some mushrooms only grow under oak or pine trees, while
+            others appear exclusively on rotting logs or moist forest floors. By
+            capturing habitat details along with the mushroom itself, the app
+            can better match patterns, suggest similar species, and provide more
+            reliable toxicity warnings. This makes habitat awareness a powerful
+            factor when using any mushroom identifier free tool for real-world
+            identification.
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
