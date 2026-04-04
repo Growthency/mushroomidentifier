@@ -24,6 +24,45 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 10,
+    title: 'Why Are Mushrooms Growing in My Yard? (Expert Investigation Guide)',
+    excerpt:
+      'Mushrooms grow in your yard because underground fungi (mycelium) are actively breaking down organic matter in moist, shaded soil.',
+    category: 'Yard Guide',
+    riskLevel: 'General',
+    region: 'Worldwide',
+    date: 'Apr 4, 2026',
+    readTime: '7 min',
+    slug: '/why-are-mushrooms-growing-in-my-yard',
+    image: '/why-are-mushrooms-growing-in-my-yard-fairy-ring-lawn.webp',
+  },
+  {
+    id: 9,
+    title: 'How Do I Get Rid of Mushrooms in My Grass? (Complete Lawn Guide)',
+    excerpt:
+      'Learn how to remove mushrooms from your lawn fast. Fix moisture, soil, and drainage issues to stop mushrooms from coming back permanently.',
+    category: 'Lawn Guide',
+    riskLevel: 'General',
+    region: 'Worldwide',
+    date: 'Apr 4, 2026',
+    readTime: '8 min',
+    slug: '/how-to-get-rid-of-mushrooms-in-grass',
+    image: '/how-to-get-rid-of-mushrooms-in-grass-fairy-ring-lawn.webp',
+  },
+  {
+    id: 8,
+    title: 'Mushroom Identifier Book: Best Field Guides, Edible Mushroom Books & Foraging Resources',
+    excerpt:
+      'A mushroom identifier book helps you recognize fungi by combining photos or illustrations with key traits such as cap shape, gills, stem structure, habitat, season, and spore print.',
+    category: 'Guide',
+    riskLevel: 'General',
+    region: 'Worldwide',
+    date: 'Apr 4, 2026',
+    readTime: '15 min',
+    slug: '/mushroom-identifier-book',
+    image: '/mushroom-identifier-book-chanterelle-cantharellus-cibarius.webp',
+  },
+  {
     id: 7,
     title: 'Mushroom Identification Quiz — Test Your Fungi Knowledge (50 Questions)',
     excerpt:

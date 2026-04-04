@@ -3,6 +3,8 @@ import Link from 'next/link'
 import NextImage from 'next/image'
 import { Shield, Microscope, Globe, Clock, BookOpen, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle, Camera, TreeDeciduous, Leaf, Mountain } from 'lucide-react'
 
+import HeroH1 from './HeroH1'
+
 const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false })
 const HomeIdentifier = dynamic(() => import('./HomeIdentifier'), { ssr: false })
 const HomeReviews = dynamic(() => import('./HomeReviews'), { ssr: false })
@@ -56,17 +58,20 @@ export default function Home() {
     <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }} />
       <section className="min-h-screen relative flex items-center justify-center overflow-hidden pt-20" style={{ background: 'var(--bg-primary)' }}>
+        {/* Ambient radial glow — pure CSS, zero JS */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--hero-ambient)' }} />
         <HeroCanvas />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-xs font-medium" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-xs font-medium tracking-wide" style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--border-hover)' }}>
             <div className="w-2 h-2 rounded-full pulse-dot" style={{ background: 'var(--accent)' }} />
             AI-POWERED · 10,000+ SPECIES · 3 FREE SCANS
           </div>
 
-          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6" style={{ color: 'var(--accent)' }}>
+          {/* HeroH1 renders solid color server-side (LCP-safe), adds shimmer client-side */}
+          <HeroH1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
             Free AI mushroom &amp; Fungi identifier from Photos
-          </h1>
+          </HeroH1>
 
           <p className="text-lg sm:text-xl mb-12 max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--text-muted)' }}>
             A mushroom identifier helps answer the common question many people ask when discovering fungi in nature: "what type of mushroom is this?" Modern tools use artificial intelligence, computer vision, and image recognition to analyze mushroom photos and compare them with a large database of labeled fungal species.

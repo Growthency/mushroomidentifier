@@ -20,7 +20,7 @@ const schemaData = {
         'Learn destroying angel identification, features, habitat, and deadly toxicity of Amanita bisporigera. Understand key traits and safety warnings.',
       author: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/' },
       publisher: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/', email: 'support@mushroomidentifiers.com' },
-      mainEntityOfPage: 'https://mushroomidentifiers.com/',
+      mainEntityOfPage: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel',
     },
     {
       '@type': 'FAQPage',

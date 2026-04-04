@@ -31,7 +31,7 @@ const schemaData = {
         url: 'https://mushroomidentifiers.com/',
         email: 'support@mushroomidentifiers.com',
       },
-      mainEntityOfPage: 'https://mushroomidentifiers.com/',
+      mainEntityOfPage: 'https://mushroomidentifiers.com/death-cap-vs-destroying-angel',
     },
     {
       '@type': 'FAQPage',

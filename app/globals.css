@@ -5,41 +5,43 @@
 @tailwind utilities;
 
 :root, [data-theme="dark"] {
-  --bg-primary: #061209;
-  --bg-secondary: #0a1a0f;
-  --bg-card: #0a1a0f;
-  --bg-card-hover: #1a3a20;
-  --bg-nav: rgba(6,18,9,0.82);
-  --text-primary: #f5f0e8;
-  --text-muted: rgba(245,240,232,0.65);
-  --text-faint: rgba(245,240,232,0.42);
-  --border: rgba(168,245,181,0.08);
-  --border-hover: rgba(168,245,181,0.22);
-  --accent: #7ec88a;
+  --bg-primary: #040e06;
+  --bg-secondary: #071409;
+  --bg-card: #0b1a0d;
+  --bg-card-hover: #132616;
+  --bg-nav: rgba(4,14,6,0.86);
+  --text-primary: #edf7ef;
+  --text-muted: rgba(237,247,239,0.68);
+  --text-faint: rgba(237,247,239,0.40);
+  --border: rgba(111,207,127,0.10);
+  --border-hover: rgba(111,207,127,0.28);
+  --accent: #6fcf7f;
   --accent-glow: #a8f5b5;
-  --accent-bg: rgba(126,200,138,0.08);
-  --btn-primary: #4a8c55;
-  --btn-hover: #7ec88a;
-  --shadow: rgba(0,0,0,0.4);
+  --accent-bg: rgba(111,207,127,0.10);
+  --btn-primary: #237a35;
+  --btn-hover: #6fcf7f;
+  --shadow: rgba(0,0,0,0.55);
+  --hero-ambient: radial-gradient(ellipse 90% 55% at 50% 42%, rgba(55,160,80,0.13) 0%, transparent 68%);
 }
 
 [data-theme="light"] {
-  --bg-primary: #f0f7f2;
-  --bg-secondary: #e4f0e8;
+  --bg-primary: #f3fbf5;
+  --bg-secondary: #e6f5eb;
   --bg-card: #ffffff;
-  --bg-card-hover: #f0f7f2;
-  --bg-nav: rgba(240,247,242,0.88);
-  --text-primary: #0d1f13;
-  --text-muted: rgba(10,26,15,0.76);
-  --text-faint: rgba(10,26,15,0.52);
-  --border: rgba(45,90,53,0.14);
-  --border-hover: rgba(45,90,53,0.32);
-  --accent: #2d5a35;
-  --accent-glow: #4a8c55;
-  --accent-bg: rgba(45,90,53,0.09);
-  --btn-primary: #2d5a35;
-  --btn-hover: #4a8c55;
-  --shadow: rgba(10,26,15,0.14);
+  --bg-card-hover: #edf7f1;
+  --bg-nav: rgba(243,251,245,0.92);
+  --text-primary: #081a0c;
+  --text-muted: rgba(8,26,12,0.72);
+  --text-faint: rgba(8,26,12,0.46);
+  --border: rgba(20,100,38,0.13);
+  --border-hover: rgba(20,100,38,0.30);
+  --accent: #156b28;
+  --accent-glow: #2a9142;
+  --accent-bg: rgba(20,107,40,0.08);
+  --btn-primary: #156b28;
+  --btn-hover: #1e8f38;
+  --shadow: rgba(8,26,12,0.12);
+  --hero-ambient: radial-gradient(ellipse 90% 55% at 50% 42%, rgba(20,107,40,0.07) 0%, transparent 68%);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -78,7 +80,7 @@ body.theme-ready {
 /* ── Gradient text ── */
 /* Static gradient — no animation on H1 so LCP paints immediately */
 .gradient-text {
-  background: linear-gradient(135deg, #7ec88a, #a8f5b5, #e8c06a);
+  background: linear-gradient(135deg, #6fcf7f, #a8f5b5, #e8d06a);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -86,15 +88,15 @@ body.theme-ready {
   display: inline-block;
 }
 [data-theme="light"] .gradient-text {
-  background: linear-gradient(135deg, #2d5a35, #4a8c55, #c9a84c);
+  background: linear-gradient(135deg, #156b28, #2a9142, #c9a030);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
 }
-/* Shimmer only for non-H1 gradient elements */
+/* Shimmer only for non-H1 gradient elements (added client-side via HeroH1) */
 .gradient-text-animate {
-  background: linear-gradient(135deg, #7ec88a, #a8f5b5, #e8c06a, #7ec88a);
+  background: linear-gradient(135deg, #6fcf7f, #a8f5b5, #e8d06a, #6fcf7f);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -103,14 +105,22 @@ body.theme-ready {
   animation: shimmer 4s linear infinite;
   display: inline-block;
 }
+[data-theme="light"] .gradient-text-animate {
+  background: linear-gradient(135deg, #156b28, #2a9142, #c9a030, #156b28);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
 @keyframes shimmer {
   0% { background-position: 0% center; }
   100% { background-position: 200% center; }
 }
 
 /* ── Buttons & glow — use filter:drop-shadow (GPU composited, avoids forced paint) ── */
-.glow-green { filter: drop-shadow(0 0 14px rgba(74,140,85,0.45)); will-change: filter; }
-.glow-green:hover { filter: drop-shadow(0 0 22px rgba(74,140,85,0.65)); }
+.glow-green { filter: drop-shadow(0 0 14px rgba(35,122,53,0.5)); will-change: filter; }
+.glow-green:hover { filter: drop-shadow(0 0 24px rgba(35,122,53,0.75)); }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }

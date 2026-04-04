@@ -29,7 +29,7 @@ const schemaData = {
         url: 'https://mushroomidentifiers.com/',
         email: 'support@mushroomidentifiers.com',
       },
-      mainEntityOfPage: 'https://mushroomidentifiers.com/',
+      mainEntityOfPage: 'https://mushroomidentifiers.com/amanita-phalloides-death-cap',
     },
     {
       '@type': 'FAQPage',

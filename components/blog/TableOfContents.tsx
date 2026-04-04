@@ -88,7 +88,7 @@ export default function TableOfContents({ headings: propHeadings, scope = 'artic
         <div className="flex items-center gap-2">
           <List className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--accent)' }} />
           <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>
-            Contents
+            Table of Contents
           </span>
           <span
             className="text-xs px-1.5 py-0.5 rounded font-medium"

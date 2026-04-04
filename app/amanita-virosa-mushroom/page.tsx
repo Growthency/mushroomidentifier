@@ -20,7 +20,7 @@ const schemaData = {
         'Learn Amanita virosa identification, features, habitat, and deadly toxicity. Understand key traits and safety warnings for this European Destroying Angel.',
       author: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/' },
       publisher: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/', email: 'support@mushroomidentifiers.com' },
-      mainEntityOfPage: 'https://mushroomidentifiers.com/',
+      mainEntityOfPage: 'https://mushroomidentifiers.com/amanita-virosa-mushroom',
     },
     {
       '@type': 'FAQPage',

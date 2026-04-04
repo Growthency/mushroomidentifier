@@ -10,7 +10,7 @@ interface Particle {
 }
 
 const PARTICLE_COUNT = 40
-const CONNECTION_DISTANCE = 120
+const CONNECTION_DISTANCE = 130
 
 export default function HeroCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -23,15 +23,7 @@ export default function HeroCanvas() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const resizeCanvas = (entries: ResizeObserverEntry[]) => {
-      const entry = entries[0]
-      if (entry) {
-        canvas.width = entry.contentRect.width
-        canvas.height = entry.contentRect.height
-      }
-    }
-    const ro = new ResizeObserver(resizeCanvas)
-    ro.observe(canvas)
+    let initialized = false
 
     const initParticles = () => {
       particlesRef.current = []
@@ -46,7 +38,20 @@ export default function HeroCanvas() {
       }
     }
 
-    initParticles()
+    const resizeCanvas = (entries: ResizeObserverEntry[]) => {
+      const entry = entries[0]
+      if (!entry) return
+      const { width, height } = entry.contentRect
+      if (width === 0 || height === 0) return
+      canvas.width = width
+      canvas.height = height
+      // Re-init particles on every resize so they fill the full canvas
+      initParticles()
+      initialized = true
+    }
+
+    const ro = new ResizeObserver(resizeCanvas)
+    ro.observe(canvas)
 
     let isLight = document.documentElement.getAttribute('data-theme') === 'light'
     const themeObserver = new MutationObserver(() => {
@@ -56,6 +61,10 @@ export default function HeroCanvas() {
 
     let animId: number
     const animate = () => {
+      if (!initialized) {
+        animId = requestAnimationFrame(animate)
+        return
+      }
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       particlesRef.current.forEach((particle) => {
@@ -67,7 +76,7 @@ export default function HeroCanvas() {
 
         ctx.beginPath()
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2)
-        ctx.fillStyle = isLight ? 'rgba(30, 80, 45, 0.5)' : 'rgba(126, 200, 138, 0.6)'
+        ctx.fillStyle = isLight ? 'rgba(26,107,46,0.55)' : 'rgba(111,207,127,0.65)'
         ctx.fill()
       })
 
@@ -82,8 +91,8 @@ export default function HeroCanvas() {
             ctx.moveTo(particlesRef.current[i].x, particlesRef.current[i].y)
             ctx.lineTo(particlesRef.current[j].x, particlesRef.current[j].y)
             ctx.strokeStyle = isLight
-              ? `rgba(30, 80, 45, ${0.35 * (1 - distance / CONNECTION_DISTANCE)})`
-              : `rgba(126, 200, 138, ${0.2 * (1 - distance / CONNECTION_DISTANCE)})`
+              ? `rgba(26,107,46,${0.3 * (1 - distance / CONNECTION_DISTANCE)})`
+              : `rgba(111,207,127,${0.22 * (1 - distance / CONNECTION_DISTANCE)})`
             ctx.lineWidth = 1
             ctx.stroke()
           }
@@ -106,7 +115,7 @@ export default function HeroCanvas() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full opacity-40"
+      className="absolute inset-0 w-full h-full opacity-45"
       style={{ pointerEvents: 'none' }}
     />
   )

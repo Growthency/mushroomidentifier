@@ -20,7 +20,7 @@ const schemaData = {
         'Learn mushroom anatomy with a clear guide to cap, gills, stem, ring, and volva. Understand how these fungal structures help with mushroom identification and safety.',
       author: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/' },
       publisher: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/', email: 'support@mushroomidentifiers.com' },
-      mainEntityOfPage: 'https://mushroomidentifiers.com/',
+      mainEntityOfPage: 'https://mushroomidentifiers.com/mushroom-parts-explained',
     },
     {
       '@type': 'FAQPage',

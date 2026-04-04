@@ -3,6 +3,33 @@ import { ArrowRight } from 'lucide-react'
 
 const ALL_ARTICLES = [
   {
+    slug: '/why-are-mushrooms-growing-in-my-yard',
+    title: 'Why Are Mushrooms Growing in My Yard? (Expert Investigation Guide)',
+    excerpt: 'Mushrooms grow in your yard because underground fungi (mycelium) are actively breaking down organic matter in moist, shaded soil.',
+    image: '/why-are-mushrooms-growing-in-my-yard-fairy-ring-lawn.webp',
+    category: 'Yard Guide',
+    risk: 'General',
+    riskColor: '#7ec88a',
+  },
+  {
+    slug: '/how-to-get-rid-of-mushrooms-in-grass',
+    title: 'How Do I Get Rid of Mushrooms in My Grass? (Complete Lawn Guide)',
+    excerpt: 'Remove lawn mushrooms fast by fixing moisture, drainage, and organic matter. Full step-by-step guide to stop mushrooms coming back.',
+    image: '/how-to-get-rid-of-mushrooms-in-grass-fairy-ring-lawn.webp',
+    category: 'Lawn Guide',
+    risk: 'General',
+    riskColor: '#7ec88a',
+  },
+  {
+    slug: '/mushroom-identifier-book',
+    title: 'Mushroom Identifier Book: Best Field Guides, Edible Mushroom Books & Foraging Resources',
+    excerpt: 'A mushroom identifier book helps you recognize fungi by cap shape, gills, habitat, season and spore print. Find the best field guide for your skill level.',
+    image: '/mushroom-identifier-book-chanterelle-cantharellus-cibarius.webp',
+    category: 'Guide',
+    risk: 'General',
+    riskColor: '#7ec88a',
+  },
+  {
     slug: '/amanita-phalloides-death-cap',
     title: 'Amanita phalloides (Death Cap): Identification, Features, Habitat & Safety Guide',
     excerpt: 'Learn death cap identification by cap color, white gills, ring, volva, and habitat. One of the world\'s most dangerous toxic mushrooms.',

@@ -19,7 +19,7 @@ const schemaData = {
       description: 'The Horse Mushroom (Agaricus arvensis) is a large, edible mushroom found in grasslands. Learn its cap, gills, ring, smell, and toxic look-alikes.',
       author: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/' },
       publisher: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/', email: 'support@mushroomidentifiers.com' },
-      mainEntityOfPage: 'https://mushroomidentifiers.com/',
+      mainEntityOfPage: 'https://mushroomidentifiers.com/agaricus-arvensis-horse-mushroom',
     },
     {
       '@type': 'FAQPage',
