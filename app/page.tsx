@@ -254,6 +254,12 @@ export default function Home() {
         style={{ background: "var(--bg-secondary)" }}
       >
         <div className="max-w-4xl mx-auto">
+          <h2
+            className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Free Mushroom Identification App by Photos
+          </h2>
           <div
             className="space-y-6 text-base sm:text-lg leading-relaxed mb-12"
             style={{ color: "var(--text-muted)" }}
@@ -2082,36 +2088,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div
-            className="relative overflow-hidden rounded-2xl mb-16 p-10 text-center"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--accent-bg) 0%, var(--bg-card) 100%)",
-              border: "1px solid var(--border)",
-            }}
-          >
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-              style={{ background: "var(--accent)", color: "#fff" }}
-            >
-              <Microscope className="w-8 h-8" />
-            </div>
-            <h3
-              className="font-playfair text-2xl sm:text-3xl font-bold mb-3"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Visual Comparison Is Critical
-            </h3>
-            <p
-              className="text-base sm:text-lg max-w-2xl mx-auto"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Our AI mushroom identifier uses advanced pattern recognition to
-              spot subtle differences between look-alike species — analyzing cap
-              texture, gill structure, and habitat clues simultaneously.
-            </p>
-          </div>
-
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <div
               className="p-6 sm:p-8 rounded-xl"
@@ -2732,36 +2708,6 @@ export default function Home() {
                 </p>
               </div>
             </div>
-          </div>
-
-          <div
-            className="relative overflow-hidden rounded-2xl mb-16 p-10 text-center"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--bg-card) 0%, var(--accent-bg) 100%)",
-              border: "1px solid var(--border)",
-            }}
-          >
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-              style={{ background: "var(--accent)", color: "#fff" }}
-            >
-              <Leaf className="w-8 h-8" />
-            </div>
-            <h3
-              className="font-playfair text-2xl sm:text-3xl font-bold mb-3"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Structural Details Matter
-            </h3>
-            <p
-              className="text-base sm:text-lg max-w-2xl mx-auto"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Pore patterns, gill structures, and stem characteristics are the
-              key to accurate mushroom identification — features our AI is
-              specifically trained to detect and compare.
-            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
