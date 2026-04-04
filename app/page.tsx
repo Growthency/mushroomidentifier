@@ -190,7 +190,7 @@ export default function Home() {
             with advanced mushroom identifier AI. Upload clear images from
             multiple angles to instantly identify fungi, detect key features,
             and receive toxicity warnings plus similar species alerts through
-            our free mushroom identifier app.
+            our free mushroom identification app.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
