@@ -21,10 +21,10 @@ export default function AuthorBlock({ updatedAt }: AuthorBlockProps = {}) {
       </div>
       <div className="flex-1">
         <p className="font-semibold text-sm leading-tight" style={{ color: 'var(--text-primary)' }}>
-          Dr. Didier Borgarino
+          Paul Stamets
         </p>
         <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-          Field Mycologist · Author · Fungi Expert
+          Mycologist · Author · Fungi Expert
         </p>
       </div>
       {updatedAt && (

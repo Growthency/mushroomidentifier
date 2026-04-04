@@ -541,7 +541,7 @@ function ArticleCard({ article }: { article: Article }) {
               height={22}
               className="rounded-full object-cover flex-shrink-0"
             />
-            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Dr. Didier Borgarino</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Paul Stamets</span>
           </div>
           <div className="flex items-center gap-2">
             <span style={{ color: 'var(--text-faint)' }}>{article.date}</span>
