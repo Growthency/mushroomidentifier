@@ -80,10 +80,23 @@ export default function BlogSidebar() {
     : POPULAR_POSTS
 
   return (
-    /* aside is NOT sticky — only the TOC inner div is sticky so it truly pins */
-    <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0">
+    /* aside is sticky — sticks to top-24 and spans remaining viewport height */
+    <aside
+      className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0 sticky self-start"
+      style={{
+        top: '6rem',
+        maxHeight: 'calc(100vh - 7rem)',
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
+      }}
+    >
 
-      {/* ── Search ── naturally scrolls away */}
+      {/* ── TOC FIRST — always visible at the top of the sticky sidebar ── */}
+      <div className="mb-5">
+        <TableOfContents />
+      </div>
+
+      {/* ── Search ── */}
       <div className="relative mb-4">
         <Search
           className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
@@ -105,7 +118,7 @@ export default function BlogSidebar() {
         />
       </div>
 
-      {/* ── Trending Posts — naturally scrolls away ── */}
+      {/* ── Trending Posts ── */}
       <div
         className="rounded-xl overflow-hidden mb-5"
         style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
@@ -177,10 +190,6 @@ export default function BlogSidebar() {
         </ul>
       </div>
 
-      {/* ── TOC — sticky: stays fixed while article scrolls ── */}
-      <div className="sticky top-24">
-        <TableOfContents />
-      </div>
     </aside>
   )
 }
