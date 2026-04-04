@@ -339,7 +339,7 @@ export default function Home() {
             className="font-playfair text-2xl sm:text-3xl font-bold mb-6 text-center"
             style={{ color: "var(--text-primary)" }}
           >
-            How AI Analyzes Mushroom Features
+            How AI Analyzes Mushroom Features?
           </h2>
           <p
             className="text-base sm:text-lg leading-relaxed mb-8 text-center max-w-3xl mx-auto"
@@ -432,7 +432,7 @@ export default function Home() {
             className="font-playfair text-4xl md:text-5xl font-bold text-center mb-16"
             style={{ color: "var(--text-primary)" }}
           >
-            How to Use the Mushroom Identifier
+            How to Use the Mushroom Identifier?
           </h2>
           <p
             className="text-center text-lg mb-12 max-w-3xl mx-auto"
@@ -549,7 +549,7 @@ export default function Home() {
             className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-6"
             style={{ color: "var(--text-primary)" }}
           >
-            Who This Mushroom Identifier Is For
+            Who This Mushroom Identifier Is For?
           </h2>
           <p
             className="text-base sm:text-lg leading-relaxed mb-12 text-center"
@@ -617,7 +617,7 @@ export default function Home() {
             className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8"
             style={{ color: "var(--text-primary)" }}
           >
-            How AI Helps Identify Mushrooms
+            How AI Helps Identify Mushrooms?
           </h2>
           <p
             className="text-base sm:text-lg leading-relaxed mb-8"
@@ -673,7 +673,7 @@ export default function Home() {
             className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-8"
             style={{ color: "var(--text-primary)" }}
           >
-            Why Mushroom Identification Requires Caution
+            Why Mushroom Identification Requires Caution?
           </h2>
           <p
             className="text-base sm:text-lg leading-relaxed mb-8"
@@ -1664,7 +1664,7 @@ export default function Home() {
             className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-12"
             style={{ color: "var(--text-primary)" }}
           >
-            When to Consult a Local Expert
+            When to Consult a Local Expert?
           </h2>
 
           <div
