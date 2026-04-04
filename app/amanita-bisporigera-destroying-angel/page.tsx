@@ -86,7 +86,7 @@ export default function DestroyingAngelPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               <em>Amanita bisporigera</em> (Destroying Angel): Identification, Features, Habitat &amp; Safety Guide
             </h1>
-            <AuthorBlock />
+            <AuthorBlock updatedAt="Mar 31, 2026" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita bisporigera</em>, commonly known as the Destroying Angel, is one of the most dangerous
               toxic mushrooms in North America. It is responsible for many fatal poisonings due to its potent

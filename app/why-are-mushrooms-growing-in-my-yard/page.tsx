@@ -192,7 +192,7 @@ export default function WhyMushroomsInYardPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               Why Are Mushrooms Growing in My Yard? (Expert Investigation Guide)
             </h1>
-            <AuthorBlock />
+            <AuthorBlock updatedAt="Apr 4, 2026" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Mushrooms grow in your yard because underground fungi (mycelium) are actively breaking down organic matter in moist, shaded soil. When conditions like high moisture, decaying roots, and low sunlight are present, fungi produce visible mushrooms (fruiting bodies). They are not random—they&apos;re a sign your soil ecosystem is active, but sometimes unbalanced.
             </p>
@@ -330,11 +330,11 @@ export default function WhyMushroomsInYardPage() {
             </WarningBox>
             <div className="rounded-2xl p-4 my-4" style={{ background: 'var(--accent-bg)', border: '1px solid var(--border-hover)' }}>
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                💡 If you&apos;re unsure, you can check our mushroom identification tool at{' '}
+                💡 Not sure what species appeared in your yard? Use our{' '}
                 <Link href="/" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>
-                  mushroomidentifiers.com
+                  free mushroom identifier app
                 </Link>{' '}
-                to understand whether a mushroom may be toxic or not.
+                — upload a photo for instant AI-powered species analysis and toxicity warnings.
               </p>
             </div>
           </Section>
@@ -476,6 +476,13 @@ export default function WhyMushroomsInYardPage() {
                 👉 Control the environment, and mushrooms will naturally decline.
               </p>
             </div>
+            <p className="mt-4 text-sm" style={{ color: 'var(--text-muted)' }}>
+              If you find an unknown mushroom species in your yard and want to know whether it is safe, use our{' '}
+              <Link href="/" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>
+                mushroom identifier by picture
+              </Link>{' '}
+              — upload a photo from multiple angles and get an instant AI analysis with toxicity warnings.
+            </p>
           </Section>
 
           <RelatedPosts currentSlug="/why-are-mushrooms-growing-in-my-yard" />

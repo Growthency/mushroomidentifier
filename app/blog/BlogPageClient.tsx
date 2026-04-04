@@ -535,15 +535,19 @@ function ArticleCard({ article }: { article: Article }) {
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/author-paul-stamets.webp"
-              alt="Paul Stamets"
+              src="/author-avatar.webp"
+              alt="Dr. Didier Borgarino"
               width={22}
               height={22}
               className="rounded-full object-cover flex-shrink-0"
             />
-            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Paul Stamets</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Dr. Didier Borgarino</span>
           </div>
-          <span style={{ color: 'var(--text-faint)' }}>{article.readTime} read</span>
+          <div className="flex items-center gap-2">
+            <span style={{ color: 'var(--text-faint)' }}>{article.date}</span>
+            <span style={{ color: 'var(--text-faint)' }}>·</span>
+            <span style={{ color: 'var(--text-faint)' }}>{article.readTime} read</span>
+          </div>
         </div>
 
         {/* Read More */}

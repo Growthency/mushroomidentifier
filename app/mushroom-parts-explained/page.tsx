@@ -64,7 +64,7 @@ export default function MushroomPartsExplainedPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               Mushroom Parts Explained: Cap, Gills, Stem, Ring &amp; Volva
             </h1>
-            <AuthorBlock />
+            <AuthorBlock updatedAt="Mar 31, 2026" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Understanding mushroom anatomy is the foundation of accurate mushroom identification. A mushroom is not the entire organism — it is the visible <strong style={{ color: 'var(--text-primary)' }}>fruiting body</strong> of fungi within the Kingdom Fungi.
             </p>

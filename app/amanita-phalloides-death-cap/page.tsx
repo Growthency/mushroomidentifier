@@ -163,7 +163,7 @@ export default function DeathCapPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               <em>Amanita phalloides</em> (Death Cap): Identification, Features, Habitat &amp; Safety Guide
             </h1>
-            <AuthorBlock />
+            <AuthorBlock updatedAt="Mar 31, 2026" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita phalloides</em>, commonly known as the Death Cap, is one of the most dangerous toxic
               mushrooms in the world. It is responsible for the majority of fatal mushroom poisonings due to its

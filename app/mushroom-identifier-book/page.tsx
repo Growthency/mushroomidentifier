@@ -279,7 +279,7 @@ export default function MushroomIdentifierBookPage() {
             >
               Mushroom Identifier Book: Best Field Guides, Edible Mushroom Books &amp; Foraging Resources
             </h1>
-            <AuthorBlock />
+            <AuthorBlock updatedAt="Apr 4, 2026" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               A mushroom identifier book helps you recognize fungi by combining photos or illustrations with key traits such as cap shape, gills, stem structure, habitat, season, and spore print. The best book for you depends on your goal: a beginner usually needs a visual field guide, a forager needs a safety-focused reference, a cook may want edible species coverage, and a grower benefits from cultivation books. A strong guide does not replace expert confirmation, but it can make mushroom identification more structured, safer, and far more accurate.
             </p>
@@ -316,6 +316,13 @@ export default function MushroomIdentifierBookPage() {
             </p>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
               For people who search for terms like "mushroom field guide pdf," "wild mushroom guide," or "edible mushroom book," the goal is often practical. They want a trusted guide they can use in real life. Some want to avoid toxic lookalikes. Some want to learn mushroom names with confidence. Others are choosing a gift, buying a foraging companion, or building a home library of fungi books. That is why a useful mushroom identifier page should not only explain what these books are, but also help readers understand which type of guide matches their purpose.
+            </p>
+            <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
+              For instant digital identification in the field, our{' '}
+              <Link href="/" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>
+                mushroom identifier AI
+              </Link>{' '}
+              works alongside any printed guide — upload a photo and get an AI-powered species match with toxicity warnings, a useful complement when you need a second opinion fast.
             </p>
           </Section>
 

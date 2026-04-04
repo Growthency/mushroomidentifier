@@ -187,7 +187,7 @@ export default function MushroomsInGrassPage() {
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
               How Do I Get Rid of Mushrooms in My Grass? (Complete Lawn Guide)
             </h1>
-            <AuthorBlock />
+            <AuthorBlock updatedAt="Apr 4, 2026" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Mushrooms in grass are caused by underground fungal networks called mycelium, which thrive in moist soil rich in organic matter. To get rid of them effectively, you need to remove visible mushrooms, reduce moisture, improve soil drainage, and eliminate decaying material like roots and thatch. Simply removing mushrooms is not enough—long-term control comes from changing the lawn conditions that allow fungi to grow.
             </p>
@@ -495,6 +495,15 @@ export default function MushroomsInGrassPage() {
               </ul>
               <p className="mt-2">Never consume wild mushrooms without proper identification by an expert.</p>
             </WarningBox>
+            <div className="rounded-2xl p-4 mt-4" style={{ background: 'var(--accent-bg)', border: '1px solid var(--border-hover)' }}>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                💡 Need to identify a lawn mushroom quickly? Try our{' '}
+                <Link href="/" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>
+                  wild mushroom identifier
+                </Link>{' '}
+                — upload a photo and receive an AI species match with safety warnings in seconds.
+              </p>
+            </div>
           </Section>
 
           <Divider />
