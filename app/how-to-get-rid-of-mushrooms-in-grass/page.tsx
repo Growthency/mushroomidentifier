@@ -210,7 +210,7 @@ export default function MushroomsInGrassPage() {
           />
 
           <Divider />
-          <div className="lg:hidden"><TableOfContents /></div>
+          <TableOfContents />
 
           {/* ── Why Mushrooms Grow ── */}
           <Section>

@@ -215,7 +215,7 @@ export default function WhyMushroomsInYardPage() {
           />
 
           <Divider />
-          <div className="lg:hidden"><TableOfContents /></div>
+          <TableOfContents />
 
           {/* ── What Mushrooms Mean ── */}
           <Section>

@@ -117,7 +117,7 @@ export default function MushroomPartsExplainedPage() {
 
           <Divider />
 
-          <div className="lg:hidden"><TableOfContents /></div>
+          <TableOfContents />
 
           {/* ── SECTION 2: Complete Overview Table ── */}
           <Section>

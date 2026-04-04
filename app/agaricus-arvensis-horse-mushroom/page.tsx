@@ -116,7 +116,7 @@ export default function HorseMushroomPage() {
 
           <Divider />
 
-          <div className="lg:hidden"><TableOfContents /></div>
+          <TableOfContents />
 
           {/* ── Taxonomy ── */}
           <Section>

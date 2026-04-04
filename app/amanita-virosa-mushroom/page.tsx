@@ -123,7 +123,7 @@ export default function AmanitaVirosaPage() {
 
           <Divider />
 
-          <div className="lg:hidden"><TableOfContents /></div>
+          <TableOfContents />
 
           {/* Quick ID Summary */}
           <Section>

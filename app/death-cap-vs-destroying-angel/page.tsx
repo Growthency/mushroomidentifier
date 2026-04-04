@@ -188,7 +188,7 @@ export default function DeathCapVsDestroyingAngelPage() {
 
           <Divider />
 
-          <div className="lg:hidden"><TableOfContents /></div>
+          <TableOfContents />
 
           {/* ── Introduction ───────────────────────────────── */}
           <Section>

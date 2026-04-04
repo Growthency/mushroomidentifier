@@ -302,7 +302,7 @@ export default function MushroomIdentifierBookPage() {
           />
 
           <Divider />
-          <div className="lg:hidden"><TableOfContents /></div>
+          <TableOfContents />
 
           {/* ── Section 1 ── */}
           <Section>
