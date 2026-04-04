@@ -47,7 +47,7 @@ export default function MushroomPartsExplainedPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
       <div className="min-h-screen pt-24 pb-20" style={{ background: 'var(--bg-primary)' }}>
-        <div className="max-w-[1380px] mx-auto px-5 md:px-8">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-10 items-start">
             <article className="min-w-0 flex-1 max-w-4xl">
 
