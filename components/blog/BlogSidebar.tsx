@@ -74,13 +74,16 @@ function formatViews(n: number) {
 
 export default function BlogSidebar() {
   const [query, setQuery] = useState('')
+  const [showAll, setShowAll] = useState(false)
 
   const filtered = query.trim()
     ? POPULAR_POSTS.filter(p => p.title.toLowerCase().includes(query.toLowerCase()))
     : POPULAR_POSTS
 
+  const visible = showAll ? filtered : filtered.slice(0, 5)
+
   return (
-    /* aside is sticky — sticks to top-24 and spans remaining viewport height */
+    /* aside is sticky — sticks at top-24, constrained to viewport height */
     <aside
       className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0 sticky self-start"
       style={{
@@ -90,11 +93,6 @@ export default function BlogSidebar() {
         scrollbarWidth: 'thin',
       }}
     >
-
-      {/* ── TOC FIRST — always visible at the top of the sticky sidebar ── */}
-      <div className="mb-5">
-        <TableOfContents />
-      </div>
 
       {/* ── Search ── */}
       <div className="relative mb-4">
@@ -134,7 +132,7 @@ export default function BlogSidebar() {
         </div>
 
         <ul>
-          {filtered.slice(0, 10).map((post, i) => (
+          {visible.map((post, i) => (
             <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
               <Link
                 href={post.slug}
@@ -188,7 +186,21 @@ export default function BlogSidebar() {
             </li>
           )}
         </ul>
+
+        {/* Show more / less toggle */}
+        {!query.trim() && (
+          <button
+            onClick={() => setShowAll(v => !v)}
+            className="w-full py-2.5 text-xs font-medium transition-colors"
+            style={{ color: 'var(--accent)', borderTop: '1px solid var(--border)' }}
+          >
+            {showAll ? '↑ Show less' : `+ ${POPULAR_POSTS.length - 5} more articles`}
+          </button>
+        )}
       </div>
+
+      {/* ── TOC at the bottom ── */}
+      <TableOfContents />
 
     </aside>
   )
