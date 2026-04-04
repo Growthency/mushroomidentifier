@@ -8,6 +8,7 @@ import HeroH1 from './HeroH1'
 const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false })
 const HomeIdentifier = dynamic(() => import('./HomeIdentifier'), { ssr: false })
 const HomeReviews = dynamic(() => import('./HomeReviews'), { ssr: false })
+const ScrollGlow = dynamic(() => import('./ScrollGlow'), { ssr: false })
 
 const homepageSchema = {
   "@context": "https://schema.org",
@@ -57,7 +58,8 @@ export default function Home() {
   return (
     <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }} />
-      <section className="min-h-screen relative flex items-center justify-center overflow-hidden pt-20" style={{ background: 'var(--bg-primary)' }}>
+      <ScrollGlow />
+      <section className="min-h-screen relative flex items-center justify-center overflow-hidden pt-20" style={{ background: 'transparent' }}>
         {/* Ambient radial glow — pure CSS, zero JS */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'var(--hero-ambient)' }} />
         <HeroCanvas />
@@ -70,7 +72,7 @@ export default function Home() {
 
           {/* HeroH1 renders solid color server-side (LCP-safe), adds shimmer client-side */}
           <HeroH1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-            Free AI mushroom &amp; Fungi identifier from Photos
+            Mushroom Identifier - Fast Mushroom Identification App by Picture
           </HeroH1>
 
           <p className="text-lg sm:text-xl mb-12 max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--text-muted)' }}>

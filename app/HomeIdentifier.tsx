@@ -138,7 +138,7 @@ export default function HomeIdentifier() {
     <section id="identifier" className="py-12 sm:py-16 px-6" style={{ background: 'var(--bg-primary)' }}>
       <div className="max-w-4xl mx-auto">
         <h2 className="font-playfair text-4xl md:text-5xl font-bold text-center mb-6 gradient-text-animate">
-          Upload Photo &amp; Identify Mushrooms
+          Upload Photo For Accurate Mushrooms Identification
         </h2>
 
         {!userId && !hasUsedFreeScan && (
@@ -221,9 +221,9 @@ export default function HomeIdentifier() {
                     { src: '/mushroom-underside-gills-spores-3.webp', label: 'Gills' },
                     { src: '/mushroom-base-root-volva-bottom-4.webp', label: 'Volva' },
                   ].map(({ src, label }) => (
-                    <div key={label} className="flex flex-col items-center gap-1">
-                      <div className="w-full rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
-                        <NextImage src={src} alt={`AI mushroom identifier - Fungi Finder - ${label} view`} width={120} height={120} sizes="96px" loading="lazy" className="w-full h-full object-cover" />
+                    <div key={label} className="flex flex-col items-center gap-1 angle-img-group">
+                      <div className="w-full rounded-lg overflow-hidden cursor-pointer" style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
+                        <NextImage src={src} alt={`AI mushroom identifier - Fungi Finder - ${label} view`} width={120} height={120} sizes="96px" loading="lazy" className="w-full h-full object-cover angle-img-wrap" />
                       </div>
                       <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span>
                     </div>

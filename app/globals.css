@@ -5,11 +5,12 @@
 @tailwind utilities;
 
 :root, [data-theme="dark"] {
-  --bg-primary: #040e06;
-  --bg-secondary: #071409;
-  --bg-card: #0b1a0d;
-  --bg-card-hover: #132616;
-  --bg-nav: rgba(4,14,6,0.86);
+  --body-bg: linear-gradient(145deg, #0b1912 0%, #0d1623 43%, #190e28 73%, #0b1912 100%);
+  --bg-primary: rgba(11, 25, 18, 0.88);
+  --bg-secondary: rgba(9, 20, 15, 0.92);
+  --bg-card: rgba(14, 28, 18, 0.97);
+  --bg-card-hover: rgba(20, 38, 22, 0.98);
+  --bg-nav: rgba(10, 22, 15, 0.90);
   --text-primary: #edf7ef;
   --text-muted: rgba(237,247,239,0.68);
   --text-faint: rgba(237,247,239,0.40);
@@ -21,15 +22,19 @@
   --btn-primary: #237a35;
   --btn-hover: #6fcf7f;
   --shadow: rgba(0,0,0,0.55);
-  --hero-ambient: radial-gradient(ellipse 90% 55% at 50% 42%, rgba(55,160,80,0.13) 0%, transparent 68%);
+  --hero-ambient: radial-gradient(ellipse 110% 65% at 50% 42%, rgba(40,190,90,0.20) 0%, rgba(110,45,210,0.08) 55%, transparent 75%);
+  --orb-1: rgba(40, 200, 90, 0.14);
+  --orb-2: rgba(115, 45, 225, 0.10);
+  --orb-3: rgba(220, 155, 38, 0.07);
 }
 
 [data-theme="light"] {
-  --bg-primary: #f3fbf5;
-  --bg-secondary: #e6f5eb;
-  --bg-card: #ffffff;
-  --bg-card-hover: #edf7f1;
-  --bg-nav: rgba(243,251,245,0.92);
+  --body-bg: linear-gradient(145deg, #eaf8f2 0%, #e3ecf8 42%, #f2e9f9 73%, #f8f0e5 100%);
+  --bg-primary: rgba(236, 249, 241, 0.82);
+  --bg-secondary: rgba(228, 244, 235, 0.87);
+  --bg-card: rgba(255, 255, 255, 0.96);
+  --bg-card-hover: rgba(245, 251, 247, 0.98);
+  --bg-nav: rgba(236, 249, 241, 0.92);
   --text-primary: #081a0c;
   --text-muted: rgba(8,26,12,0.72);
   --text-faint: rgba(8,26,12,0.46);
@@ -41,7 +46,10 @@
   --btn-primary: #156b28;
   --btn-hover: #1e8f38;
   --shadow: rgba(8,26,12,0.12);
-  --hero-ambient: radial-gradient(ellipse 90% 55% at 50% 42%, rgba(20,107,40,0.07) 0%, transparent 68%);
+  --hero-ambient: radial-gradient(ellipse 110% 65% at 50% 42%, rgba(20,130,60,0.13) 0%, rgba(90,45,170,0.06) 55%, transparent 75%);
+  --orb-1: rgba(20, 140, 60, 0.07);
+  --orb-2: rgba(95, 55, 200, 0.05);
+  --orb-3: rgba(200, 128, 30, 0.04);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,7 +60,7 @@ h1[id], h2[id], h3[id], h4[id] {
   scroll-margin-top: 96px;
 }
 body {
-  background: var(--bg-primary);
+  background: var(--body-bg);
   color: var(--text-primary);
   font-family: var(--font-inter), 'Inter', sans-serif;
   overflow-x: hidden;
@@ -166,3 +174,13 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   color: rgba(10,26,15,0.78);
 }
 [data-theme="light"] article strong { color: #0d1f13; }
+
+/* ── Scroll Glow Orbs ── */
+.scroll-orb { position: absolute; border-radius: 50%; will-change: transform; }
+.orb-1 { width: 80vw; height: 80vw; top: -25%; left: -18%; background: radial-gradient(circle, var(--orb-1) 0%, transparent 70%); }
+.orb-2 { width: 65vw; height: 65vw; top: 28%; right: -22%; background: radial-gradient(circle, var(--orb-2) 0%, transparent 70%); }
+.orb-3 { width: 58vw; height: 58vw; bottom: -8%; left: 18%; background: radial-gradient(circle, var(--orb-3) 0%, transparent 70%); }
+
+/* ── Angle Image Zoom ── */
+.angle-img-wrap { transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.angle-img-group:hover .angle-img-wrap { transform: scale(1.11); }
