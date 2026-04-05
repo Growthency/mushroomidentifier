@@ -100,7 +100,9 @@ export async function POST(request: NextRequest) {
       ],
     })
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
+    const rawText = message.content[0].type === 'text' ? message.content[0].text : ''
+    // Strip markdown code fences if model returns ```json ... ```
+    const responseText = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
     const result = JSON.parse(responseText)
 
     if (userId) {
