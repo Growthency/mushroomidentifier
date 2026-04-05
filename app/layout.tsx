@@ -3,8 +3,7 @@ import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
 import Script from 'next/script'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
+import LayoutShell from '@/components/layout/LayoutShell'
 import ScrollToTop from '@/components/ui/ScrollToTop'
 
 const inter = Inter({
@@ -107,9 +106,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
+          <LayoutShell>{children}</LayoutShell>
           <ScrollToTop />
         </ThemeProvider>
 
