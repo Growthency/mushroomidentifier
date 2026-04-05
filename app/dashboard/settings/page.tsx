@@ -1,40 +1,23 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import {
-  User, Mail, Lock, Save, Check, Copy, Share2,
-  Crown, Zap, Star, Gift, Users, AlertCircle
+  User, Mail, Lock, Save, Check, Camera,
+  Crown, Zap, Star, AlertCircle, Loader2
 } from 'lucide-react'
 
-function genCode(uid: string) {
-  // deterministic 8-char alphanum from user id
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  let hash = 0
-  for (let i = 0; i < uid.length; i++) {
-    hash = ((hash << 5) - hash) + uid.charCodeAt(i)
-    hash |= 0
-  }
-  let code = ''
-  let h = Math.abs(hash)
-  for (let i = 0; i < 8; i++) {
-    code += chars[h % chars.length]
-    h = Math.floor(h / chars.length) || (h * 31 + i)
-  }
-  return code
-}
-
 export default function SettingsPage() {
-  const [user, setUser]         = useState<any>(null)
-  const [profile, setProfile]   = useState<any>(null)
-  const [fullName, setFullName]  = useState('')
-  const [email, setEmail]        = useState('')
-  const [saving, setSaving]      = useState(false)
-  const [saved, setSaved]        = useState(false)
-  const [error, setError]        = useState('')
-  const [copied, setCopied]      = useState(false)
-  const [referralCode, setReferralCode] = useState('')
-  const [referralStats, setReferralStats] = useState({ count: 0 })
+  const [user, setUser]           = useState<any>(null)
+  const [profile, setProfile]     = useState<any>(null)
+  const [fullName, setFullName]   = useState('')
+  const [email, setEmail]         = useState('')
+  const [saving, setSaving]       = useState(false)
+  const [saved, setSaved]         = useState(false)
+  const [error, setError]         = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -47,32 +30,43 @@ export default function SettingsPage() {
       if (data) {
         setProfile(data)
         setFullName(data.full_name || '')
-        // Use stored code or generate from user id
-        const code = data.referral_code || genCode(user.id)
-        setReferralCode(code)
-        // If no code stored yet, save it
-        if (!data.referral_code) {
-          await supabase.from('profiles').update({ referral_code: code }).eq('id', user.id)
-        }
-        // Count how many users were referred by this user
-        const { count } = await supabase
-          .from('profiles')
-          .select('id', { count: 'exact', head: true })
-          .eq('referred_by', user.id)
-        setReferralStats({ count: count || 0 })
+        setAvatarUrl(data.avatar_url || '')
       }
     }
     load()
   }, [supabase])
 
-  const handleSaveProfile = async (e: React.FormEvent) => {
+  /* ── Avatar upload ── */
+  const handleAvatarFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user) return
+    setAvatarUploading(true)
+    try {
+      const ext      = file.name.split('.').pop() || 'jpg'
+      const fileName = `${user.id}.${ext}`
+      const { error: upErr } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true, contentType: file.type })
+      if (upErr) throw upErr
+      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName)
+      const url = urlData.publicUrl + `?t=${Date.now()}` // cache bust
+      await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id)
+      setAvatarUrl(url)
+      setProfile((p: any) => ({ ...p, avatar_url: url }))
+    } catch (err: any) {
+      setError('Image upload failed: ' + err.message)
+    } finally {
+      setAvatarUploading(false)
+    }
+  }
+
+  /* ── Profile save ── */
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     setError('')
     try {
-      // Update full_name in profiles
       await supabase.from('profiles').update({ full_name: fullName }).eq('id', user.id)
-      // Update email in auth if changed
       if (email !== user.email) {
         const { error: emailErr } = await supabase.auth.updateUser({ email })
         if (emailErr) throw emailErr
@@ -81,30 +75,9 @@ export default function SettingsPage() {
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch (err: any) {
-      setError(err.message || 'Failed to save')
+      setError(err.message || 'Save failed')
     } finally {
       setSaving(false)
-    }
-  }
-
-  const copyReferral = () => {
-    const link = `${window.location.origin}/signup?ref=${referralCode}`
-    navigator.clipboard.writeText(link).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2500)
-    })
-  }
-
-  const shareReferral = () => {
-    const link = `${window.location.origin}/signup?ref=${referralCode}`
-    if (navigator.share) {
-      navigator.share({
-        title: 'Join MushroomIdentifiers',
-        text: 'Use my referral link to get 20 bonus credits on MushroomIdentifiers!',
-        url: link,
-      })
-    } else {
-      copyReferral()
     }
   }
 
@@ -112,36 +85,59 @@ export default function SettingsPage() {
   const planLabel = plan === 'pro' ? 'Pro' : plan === 'explorer' ? 'Explorer' : plan === 'starter' ? 'Starter' : 'Free'
   const planColor = plan === 'pro' ? '#f59e0b' : plan === 'explorer' ? '#8b5cf6' : plan === 'starter' ? '#3b82f6' : 'var(--accent)'
   const credits   = profile?.credits ?? 0
-
-  const referralLink = typeof window !== 'undefined' ? `${window.location.origin}/signup?ref=${referralCode}` : ''
+  const initials  = (profile?.full_name || user?.email || 'U').slice(0, 2).toUpperCase()
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-xl mx-auto space-y-6">
 
-      {/* Profile Settings */}
+      {/* Error banner */}
+      {error && (
+        <div className="flex items-center gap-2 p-4 rounded-2xl text-sm"
+          style={{ background: '#ef444418', color: '#ef4444', border: '1px solid #ef444430' }}>
+          <AlertCircle className="w-4 h-4 flex-shrink-0" /> {error}
+        </div>
+      )}
+
+      {/* ── Profile Card ── */}
       <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
-            <User className="w-5 h-5" />
+        <h2 className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Profile Information</h2>
+        <p className="text-xs mb-6" style={{ color: 'var(--text-muted)' }}>Update your photo, name and email</p>
+
+        {/* Avatar upload */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="relative mb-3">
+            <div className="w-24 h-24 rounded-full overflow-hidden flex items-center justify-center text-2xl font-bold"
+              style={{ background: avatarUrl ? 'transparent' : 'var(--accent)', color: '#fff' }}>
+              {avatarUrl
+                ? <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                : initials}
+            </div>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={avatarUploading}
+              className="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-opacity hover:opacity-80"
+              style={{ background: 'var(--accent)', color: '#fff' }}>
+              {avatarUploading
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : <Camera className="w-4 h-4" />}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarFile}
+            />
           </div>
-          <div>
-            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Profile Information</h2>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Update your name and email</p>
-          </div>
+          <p className="text-xs" style={{ color: 'var(--text-faint)' }}>
+            {avatarUploading ? 'Uploading...' : 'Tap camera to change photo'}
+          </p>
         </div>
 
-        {error && (
-          <div className="flex items-center gap-2 p-3 rounded-xl mb-4 text-sm"
-            style={{ background: '#ef444418', color: '#ef4444' }}>
-            <AlertCircle className="w-4 h-4 flex-shrink-0" /> {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSaveProfile} className="space-y-4">
+        <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>
-              Full Name
-            </label>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>Full Name</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-faint)' }} />
               <input
@@ -156,9 +152,7 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>
-              Email Address
-            </label>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>Email Address</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-faint)' }} />
               <input
@@ -172,21 +166,24 @@ export default function SettingsPage() {
             </div>
             {email !== user?.email && (
               <p className="text-xs mt-1" style={{ color: '#f59e0b' }}>
-                ⚠️ A verification email will be sent to confirm the change.
+                ⚠️ A confirmation email will be sent to verify the change.
               </p>
             )}
           </div>
 
           <button type="submit" disabled={saving}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
-            style={{ background: 'var(--accent)', color: '#fff' }}>
-            {saved ? <Check className="w-4 h-4" /> : saving ? null : <Save className="w-4 h-4" />}
-            {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
+            style={{ background: saved ? '#22c55e' : 'var(--accent)', color: '#fff' }}>
+            {saved
+              ? <><Check className="w-4 h-4" /> Saved!</>
+              : saving
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
+              : <><Save className="w-4 h-4" /> Save Changes</>}
           </button>
         </form>
       </div>
 
-      {/* Plan & Credits */}
+      {/* ── Plan & Credits ── */}
       <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
         <div className="flex items-center gap-3 mb-5">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -199,33 +196,27 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-4 rounded-xl mb-4"
-          style={{ background: 'var(--bg-secondary)' }}>
-          <div>
-            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-              {planLabel} Plan
-            </p>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              {credits} credits remaining · each scan costs 10 credits
-            </p>
+        <div className="p-4 rounded-xl mb-4" style={{ background: 'var(--bg-secondary)' }}>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{planLabel} Plan</p>
+            <span className="px-2.5 py-1 rounded-full text-xs font-bold"
+              style={{ background: planColor + '20', color: planColor }}>{planLabel}</span>
           </div>
-          <span className="px-3 py-1.5 rounded-full text-xs font-bold"
-            style={{ background: planColor + '20', color: planColor }}>
-            {planLabel}
-          </span>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            {credits} credits remaining · each scan costs 10 credits
+          </p>
         </div>
 
-        {/* Credits bar */}
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1.5" style={{ color: 'var(--text-faint)' }}>
-            <span>Credits used</span>
-            <span>{Math.max(0, 30 - credits)}/30</span>
+            <span>Credits remaining</span>
+            <span>{credits}/30</span>
           </div>
-          <div className="h-2 rounded-full" style={{ background: 'var(--border)' }}>
+          <div className="h-2.5 rounded-full" style={{ background: 'var(--border)' }}>
             <div className="h-full rounded-full transition-all"
               style={{
                 width: `${Math.max(0, Math.min(100, (credits / 30) * 100))}%`,
-                background: credits > 10 ? 'var(--accent)' : credits > 0 ? '#f59e0b' : '#ef4444'
+                background: credits > 10 ? 'var(--accent)' : credits > 0 ? '#f59e0b' : '#ef4444',
               }} />
           </div>
         </div>
@@ -239,97 +230,17 @@ export default function SettingsPage() {
         )}
       </div>
 
-      {/* Referral System */}
-      <div id="referral" className="p-6 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ background: '#8b5cf620', color: '#8b5cf6' }}>
-            <Gift className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Referral Program</h2>
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Invite friends & earn free credits</p>
-          </div>
-        </div>
-
-        {/* How it works */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
-          {[
-            { icon: '🔗', title: 'Share Link', desc: 'Send your unique referral link' },
-            { icon: '👤', title: 'Friend Signs Up', desc: 'They create a free account' },
-            { icon: '💎', title: 'Both Get 20', desc: 'You and your friend each get 20 bonus credits' },
-          ].map(item => (
-            <div key={item.title} className="p-3 rounded-xl text-center"
-              style={{ background: 'var(--bg-secondary)' }}>
-              <div className="text-2xl mb-1">{item.icon}</div>
-              <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>{item.title}</p>
-              <p className="text-xs" style={{ color: 'var(--text-faint)' }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Stats */}
-        <div className="flex items-center gap-4 p-3 rounded-xl mb-5"
-          style={{ background: 'var(--bg-secondary)' }}>
-          <Users className="w-5 h-5 flex-shrink-0" style={{ color: '#8b5cf6' }} />
-          <div>
-            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-              {referralStats.count} friend{referralStats.count !== 1 ? 's' : ''} referred
-            </p>
-            <p className="text-xs" style={{ color: 'var(--text-faint)' }}>
-              +{referralStats.count * 20} bonus credits earned
-            </p>
-          </div>
-        </div>
-
-        {/* Your code */}
-        <div className="mb-4">
-          <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>Your Referral Code</p>
-          <div className="flex items-center gap-2 p-3 rounded-xl font-mono text-lg font-bold tracking-widest"
-            style={{ background: 'var(--bg-secondary)', color: 'var(--accent)', border: '2px dashed var(--accent)' }}>
-            {referralCode}
-          </div>
-        </div>
-
-        {/* Referral link */}
-        <div className="mb-4">
-          <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>Your Referral Link</p>
-          <div className="flex items-center gap-2">
-            <input
-
-              readOnly
-              value={referralLink}
-              className="flex-1 px-3 py-2 rounded-xl text-xs truncate"
-              style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-muted)', outline: 'none' }}
-            />
-            <button onClick={copyReferral}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold flex-shrink-0 transition-opacity hover:opacity-80"
-              style={{ background: copied ? '#22c55e20' : 'var(--accent-bg)', color: copied ? '#22c55e' : 'var(--accent)' }}>
-              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              {copied ? 'Copied!' : 'Copy'}
-            </button>
-          </div>
-        </div>
-
-        <button onClick={shareReferral}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
-          style={{ background: '#8b5cf620', color: '#8b5cf6', border: '1px solid #8b5cf640' }}>
-          <Share2 className="w-4 h-4" /> Share with Friends
-        </button>
-      </div>
-
-      {/* Danger zone */}
+      {/* ── Account ── */}
       <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
         <h2 className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Account</h2>
-        <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>Manage your account settings</p>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/login"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-opacity hover:opacity-80"
-            style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
-            <Lock className="w-4 h-4" /> Change Password
-          </Link>
-        </div>
+        <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>Manage account security</p>
+        <Link href="/login"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-opacity hover:opacity-80"
+          style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
+          <Lock className="w-4 h-4" /> Change Password
+        </Link>
       </div>
+
     </div>
   )
 }

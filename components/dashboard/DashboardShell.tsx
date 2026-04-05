@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import {
   Sparkles, History, LogOut, Gem,
@@ -13,25 +14,25 @@ const NAV = [
   { icon: LayoutDashboard, label: 'Overview',       href: '/dashboard' },
   { icon: Sparkles,         label: 'New Scan',        href: '/#identifier' },
   { icon: History,          label: 'Scan History',    href: '/dashboard/history' },
-  { icon: Users,            label: 'Referrals',       href: '/dashboard/settings#referral' },
+  { icon: Users,            label: 'Referrals',       href: '/dashboard/referral' },
   { icon: TrendingUp,       label: 'Pricing & Plans', href: '/pricing' },
   { icon: Settings,         label: 'Settings',        href: '/dashboard/settings' },
 ]
 
 const BOTTOM_NAV = [
-  { icon: LayoutDashboard, label: 'Home',    href: '/dashboard' },
-  { icon: Sparkles,         label: 'New Scan', href: '/#identifier' },
-  { icon: History,          label: 'History',  href: '/dashboard/history' },
-  { icon: Settings,         label: 'Settings', href: '/dashboard/settings' },
-  { icon: TrendingUp,       label: 'Plans',    href: '/pricing' },
+  { icon: LayoutDashboard, label: 'Home',     href: '/dashboard' },
+  { icon: Sparkles,         label: 'New Scan',  href: '/#identifier' },
+  { icon: History,          label: 'History',   href: '/dashboard/history' },
+  { icon: Users,            label: 'Referrals', href: '/dashboard/referral' },
+  { icon: Settings,         label: 'Settings',  href: '/dashboard/settings' },
 ]
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
-  const [user, setUser]       = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser]         = useState<any>(null)
+  const [profile, setProfile]   = useState<any>(null)
+  const [loading, setLoading]   = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [dark, setDark] = useState(false)
+  const [dark, setDark]         = useState(false)
   const router   = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
@@ -76,16 +77,34 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const planColor  = plan === 'pro' ? '#f59e0b' : plan === 'explorer' ? '#8b5cf6' : plan === 'starter' ? '#3b82f6' : 'var(--accent)'
   const initials   = (profile?.full_name || user?.email || 'U').slice(0, 2).toUpperCase()
   const firstName  = profile?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'there'
+  const avatarUrl  = profile?.avatar_url
 
-  /* page title from pathname */
   const pageTitle = (() => {
-    if (pathname === '/dashboard') return 'Overview'
-    if (pathname?.includes('/history')) return 'Scan History'
-    if (pathname?.includes('/settings')) return 'Settings'
+    if (pathname === '/dashboard')             return 'Overview'
+    if (pathname?.includes('/history'))        return 'Scan History'
+    if (pathname?.includes('/referral'))       return 'Referrals'
+    if (pathname?.includes('/settings'))       return 'Settings'
     return 'Dashboard'
   })()
 
-  const greeting = (() => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening' })()
+  const greeting = (() => {
+    const h = new Date().getHours()
+    return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+  })()
+
+  /* Avatar component — reused in sidebar & mobile bar */
+  const Avatar = ({ size = 9 }: { size?: number }) => (
+    <Link href="/dashboard/settings" title="Go to Settings">
+      <div
+        className={`w-${size} h-${size} rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden hover:ring-2 transition-all`}
+        style={{ background: avatarUrl ? 'transparent' : 'var(--accent)', color: '#fff', width: size * 4, height: size * 4, ringColor: 'var(--accent)' }}
+      >
+        {avatarUrl
+          ? <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+          : initials}
+      </div>
+    </Link>
+  )
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -100,16 +119,17 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       {/* Nav */}
       <nav className="flex-1 px-3 space-y-1">
         {NAV.map(item => {
-          const active = item.href === '/dashboard'
-            ? pathname === '/dashboard'
-            : pathname?.startsWith(item.href.split('#')[0]) && item.href !== '/#identifier'
+          const active =
+            item.href === '/dashboard'
+              ? pathname === '/dashboard'
+              : pathname?.startsWith(item.href.split('#')[0]) && item.href !== '/#identifier'
           const Icon = item.icon
           return (
             <Link key={item.label} href={item.href}
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"
               style={{
-                color: active ? 'var(--accent)' : 'var(--text-muted)',
+                color:      active ? 'var(--accent)' : 'var(--text-muted)',
                 background: active ? 'var(--accent-bg)' : 'transparent',
               }}>
               <Icon className="w-5 h-5" style={{ color: active ? 'var(--accent)' : 'var(--text-faint)' }} />
@@ -136,10 +156,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           </div>
         </div>
 
-        {/* User row */}
+        {/* User row — avatar links to settings */}
         <div className="flex items-center gap-3 px-2">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-            style={{ background: 'var(--accent)', color: '#fff' }}>{initials}</div>
+          <Avatar size={9} />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{profile?.full_name || firstName}</p>
             <p className="text-xs truncate" style={{ color: 'var(--text-faint)' }}>{user?.email}</p>
@@ -203,8 +222,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               {pathname === '/dashboard' ? `${greeting}, ${firstName} 👋` : pageTitle}
             </h1>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              {pathname === '/dashboard' ? 'Here\'s your mushroom identification overview' :
-               pathname?.includes('/history') ? 'View and manage your past identifications' :
+              {pathname === '/dashboard'   ? "Here's your mushroom identification overview" :
+               pathname?.includes('/history')  ? 'View and manage your past identifications' :
+               pathname?.includes('/referral') ? 'Invite friends and earn free credits together' :
                pathname?.includes('/settings') ? 'Manage your account and preferences' : ''}
             </p>
           </div>
@@ -223,7 +243,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
         {/* Page Body */}
         <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-y-auto">
-          {/* Mobile greeting (overview only) */}
           {pathname === '/dashboard' && (
             <div className="md:hidden mb-5">
               <h1 className="font-playfair text-2xl font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>
@@ -240,9 +259,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around px-2 py-2"
         style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--border)' }}>
         {BOTTOM_NAV.map(item => {
-          const active = item.href === '/dashboard'
-            ? pathname === '/dashboard'
-            : pathname?.startsWith(item.href) && item.href !== '/#identifier'
+          const active =
+            item.href === '/dashboard'
+              ? pathname === '/dashboard'
+              : pathname?.startsWith(item.href) && item.href !== '/#identifier'
           const Icon = item.icon
           return (
             <Link key={item.label} href={item.href}

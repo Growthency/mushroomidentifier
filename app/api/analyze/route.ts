@@ -54,21 +54,22 @@ export async function POST(request: NextRequest) {
 
     if (!userId) {
       return NextResponse.json({ error: 'signup_required' }, { status: 401 })
-    } else {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('credits')
-        .eq('id', userId)
-        .maybeSingle()
-
-      if (!profile || profile.credits < 10) {
-        return NextResponse.json({ error: 'insufficient_credits' }, { status: 402 })
-      }
     }
 
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('credits')
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (!profile || profile.credits < 10) {
+      return NextResponse.json({ error: 'insufficient_credits' }, { status: 402 })
+    }
+
+    // Check cache first
     const { data: cachedResult } = await supabase
       .from('analyses')
-      .select('result')
+      .select('result, image_url')
       .eq('image_hash', imageHash)
       .maybeSingle()
 
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ result: cachedResult.result, cached: true })
     }
 
+    // Call AI
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 2000,
@@ -91,44 +93,58 @@ export async function POST(request: NextRequest) {
                 data: img,
               },
             })),
-            {
-              type: 'text' as const,
-              text: MUSHROOM_PROMPT,
-            },
+            { type: 'text' as const, text: MUSHROOM_PROMPT },
           ],
         },
       ],
     })
 
-    const rawText = message.content[0].type === 'text' ? message.content[0].text : ''
-    // Strip markdown code fences if model returns ```json ... ```
+    const rawText      = message.content[0].type === 'text' ? message.content[0].text : ''
     const responseText = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
-    const result = JSON.parse(responseText)
+    const result       = JSON.parse(responseText)
 
-    if (userId) {
-      const { data: currentProfile } = await supabase
-        .from('profiles')
-        .select('credits, total_identifications')
-        .eq('id', userId)
-        .maybeSingle()
-
-      if (currentProfile) {
-        await supabase
-          .from('profiles')
-          .update({
-            credits: currentProfile.credits - 10,
-            total_identifications: currentProfile.total_identifications + 1,
-          })
-          .eq('id', userId)
-      }
+    // Upload all images to Supabase Storage (mushroom-scans bucket)
+    const imageUrls: string[] = []
+    for (let i = 0; i < imagesBase64.length; i++) {
+      try {
+        const buffer   = Buffer.from(imagesBase64[i], 'base64')
+        const fileName = `${imageHash}_${i}.jpg`
+        const { error: upErr } = await supabase.storage
+          .from('mushroom-scans')
+          .upload(fileName, buffer, { contentType: 'image/jpeg', upsert: true })
+        if (!upErr) {
+          const { data: urlData } = supabase.storage.from('mushroom-scans').getPublicUrl(fileName)
+          imageUrls.push(urlData.publicUrl)
+        }
+      } catch {}
     }
 
+    // Deduct credits
+    const { data: currentProfile } = await supabase
+      .from('profiles')
+      .select('credits, total_identifications')
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (currentProfile) {
+      await supabase
+        .from('profiles')
+        .update({
+          credits: currentProfile.credits - 10,
+          total_identifications: currentProfile.total_identifications + 1,
+        })
+        .eq('id', userId)
+    }
+
+    // Save analysis with image URLs
     await supabase.from('analyses').insert({
-      user_id: userId || null,
-      ip_address: ip,
-      image_hash: imageHash,
+      user_id:      userId,
+      ip_address:   ip,
+      image_hash:   imageHash,
       result,
-      credits_used: userId ? 10 : 0,
+      credits_used: 10,
+      image_url:    imageUrls[0] || null,        // primary thumbnail
+      image_urls:   imageUrls.length > 0 ? imageUrls : null, // all images (JSON array)
     })
 
     return NextResponse.json({ result, cached: false })
