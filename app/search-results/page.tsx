@@ -1,27 +1,33 @@
 'use client'
 import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { AlertTriangle, ChevronLeft, Sparkles, History } from 'lucide-react'
 
 function SearchResultsContent() {
-  const [result, setResult] = useState<any>(null)
-  const [notFound, setNotFound] = useState(false)
-  const params = useSearchParams()
+  const [result, setResult]       = useState<any>(null)
+  const [images, setImages]       = useState<string[]>([])  // data URLs of uploaded photos
+  const [activeImg, setActiveImg] = useState(0)
+  const [notFound, setNotFound]   = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    // Try to load from localStorage (set by HomeIdentifier after scan)
-    const stored = localStorage.getItem('mushroom_last_result')
+    const stored     = localStorage.getItem('mushroom_last_result')
+    const storedImgs = localStorage.getItem('mushroom_scan_images')
+
     if (stored) {
+      try { setResult(JSON.parse(stored)) } catch {}
+    } else {
+      setNotFound(true)
+    }
+
+    if (storedImgs) {
       try {
-        const parsed = JSON.parse(stored)
-        setResult(parsed)
-        return
+        const imgs = JSON.parse(storedImgs)
+        if (Array.isArray(imgs) && imgs.length > 0) setImages(imgs)
       } catch {}
     }
-    setNotFound(true)
-  }, [params])
+  }, [])
 
   if (notFound) return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
@@ -47,6 +53,12 @@ function SearchResultsContent() {
   const riskColor = result.riskLevel === 'HIGH' ? '#ef4444' : result.riskLevel === 'MEDIUM' ? '#f59e0b' : '#22c55e'
   const riskBg    = result.riskLevel === 'HIGH' ? '#ef444420' : result.riskLevel === 'MEDIUM' ? '#f59e0b20' : '#22c55e20'
 
+  const handleNewScan = () => {
+    localStorage.removeItem('mushroom_last_result')
+    localStorage.removeItem('mushroom_scan_images')
+    router.push('/#identifier')
+  }
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       {/* Top nav bar */}
@@ -57,7 +69,7 @@ function SearchResultsContent() {
           style={{ color: 'var(--text-muted)' }}>
           <ChevronLeft className="w-5 h-5" /> Back
         </button>
-        <span className="font-playfair font-bold" style={{ color: 'var(--text-primary)' }}>🍄 Result</span>
+        <span className="font-playfair font-bold" style={{ color: 'var(--text-primary)' }}>🍄 Identification Result</span>
         <Link href="/dashboard/history"
           className="flex items-center gap-1.5 text-sm font-medium hover:opacity-80 transition-opacity"
           style={{ color: 'var(--accent)' }}>
@@ -66,7 +78,58 @@ function SearchResultsContent() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-        {/* Main card */}
+
+        {/* ── Uploaded images gallery ── */}
+        {images.length > 0 && (
+          <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            {/* Main image */}
+            <div className="relative" style={{ height: 260 }}>
+              <img
+                src={images[activeImg]}
+                alt={`Scan photo ${activeImg + 1}`}
+                className="w-full h-full object-cover"
+              />
+              {/* Risk badge overlay */}
+              <div className="absolute top-3 right-3">
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold"
+                  style={{ background: riskBg, color: riskColor, backdropFilter: 'blur(8px)' }}>
+                  {result.riskLevel} RISK
+                </span>
+              </div>
+              {/* Photo counter */}
+              {images.length > 1 && (
+                <div className="absolute bottom-3 right-3 px-2 py-1 rounded-full text-xs font-medium"
+                  style={{ background: 'rgba(0,0,0,0.55)', color: '#fff' }}>
+                  {activeImg + 1} / {images.length}
+                </div>
+              )}
+            </div>
+            {/* Thumbnails */}
+            {images.length > 1 && (
+              <div className="flex gap-2 p-3">
+                {images.map((src, i) => (
+                  <button key={i} onClick={() => setActiveImg(i)}
+                    className="rounded-xl overflow-hidden flex-shrink-0 transition-all"
+                    style={{
+                      width: 72, height: 56,
+                      outline: i === activeImg ? '2px solid var(--accent)' : '2px solid transparent',
+                      outlineOffset: 2,
+                      opacity: i === activeImg ? 1 : 0.55,
+                    }}>
+                    <img src={src} alt={`thumb ${i + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+                <div className="flex items-center pl-1">
+                  <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
+                    {images.length} photo{images.length > 1 ? 's' : ''} submitted
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Main result card */}
         <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
           <div className="flex items-start justify-between mb-4 flex-wrap gap-4">
             <div>
@@ -76,10 +139,12 @@ function SearchResultsContent() {
               <p className="italic text-sm" style={{ color: 'var(--text-muted)' }}>{result.scientificName}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full text-sm font-bold"
-                style={{ background: riskBg, color: riskColor }}>
-                {result.riskLevel} RISK
-              </span>
+              {images.length === 0 && (
+                <span className="px-3 py-1 rounded-full text-sm font-bold"
+                  style={{ background: riskBg, color: riskColor }}>
+                  {result.riskLevel} RISK
+                </span>
+              )}
               <span className="px-3 py-1 rounded-full text-sm font-semibold"
                 style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
                 {result.confidence} Confidence
@@ -117,11 +182,11 @@ function SearchResultsContent() {
           <h2 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Habitat & Distribution</h2>
           <div className="grid grid-cols-2 gap-4">
             {[
-              ['Habitat', result.habitat],
-              ['Distribution', result.distribution],
-              ['Seasonality', result.seasonality],
-              ['Color', result.color],
-              ['Smell', result.smell],
+              ['Habitat',        result.habitat],
+              ['Distribution',   result.distribution],
+              ['Seasonality',    result.seasonality],
+              ['Color',          result.color],
+              ['Smell',          result.smell],
               ['Economic Value', result.economicValue],
             ].filter(([, v]) => v).map(([label, val]) => (
               <div key={label as string}>
@@ -134,7 +199,8 @@ function SearchResultsContent() {
 
         {/* Critical Features */}
         {result.criticalFeatures?.length > 0 && (
-          <div className="p-5 rounded-2xl" style={{ background: 'rgba(251,146,60,0.08)', border: '2px solid rgba(251,146,60,0.3)' }}>
+          <div className="p-5 rounded-2xl"
+            style={{ background: 'rgba(251,146,60,0.08)', border: '2px solid rgba(251,146,60,0.3)' }}>
             <div className="flex items-center gap-2 mb-3">
               <AlertTriangle className="w-5 h-5" style={{ color: '#fb923c' }} />
               <h2 className="font-semibold" style={{ color: '#fb923c' }}>Critical Features</h2>
@@ -155,7 +221,8 @@ function SearchResultsContent() {
             <h2 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Similar Species</h2>
             <div className="space-y-3">
               {result.similarSpecies.map((sp: any, i: number) => (
-                <div key={i} className="p-4 rounded-xl" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <div key={i} className="p-4 rounded-xl"
+                  style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                   <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
                     <div>
                       <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{sp.name}</p>
@@ -177,7 +244,7 @@ function SearchResultsContent() {
         )}
 
         {/* Recommended Action */}
-        <div className={`p-5 rounded-2xl`}
+        <div className="p-5 rounded-2xl"
           style={{
             background: result.riskLevel === 'HIGH' ? '#ef444410' : result.riskLevel === 'MEDIUM' ? '#f59e0b10' : '#22c55e10',
             border: `2px solid ${result.riskLevel === 'HIGH' ? 'rgba(239,68,68,0.3)' : result.riskLevel === 'MEDIUM' ? 'rgba(251,146,60,0.3)' : 'rgba(34,197,94,0.3)'}`,
@@ -187,13 +254,12 @@ function SearchResultsContent() {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 flex-wrap pb-6">
-          <Link href="/#identifier"
+        <div className="flex gap-3 flex-wrap pb-8">
+          <button onClick={handleNewScan}
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-opacity hover:opacity-90"
-            style={{ background: 'var(--accent)', color: '#fff' }}
-            onClick={() => localStorage.removeItem('mushroom_last_result')}>
-            <Sparkles className="w-4 h-4" /> Scan Another
-          </Link>
+            style={{ background: 'var(--accent)', color: '#fff' }}>
+            <Sparkles className="w-4 h-4" /> Identify Another
+          </button>
           <Link href="/dashboard/history"
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-opacity hover:opacity-80"
             style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}>

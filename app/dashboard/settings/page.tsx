@@ -36,23 +36,21 @@ export default function SettingsPage() {
     load()
   }, [supabase])
 
-  /* ── Avatar upload ── */
+  /* ── Avatar upload (via server-side API to bypass bucket RLS) ── */
   const handleAvatarFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !user) return
     setAvatarUploading(true)
+    setError('')
     try {
-      const ext      = file.name.split('.').pop() || 'jpg'
-      const fileName = `${user.id}.${ext}`
-      const { error: upErr } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, { upsert: true, contentType: file.type })
-      if (upErr) throw upErr
-      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName)
-      const url = urlData.publicUrl + `?t=${Date.now()}` // cache bust
-      await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id)
-      setAvatarUrl(url)
-      setProfile((p: any) => ({ ...p, avatar_url: url }))
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('userId', user.id)
+      const res = await fetch('/api/upload-avatar', { method: 'POST', body: formData })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Upload failed')
+      setAvatarUrl(json.url)
+      setProfile((p: any) => ({ ...p, avatar_url: json.url }))
     } catch (err: any) {
       setError('Image upload failed: ' + err.message)
     } finally {
