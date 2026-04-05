@@ -109,7 +109,7 @@ export default function HomeIdentifier() {
         } else if (data.error === 'insufficient_credits') {
           setError('Insufficient credits. Please purchase more to continue.')
         } else {
-          setError(data.error || 'Analysis failed')
+          setError((data.error || 'Analysis failed') + (data.details ? ': ' + data.details : ''))
         }
         setAnalyzing(false)
         return
