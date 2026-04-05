@@ -362,11 +362,18 @@ export default function HomeIdentifier() {
                     { src: '/mushroom-underside-gills-spores-3.webp', label: 'Gills' },
                     { src: '/mushroom-base-root-volva-bottom-4.webp', label: 'Volva' },
                   ].map(({ src, label }) => (
-                    <div key={label} className="flex flex-col items-center gap-1">
-                      <div className="w-full rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
-                        <NextImage src={src} alt={`${label} view`} width={120} height={120} sizes="96px" loading="lazy" className="w-full h-full object-cover" />
+                    <div key={label} className="flex flex-col items-center gap-1 group">
+                      <div className="w-full rounded-lg overflow-hidden"
+                        style={{ aspectRatio: '1', background: 'var(--bg-secondary)' }}>
+                        <NextImage
+                          src={src}
+                          alt={`${label} view`}
+                          width={120} height={120} sizes="96px" loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        />
                       </div>
-                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{label}</span>
+                      <span className="text-xs transition-colors duration-200 group-hover:font-semibold"
+                        style={{ color: 'var(--text-muted)' }}>{label}</span>
                     </div>
                   ))}
                 </div>

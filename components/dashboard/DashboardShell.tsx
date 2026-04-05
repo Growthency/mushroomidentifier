@@ -48,6 +48,14 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       setLoading(false)
     }
     getUser()
+
+    // Listen for profile updates from settings page (avatar, name) — no reload needed
+    const onProfileUpdated = (e: Event) => {
+      const detail = (e as CustomEvent).detail
+      setProfile((prev: any) => prev ? { ...prev, ...detail } : detail)
+    }
+    window.addEventListener('profile-updated', onProfileUpdated)
+    return () => window.removeEventListener('profile-updated', onProfileUpdated)
   }, [supabase, router])
 
   const toggleTheme = () => {

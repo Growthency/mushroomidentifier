@@ -51,6 +51,8 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error(json.error || 'Upload failed')
       setAvatarUrl(json.url)
       setProfile((p: any) => ({ ...p, avatar_url: json.url }))
+      // Notify DashboardShell to refresh avatar immediately (no page reload needed)
+      window.dispatchEvent(new CustomEvent('profile-updated', { detail: { avatar_url: json.url } }))
     } catch (err: any) {
       setError('Image upload failed: ' + err.message)
     } finally {
@@ -70,6 +72,8 @@ export default function SettingsPage() {
         if (emailErr) throw emailErr
       }
       setProfile((p: any) => ({ ...p, full_name: fullName }))
+      // Notify DashboardShell to refresh name immediately
+      window.dispatchEvent(new CustomEvent('profile-updated', { detail: { full_name: fullName } }))
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch (err: any) {
