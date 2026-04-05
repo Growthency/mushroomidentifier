@@ -104,8 +104,8 @@ export default function HomeIdentifier() {
       const data = await response.json()
 
       if (!response.ok) {
-        if (data.error === 'free_limit_reached') {
-          setError('You\'ve used your 3 lifetime free scans. Create an account to unlock unlimited identifications.')
+        if (data.error === 'signup_required') {
+          setError('signup_required')
         } else if (data.error === 'insufficient_credits') {
           setError('Insufficient credits. Please purchase more to continue.')
         } else {
@@ -141,19 +141,45 @@ export default function HomeIdentifier() {
           Upload Photo For Accurate Mushrooms Identification
         </h2>
 
-        {!userId && !hasUsedFreeScan && (
-          <div className="flex items-center justify-center gap-2 mb-6 text-sm font-medium" style={{ color: 'var(--accent)' }}>
-            <div className="w-3 h-3 rounded-full pulse-dot" style={{ background: 'var(--accent)' }} />
-            Try your FREE scan now — No signup required
+        {/* Guest sign-up wall */}
+        {!userId && (
+          <div className="mb-8 p-6 rounded-2xl text-center" style={{ background: 'var(--bg-card)', border: '2px solid var(--accent)' }}>
+            <div className="text-4xl mb-3">🍄</div>
+            <h3 className="font-playfair text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+              Create a Free Account to Start Identifying
+            </h3>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>
+              Sign up for free and get <strong style={{ color: 'var(--accent)' }}>3 free identifications</strong> instantly. No credit card required.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/signup"
+                className="px-6 py-3 rounded-xl font-semibold glow-green transition-opacity hover:opacity-90"
+                style={{ background: 'var(--btn-primary)', color: '#fff' }}
+              >
+                Sign Up Free →
+              </Link>
+              <Link
+                href="/login"
+                className="px-6 py-3 rounded-xl font-semibold transition-opacity hover:opacity-80"
+                style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+              >
+                Already have an account? Sign In
+              </Link>
+            </div>
           </div>
         )}
 
-        {error && (
+        {error && error !== 'signup_required' && (
           <div className="mb-6 p-4 rounded-lg flex items-start gap-3" style={{ background: 'rgba(251, 146, 60, 0.1)', border: '1px solid rgba(251, 146, 60, 0.3)' }}>
             <AlertTriangle className="w-5 h-5 mt-0.5" style={{ color: '#fb923c' }} />
             <div>
-              <p className="font-medium" style={{ color: '#fb923c' }}>{error}</p>
-              {error.includes('Buy credits') && (
+              <p className="font-medium" style={{ color: '#fb923c' }}>
+                {error === 'insufficient_credits'
+                  ? 'Insufficient credits. Please purchase more to continue.'
+                  : error}
+              </p>
+              {error === 'insufficient_credits' && (
                 <Link href="/pricing" className="underline text-sm mt-1 inline-block" style={{ color: '#fb923c' }}>
                   View Pricing →
                 </Link>

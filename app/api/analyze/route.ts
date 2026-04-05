@@ -53,24 +53,7 @@ export async function POST(request: NextRequest) {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown'
 
     if (!userId) {
-      const { data: ipData } = await supabase
-        .from('ip_usage')
-        .select('count')
-        .eq('ip_address', ip)
-        .maybeSingle()
-
-      if (ipData && ipData.count >= 3) {
-        return NextResponse.json({ error: 'free_limit_reached' }, { status: 429 })
-      } else if (ipData) {
-        await supabase
-          .from('ip_usage')
-          .update({ count: ipData.count + 1 })
-          .eq('ip_address', ip)
-      } else {
-        await supabase
-          .from('ip_usage')
-          .insert({ ip_address: ip, count: 1 })
-      }
+      return NextResponse.json({ error: 'signup_required' }, { status: 401 })
     } else {
       const { data: profile } = await supabase
         .from('profiles')

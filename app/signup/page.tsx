@@ -41,7 +41,8 @@ export default function SignupPage() {
         id: data.user.id,
         email,
         full_name: fullName,
-        credits: 0,
+        credits: 30,
+        plan: 'free',
         total_identifications: 0,
       })
       router.push('/dashboard')
