@@ -80,7 +80,12 @@
       "Bash(done)",
       "Bash(perl -0777 -i -pe 's/<AuthorBlock \\\\/>/<AuthorBlock updatedAt=\"\"Apr 4, 2026\"\" \\\\/>/g' \"app/why-are-mushrooms-growing-in-my-yard/page.tsx\" \"app/how-to-get-rid-of-mushrooms-in-grass/page.tsx\" \"app/mushroom-identifier-book/page.tsx\")",
       "Bash(perl -0777 -i -pe 's/<AuthorBlock \\\\/>/<AuthorBlock updatedAt=\"\"Mar 31, 2026\"\" \\\\/>/g' \"app/mushroom-identification-quiz/page.tsx\" \"app/amanita-virosa-mushroom/page.tsx\" \"app/amanita-bisporigera-destroying-angel/page.tsx\" \"app/amanita-phalloides-death-cap/page.tsx\" \"app/death-cap-vs-destroying-angel/page.tsx\" \"app/agaricus-arvensis-horse-mushroom/page.tsx\" \"app/mushroom-parts-explained/page.tsx\")",
-      "Bash(find /e/mushroomidentifiers -name *supabase* -type f)"
+      "Bash(find /e/mushroomidentifiers -name *supabase* -type f)",
+      "Bash(perl -0777 -i -pe 's/className=\"\"max-w-\\\\[1380px\\\\] mx-auto px-5 md:px-8\"\"/className=\"\"max-w-7xl mx-auto px-6\"\"/g' app/amanita-phalloides-death-cap/page.tsx app/death-cap-vs-destroying-angel/page.tsx app/amanita-bisporigera-destroying-angel/page.tsx app/amanita-virosa-mushroom/page.tsx app/how-to-get-rid-of-mushrooms-in-grass/page.tsx app/why-are-mushrooms-growing-in-my-yard/page.tsx app/mushroom-identifier-book/page.tsx app/mushroom-parts-explained/page.tsx app/agaricus-arvensis-horse-mushroom/page.tsx)",
+      "Bash(cd /d E:mushroomidentifiers)",
+      "Bash(magick --version)",
+      "Bash(convert --version)",
+      "Bash(ffmpeg -version)"
     ]
   }
 }

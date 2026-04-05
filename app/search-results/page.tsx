@@ -1,0 +1,219 @@
+'use client'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { AlertTriangle, ChevronLeft, Sparkles, History } from 'lucide-react'
+
+function SearchResultsContent() {
+  const [result, setResult] = useState<any>(null)
+  const [notFound, setNotFound] = useState(false)
+  const params = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    // Try to load from localStorage (set by HomeIdentifier after scan)
+    const stored = localStorage.getItem('mushroom_last_result')
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored)
+        setResult(parsed)
+        return
+      } catch {}
+    }
+    setNotFound(true)
+  }, [params])
+
+  if (notFound) return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
+      style={{ background: 'var(--bg-primary)' }}>
+      <div className="text-6xl mb-4">🍄</div>
+      <h2 className="font-playfair text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>No result found</h2>
+      <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>Please upload a mushroom photo first</p>
+      <Link href="/#identifier"
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm"
+        style={{ background: 'var(--accent)', color: '#fff' }}>
+        <Sparkles className="w-4 h-4" /> Start New Scan
+      </Link>
+    </div>
+  )
+
+  if (!result) return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+      <div className="w-10 h-10 border-4 border-t-transparent rounded-full animate-spin"
+        style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
+    </div>
+  )
+
+  const riskColor = result.riskLevel === 'HIGH' ? '#ef4444' : result.riskLevel === 'MEDIUM' ? '#f59e0b' : '#22c55e'
+  const riskBg    = result.riskLevel === 'HIGH' ? '#ef444420' : result.riskLevel === 'MEDIUM' ? '#f59e0b20' : '#22c55e20'
+
+  return (
+    <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
+      {/* Top nav bar */}
+      <div className="sticky top-0 z-30 px-4 py-3 flex items-center justify-between"
+        style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border)' }}>
+        <button onClick={() => router.back()}
+          className="flex items-center gap-2 text-sm font-medium hover:opacity-70 transition-opacity"
+          style={{ color: 'var(--text-muted)' }}>
+          <ChevronLeft className="w-5 h-5" /> Back
+        </button>
+        <span className="font-playfair font-bold" style={{ color: 'var(--text-primary)' }}>🍄 Result</span>
+        <Link href="/dashboard/history"
+          className="flex items-center gap-1.5 text-sm font-medium hover:opacity-80 transition-opacity"
+          style={{ color: 'var(--accent)' }}>
+          <History className="w-4 h-4" /> History
+        </Link>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
+        {/* Main card */}
+        <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+          <div className="flex items-start justify-between mb-4 flex-wrap gap-4">
+            <div>
+              <h1 className="font-playfair text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                {result.commonName}
+              </h1>
+              <p className="italic text-sm" style={{ color: 'var(--text-muted)' }}>{result.scientificName}</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <span className="px-3 py-1 rounded-full text-sm font-bold"
+                style={{ background: riskBg, color: riskColor }}>
+                {result.riskLevel} RISK
+              </span>
+              <span className="px-3 py-1 rounded-full text-sm font-semibold"
+                style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+                {result.confidence} Confidence
+              </span>
+              {result.edibility && (
+                <span className="px-3 py-1 rounded-full text-sm font-medium"
+                  style={{ background: 'var(--bg-secondary)', color: 'var(--text-muted)' }}>
+                  {result.edibility}
+                </span>
+              )}
+            </div>
+          </div>
+          {result.funFact && (
+            <p className="text-sm p-4 rounded-xl" style={{ background: 'var(--accent-bg)', color: 'var(--text-primary)' }}>
+              💡 {result.funFact}
+            </p>
+          )}
+        </div>
+
+        {/* Key Features */}
+        {result.keyFeatures?.length > 0 && (
+          <div className="p-5 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <h2 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Key Features</h2>
+            <div className="flex flex-wrap gap-2">
+              {result.keyFeatures.map((f: string, i: number) => (
+                <span key={i} className="px-3 py-1.5 rounded-full text-sm"
+                  style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>{f}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Habitat & Distribution */}
+        <div className="p-5 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+          <h2 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Habitat & Distribution</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              ['Habitat', result.habitat],
+              ['Distribution', result.distribution],
+              ['Seasonality', result.seasonality],
+              ['Color', result.color],
+              ['Smell', result.smell],
+              ['Economic Value', result.economicValue],
+            ].filter(([, v]) => v).map(([label, val]) => (
+              <div key={label as string}>
+                <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-faint)' }}>{label}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{val}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Critical Features */}
+        {result.criticalFeatures?.length > 0 && (
+          <div className="p-5 rounded-2xl" style={{ background: 'rgba(251,146,60,0.08)', border: '2px solid rgba(251,146,60,0.3)' }}>
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="w-5 h-5" style={{ color: '#fb923c' }} />
+              <h2 className="font-semibold" style={{ color: '#fb923c' }}>Critical Features</h2>
+            </div>
+            <ul className="space-y-2">
+              {result.criticalFeatures.map((f: string, i: number) => (
+                <li key={i} className="text-sm flex items-start gap-2" style={{ color: 'var(--text-primary)' }}>
+                  <span style={{ color: '#fb923c' }}>•</span> {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Similar Species */}
+        {result.similarSpecies?.length > 0 && (
+          <div className="p-5 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <h2 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Similar Species</h2>
+            <div className="space-y-3">
+              {result.similarSpecies.map((sp: any, i: number) => (
+                <div key={i} className="p-4 rounded-xl" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                  <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
+                    <div>
+                      <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{sp.name}</p>
+                      <p className="text-xs italic" style={{ color: 'var(--text-muted)' }}>{sp.scientificName}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded text-xs font-bold flex-shrink-0 ${sp.toxicity === 'DEADLY' ? 'bg-red-500/20 text-red-500' : sp.toxicity === 'TOXIC' ? 'bg-amber-500/20 text-amber-500' : 'bg-green-500/20 text-green-500'}`}>
+                      {sp.toxicity}
+                    </span>
+                  </div>
+                  <ul className="space-y-1">
+                    {sp.differences?.map((d: string, j: number) => (
+                      <li key={j} className="text-xs" style={{ color: 'var(--text-muted)' }}>• {d}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recommended Action */}
+        <div className={`p-5 rounded-2xl`}
+          style={{
+            background: result.riskLevel === 'HIGH' ? '#ef444410' : result.riskLevel === 'MEDIUM' ? '#f59e0b10' : '#22c55e10',
+            border: `2px solid ${result.riskLevel === 'HIGH' ? 'rgba(239,68,68,0.3)' : result.riskLevel === 'MEDIUM' ? 'rgba(251,146,60,0.3)' : 'rgba(34,197,94,0.3)'}`,
+          }}>
+          <h2 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Recommended Action</h2>
+          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{result.recommendedAction}</p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 flex-wrap pb-6">
+          <Link href="/#identifier"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-opacity hover:opacity-90"
+            style={{ background: 'var(--accent)', color: '#fff' }}
+            onClick={() => localStorage.removeItem('mushroom_last_result')}>
+            <Sparkles className="w-4 h-4" /> Scan Another
+          </Link>
+          <Link href="/dashboard/history"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-opacity hover:opacity-80"
+            style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
+            <History className="w-4 h-4" /> View History
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function SearchResultsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+        <div className="w-10 h-10 border-4 border-t-transparent rounded-full animate-spin"
+          style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }} />
+      </div>
+    }>
+      <SearchResultsContent />
+    </Suspense>
+  )
+}
