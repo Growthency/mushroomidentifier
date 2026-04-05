@@ -25,6 +25,20 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 11,
+    title: 'Are There Any Deadly Leccinum Mushrooms?',
+    excerpt:
+      'There are no confirmed deadly species in the genus Leccinum. However, several Leccinum mushrooms have been linked to gastrointestinal poisoning, especially when undercooked or misidentified.',
+    category: 'Edibility Guide',
+    riskLevel: 'Low Risk',
+    region: 'Worldwide',
+    date: 'Apr 5, 2026',
+    readTime: '6 min',
+    slug: '/are-there-any-deadly-leccinum-mushrooms',
+    image: '/leccinum-scabrum-birch-bolete-identification.webp',
+    views: 1240,
+  },
+  {
     id: 10,
     title: 'Why Are Mushrooms Growing in My Yard? (Expert Investigation Guide)',
     excerpt:
