@@ -60,19 +60,28 @@ export default function SettingsPage() {
     }
   }
 
-  /* ── Profile save ── */
+  /* ── Profile save — goes through server route, never client-side ── */
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     setError('')
     try {
-      await supabase.from('profiles').update({ full_name: fullName }).eq('id', user.id)
+      // Update name via server-side route (plan/credits/etc. cannot be changed this way)
+      const res = await fetch('/api/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: fullName }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Save failed')
+
+      // Email change still goes through Supabase Auth (not profiles table)
       if (email !== user.email) {
         const { error: emailErr } = await supabase.auth.updateUser({ email })
         if (emailErr) throw emailErr
       }
+
       setProfile((p: any) => ({ ...p, full_name: fullName }))
-      // Notify DashboardShell to refresh name immediately
       window.dispatchEvent(new CustomEvent('profile-updated', { detail: { full_name: fullName } }))
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)

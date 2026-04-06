@@ -61,28 +61,18 @@ function SignupForm() {
     }
 
     if (data.user) {
-      const myCode = genCode(data.user.id)
-      // Insert profile with referral_code
-      await supabase.from('profiles').insert({
-        id: data.user.id,
-        email,
-        full_name: fullName,
-        credits: 30,
-        plan: 'free',
-        total_identifications: 0,
-        referral_code: myCode,
+      // Profile creation via server route — plan/credits hardcoded server-side
+      // Client cannot influence plan or credits values
+      await fetch('/api/create-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId:       data.user.id,
+          email,
+          fullName,
+          referralCode: refCode || null,   // referral applied server-side too
+        }),
       })
-
-      // Apply referral bonus if a ref code was provided
-      if (refCode) {
-        try {
-          await fetch('/api/referral/apply', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ referralCode: refCode, newUserId: data.user.id }),
-          })
-        } catch {}
-      }
 
       router.push('/dashboard')
     }

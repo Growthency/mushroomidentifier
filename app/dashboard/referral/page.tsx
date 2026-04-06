@@ -35,8 +35,13 @@ export default function ReferralPage() {
       const { data } = await supabase.from('profiles').select('referral_code').eq('id', user.id).maybeSingle()
       const code = data?.referral_code || genCode(user.id)
       setReferralCode(code)
+      // If no code yet, generate via server route (not client-side — protects other fields)
       if (!data?.referral_code) {
-        await supabase.from('profiles').update({ referral_code: code }).eq('id', user.id)
+        await fetch('/api/generate-referral-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        })
       }
       const { count } = await supabase
         .from('profiles')
