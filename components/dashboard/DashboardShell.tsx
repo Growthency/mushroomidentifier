@@ -15,9 +15,9 @@ const NAV = [
   { icon: Sparkles,         label: 'New Scan',        href: '/#identifier' },
   { icon: History,          label: 'Scan History',    href: '/dashboard/history' },
   { icon: Bookmark,         label: 'Saved Articles',  href: '/dashboard/saved-articles' },
-  { icon: Users,            label: 'Referrals',       href: '/dashboard/referral' },
   { icon: TrendingUp,       label: 'Pricing & Plans', href: '/pricing' },
   { icon: Settings,         label: 'Settings',        href: '/dashboard/settings' },
+  { icon: Users,            label: 'Referrals',       href: '/dashboard/referral' },
 ]
 
 const BOTTOM_NAV = [

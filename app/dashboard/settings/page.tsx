@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import {
   User, Mail, Lock, Save, Check, Camera,
-  Crown, Zap, Star, AlertCircle, Loader2
+  Crown, Zap, Star, AlertCircle, Loader2, Eye, EyeOff, KeyRound
 } from 'lucide-react'
 
 export default function SettingsPage() {
@@ -17,6 +17,18 @@ export default function SettingsPage() {
   const [error, setError]         = useState('')
   const [avatarUrl, setAvatarUrl] = useState('')
   const [avatarUploading, setAvatarUploading] = useState(false)
+
+  // Change password state
+  const [currentPw, setCurrentPw]   = useState('')
+  const [newPw, setNewPw]           = useState('')
+  const [confirmPw, setConfirmPw]   = useState('')
+  const [pwSaving, setPwSaving]     = useState(false)
+  const [pwSaved, setPwSaved]       = useState(false)
+  const [pwError, setPwError]       = useState('')
+  const [showCurr, setShowCurr]     = useState(false)
+  const [showNew, setShowNew]       = useState(false)
+  const [showConf, setShowConf]     = useState(false)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
@@ -89,6 +101,34 @@ export default function SettingsPage() {
       setError(err.message || 'Save failed')
     } finally {
       setSaving(false)
+    }
+  }
+
+  /* ── Password change ── */
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setPwError('')
+    if (!currentPw) { setPwError('Enter your current password'); return }
+    if (newPw.length < 6) { setPwError('New password must be at least 6 characters'); return }
+    if (newPw !== confirmPw) { setPwError('New passwords do not match'); return }
+    setPwSaving(true)
+    try {
+      // Re-authenticate with current password first
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPw,
+      })
+      if (signInErr) throw new Error('Current password is incorrect')
+      // Now update to new password
+      const { error: updateErr } = await supabase.auth.updateUser({ password: newPw })
+      if (updateErr) throw updateErr
+      setPwSaved(true)
+      setCurrentPw(''); setNewPw(''); setConfirmPw('')
+      setTimeout(() => setPwSaved(false), 3000)
+    } catch (err: any) {
+      setPwError(err.message || 'Password change failed')
+    } finally {
+      setPwSaving(false)
     }
   }
 
@@ -241,15 +281,100 @@ export default function SettingsPage() {
         )}
       </div>
 
-      {/* ── Account ── */}
+      {/* ── Change Password ── */}
       <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-        <h2 className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Account</h2>
-        <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>Manage account security</p>
-        <Link href="/login"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-opacity hover:opacity-80"
-          style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
-          <Lock className="w-4 h-4" /> Change Password
-        </Link>
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'var(--accent-bg)' }}>
+            <KeyRound className="w-5 h-5" style={{ color: 'var(--accent)' }} />
+          </div>
+          <div>
+            <h2 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Change Password</h2>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Update your account password</p>
+          </div>
+        </div>
+
+        {pwError && (
+          <div className="flex items-center gap-2 p-3 rounded-xl text-sm mb-4"
+            style={{ background: '#ef444418', color: '#ef4444', border: '1px solid #ef444430' }}>
+            <AlertCircle className="w-4 h-4 flex-shrink-0" /> {pwError}
+          </div>
+        )}
+
+        <form onSubmit={handlePasswordChange} className="space-y-4">
+          {/* Current Password */}
+          <div>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>Current Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-faint)' }} />
+              <input
+                type={showCurr ? 'text' : 'password'}
+                value={currentPw}
+                onChange={e => setCurrentPw(e.target.value)}
+                className="w-full pl-10 pr-10 py-3 rounded-xl text-sm"
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }}
+                placeholder="Enter current password"
+              />
+              <button type="button" onClick={() => setShowCurr(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100">
+                {showCurr ? <EyeOff className="w-4 h-4" style={{ color: 'var(--text-muted)' }} /> : <Eye className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />}
+              </button>
+            </div>
+          </div>
+
+          {/* New Password */}
+          <div>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>New Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-faint)' }} />
+              <input
+                type={showNew ? 'text' : 'password'}
+                value={newPw}
+                onChange={e => setNewPw(e.target.value)}
+                className="w-full pl-10 pr-10 py-3 rounded-xl text-sm"
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }}
+                placeholder="At least 6 characters"
+              />
+              <button type="button" onClick={() => setShowNew(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100">
+                {showNew ? <EyeOff className="w-4 h-4" style={{ color: 'var(--text-muted)' }} /> : <Eye className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Confirm New Password */}
+          <div>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>Confirm New Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-faint)' }} />
+              <input
+                type={showConf ? 'text' : 'password'}
+                value={confirmPw}
+                onChange={e => setConfirmPw(e.target.value)}
+                className="w-full pl-10 pr-10 py-3 rounded-xl text-sm"
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }}
+                placeholder="Repeat new password"
+              />
+              <button type="button" onClick={() => setShowConf(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100">
+                {showConf ? <EyeOff className="w-4 h-4" style={{ color: 'var(--text-muted)' }} /> : <Eye className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />}
+              </button>
+            </div>
+            {confirmPw && newPw && confirmPw !== newPw && (
+              <p className="text-xs mt-1" style={{ color: '#ef4444' }}>Passwords do not match</p>
+            )}
+          </div>
+
+          <button type="submit" disabled={pwSaving}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
+            style={{ background: pwSaved ? '#22c55e' : 'var(--accent)', color: '#fff' }}>
+            {pwSaved
+              ? <><Check className="w-4 h-4" /> Password Updated!</>
+              : pwSaving
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> Updating...</>
+              : <><KeyRound className="w-4 h-4" /> Update Password</>}
+          </button>
+        </form>
       </div>
 
     </div>

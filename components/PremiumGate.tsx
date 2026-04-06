@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Lock, Crown } from 'lucide-react'
 
 export default async function PremiumGate({ children }: { children: React.ReactNode }) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
