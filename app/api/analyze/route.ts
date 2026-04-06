@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("credits")
+      .select("credits, plan")
       .eq("id", userId)
       .maybeSingle();
 
@@ -93,6 +93,10 @@ export async function POST(request: NextRequest) {
         { status: 402 },
       );
     }
+
+    // Free plan → Haiku (fast & cheap), paid plans → Sonnet (accurate)
+    const isPaid = profile.plan && profile.plan !== "free";
+    const model = isPaid ? "claude-sonnet-4-5" : "claude-haiku-4-5-20251001";
 
     // Check cache first
     const { data: cachedResult } = await supabase
@@ -105,9 +109,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ result: cachedResult.result, cached: true });
     }
 
-    // Call Claude Sonnet for better accuracy on complex multi-image identification
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-5",
+      model,
       max_tokens: 2000,
       messages: [
         {
