@@ -4,8 +4,8 @@ import { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
   Search, ChevronDown, Globe, Shield, BookOpen,
-  ChevronLeft, ChevronRight, Eye, Heart, Lock, LockOpen,
-  Crown, Tag,
+  ChevronLeft, ChevronRight, Eye, Heart, Lock,
+  Crown, Tag, CheckCircle2, Sparkles,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -469,9 +469,17 @@ export default function BlogPageClient() {
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm w-full md:w-auto"
               style={{ ...dropdownBase, minWidth: '148px' }}
             >
-              <Tag className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
-              <span className="flex-1 text-left">
-                {selectedPricing === 'All' ? 'All Articles' : selectedPricing === 'Premium' ? '🔒 Premium' : '🔓 Free'}
+              {selectedPricing === 'Premium'
+                ? <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#f59e0b' }} />
+                : selectedPricing === 'Free'
+                ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: '#22c55e' }} />
+                : <Tag className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+              }
+              <span className="flex-1 text-left" style={{
+                color: selectedPricing === 'Premium' ? '#f59e0b' : selectedPricing === 'Free' ? '#22c55e' : 'var(--text-primary)',
+                fontWeight: selectedPricing !== 'All' ? 600 : 400,
+              }}>
+                {selectedPricing === 'All' ? 'All Articles' : selectedPricing}
               </span>
               <ChevronDown
                 className="w-4 h-4 flex-shrink-0 transition-transform"
@@ -479,21 +487,39 @@ export default function BlogPageClient() {
               />
             </button>
             {pricingOpen && (
-              <div className="absolute top-full mt-2 left-0 w-44 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden" style={dropdownBase}>
-                {pricingOptions.map(opt => (
-                  <button
-                    key={opt.value}
-                    onClick={() => { setSelectedPricing(opt.value); setPricingOpen(false) }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
-                    style={{ color: 'var(--text-primary)', background: selectedPricing === opt.value ? 'var(--accent-bg)' : 'transparent' }}
-                  >
-                    <span className="text-base w-5 text-center flex-shrink-0">
-                      {opt.value === 'Free' ? '🔓' : opt.value === 'Premium' ? '🔒' : '📚'}
-                    </span>
-                    <span className="flex-1">{opt.label}</span>
-                    {selectedPricing === opt.value && <span style={{ color: 'var(--accent)', fontSize: '12px' }}>✓</span>}
-                  </button>
-                ))}
+              <div className="absolute top-full mt-2 left-0 w-48 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden" style={dropdownBase}>
+                {/* All */}
+                <button
+                  onClick={() => { setSelectedPricing('All'); setPricingOpen(false) }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                  style={{ color: 'var(--text-primary)', background: selectedPricing === 'All' ? 'var(--accent-bg)' : 'transparent' }}
+                >
+                  <Tag className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+                  <span className="flex-1">All Articles</span>
+                  {selectedPricing === 'All' && <span style={{ color: 'var(--accent)', fontSize: '12px' }}>✓</span>}
+                </button>
+                {/* Free */}
+                <button
+                  onClick={() => { setSelectedPricing('Free'); setPricingOpen(false) }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                  style={{ background: selectedPricing === 'Free' ? '#22c55e18' : 'transparent' }}
+                >
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: '#22c55e' }} />
+                  <span className="flex-1 font-medium" style={{ color: '#22c55e' }}>Free</span>
+                  <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ background: '#22c55e22', color: '#22c55e' }}>FREE</span>
+                  {selectedPricing === 'Free' && <span style={{ color: '#22c55e', fontSize: '12px' }}>✓</span>}
+                </button>
+                {/* Premium */}
+                <button
+                  onClick={() => { setSelectedPricing('Premium'); setPricingOpen(false) }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                  style={{ background: selectedPricing === 'Premium' ? '#f59e0b18' : 'transparent' }}
+                >
+                  <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#f59e0b' }} />
+                  <span className="flex-1 font-medium" style={{ color: '#f59e0b' }}>Premium</span>
+                  <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ background: '#f59e0b22', color: '#f59e0b' }}>PRO</span>
+                  {selectedPricing === 'Premium' && <span style={{ color: '#f59e0b', fontSize: '12px' }}>✓</span>}
+                </button>
               </div>
             )}
           </div>
@@ -675,17 +701,24 @@ function ArticleCard({ article, isPaid, isLoggedIn, isFavorited, isLoadingFav, o
           )}
         </button>
 
-        {/* Lock / unlock icon */}
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
-          title={isPremium ? 'Premium content' : 'Free content'}
-        >
-          {isPremium
-            ? <Lock className="w-4 h-4" style={{ color: '#fbbf24' }} />
-            : <LockOpen className="w-4 h-4" style={{ color: '#4ade80' }} />
-          }
-        </div>
+        {/* Free / Premium badge */}
+        {isPremium ? (
+          <div
+            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold"
+            style={{ background: 'rgba(245,158,11,0.92)', color: '#fff', backdropFilter: 'blur(4px)', letterSpacing: '0.02em' }}
+            title="Premium content"
+          >
+            <Crown className="w-3 h-3" /> PRO
+          </div>
+        ) : (
+          <div
+            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold"
+            style={{ background: 'rgba(34,197,94,0.92)', color: '#fff', backdropFilter: 'blur(4px)', letterSpacing: '0.02em' }}
+            title="Free content"
+          >
+            <CheckCircle2 className="w-3 h-3" /> FREE
+          </div>
+        )}
       </div>
 
       {/* Body */}
@@ -698,12 +731,19 @@ function ArticleCard({ article, isPaid, isLoggedIn, isFavorited, isLoadingFav, o
           >
             {article.category}
           </span>
-          {isPremium && (
+          {isPremium ? (
             <span
-              className="px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1"
-              style={{ background: '#f59e0b22', color: '#f59e0b' }}
+              className="px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1"
+              style={{ background: '#f59e0b22', color: '#f59e0b', border: '1px solid #f59e0b44' }}
             >
               <Crown className="w-3 h-3" /> Premium
+            </span>
+          ) : (
+            <span
+              className="px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1"
+              style={{ background: '#22c55e18', color: '#22c55e', border: '1px solid #22c55e44' }}
+            >
+              <CheckCircle2 className="w-3 h-3" /> Free
             </span>
           )}
           <span className="text-xs flex items-center gap-1" style={{ color: 'var(--text-faint)' }}>
