@@ -7,13 +7,14 @@ import { createClient } from '@/lib/supabase/client'
 import {
   Sparkles, History, LogOut, Gem,
   TrendingUp, Crown, Zap, Star, LayoutDashboard,
-  Menu, X, Moon, Sun, ChevronRight, Settings, Users
+  Menu, X, Moon, Sun, ChevronRight, Settings, Users, Bookmark
 } from 'lucide-react'
 
 const NAV = [
   { icon: LayoutDashboard, label: 'Overview',       href: '/dashboard' },
   { icon: Sparkles,         label: 'New Scan',        href: '/#identifier' },
   { icon: History,          label: 'Scan History',    href: '/dashboard/history' },
+  { icon: Bookmark,         label: 'Saved Articles',  href: '/dashboard/saved-articles' },
   { icon: Users,            label: 'Referrals',       href: '/dashboard/referral' },
   { icon: TrendingUp,       label: 'Pricing & Plans', href: '/pricing' },
   { icon: Settings,         label: 'Settings',        href: '/dashboard/settings' },
@@ -23,7 +24,7 @@ const BOTTOM_NAV = [
   { icon: LayoutDashboard, label: 'Home',     href: '/dashboard' },
   { icon: Sparkles,         label: 'New Scan',  href: '/#identifier' },
   { icon: History,          label: 'History',   href: '/dashboard/history' },
-  { icon: Users,            label: 'Referrals', href: '/dashboard/referral' },
+  { icon: Bookmark,         label: 'Saved',     href: '/dashboard/saved-articles' },
   { icon: Settings,         label: 'Settings',  href: '/dashboard/settings' },
 ]
 

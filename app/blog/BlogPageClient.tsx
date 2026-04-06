@@ -1,11 +1,17 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { Search, ChevronDown, Globe, Shield, BookOpen, ChevronLeft, ChevronRight, Eye } from 'lucide-react'
+import {
+  Search, ChevronDown, Globe, Shield, BookOpen,
+  ChevronLeft, ChevronRight, Eye, Heart, Lock, LockOpen,
+  Crown, Tag,
+} from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
-type RiskLevel = 'All Levels' | 'Toxic' | 'High Risk' | 'Low Risk' | 'General'
-type Region = 'All Regions' | 'US North America' | 'EU Europe' | 'Worldwide' | 'Temperate' | 'Others'
+type RiskLevel    = 'All Levels' | 'Toxic' | 'High Risk' | 'Low Risk' | 'General'
+type Region       = 'All Regions' | 'US North America' | 'EU Europe' | 'Worldwide' | 'Temperate' | 'Others'
+type PricingFilter = 'All' | 'Free' | 'Premium'
 
 interface Article {
   id: number
@@ -19,6 +25,7 @@ interface Article {
   slug: string
   image?: string
   views: number
+  is_premium: boolean
 }
 
 const ARTICLES_PER_PAGE = 9
@@ -37,6 +44,7 @@ const articles: Article[] = [
     slug: '/are-there-any-deadly-leccinum-mushrooms',
     image: '/leccinum-scabrum-birch-bolete-identification.webp',
     views: 1240,
+    is_premium: false,
   },
   {
     id: 10,
@@ -51,6 +59,7 @@ const articles: Article[] = [
     slug: '/why-are-mushrooms-growing-in-my-yard',
     image: '/why-are-mushrooms-growing-in-my-yard-fairy-ring-lawn.webp',
     views: 2510,
+    is_premium: false,
   },
   {
     id: 9,
@@ -65,6 +74,7 @@ const articles: Article[] = [
     slug: '/how-to-get-rid-of-mushrooms-in-grass',
     image: '/how-to-get-rid-of-mushrooms-in-grass-fairy-ring-lawn.webp',
     views: 2740,
+    is_premium: false,
   },
   {
     id: 8,
@@ -79,6 +89,7 @@ const articles: Article[] = [
     slug: '/mushroom-identifier-book',
     image: '/mushroom-identifier-book-chanterelle-cantharellus-cibarius.webp',
     views: 2230,
+    is_premium: false,
   },
   {
     id: 7,
@@ -93,6 +104,7 @@ const articles: Article[] = [
     slug: '/mushroom-identification-quiz',
     image: '/mushroom-identification-quiz-various-species.webp',
     views: 1540,
+    is_premium: true,
   },
   {
     id: 6,
@@ -107,6 +119,7 @@ const articles: Article[] = [
     slug: '/amanita-virosa-mushroom',
     image: '/amanita-virosa-mushroom-destroying-angel.webp',
     views: 2980,
+    is_premium: false,
   },
   {
     id: 5,
@@ -121,6 +134,7 @@ const articles: Article[] = [
     slug: '/amanita-bisporigera-destroying-angel',
     image: '/amanita-bisporigera-destroying-angel-identification.webp',
     views: 3450,
+    is_premium: false,
   },
   {
     id: 4,
@@ -135,6 +149,7 @@ const articles: Article[] = [
     slug: '/amanita-phalloides-death-cap',
     image: '/amanita-phalloides-death-cap-identification.webp',
     views: 4821,
+    is_premium: false,
   },
   {
     id: 1,
@@ -149,6 +164,7 @@ const articles: Article[] = [
     slug: '/death-cap-vs-destroying-angel',
     image: '/death-cap-vs-destroying-angel-comparison.webp',
     views: 3920,
+    is_premium: false,
   },
   {
     id: 3,
@@ -163,6 +179,7 @@ const articles: Article[] = [
     slug: '/agaricus-arvensis-horse-mushroom',
     image: '/agaricus-arvensis-horse-mushroom.webp',
     views: 1860,
+    is_premium: false,
   },
   {
     id: 2,
@@ -177,6 +194,7 @@ const articles: Article[] = [
     slug: '/mushroom-parts-explained',
     image: '/parts-of-mushrooms.webp',
     views: 2180,
+    is_premium: true,
   },
 ]
 
@@ -196,39 +214,109 @@ const regionMeta: Record<string, { icon: string; label: string }> = {
 }
 
 const riskLevels: RiskLevel[] = ['All Levels', 'Toxic', 'High Risk', 'Low Risk', 'General']
-const regions: Region[] = ['All Regions', 'US North America', 'EU Europe', 'Worldwide', 'Temperate', 'Others']
+const regions: Region[]       = ['All Regions', 'US North America', 'EU Europe', 'Worldwide', 'Temperate', 'Others']
+const pricingOptions: { value: PricingFilter; label: string }[] = [
+  { value: 'All',     label: 'All Articles' },
+  { value: 'Free',    label: 'Free' },
+  { value: 'Premium', label: 'Premium' },
+]
 
 export default function BlogPageClient() {
-  const [searchQuery, setSearchQuery]       = useState('')
-  const [selectedRisk, setSelectedRisk]     = useState<RiskLevel>('All Levels')
-  const [selectedRegion, setSelectedRegion] = useState<Region>('All Regions')
-  const [riskOpen, setRiskOpen]             = useState(false)
-  const [regionOpen, setRegionOpen]         = useState(false)
-  const [currentPage, setCurrentPage]       = useState(1)
-  const [activeFilters, setActiveFilters]   = useState({
+  const [searchQuery, setSearchQuery]         = useState('')
+  const [selectedRisk, setSelectedRisk]       = useState<RiskLevel>('All Levels')
+  const [selectedRegion, setSelectedRegion]   = useState<Region>('All Regions')
+  const [selectedPricing, setSelectedPricing] = useState<PricingFilter>('All')
+  const [riskOpen, setRiskOpen]               = useState(false)
+  const [regionOpen, setRegionOpen]           = useState(false)
+  const [pricingOpen, setPricingOpen]         = useState(false)
+  const [currentPage, setCurrentPage]         = useState(1)
+  const [activeFilters, setActiveFilters]     = useState({
     query: '',
     risk: 'All Levels' as RiskLevel,
     region: 'All Regions' as Region,
+    pricing: 'All' as PricingFilter,
   })
+
+  // User state
+  const [isPaid, setIsPaid]           = useState(false)
+  const [isLoggedIn, setIsLoggedIn]   = useState(false)
+  const [favorites, setFavorites]     = useState<Set<string>>(new Set())
+  const [loadingFav, setLoadingFav]   = useState<string | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      setIsLoggedIn(true)
+
+      const [{ data: profile }, { slugs }] = await Promise.all([
+        supabase.from('profiles').select('plan').eq('id', user.id).maybeSingle(),
+        fetch('/api/favorites').then(r => r.json()).catch(() => ({ slugs: [] })),
+      ])
+
+      setIsPaid(!!(profile?.plan && profile.plan !== 'free'))
+      setFavorites(new Set(slugs ?? []))
+    }
+    init()
+  }, [])
+
+  const toggleFavorite = useCallback(async (article: Article) => {
+    if (!isLoggedIn) {
+      window.location.href = '/login'
+      return
+    }
+    setLoadingFav(article.slug)
+    try {
+      const res = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: article.slug,
+          title: article.title,
+          image: article.image ?? '',
+          excerpt: article.excerpt,
+          category: article.category,
+        }),
+      })
+      const data = await res.json()
+      setFavorites(prev => {
+        const next = new Set(prev)
+        data.saved ? next.add(article.slug) : next.delete(article.slug)
+        return next
+      })
+    } finally {
+      setLoadingFav(null)
+    }
+  }, [isLoggedIn])
 
   const closeDropdowns = () => {
     setRiskOpen(false)
     setRegionOpen(false)
+    setPricingOpen(false)
   }
 
   const handleSearch = () => {
-    setActiveFilters({ query: searchQuery, risk: selectedRisk, region: selectedRegion })
+    setActiveFilters({
+      query: searchQuery,
+      risk: selectedRisk,
+      region: selectedRegion,
+      pricing: selectedPricing,
+    })
     setCurrentPage(1)
     closeDropdowns()
   }
 
   const filtered = useMemo(() => {
     return articles.filter(a => {
-      const q = activeFilters.query.toLowerCase()
+      const q      = activeFilters.query.toLowerCase()
       const matchQ = !q || a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q)
       const matchR = activeFilters.risk === 'All Levels' || a.riskLevel === activeFilters.risk
       const matchReg = activeFilters.region === 'All Regions' || a.region === activeFilters.region
-      return matchQ && matchR && matchReg
+      const matchP = activeFilters.pricing === 'All' ||
+        (activeFilters.pricing === 'Free' && !a.is_premium) ||
+        (activeFilters.pricing === 'Premium' && a.is_premium)
+      return matchQ && matchR && matchReg && matchP
     })
   }, [activeFilters])
 
@@ -302,18 +390,14 @@ export default function BlogPageClient() {
           {/* Risk Level Dropdown */}
           <div className="relative">
             <button
-              onClick={() => { setRiskOpen(v => !v); setRegionOpen(false) }}
+              onClick={() => { setRiskOpen(v => !v); setRegionOpen(false); setPricingOpen(false) }}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm w-full md:w-auto"
               style={{ ...dropdownBase, minWidth: '162px' }}
             >
               <Shield className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
               <span
                 className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{
-                  background: selectedRisk === 'All Levels'
-                    ? 'var(--text-muted)'
-                    : riskLevelColors[selectedRisk],
-                }}
+                style={{ background: selectedRisk === 'All Levels' ? 'var(--text-muted)' : riskLevelColors[selectedRisk] }}
               />
               <span className="flex-1 text-left">{selectedRisk}</span>
               <ChevronDown
@@ -321,34 +405,18 @@ export default function BlogPageClient() {
                 style={{ color: 'var(--text-muted)', transform: riskOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
               />
             </button>
-
             {riskOpen && (
-              <div
-                className="absolute top-full mt-2 left-0 w-52 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden"
-                style={dropdownBase}
-              >
+              <div className="absolute top-full mt-2 left-0 w-52 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden" style={dropdownBase}>
                 {riskLevels.map(level => (
                   <button
                     key={level}
                     onClick={() => { setSelectedRisk(level); setRiskOpen(false) }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
-                    style={{
-                      color: 'var(--text-primary)',
-                      background: selectedRisk === level ? 'var(--accent-bg)' : 'transparent',
-                    }}
+                    style={{ color: 'var(--text-primary)', background: selectedRisk === level ? 'var(--accent-bg)' : 'transparent' }}
                   >
-                    <span
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      style={{
-                        background: level === 'All Levels'
-                          ? 'var(--text-muted)'
-                          : riskLevelColors[level],
-                      }}
-                    />
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: level === 'All Levels' ? 'var(--text-muted)' : riskLevelColors[level] }} />
                     <span className="flex-1">{level}</span>
-                    {selectedRisk === level && (
-                      <span style={{ color: 'var(--accent)', fontSize: '12px' }}>✓</span>
-                    )}
+                    {selectedRisk === level && <span style={{ color: 'var(--accent)', fontSize: '12px' }}>✓</span>}
                   </button>
                 ))}
               </div>
@@ -358,7 +426,7 @@ export default function BlogPageClient() {
           {/* Region Dropdown */}
           <div className="relative">
             <button
-              onClick={() => { setRegionOpen(v => !v); setRiskOpen(false) }}
+              onClick={() => { setRegionOpen(v => !v); setRiskOpen(false); setPricingOpen(false) }}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm w-full md:w-auto"
               style={{ ...dropdownBase, minWidth: '162px' }}
             >
@@ -369,29 +437,56 @@ export default function BlogPageClient() {
                 style={{ color: 'var(--text-muted)', transform: regionOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
               />
             </button>
-
             {regionOpen && (
-              <div
-                className="absolute top-full mt-2 left-0 w-56 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden"
-                style={dropdownBase}
-              >
+              <div className="absolute top-full mt-2 left-0 w-56 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden" style={dropdownBase}>
                 {regions.map(region => (
                   <button
                     key={region}
                     onClick={() => { setSelectedRegion(region); setRegionOpen(false) }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
-                    style={{
-                      color: 'var(--text-primary)',
-                      background: selectedRegion === region ? 'var(--accent-bg)' : 'transparent',
-                    }}
+                    style={{ color: 'var(--text-primary)', background: selectedRegion === region ? 'var(--accent-bg)' : 'transparent' }}
                   >
                     <span className="text-base w-5 text-center flex-shrink-0">
                       {region === 'All Regions' ? '🌐' : regionMeta[region].icon}
                     </span>
                     <span className="flex-1">{region}</span>
-                    {selectedRegion === region && (
-                      <span style={{ color: 'var(--accent)', fontSize: '12px' }}>✓</span>
-                    )}
+                    {selectedRegion === region && <span style={{ color: 'var(--accent)', fontSize: '12px' }}>✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Pricing Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => { setPricingOpen(v => !v); setRiskOpen(false); setRegionOpen(false) }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm w-full md:w-auto"
+              style={{ ...dropdownBase, minWidth: '148px' }}
+            >
+              <Tag className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-muted)' }} />
+              <span className="flex-1 text-left">
+                {selectedPricing === 'All' ? 'All Articles' : selectedPricing === 'Premium' ? '🔒 Premium' : '🔓 Free'}
+              </span>
+              <ChevronDown
+                className="w-4 h-4 flex-shrink-0 transition-transform"
+                style={{ color: 'var(--text-muted)', transform: pricingOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              />
+            </button>
+            {pricingOpen && (
+              <div className="absolute top-full mt-2 left-0 w-44 rounded-xl shadow-2xl z-50 py-1.5 overflow-hidden" style={dropdownBase}>
+                {pricingOptions.map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => { setSelectedPricing(opt.value); setPricingOpen(false) }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                    style={{ color: 'var(--text-primary)', background: selectedPricing === opt.value ? 'var(--accent-bg)' : 'transparent' }}
+                  >
+                    <span className="text-base w-5 text-center flex-shrink-0">
+                      {opt.value === 'Free' ? '🔓' : opt.value === 'Premium' ? '🔒' : '📚'}
+                    </span>
+                    <span className="flex-1">{opt.label}</span>
+                    {selectedPricing === opt.value && <span style={{ color: 'var(--accent)', fontSize: '12px' }}>✓</span>}
                   </button>
                 ))}
               </div>
@@ -426,11 +521,24 @@ export default function BlogPageClient() {
 
         {/* ── Article Grid or Empty State ───────────────────────── */}
         {pageItems.length === 0 ? (
-          <EmptyState hasFilters={activeFilters.query !== '' || activeFilters.risk !== 'All Levels' || activeFilters.region !== 'All Regions'} />
+          <EmptyState hasFilters={
+            activeFilters.query !== '' ||
+            activeFilters.risk !== 'All Levels' ||
+            activeFilters.region !== 'All Regions' ||
+            activeFilters.pricing !== 'All'
+          } />
         ) : (
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {pageItems.map(article => (
-              <ArticleCard key={article.id} article={article} />
+              <ArticleCard
+                key={article.id}
+                article={article}
+                isPaid={isPaid}
+                isLoggedIn={isLoggedIn}
+                isFavorited={favorites.has(article.slug)}
+                isLoadingFav={loadingFav === article.slug}
+                onToggleFavorite={toggleFavorite}
+              />
             ))}
           </div>
         )}
@@ -449,13 +557,7 @@ export default function BlogPageClient() {
 
             {getPageNumbers().map((page, i) =>
               page === '...' ? (
-                <span
-                  key={`ellipsis-${i}`}
-                  className="w-10 h-10 flex items-center justify-center text-sm"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  …
-                </span>
+                <span key={`ellipsis-${i}`} className="w-10 h-10 flex items-center justify-center text-sm" style={{ color: 'var(--text-muted)' }}>…</span>
               ) : (
                 <button
                   key={page}
@@ -489,23 +591,34 @@ export default function BlogPageClient() {
 }
 
 /* ── Article Card ─────────────────────────────────────────────── */
-function ArticleCard({ article }: { article: Article }) {
+interface ArticleCardProps {
+  article: Article
+  isPaid: boolean
+  isLoggedIn: boolean
+  isFavorited: boolean
+  isLoadingFav: boolean
+  onToggleFavorite: (article: Article) => void
+}
+
+function ArticleCard({ article, isPaid, isLoggedIn, isFavorited, isLoadingFav, onToggleFavorite }: ArticleCardProps) {
   const riskColor = riskLevelColors[article.riskLevel]
   const region    = regionMeta[article.region]
+  const isPremium = article.is_premium
+  const canRead   = !isPremium || isPaid
+  const href      = article.slug.startsWith('/') ? article.slug : `/blog/${article.slug}`
 
   return (
-    <Link
-      href={article.slug.startsWith('/') ? article.slug : `/blog/${article.slug}`}
-      className="rounded-2xl overflow-hidden card-lift card-glow cursor-pointer group flex flex-col"
-      style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', textDecoration: 'none' }}
+    <div
+      className="rounded-2xl overflow-hidden card-lift card-glow flex flex-col relative group"
+      style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
     >
       {/* Thumbnail */}
-      <div className="relative h-48 flex-shrink-0 overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
+      <Link href={href} className="block relative h-48 flex-shrink-0 overflow-hidden" style={{ background: 'var(--bg-secondary)' }}>
         {article.image ? (
           <img
             src={article.image}
             alt={article.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${isPremium && !isPaid ? 'blur-[6px] scale-110' : ''}`}
           />
         ) : (
           <div
@@ -515,17 +628,63 @@ function ArticleCard({ article }: { article: Article }) {
             <BookOpen className="w-12 h-12 opacity-20" style={{ color: 'var(--accent)' }} />
           </div>
         )}
-        {/* Risk badge overlay */}
+
+        {/* Risk badge */}
         <span
-          className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white"
+          className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white z-10"
           style={{ background: riskColor }}
         >
           {article.riskLevel}
         </span>
+
+        {/* Premium blur overlay */}
+        {isPremium && !isPaid && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-white"
+              style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
+            >
+              <Crown className="w-3.5 h-3.5 text-amber-400" />
+              Premium Only
+            </div>
+          </div>
+        )}
+      </Link>
+
+      {/* Action icons — top right of image */}
+      <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5">
+        {/* Favorite button */}
+        <button
+          onClick={e => { e.stopPropagation(); onToggleFavorite(article) }}
+          className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+          title={isLoggedIn ? (isFavorited ? 'Remove from saved' : 'Save article') : 'Log in to save'}
+        >
+          {isLoadingFav ? (
+            <div className="w-3.5 h-3.5 rounded-full border border-white border-t-transparent animate-spin" />
+          ) : (
+            <Heart
+              className="w-4 h-4 transition-colors"
+              style={{ color: isFavorited ? '#f87171' : '#ffffff', fill: isFavorited ? '#f87171' : 'transparent' }}
+            />
+          )}
+        </button>
+
+        {/* Lock / unlock icon */}
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+          title={isPremium ? 'Premium content' : 'Free content'}
+        >
+          {isPremium
+            ? <Lock className="w-4 h-4" style={{ color: '#fbbf24' }} />
+            : <LockOpen className="w-4 h-4" style={{ color: '#4ade80' }} />
+          }
+        </div>
       </div>
 
       {/* Body */}
-      <div className="p-5 flex flex-col flex-1">
+      <Link href={href} className="p-5 flex flex-col flex-1" style={{ textDecoration: 'none' }}>
         {/* Category + Region */}
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span
@@ -534,6 +693,14 @@ function ArticleCard({ article }: { article: Article }) {
           >
             {article.category}
           </span>
+          {isPremium && (
+            <span
+              className="px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1"
+              style={{ background: '#f59e0b22', color: '#f59e0b' }}
+            >
+              <Crown className="w-3 h-3" /> Premium
+            </span>
+          )}
           <span className="text-xs flex items-center gap-1" style={{ color: 'var(--text-faint)' }}>
             {region.icon} {region.label}
           </span>
@@ -545,10 +712,7 @@ function ArticleCard({ article }: { article: Article }) {
         >
           {article.title}
         </h2>
-        <p
-          className="text-sm mb-4 flex-1 line-clamp-2"
-          style={{ color: 'var(--text-muted)' }}
-        >
+        <p className="text-sm mb-4 flex-1 line-clamp-2" style={{ color: 'var(--text-muted)' }}>
           {article.excerpt}
         </p>
 
@@ -582,10 +746,14 @@ function ArticleCard({ article }: { article: Article }) {
 
         {/* Read More */}
         <div className="mt-3 flex items-center gap-1 text-sm font-semibold transition-opacity group-hover:opacity-80" style={{ color: 'var(--accent)' }}>
-          Read More <span className="transition-transform group-hover:translate-x-1 inline-block">→</span>
+          {isPremium && !isPaid ? (
+            <><Lock className="w-3.5 h-3.5" /> Unlock to Read</>
+          ) : (
+            <>Read More <span className="transition-transform group-hover:translate-x-1 inline-block">→</span></>
+          )}
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   )
 }
 

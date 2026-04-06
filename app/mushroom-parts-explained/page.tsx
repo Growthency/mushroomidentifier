@@ -6,6 +6,7 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import PremiumGate from '@/components/PremiumGate'
 
 export const metadata: Metadata = {
   title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
@@ -41,8 +42,9 @@ const schemaData = {
   ],
 }
 
-export default function MushroomPartsExplainedPage() {
+export default async function MushroomPartsExplainedPage() {
   return (
+    <PremiumGate>
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
@@ -603,6 +605,7 @@ export default function MushroomPartsExplainedPage() {
         </div>
       </div>
     </>
+    </PremiumGate>
   )
 }
 
