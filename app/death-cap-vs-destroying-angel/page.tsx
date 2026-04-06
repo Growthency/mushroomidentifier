@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import BlogComments from '@/components/blog/BlogComments'
 import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
@@ -772,6 +773,7 @@ export default function DeathCapVsDestroyingAngelPage() {
           </div>
 
           <RelatedPosts currentSlug="/death-cap-vs-destroying-angel" />
+          <BlogComments slug="/death-cap-vs-destroying-angel" />
 
             </article>
             <BlogSidebar />

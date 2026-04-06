@@ -4,6 +4,7 @@ import Link from 'next/link'
 import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import BlogComments from '@/components/blog/BlogComments'
 import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
@@ -523,6 +524,7 @@ export default function LeccinumPage() {
                 </div>
               </Section>
 
+          <BlogComments slug="/are-there-any-deadly-leccinum-mushrooms" />
             </article>
 
             <BlogSidebar />

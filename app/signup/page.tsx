@@ -95,7 +95,7 @@ function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen pt-20 flex items-center justify-center px-6" style={{ background: 'var(--bg-primary)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🍄</div>

@@ -5,6 +5,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import BlogComments from '@/components/blog/BlogComments'
 import ArticleViewCount from '@/components/blog/ArticleViewCount'
 
 export const metadata: Metadata = {
@@ -552,6 +553,7 @@ export default function AmanitaVirosaPage() {
           </Section>
 
           <RelatedPosts currentSlug="/amanita-virosa-mushroom" />
+          <BlogComments slug="/amanita-virosa-mushroom" />
 
             </article>
             <BlogSidebar />
