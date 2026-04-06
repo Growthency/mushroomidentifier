@@ -279,12 +279,17 @@ export default function BlogPageClient() {
           category: article.category,
         }),
       })
+      if (!res.ok) throw new Error('Failed to save')
       const data = await res.json()
-      setFavorites(prev => {
-        const next = new Set(prev)
-        data.saved ? next.add(article.slug) : next.delete(article.slug)
-        return next
-      })
+      if (typeof data.saved === 'boolean') {
+        setFavorites(prev => {
+          const next = new Set(prev)
+          data.saved ? next.add(article.slug) : next.delete(article.slug)
+          return next
+        })
+      }
+    } catch (err) {
+      console.error('Favorite toggle failed:', err)
     } finally {
       setLoadingFav(null)
     }
