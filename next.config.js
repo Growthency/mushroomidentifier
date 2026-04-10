@@ -8,9 +8,7 @@ const nextConfig = {
   },
   compress: true,
   swcMinify: true,
-  experimental: {
-    optimizeCss: true,
-  },
+  experimental: {},
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,
