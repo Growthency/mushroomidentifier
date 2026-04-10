@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   Plus, Pencil, Trash2, Eye, Loader2,
-  ChevronLeft, ChevronRight, Search, Globe, Lock,
+  ChevronLeft, ChevronRight, Search, Globe, Lock, ExternalLink,
 } from 'lucide-react'
 
 interface Post {
@@ -141,12 +141,13 @@ export default function AdminPagesPage() {
                   <td className="px-5 py-3.5">
                     <div className="flex items-center justify-end gap-1">
                       <a
-                        href={post.slug}
+                        href={`https://mushroomidentifiers.com${post.slug}`}
                         target="_blank"
-                        className="p-2 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors"
-                        title="View"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg text-slate-500 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors"
+                        title="View live page"
                       >
-                        <Eye className="w-4 h-4" />
+                        <ExternalLink className="w-4 h-4" />
                       </a>
                       <Link
                         href={`/admin/pages/edit?id=${post.id}`}

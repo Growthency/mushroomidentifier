@@ -4,7 +4,7 @@ import {
   Bold, Italic, Underline, Strikethrough, List, ListOrdered,
   Heading1, Heading2, Heading3, Link, Image as ImageIcon,
   AlignLeft, AlignCenter, AlignRight, Quote, Code, Minus,
-  Upload, Undo2, Redo2, Type, Pilcrow,
+  Upload, Undo2, Redo2, Type, Pilcrow, Table,
 } from 'lucide-react'
 
 interface RichEditorProps {
@@ -87,6 +87,25 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
   const insertHR = () => exec('insertHTML', '<hr style="border:none;border-top:1px solid #334155;margin:24px 0;" />')
 
+  const insertTable = () => {
+    const rows = prompt('Number of rows:', '3')
+    const cols = prompt('Number of columns:', '3')
+    if (!rows || !cols) return
+    const r = parseInt(rows, 10) || 3
+    const c = parseInt(cols, 10) || 3
+
+    let html = '<table style="width:100%;border-collapse:collapse;margin:16px 0;"><thead><tr>'
+    for (let j = 0; j < c; j++) html += '<th style="border:1px solid #334155;padding:8px 12px;text-align:left;background:#1e293b;color:#e2e8f0;font-weight:600;">Header</th>'
+    html += '</tr></thead><tbody>'
+    for (let i = 0; i < r - 1; i++) {
+      html += '<tr>'
+      for (let j = 0; j < c; j++) html += '<td style="border:1px solid #334155;padding:8px 12px;color:#cbd5e1;">Cell</td>'
+      html += '</tr>'
+    }
+    html += '</tbody></table><p><br></p>'
+    exec('insertHTML', html)
+  }
+
   const ToolBtn = ({ onClick, title, children, active }: {
     onClick: () => void; title: string; children: React.ReactNode; active?: boolean
   }) => (
@@ -145,6 +164,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         <ToolBtn onClick={() => exec('formatBlock', 'blockquote')} title="Quote"><Quote className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('formatBlock', 'pre')} title="Code Block"><Code className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertHR} title="Horizontal Line"><Minus className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={insertTable} title="Insert Table"><Table className="w-4 h-4" /></ToolBtn>
 
         <Divider />
 
@@ -193,6 +213,9 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
           [&_hr]:border-slate-700 [&_hr]:my-6
           [&_strong]:text-white [&_strong]:font-semibold
           [&_em]:italic
+          [&_table]:w-full [&_table]:border-collapse [&_table]:my-4
+          [&_th]:border [&_th]:border-slate-600 [&_th]:p-2 [&_th]:text-left [&_th]:bg-slate-800 [&_th]:text-slate-200 [&_th]:font-semibold
+          [&_td]:border [&_td]:border-slate-600 [&_td]:p-2 [&_td]:text-slate-300
         "
         style={{ background: '#0f172a' }}
       />
