@@ -1,11 +1,13 @@
 import { MetadataRoute } from 'next'
+import { createClient } from '@supabase/supabase-js'
 
 const BASE_URL = 'https://mushroomidentifiers.com'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastMod = new Date('2026-03-31')
 
-  return [
+  // ── Static pages ──
+  const staticPages: MetadataRoute.Sitemap = [
     // Core pages
     { url: `${BASE_URL}/`,          lastModified: lastMod, changeFrequency: 'weekly',  priority: 1.0 },
     { url: `${BASE_URL}/pricing`,   lastModified: lastMod, changeFrequency: 'monthly', priority: 0.9 },
@@ -21,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/privacy`,   lastModified: lastMod, changeFrequency: 'yearly',  priority: 0.4 },
     { url: `${BASE_URL}/terms`,     lastModified: lastMod, changeFrequency: 'yearly',  priority: 0.4 },
 
-    // Blog / Article pages
+    // Hardcoded blog / article pages
     { url: `${BASE_URL}/death-cap-vs-destroying-angel`,                lastModified: lastMod,                    changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/mushroom-parts-explained`,                     lastModified: lastMod,                    changeFrequency: 'monthly', priority: 0.8  },
     { url: `${BASE_URL}/agaricus-arvensis-horse-mushroom`,             lastModified: lastMod,                    changeFrequency: 'monthly', priority: 0.8  },
@@ -40,4 +42,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/omphalotus-illudens`,                          lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/agaricus-campestris`,                          lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
   ]
+
+  // ── Dynamic pages from Supabase (admin-created posts) ──
+  let dynamicPages: MetadataRoute.Sitemap = []
+
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
+    const { data: posts } = await supabase
+      .from('blog_posts')
+      .select('slug, updated_at, published_at, created_at')
+      .eq('status', 'published')
+
+    if (posts && posts.length > 0) {
+      // Collect slugs already in static pages to avoid duplicates
+      const staticSlugs = new Set(staticPages.map(p => p.url))
+
+      dynamicPages = posts
+        .filter(p => !staticSlugs.has(`${BASE_URL}${p.slug}`))
+        .map(p => ({
+          url: `${BASE_URL}${p.slug}`,
+          lastModified: new Date(p.updated_at || p.published_at || p.created_at),
+          changeFrequency: 'monthly' as const,
+          priority: 0.8,
+        }))
+    }
+  } catch (err) {
+    console.error('[sitemap] Failed to fetch dynamic posts:', err)
+  }
+
+  return [...staticPages, ...dynamicPages]
 }
