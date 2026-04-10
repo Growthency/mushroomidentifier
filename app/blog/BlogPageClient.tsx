@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 15,
+    title: 'Galerina marginata (Funeral Bell): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Galerina marginata, commonly known as the Funeral Bell, is a small brown poisonous mushroom that contains deadly amatoxins, the same toxins found in the Death Cap. Learn identification, habitat, toxicity, and safety tips.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '10 min',
+    slug: '/galerina-marginata',
+    image: '/galerina-marginata-funeral-bell-identification.webp',
+    views: 1680,
+    is_premium: false,
+  },
+  {
     id: 14,
     title: 'Amanita pantherina (Panther Cap): Identification, Features, Habitat & Safety Guide',
     excerpt:
