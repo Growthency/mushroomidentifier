@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Check, Sparkles, Loader2, ShieldCheck, RefreshCcw, Infinity } from 'lucide-react'
+import { Check, Sparkles, Loader2, ShieldCheck, RefreshCcw, Infinity as InfinityIcon } from 'lucide-react'
 import { initializePaddle, type Paddle } from '@paddle/paddle-js'
 import { createClient } from '@/lib/supabase/client'
 
@@ -273,7 +273,7 @@ export default function PricingPage() {
           {[
             { icon: <ShieldCheck className="w-5 h-5" />, text: '256-bit SSL encryption' },
             { icon: <RefreshCcw className="w-5 h-5" />, text: '14-day money-back guarantee' },
-            { icon: <Infinity className="w-5 h-5" />, text: 'Credits never expire' },
+            { icon: <InfinityIcon className="w-5 h-5" />, text: 'Credits never expire' },
           ].map((badge, i) => (
             <div key={i} className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
               <span style={{ color: 'var(--accent)' }}>{badge.icon}</span>
