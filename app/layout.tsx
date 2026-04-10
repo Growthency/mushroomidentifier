@@ -22,7 +22,7 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mushroomidentifiers.com'),
-  title: 'Mushroom Identifier - Fast Mushroom Identification App by Picture',
+  title: 'Mushroom Identifier - Free Mushroom Identification App by Picture',
   description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
   icons: {
     icon: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: 'Mushroom Identifier - Fast Mushroom Identification App by Picture',
+    title: 'Mushroom Identifier - Free Mushroom Identification App by Picture',
     description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
     url: 'https://mushroomidentifiers.com',
     siteName: 'Mushroom Identifier',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mushroom Identifier - Fast Mushroom Identification App by Picture',
+    title: 'Mushroom Identifier - Free Mushroom Identification App by Picture',
     description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
     images: ['https://mushroomidentifiers.com/mushroom-fungi-identifier.webp'],
   },

@@ -233,7 +233,7 @@ export default function HomeIdentifier() {
     <section id="identifier" className="py-12 sm:py-16 px-6" style={{ background: 'var(--bg-primary)' }}>
       <div className="max-w-4xl mx-auto">
         <h2 className="font-playfair text-4xl md:text-5xl font-bold text-center mb-6 gradient-text-animate">
-          Upload Photo For Accurate Mushrooms Identification
+          Upload Photo For Free Mushrooms Identification
         </h2>
 
         {/* Guest sign-up wall */}
