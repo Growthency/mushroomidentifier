@@ -272,19 +272,9 @@ export default function BlogSidebar() {
 
   return (
     <aside
-      className="hidden lg:flex flex-col w-[272px] xl:w-[292px] flex-shrink-0"
-      style={{
-        position: 'sticky',
-        top: '88px',
-        maxHeight: 'calc(100vh - 108px)',
-        alignSelf: 'flex-start',
-      }}
+      className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0"
+      style={{ position: 'sticky', top: '88px', alignSelf: 'flex-start' }}
     >
-      {/* ── SCROLLABLE SECTION: Search + Trending + Recent ── */}
-      <div
-        className="flex-1 overflow-y-auto"
-        style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--border) transparent' }}
-      >
         {/* Search */}
         <div className="relative mb-4">
           <Search
@@ -395,13 +385,10 @@ export default function BlogSidebar() {
             )}
           </ul>
         </div>
-      </div>
 
-      {/* ── FIXED BOTTOM SECTION: Premium Banner + Table of Contents ── */}
-      <div className="flex-shrink-0 mt-4">
-        <PremiumBanner />
-        <TableOfContents />
-      </div>
+      {/* ── Premium Banner + Table of Contents (below posts) ── */}
+      <PremiumBanner />
+      <TableOfContents />
     </aside>
   )
 }
