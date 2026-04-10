@@ -7,7 +7,7 @@ import {
   Crown, Check, ChevronRight, Sparkles,
   BookOpen, Zap, ShieldCheck, Star,
 } from 'lucide-react'
-import TableOfContents from '@/components/blog/TableOfContents'
+// TableOfContents removed from sidebar — now auto-injected inside article content
 
 const TRENDING_POSTS = [
   {
@@ -324,10 +324,7 @@ export default function BlogSidebar() {
   return (
     <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0">
 
-      {/* ── Premium Banner — normal flow ── */}
-      <PremiumBanner />
-
-        {/* Search */}
+        {/* 1. Search */}
         <div className="relative mb-4">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
@@ -349,7 +346,7 @@ export default function BlogSidebar() {
           />
         </div>
 
-        {/* Trending Posts */}
+        {/* 2. Popular / Trending Posts */}
         <div
           className="rounded-xl overflow-hidden mb-5"
           style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
@@ -360,7 +357,7 @@ export default function BlogSidebar() {
           >
             <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--accent)' }} />
             <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
-              Trending Posts
+              Popular Posts
             </span>
           </div>
           <ul>
@@ -396,7 +393,10 @@ export default function BlogSidebar() {
           </ul>
         </div>
 
-        {/* Recent Posts */}
+        {/* 3. Premium Banner */}
+        <PremiumBanner />
+
+        {/* 4. Recent Posts */}
         <div
           className="rounded-xl overflow-hidden mb-5"
           style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
@@ -438,8 +438,6 @@ export default function BlogSidebar() {
           </ul>
         </div>
 
-      {/* ── Table of Contents ── */}
-      <TableOfContents />
     </aside>
   )
 }

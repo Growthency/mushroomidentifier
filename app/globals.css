@@ -182,6 +182,26 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   color: var(--text-primary) !important;
   font-family: var(--font-playfair), 'Playfair Display', serif;
   font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.rich-content h2 {
+  font-size: 1.5rem !important;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+.rich-content h3 {
+  font-size: 1.25rem !important;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.rich-content h4 {
+  font-size: 1.125rem !important;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+@media (min-width: 768px) {
+  .rich-content h2 { font-size: 1.875rem !important; }
+  .rich-content h3 { font-size: 1.25rem !important; }
 }
 .rich-content p { color: var(--text-muted) !important; line-height: 1.8; }
 .rich-content ul, .rich-content ol { color: var(--text-muted) !important; padding-left: 1.4rem; }

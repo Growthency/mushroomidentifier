@@ -54,14 +54,17 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
   const insertImageUrl = () => {
     const url = prompt('Enter image URL:')
-    if (url) {
-      exec('insertHTML', `<img src="${url}" alt="Article image" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;" />`)
-    }
+    if (!url) return
+    const alt = prompt('Enter alt text (for SEO & accessibility):', '') || 'Article image'
+    exec('insertHTML', `<img src="${url}" alt="${alt.replace(/"/g, '&quot;')}" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;" />`)
   }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    // Ask for alt text before uploading
+    const alt = prompt('Enter alt text for this image (for SEO & accessibility):', file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')) || file.name
 
     setUploading(true)
     try {
@@ -76,7 +79,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Upload failed')
 
-      exec('insertHTML', `<img src="${data.url}" alt="${file.name}" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;" />`)
+      exec('insertHTML', `<img src="${data.url}" alt="${alt.replace(/"/g, '&quot;')}" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;" />`)
     } catch (err: any) {
       alert('Upload failed: ' + err.message)
     } finally {

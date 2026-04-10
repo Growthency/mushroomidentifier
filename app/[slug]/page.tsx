@@ -7,6 +7,7 @@ import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
 import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import ArticleContent from '@/components/blog/ArticleContent'
 
 /* ── Supabase admin client (service role reads all rows including drafts for preview) ── */
 function getSupabase() {
@@ -229,13 +230,13 @@ export default async function DynamicPostPage({
                 </figure>
               )}
 
-              {/* ── Main Content (HTML from rich editor) ── */}
-              <div
+              {/* ── Main Content (HTML from rich editor) + auto TOC ── */}
+              <ArticleContent
+                html={stripInlineStyles(post.content || '')}
                 className="rich-content prose prose-sm sm:prose-base max-w-none
                   prose-headings:font-playfair prose-headings:font-bold
-                  prose-h1:text-2xl prose-h1:md:text-3xl prose-h1:mt-8 prose-h1:mb-4
-                  prose-h2:text-xl prose-h2:md:text-2xl prose-h2:mt-10 prose-h2:mb-4
-                  prose-h3:text-lg prose-h3:md:text-xl prose-h3:mt-6 prose-h3:mb-3
+                  prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-10 prose-h2:mb-4
+                  prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
                   prose-p:leading-relaxed prose-p:mb-4
                   prose-li:leading-relaxed
                   prose-a:font-medium prose-a:no-underline hover:prose-a:underline
@@ -261,7 +262,6 @@ export default async function DynamicPostPage({
                   ['--tw-prose-pre-bg' as string]: 'var(--bg-secondary)',
                   ['--tw-prose-pre-code' as string]: 'var(--text-muted)',
                 }}
-                dangerouslySetInnerHTML={{ __html: stripInlineStyles(post.content || '') }}
               />
 
               <hr
