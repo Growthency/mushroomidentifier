@@ -1,6 +1,25 @@
 import { createClient } from '@/lib/supabase/server'
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { Lock, Crown, Check, ChevronRight, Sparkles } from 'lucide-react'
+
+// ── Bot detection (Google flexible sampling strategy) ─────────────────────────
+// Google, Bing, and other search engine crawlers get full content so pages
+// can be indexed properly. This is NOT cloaking — Google officially recommends
+// this approach for paywalled content (structured data + bot access).
+const BOT_PATTERNS = [
+  'googlebot', 'google-inspectiontool', 'storebot-google',
+  'bingbot', 'slurp',            // Yahoo
+  'duckduckbot', 'baiduspider', 'yandexbot',
+  'facebot', 'ia_archiver',     // Facebook, Alexa
+  'twitterbot', 'linkedinbot',
+  'applebot', 'petalbot',
+]
+
+function isSearchBot(userAgent: string): boolean {
+  const ua = userAgent.toLowerCase()
+  return BOT_PATTERNS.some(bot => ua.includes(bot))
+}
 
 interface PremiumGateProps {
   children: React.ReactNode
@@ -12,6 +31,13 @@ interface PremiumGateProps {
 }
 
 export default async function PremiumGate({ children, inline = false }: PremiumGateProps) {
+  // Let search engine bots see full content for indexing
+  const headersList = await headers()
+  const userAgent = headersList.get('user-agent') ?? ''
+  if (isSearchBot(userAgent)) {
+    return <>{children}</>
+  }
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
