@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { validateEmailQuality } from '@/lib/email-validation'
 
 // Service role — bypasses RLS, only used server-side
 const adminSupabase = createClient(
@@ -23,6 +24,12 @@ function genCode(uid: string) {
   return code
 }
 
+function getClientIp(request: NextRequest): string | null {
+  const forwarded = request.headers.get('x-forwarded-for')
+  if (forwarded) return forwarded.split(',')[0].trim()
+  return request.headers.get('x-real-ip') || null
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { userId, email, fullName, referralCode } = await request.json()
@@ -31,10 +38,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    // --- Email quality check ---
+    const emailCheck = validateEmailQuality(email)
+    if (!emailCheck.valid) {
+      return NextResponse.json({ error: emailCheck.reason }, { status: 400 })
+    }
+
     // Verify the user actually exists in Supabase Auth (prevent fake userId)
     const { data: authUser, error: authErr } = await adminSupabase.auth.admin.getUserById(userId)
     if (authErr || !authUser?.user) {
       return NextResponse.json({ error: 'Invalid user' }, { status: 401 })
+    }
+
+    // --- IP-based duplicate account check ---
+    const clientIp = getClientIp(request)
+    if (clientIp) {
+      const { data: existingByIp } = await adminSupabase
+        .from('profiles')
+        .select('id')
+        .eq('signup_ip', clientIp)
+        .limit(1)
+        .maybeSingle()
+
+      if (existingByIp) {
+        return NextResponse.json({
+          error: 'suspicious_ip',
+          message: 'An account already exists from your network. For security reasons, only one account is allowed per network. If you believe this is a mistake, please contact support.',
+        }, { status: 409 })
+      }
     }
 
     const myCode = genCode(userId)
@@ -48,6 +79,7 @@ export async function POST(request: NextRequest) {
       plan:                 'free',      // always free — never from client
       total_identifications: 0,
       referral_code:        myCode,
+      signup_ip:            clientIp,
     })
 
     if (insertErr) throw insertErr

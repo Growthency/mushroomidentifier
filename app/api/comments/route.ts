@@ -67,6 +67,32 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PATCH(request: NextRequest) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const { id, content } = await request.json()
+    if (!id || !content?.trim()) {
+      return NextResponse.json({ error: 'id and content required' }, { status: 400 })
+    }
+
+    const { data: updated, error } = await supabase
+      .from('blog_comments')
+      .update({ content: content.trim() })
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .select('id, content, created_at, user_id')
+      .single()
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ comment: updated })
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 })
+  }
+}
+
 export async function DELETE(request: NextRequest) {
   try {
     const supabase = await createClient()
