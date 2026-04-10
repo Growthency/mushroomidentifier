@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// Prevent Next.js from caching this route — always fetch fresh data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   // Use service role key for reliable server-side reads (bypasses RLS)
   const supabase = createClient(
