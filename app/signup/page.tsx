@@ -3,6 +3,7 @@ import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { validateEmailQuality } from '@/lib/email-validation'
 
 function genCode(uid: string) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -64,6 +65,14 @@ function SignupForm() {
       return
     }
 
+    // Client-side email quality check
+    const emailCheck = validateEmailQuality(email)
+    if (!emailCheck.valid) {
+      setError(emailCheck.reason || 'Invalid email address.')
+      setLoading(false)
+      return
+    }
+
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,
@@ -79,7 +88,7 @@ function SignupForm() {
     if (data.user) {
       // Profile creation via server route — plan/credits hardcoded server-side
       // Client cannot influence plan or credits values
-      await fetch('/api/create-profile', {
+      const profileRes = await fetch('/api/create-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -89,6 +98,19 @@ function SignupForm() {
           referralCode: refCode || null,   // referral applied server-side too
         }),
       })
+
+      if (!profileRes.ok) {
+        const profileData = await profileRes.json()
+        // Delete the auth user so they can retry after resolving the issue
+        await supabase.auth.signOut()
+        if (profileData.error === 'suspicious_ip') {
+          setError(profileData.message)
+        } else {
+          setError(profileData.error || 'Failed to create account. Please try again.')
+        }
+        setLoading(false)
+        return
+      }
 
       router.push('/dashboard')
     }
