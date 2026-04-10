@@ -6,6 +6,7 @@ import {
   LogOut, ChevronRight, Menu, X,
 } from 'lucide-react'
 import { useState } from 'react'
+import { AdminModalProvider } from '@/components/admin/AdminModal'
 
 const NAV = [
   { href: '/admin',           label: 'Dashboard',  icon: LayoutDashboard },
@@ -23,6 +24,7 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
   }
 
   return (
+    <AdminModalProvider>
     <div className="min-h-screen flex bg-[#080c14]">
 
       {/* ── Sidebar (desktop) ── */}
@@ -122,5 +124,6 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
         </div>
       </main>
     </div>
+    </AdminModalProvider>
   )
 }

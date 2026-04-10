@@ -7,6 +7,7 @@ import {
   Upload, Undo2, Redo2, Type, Pilcrow, Table,
   Trash2, X, GripVertical,
 } from 'lucide-react'
+import { useModal } from '@/components/admin/AdminModal'
 
 interface RichEditorProps {
   value: string
@@ -14,6 +15,7 @@ interface RichEditorProps {
 }
 
 export default function RichEditor({ value, onChange }: RichEditorProps) {
+  const { showPrompt, showAlert } = useModal()
   const editorRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -267,15 +269,16 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     }
   }
 
-  const insertLink = () => {
-    const url = prompt('Enter URL:')
-    if (url) exec('createLink', url)
+  const insertLink = async () => {
+    const url = await showPrompt('Insert Link', 'Enter the URL for the link:', { placeholder: 'https://example.com', icon: 'link' })
+    if (url) { editorRef.current?.focus(); restoreSelection(); exec('createLink', url) }
   }
 
-  const insertImageUrl = () => {
-    const url = prompt('Enter image URL:')
+  const insertImageUrl = async () => {
+    const url = await showPrompt('Insert Image URL', 'Enter the image URL:', { placeholder: 'https://example.com/image.webp', icon: 'image' })
     if (!url) return
-    const alt = prompt('Enter alt text (for SEO & accessibility):', '') || 'Article image'
+    const alt = await showPrompt('Alt Text', 'Enter alt text for SEO & accessibility:', { placeholder: 'Describe the image…', icon: 'text' }) || 'Article image'
+    editorRef.current?.focus(); restoreSelection()
     exec('insertHTML', `<img src="${url}" alt="${alt.replace(/"/g, '&quot;')}" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;" />`)
   }
 
@@ -283,7 +286,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const alt = prompt('Enter alt text for this image (for SEO & accessibility):', file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')) || file.name
+    const alt = await showPrompt('Image Alt Text', 'Enter alt text for this image (for SEO & accessibility):', { defaultValue: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '), icon: 'image' }) || file.name
 
     setUploading(true)
     try {
@@ -311,7 +314,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
       syncContent()
     } catch (err: any) {
-      alert('Upload failed: ' + err.message)
+      showAlert('Upload Failed', err.message, 'danger')
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -320,10 +323,11 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
   const insertHR = () => exec('insertHTML', '<hr style="border:none;border-top:1px solid #334155;margin:24px 0;" />')
 
-  const insertTable = () => {
-    const rows = prompt('Number of rows:', '3')
-    const cols = prompt('Number of columns:', '3')
-    if (!rows || !cols) return
+  const insertTable = async () => {
+    const rows = await showPrompt('Insert Table', 'Number of rows:', { defaultValue: '3', icon: 'table' })
+    if (!rows) return
+    const cols = await showPrompt('Insert Table', 'Number of columns:', { defaultValue: '3', icon: 'table' })
+    if (!cols) return
     const r = parseInt(rows, 10) || 3
     const c = parseInt(cols, 10) || 3
 
@@ -336,6 +340,8 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
       html += '</tr>'
     }
     html += '</tbody></table><p><br></p>'
+    editorRef.current?.focus()
+    restoreSelection()
     exec('insertHTML', html)
   }
 

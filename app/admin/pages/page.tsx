@@ -5,6 +5,7 @@ import {
   Plus, Pencil, Trash2, Eye, Loader2,
   ChevronLeft, ChevronRight, Search, Globe, Lock, ExternalLink,
 } from 'lucide-react'
+import { useModal } from '@/components/admin/AdminModal'
 
 interface Post {
   id: number; title: string; slug: string; status: string;
@@ -13,6 +14,7 @@ interface Post {
 }
 
 export default function AdminPagesPage() {
+  const { showConfirm } = useModal()
   const [posts, setPosts] = useState<Post[]>([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -37,7 +39,8 @@ export default function AdminPagesPage() {
   useEffect(() => { load(1) }, [])
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this post?')) return
+    const ok = await showConfirm('Delete Post', 'Are you sure you want to delete this post? This action cannot be undone.', 'danger')
+    if (!ok) return
     setDeleting(id)
     await fetch('/api/admin/posts', {
       method: 'DELETE',

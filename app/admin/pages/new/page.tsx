@@ -7,6 +7,7 @@ import {
   ArrowLeft, Save, Eye, Loader2, Image as ImageIcon,
   Upload, Globe, Lock, Search, AlertCircle, CheckCircle2,
 } from 'lucide-react'
+import { useModal } from '@/components/admin/AdminModal'
 
 const RichEditor = dynamic(() => import('@/components/admin/RichEditor'), { ssr: false })
 
@@ -30,6 +31,7 @@ function slugify(text: string) {
 }
 
 export default function NewPageEditor() {
+  const { showAlert } = useModal()
   const router = useRouter()
   const featuredFileRef = useRef<HTMLInputElement>(null)
   const [saving, setSaving] = useState(false)
@@ -81,7 +83,7 @@ export default function NewPageEditor() {
       if (!res.ok) throw new Error(data.error)
       setFeaturedImage(data.url)
     } catch (err: any) {
-      alert('Upload failed: ' + err.message)
+      showAlert('Upload Failed', err.message, 'warning')
     } finally {
       setUploadingFeatured(false)
       if (featuredFileRef.current) featuredFileRef.current.value = ''

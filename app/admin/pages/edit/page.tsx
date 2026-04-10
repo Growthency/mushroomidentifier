@@ -7,6 +7,7 @@ import {
   ArrowLeft, Save, Eye, Loader2, Image as ImageIcon,
   Upload, Globe, Lock, Trash2, Search, AlertCircle, CheckCircle2,
 } from 'lucide-react'
+import { useModal } from '@/components/admin/AdminModal'
 
 const RichEditor = dynamic(() => import('@/components/admin/RichEditor'), { ssr: false })
 
@@ -21,6 +22,7 @@ const META_TITLE_MAX = 60
 const META_DESC_MAX = 155
 
 export default function EditPageEditor() {
+  const { showConfirm, showAlert } = useModal()
   const router = useRouter()
   const searchParams = useSearchParams()
   const postId = searchParams.get('id')
@@ -93,7 +95,7 @@ export default function EditPageEditor() {
       if (!res.ok) throw new Error(data.error)
       setFeaturedImage(data.url)
     } catch (err: any) {
-      alert('Upload failed: ' + err.message)
+      showAlert('Upload Failed', err.message, 'warning')
     } finally {
       setUploadingFeatured(false)
       if (featuredFileRef.current) featuredFileRef.current.value = ''
@@ -143,7 +145,8 @@ export default function EditPageEditor() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this post? This cannot be undone.')) return
+    const ok = await showConfirm('Delete Post', 'Are you sure you want to delete this post? This action cannot be undone.', 'danger')
+    if (!ok) return
     setSaving(true)
     try {
       await fetch('/api/admin/posts', {
