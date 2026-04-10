@@ -1,5 +1,4 @@
--- Add paddle_transaction_id to transactions table
--- Rename stripe_payment_id → kept for backward compat, paddle field added alongside
+-- Add paddle_transaction_id, remove stripe columns (Paddle is now the payment processor)
 
 ALTER TABLE transactions
   ADD COLUMN IF NOT EXISTS paddle_transaction_id TEXT;

@@ -349,8 +349,8 @@ export default function Footer() {
               <PaymentBadge bg="#fff" color="#3c4043">
                 G Pay
               </PaymentBadge>
-              <PaymentBadge bg="#635BFF" color="#fff">
-                stripe
+              <PaymentBadge bg="#0070E0" color="#fff">
+                Paddle
               </PaymentBadge>
             </div>
 
