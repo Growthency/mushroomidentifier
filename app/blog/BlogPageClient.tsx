@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 17,
+    title: 'Agaricus campestris (Meadow Mushroom): Identification, Edibility & Lookalikes',
+    excerpt:
+      'Agaricus campestris, commonly known as the meadow mushroom or field mushroom, is a widely recognized edible wild mushroom found in grasslands, pastures, and open fields. Learn identification, edibility, and how to avoid toxic lookalikes.',
+    category: 'Edibility Guide',
+    riskLevel: 'Low Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '10 min',
+    slug: '/agaricus-campestris',
+    image: '/agaricus-campestris-meadow-mushroom-identification.webp',
+    views: 2130,
+    is_premium: false,
+  },
+  {
     id: 16,
     title: "Omphalotus illudens (Jack-o'-Lantern Mushroom): Identification & Safety Guide",
     excerpt:

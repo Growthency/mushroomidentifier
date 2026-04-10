@@ -25,7 +25,7 @@ const nextConfig = {
     return [
       {
         // Static blog & info pages — cache at CDN edge for 1 hour, stale-while-revalidate 1 day
-        source: '/(about|contact|pricing|blog|mushroom-parts-explained|mushroom-identifier-book|how-to-get-rid-of-mushrooms-in-grass|why-are-mushrooms-growing-in-my-yard|amanita-bisporigera-destroying-angel|amanita-phalloides-death-cap|amanita-virosa-mushroom|agaricus-arvensis-horse-mushroom|death-cap-vs-destroying-angel|amanita-ocreata|amanita-muscaria|amanita-pantherina|galerina-marginata|omphalotus-illudens)',
+        source: '/(about|contact|pricing|blog|mushroom-parts-explained|mushroom-identifier-book|how-to-get-rid-of-mushrooms-in-grass|why-are-mushrooms-growing-in-my-yard|amanita-bisporigera-destroying-angel|amanita-phalloides-death-cap|amanita-virosa-mushroom|agaricus-arvensis-horse-mushroom|death-cap-vs-destroying-angel|amanita-ocreata|amanita-muscaria|amanita-pantherina|galerina-marginata|omphalotus-illudens|agaricus-campestris)',
         headers: [
           { key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' },
         ],
