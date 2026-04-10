@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 12,
+    title: 'Amanita ocreata (Toxic Amanita Species): Identification Guide',
+    excerpt:
+      'Amanita ocreata, commonly known as the Western Destroying Angel, is a highly toxic Amanita species found in North America. It contains deadly amatoxins that can cause severe liver and kidney failure.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'US North America',
+    date: 'Apr 10, 2026',
+    readTime: '8 min',
+    slug: '/amanita-ocreata',
+    image: '/amanita-ocreata-western-destroying-angel-identification.webp',
+    views: 2341,
+    is_premium: false,
+  },
+  {
     id: 11,
     title: 'Are There Any Deadly Leccinum Mushrooms?',
     excerpt:
