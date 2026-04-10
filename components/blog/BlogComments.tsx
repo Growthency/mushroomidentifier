@@ -30,6 +30,7 @@ export default function BlogComments({ slug }: BlogCommentsProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
   const [savingEdit, setSavingEdit] = useState(false)
+  const [editError, setEditError] = useState('')
   const [error, setError] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -80,16 +81,19 @@ export default function BlogComments({ slug }: BlogCommentsProps) {
   const startEdit = (comment: Comment) => {
     setEditingId(comment.id)
     setEditContent(comment.content)
+    setEditError('')
   }
 
   const cancelEdit = () => {
     setEditingId(null)
     setEditContent('')
+    setEditError('')
   }
 
   const handleEdit = async (id: string) => {
     if (!editContent.trim()) return
     setSavingEdit(true)
+    setEditError('')
     try {
       const res = await fetch('/api/comments', {
         method: 'PATCH',
@@ -100,6 +104,9 @@ export default function BlogComments({ slug }: BlogCommentsProps) {
         setComments(prev => prev.map(c => c.id === id ? { ...c, content: editContent.trim() } : c))
         setEditingId(null)
         setEditContent('')
+      } else {
+        const data = await res.json()
+        setEditError(data.error || 'Failed to save. Please try again.')
       }
     } finally {
       setSavingEdit(false)
@@ -209,6 +216,7 @@ export default function BlogComments({ slug }: BlogCommentsProps) {
                       }}
                       autoFocus
                     />
+                    {editError && <p className="text-xs text-red-500">{editError}</p>}
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleEdit(comment.id)}
