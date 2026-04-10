@@ -51,45 +51,42 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
-        <p className="text-sm text-slate-400 mt-1">Real-time stats for Mushroom Identifiers</p>
+        <h1 className="text-[26px] font-bold text-white tracking-tight">Dashboard Overview</h1>
+        <p className="text-sm text-slate-500 mt-1">Real-time stats for Mushroom Identifiers</p>
       </div>
 
-      {/* ── Stat cards ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard icon={Users} label="Total Users" value={stats.users.total} color="blue" />
-        <StatCard icon={UserCheck} label="Paid Users" value={stats.users.paid} color="emerald" />
-        <StatCard icon={UserX} label="Free Users" value={stats.users.free} color="slate" />
-        <StatCard icon={Percent} label="Conversion Rate" value={`${stats.users.conversionRate}%`} color="amber" />
+      {/* ── User Stat cards ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <GlassCard icon={Users} label="Total Users" value={stats.users.total} color="blue" />
+        <GlassCard icon={UserCheck} label="Paid Users" value={stats.users.paid} color="emerald" />
+        <GlassCard icon={UserX} label="Free Users" value={stats.users.free} color="slate" />
+        <GlassCard icon={Percent} label="Conversion Rate" value={`${stats.users.conversionRate}%`} color="amber" />
       </div>
 
       {/* ── Revenue cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard icon={DollarSign} label="Lifetime Earnings" value={fmt(stats.revenue.lifetime)} color="emerald" />
-        <StatCard icon={CreditCard} label="This Month" value={fmt(stats.revenue.thisMonth)} color="blue" />
-        <StatCard icon={CreditCard} label="Last 30 Days" value={fmt(stats.revenue.last30Days)} color="purple" />
-        <div
-          className="p-5 rounded-xl border"
-          style={{ background: '#1e293b', borderColor: '#334155' }}
-        >
+        <GlassCard icon={DollarSign} label="Lifetime Earnings" value={fmt(stats.revenue.lifetime)} color="emerald" />
+        <GlassCard icon={CreditCard} label="This Month" value={fmt(stats.revenue.thisMonth)} color="blue" />
+        <GlassCard icon={CreditCard} label="Last 30 Days" value={fmt(stats.revenue.last30Days)} color="purple" />
+        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-400">vs Previous 30 Days</span>
-            <div className={`p-1.5 rounded-lg ${changeUp ? 'bg-emerald-500/15' : 'bg-red-500/15'}`}>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">vs Previous 30d</span>
+            <div className={`p-2 rounded-xl ${changeUp ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
               {changeUp
                 ? <TrendingUp className="w-4 h-4 text-emerald-400" />
                 : <TrendingDown className="w-4 h-4 text-red-400" />
               }
             </div>
           </div>
-          <p className={`text-2xl font-bold ${changeUp ? 'text-emerald-400' : 'text-red-400'}`}>
+          <p className={`text-[28px] font-bold tracking-tight ${changeUp ? 'text-emerald-400' : 'text-red-400'}`}>
             {changeUp ? '+' : ''}{stats.revenue.earningsChangePercent}%
           </p>
-          <div className="flex items-center gap-1 mt-1">
+          <div className="flex items-center gap-1 mt-1.5">
             {changeUp
-              ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
-              : <ArrowDownRight className="w-3.5 h-3.5 text-red-400" />
+              ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500/60" />
+              : <ArrowDownRight className="w-3.5 h-3.5 text-red-500/60" />
             }
-            <span className="text-xs text-slate-500">month over month</span>
+            <span className="text-[11px] text-slate-500">month over month</span>
           </div>
         </div>
       </div>
@@ -97,52 +94,52 @@ export default function AdminDashboard() {
       {/* ── Recent tables ── */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Users */}
-        <div className="rounded-xl border overflow-hidden" style={{ background: '#1e293b', borderColor: '#334155' }}>
-          <div className="px-5 py-4 border-b" style={{ borderColor: '#334155' }}>
-            <h2 className="font-semibold text-white text-sm">Recent Users</h2>
+        <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
+          <div className="px-5 py-4 border-b border-white/[0.06]">
+            <h2 className="font-semibold text-white text-[13px] tracking-tight">Recent Users</h2>
           </div>
-          <div className="divide-y" style={{ borderColor: '#334155' }}>
+          <div className="divide-y divide-white/[0.04]">
             {stats.recentUsers.map(u => (
-              <div key={u.id} className="px-5 py-3 flex items-center justify-between">
+              <div key={u.id} className="px-5 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
                 <div>
-                  <p className="text-sm text-white">{u.full_name || u.email}</p>
-                  <p className="text-xs text-slate-500">{u.email}</p>
+                  <p className="text-[13px] text-white font-medium">{u.full_name || u.email}</p>
+                  <p className="text-[11px] text-slate-500">{u.email}</p>
                 </div>
                 <div className="text-right">
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  <span className={`text-[11px] px-2 py-0.5 rounded-lg font-semibold ${
                     u.plan && u.plan !== 'free'
-                      ? 'bg-emerald-500/15 text-emerald-400'
-                      : 'bg-slate-500/15 text-slate-400'
+                      ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
+                      : 'bg-white/[0.04] text-slate-500 ring-1 ring-white/[0.06]'
                   }`}>
                     {u.plan || 'free'}
                   </span>
-                  <p className="text-xs text-slate-500 mt-1">{timeAgo(u.created_at)}</p>
+                  <p className="text-[10px] text-slate-600 mt-1">{timeAgo(u.created_at)}</p>
                 </div>
               </div>
             ))}
             {stats.recentUsers.length === 0 && (
-              <p className="px-5 py-6 text-sm text-slate-500 text-center">No users yet</p>
+              <p className="px-5 py-8 text-[13px] text-slate-600 text-center">No users yet</p>
             )}
           </div>
         </div>
 
         {/* Recent Transactions */}
-        <div className="rounded-xl border overflow-hidden" style={{ background: '#1e293b', borderColor: '#334155' }}>
-          <div className="px-5 py-4 border-b" style={{ borderColor: '#334155' }}>
-            <h2 className="font-semibold text-white text-sm">Recent Transactions</h2>
+        <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
+          <div className="px-5 py-4 border-b border-white/[0.06]">
+            <h2 className="font-semibold text-white text-[13px] tracking-tight">Recent Transactions</h2>
           </div>
-          <div className="divide-y" style={{ borderColor: '#334155' }}>
+          <div className="divide-y divide-white/[0.04]">
             {stats.recentTransactions.map(tx => (
-              <div key={tx.id} className="px-5 py-3 flex items-center justify-between">
+              <div key={tx.id} className="px-5 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
                 <div>
-                  <p className="text-sm text-white capitalize">{tx.pack_name} Pack</p>
-                  <p className="text-xs text-slate-500">{timeAgo(tx.created_at)}</p>
+                  <p className="text-[13px] text-white font-medium capitalize">{tx.pack_name} Pack</p>
+                  <p className="text-[11px] text-slate-500">{timeAgo(tx.created_at)}</p>
                 </div>
-                <span className="text-sm font-semibold text-emerald-400">{fmt(tx.amount_paid)}</span>
+                <span className="text-[14px] font-bold text-emerald-400">{fmt(tx.amount_paid)}</span>
               </div>
             ))}
             {stats.recentTransactions.length === 0 && (
-              <p className="px-5 py-6 text-sm text-slate-500 text-center">No transactions yet</p>
+              <p className="px-5 py-8 text-[13px] text-slate-600 text-center">No transactions yet</p>
             )}
           </div>
         </div>
@@ -151,27 +148,27 @@ export default function AdminDashboard() {
   )
 }
 
-// ── Stat card component ──
-function StatCard({ icon: Icon, label, value, color }: {
+// ── Glass Card component ──
+function GlassCard({ icon: Icon, label, value, color }: {
   icon: any; label: string; value: string | number; color: string
 }) {
-  const colorMap: Record<string, string> = {
-    blue: 'bg-blue-500/15 text-blue-400',
-    emerald: 'bg-emerald-500/15 text-emerald-400',
-    amber: 'bg-amber-500/15 text-amber-400',
-    purple: 'bg-purple-500/15 text-purple-400',
-    slate: 'bg-slate-500/15 text-slate-400',
-    red: 'bg-red-500/15 text-red-400',
+  const iconBg: Record<string, string> = {
+    blue:    'bg-blue-500/10 text-blue-400',
+    emerald: 'bg-emerald-500/10 text-emerald-400',
+    amber:   'bg-amber-500/10 text-amber-400',
+    purple:  'bg-purple-500/10 text-purple-400',
+    slate:   'bg-white/[0.05] text-slate-400',
+    red:     'bg-red-500/10 text-red-400',
   }
   return (
-    <div className="p-5 rounded-xl border" style={{ background: '#1e293b', borderColor: '#334155' }}>
+    <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-medium text-slate-400">{label}</span>
-        <div className={`p-1.5 rounded-lg ${colorMap[color] ?? colorMap.blue}`}>
+        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">{label}</span>
+        <div className={`p-2 rounded-xl ${iconBg[color] ?? iconBg.blue}`}>
           <Icon className="w-4 h-4" />
         </div>
       </div>
-      <p className="text-2xl font-bold text-white">{value}</p>
+      <p className="text-[28px] font-bold text-white tracking-tight">{value}</p>
     </div>
   )
 }

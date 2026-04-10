@@ -9,10 +9,6 @@ const nextConfig = {
   compress: true,
   swcMinify: true,
   experimental: {
-    // Tell Next.js SWC compiler to respect browserslist for modern-only output
-    browsersListForSwc: true,
-    legacyBrowsers: false,
-    // Inline critical CSS + defer unused rules → fixes "Reduce unused CSS" audit
     optimizeCss: true,
   },
   images: {
