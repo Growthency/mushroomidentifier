@@ -5,6 +5,7 @@ import {
   Heading1, Heading2, Heading3, Link, Image as ImageIcon,
   AlignLeft, AlignCenter, AlignRight, Quote, Code, Minus,
   Upload, Undo2, Redo2, Type, Pilcrow, Table,
+  Trash2, X, GripVertical,
 } from 'lucide-react'
 
 interface RichEditorProps {
@@ -20,6 +21,13 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   const initializedRef = useRef(false)
   const savedSelectionRef = useRef<Range | null>(null)
   const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set())
+
+  // Image selection state
+  const [selectedImg, setSelectedImg] = useState<HTMLImageElement | null>(null)
+  const [imgAlt, setImgAlt] = useState('')
+  const [imgToolbarPos, setImgToolbarPos] = useState<{ top: number; left: number; width: number } | null>(null)
+  const [resizing, setResizing] = useState(false)
+  const resizeStartRef = useRef<{ x: number; width: number } | null>(null)
 
   // Keep callback ref fresh without re-renders
   useEffect(() => { onChangeRef.current = onChange }, [onChange])
@@ -85,7 +93,6 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     if (document.queryCommandState('insertUnorderedList')) formats.add('insertUnorderedList')
     if (document.queryCommandState('insertOrderedList')) formats.add('insertOrderedList')
 
-    // Detect current block format (h1, h2, h3, p, blockquote, pre)
     const block = document.queryCommandValue('formatBlock')
     if (block) formats.add(block.toLowerCase())
 
@@ -112,7 +119,135 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     detectFormats()
   }, [detectFormats])
 
-  // Toggle heading: if already that heading, switch to paragraph
+  // ── Image selection & management ──
+
+  const selectImage = useCallback((img: HTMLImageElement) => {
+    setSelectedImg(img)
+    setImgAlt(img.getAttribute('alt') || '')
+
+    // Position toolbar relative to the editor container
+    const editorRect = editorRef.current?.getBoundingClientRect()
+    const imgRect = img.getBoundingClientRect()
+    if (editorRect) {
+      setImgToolbarPos({
+        top: imgRect.top - editorRect.top + editorRef.current!.scrollTop,
+        left: imgRect.left - editorRect.left,
+        width: imgRect.width,
+      })
+    }
+
+    // Visual selection
+    img.style.outline = '3px solid #34d399'
+    img.style.outlineOffset = '2px'
+    img.style.cursor = 'move'
+  }, [])
+
+  const deselectImage = useCallback(() => {
+    if (selectedImg) {
+      selectedImg.style.outline = ''
+      selectedImg.style.outlineOffset = ''
+      selectedImg.style.cursor = ''
+    }
+    setSelectedImg(null)
+    setImgToolbarPos(null)
+  }, [selectedImg])
+
+  const deleteSelectedImage = useCallback(() => {
+    if (!selectedImg) return
+    selectedImg.remove()
+    deselectImage()
+    syncContent()
+  }, [selectedImg, deselectImage, syncContent])
+
+  const updateImgAlt = useCallback((newAlt: string) => {
+    setImgAlt(newAlt)
+    if (selectedImg) {
+      selectedImg.setAttribute('alt', newAlt)
+      syncContent()
+    }
+  }, [selectedImg, syncContent])
+
+  // Handle click inside editor — select image or deselect
+  const handleEditorClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement
+    if (target.tagName === 'IMG') {
+      e.preventDefault()
+      e.stopPropagation()
+      deselectImage()
+      selectImage(target as HTMLImageElement)
+    } else {
+      deselectImage()
+    }
+    detectFormats()
+  }, [selectImage, deselectImage, detectFormats])
+
+  // Handle keyboard: Delete/Backspace removes selected image
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (selectedImg && (e.key === 'Backspace' || e.key === 'Delete')) {
+      e.preventDefault()
+      deleteSelectedImage()
+      return
+    }
+    if (selectedImg && e.key === 'Escape') {
+      deselectImage()
+      return
+    }
+  }, [selectedImg, deleteSelectedImage, deselectImage])
+
+  // Resize drag handlers
+  const startResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!selectedImg) return
+    setResizing(true)
+    resizeStartRef.current = { x: e.clientX, width: selectedImg.offsetWidth }
+
+    const onMouseMove = (ev: MouseEvent) => {
+      if (!resizeStartRef.current || !selectedImg) return
+      const diff = ev.clientX - resizeStartRef.current.x
+      const newWidth = Math.max(100, resizeStartRef.current.width + diff)
+      selectedImg.style.width = `${newWidth}px`
+      selectedImg.style.height = 'auto'
+
+      // Update toolbar position
+      const editorRect = editorRef.current?.getBoundingClientRect()
+      const imgRect = selectedImg.getBoundingClientRect()
+      if (editorRect) {
+        setImgToolbarPos({
+          top: imgRect.top - editorRect.top + editorRef.current!.scrollTop,
+          left: imgRect.left - editorRect.left,
+          width: imgRect.width,
+        })
+      }
+    }
+
+    const onMouseUp = () => {
+      setResizing(false)
+      resizeStartRef.current = null
+      syncContent()
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+    }
+
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
+  }, [selectedImg, syncContent])
+
+  // Click outside editor to deselect image
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (editorRef.current && !editorRef.current.contains(e.target as Node)) {
+        // Don't deselect if clicking on the image toolbar
+        const toolbar = document.getElementById('img-toolbar')
+        if (toolbar && toolbar.contains(e.target as Node)) return
+        deselectImage()
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
+  }, [deselectImage])
+
+  // Toggle heading
   const toggleHeading = (level: number) => {
     const tag = `h${level}`
     const currentBlock = document.queryCommandValue('formatBlock').toLowerCase()
@@ -123,7 +258,6 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     }
   }
 
-  // Toggle block format (blockquote, pre): if active, switch to paragraph
   const toggleBlock = (tag: string) => {
     const currentBlock = document.queryCommandValue('formatBlock').toLowerCase()
     if (currentBlock === tag) {
@@ -149,7 +283,6 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Ask for alt text before uploading
     const alt = prompt('Enter alt text for this image (for SEO & accessibility):', file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')) || file.name
 
     setUploading(true)
@@ -167,19 +300,15 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
       const imgHtml = `<img src="${data.url}" alt="${alt.replace(/"/g, '&quot;')}" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;" /><p><br></p>`
 
-      // Focus the editor and restore cursor position before inserting
       editorRef.current?.focus()
       restoreSelection()
 
-      // Try execCommand first
       const success = document.execCommand('insertHTML', false, imgHtml)
 
-      // Fallback: if execCommand fails, append directly to editor
       if (!success && editorRef.current) {
         editorRef.current.innerHTML += imgHtml
       }
 
-      // Force sync content to parent state
       syncContent()
     } catch (err: any) {
       alert('Upload failed: ' + err.message)
@@ -210,7 +339,6 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     exec('insertHTML', html)
   }
 
-  // Check if a format is active
   const isActive = (fmt: string) => activeFormats.has(fmt)
 
   const ToolBtn = ({ onClick, title, children, active }: {
@@ -229,16 +357,14 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   const Divider = () => <div className="w-px h-6 bg-slate-700 mx-1" />
 
   return (
-    <div className="rounded-xl border max-h-[75vh] overflow-y-auto" style={{ background: '#1e293b', borderColor: '#334155' }}>
-      {/* Toolbar — sticky inside scrollable container */}
-      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b sticky top-0 z-10" style={{ borderColor: '#334155', background: '#162032' }}>
-        {/* Undo / Redo */}
+    <div className="rounded-xl border max-h-[75vh] overflow-y-auto relative" style={{ background: '#1e293b', borderColor: '#334155' }}>
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b sticky top-0 z-20" style={{ borderColor: '#334155', background: '#162032' }}>
         <ToolBtn onClick={() => exec('undo')} title="Undo"><Undo2 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('redo')} title="Redo"><Redo2 className="w-4 h-4" /></ToolBtn>
 
         <Divider />
 
-        {/* Headings — toggle behavior */}
         <ToolBtn onClick={() => toggleHeading(1)} title="Heading 1" active={isActive('h1')}><Heading1 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(2)} title="Heading 2" active={isActive('h2')}><Heading2 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(3)} title="Heading 3" active={isActive('h3')}><Heading3 className="w-4 h-4" /></ToolBtn>
@@ -246,7 +372,6 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
         <Divider />
 
-        {/* Text formatting — active states */}
         <ToolBtn onClick={() => exec('bold')} title="Bold" active={isActive('bold')}><Bold className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('italic')} title="Italic" active={isActive('italic')}><Italic className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('underline')} title="Underline" active={isActive('underline')}><Underline className="w-4 h-4" /></ToolBtn>
@@ -254,20 +379,17 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
         <Divider />
 
-        {/* Lists — active states */}
         <ToolBtn onClick={() => exec('insertUnorderedList')} title="Bullet List" active={isActive('insertUnorderedList')}><List className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('insertOrderedList')} title="Numbered List" active={isActive('insertOrderedList')}><ListOrdered className="w-4 h-4" /></ToolBtn>
 
         <Divider />
 
-        {/* Alignment */}
         <ToolBtn onClick={() => exec('justifyLeft')} title="Align Left"><AlignLeft className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('justifyCenter')} title="Align Center"><AlignCenter className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('justifyRight')} title="Align Right"><AlignRight className="w-4 h-4" /></ToolBtn>
 
         <Divider />
 
-        {/* Block elements — toggle behavior */}
         <ToolBtn onClick={() => toggleBlock('blockquote')} title="Quote" active={isActive('blockquote')}><Quote className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleBlock('pre')} title="Code Block" active={isActive('pre')}><Code className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertHR} title="Horizontal Line"><Minus className="w-4 h-4" /></ToolBtn>
@@ -275,7 +397,6 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
         <Divider />
 
-        {/* Links & Images */}
         <ToolBtn onClick={insertLink} title="Insert Link"><Link className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertImageUrl} title="Image URL"><ImageIcon className="w-4 h-4" /></ToolBtn>
         <ToolBtn
@@ -304,7 +425,9 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         onInput={handleInput}
         onBlur={() => { saveSelection(); syncContent() }}
         onKeyUp={handleKeyUp}
+        onKeyDown={handleKeyDown}
         onMouseUp={handleMouseUp}
+        onClick={handleEditorClick}
         suppressContentEditableWarning
         className="min-h-[500px] px-6 py-5 text-sm text-white leading-relaxed outline-none prose prose-invert prose-sm max-w-none
           [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-white [&_h1]:mt-6 [&_h1]:mb-3
@@ -318,7 +441,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
           [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-500 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-400 [&_blockquote]:my-4
           [&_pre]:bg-slate-800 [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:text-sm [&_pre]:font-mono [&_pre]:text-emerald-300 [&_pre]:my-4
           [&_code]:bg-slate-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-emerald-300 [&_code]:text-xs
-          [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-4
+          [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-4 [&_img]:cursor-pointer
           [&_hr]:border-slate-700 [&_hr]:my-6
           [&_strong]:text-white [&_strong]:font-semibold
           [&_em]:italic
@@ -328,6 +451,71 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         "
         style={{ background: '#0f172a' }}
       />
+
+      {/* ── Image toolbar (shows when an image is selected) ── */}
+      {selectedImg && imgToolbarPos && (
+        <div
+          id="img-toolbar"
+          className="absolute z-30 flex flex-col gap-2"
+          style={{
+            top: imgToolbarPos.top + 44, // below sticky toolbar
+            left: imgToolbarPos.left,
+            width: Math.max(imgToolbarPos.width, 280),
+          }}
+          contentEditable={false}
+        >
+          {/* Top controls — positioned at bottom of image */}
+          <div
+            className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg"
+            style={{
+              background: 'rgba(15, 23, 42, 0.95)',
+              border: '1px solid #334155',
+              backdropFilter: 'blur(8px)',
+              marginTop: (selectedImg?.offsetHeight || 0) - 6,
+            }}
+          >
+            {/* Alt text input */}
+            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+              <span className="text-[10px] font-bold text-emerald-400 shrink-0 uppercase">Alt</span>
+              <input
+                type="text"
+                value={imgAlt}
+                onChange={e => updateImgAlt(e.target.value)}
+                placeholder="Enter alt text for SEO…"
+                className="flex-1 min-w-0 px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-white outline-none focus:border-emerald-500"
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+
+            {/* Resize handle */}
+            <button
+              onMouseDown={startResize}
+              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 cursor-ew-resize"
+              title="Drag to resize"
+            >
+              <GripVertical className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Delete button */}
+            <button
+              onClick={e => { e.stopPropagation(); deleteSelectedImage() }}
+              className="p-1 rounded text-red-400 hover:text-red-300 hover:bg-red-500/15"
+              title="Delete image (Backspace)"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Close selection */}
+            <button
+              onClick={e => { e.stopPropagation(); deselectImage() }}
+              className="p-1 rounded text-slate-500 hover:text-white hover:bg-white/10"
+              title="Deselect (Esc)"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
