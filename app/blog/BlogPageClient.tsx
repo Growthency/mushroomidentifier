@@ -257,6 +257,23 @@ export default function BlogPageClient() {
   const [isLoggedIn, setIsLoggedIn]   = useState(false)
   const [favorites, setFavorites]     = useState<Set<string>>(new Set())
   const [loadingFav, setLoadingFav]   = useState<string | null>(null)
+  const [allArticles, setAllArticles] = useState<Article[]>(articles)
+
+  useEffect(() => {
+    // Fetch admin-created posts from database and merge with hardcoded articles
+    fetch('/api/blog/posts')
+      .then(r => r.json())
+      .then(data => {
+        if (data.posts && data.posts.length > 0) {
+          const hardcodedSlugs = new Set(articles.map(a => a.slug))
+          const newPosts = data.posts.filter((p: Article) => !hardcodedSlugs.has(p.slug))
+          if (newPosts.length > 0) {
+            setAllArticles([...newPosts, ...articles])
+          }
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const supabase = createClient()
@@ -328,7 +345,7 @@ export default function BlogPageClient() {
   }
 
   const filtered = useMemo(() => {
-    return articles.filter(a => {
+    return allArticles.filter(a => {
       const q      = activeFilters.query.toLowerCase()
       const matchQ = !q || a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q)
       const matchR = activeFilters.risk === 'All Levels' || a.riskLevel === activeFilters.risk
@@ -338,7 +355,7 @@ export default function BlogPageClient() {
         (activeFilters.pricing === 'Premium' && a.is_premium)
       return matchQ && matchR && matchReg && matchP
     })
-  }, [activeFilters])
+  }, [activeFilters, allArticles])
 
   const totalPages = Math.ceil(filtered.length / ARTICLES_PER_PAGE)
   const pageItems  = filtered.slice((currentPage - 1) * ARTICLES_PER_PAGE, currentPage * ARTICLES_PER_PAGE)

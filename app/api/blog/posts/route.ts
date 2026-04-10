@@ -1,0 +1,40 @@
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+export async function GET() {
+  // Use anon key for public read — RLS allows reading published posts
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const { data: posts, error } = await supabase
+    .from('blog_posts')
+    .select('id, title, slug, excerpt, featured_image, category, risk_level, region, is_premium, views, read_time, status, created_at, published_at')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false })
+
+  if (error) {
+    return NextResponse.json({ posts: [] })
+  }
+
+  // Map to the Article format expected by the blog client
+  const mapped = (posts ?? []).map(p => ({
+    id: p.id + 1000, // offset to avoid collision with hardcoded IDs
+    title: p.title,
+    excerpt: p.excerpt || '',
+    category: p.category || 'Guide',
+    riskLevel: p.risk_level || 'General',
+    region: p.region || 'Worldwide',
+    date: p.published_at
+      ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : 'Draft',
+    readTime: p.read_time ? `${p.read_time} min` : '5 min',
+    slug: p.slug,
+    image: p.featured_image || '',
+    views: p.views || 0,
+    is_premium: p.is_premium || false,
+  }))
+
+  return NextResponse.json({ posts: mapped })
+}
