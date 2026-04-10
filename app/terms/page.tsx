@@ -48,7 +48,7 @@ export default function TermsOfServicePage() {
 
           <Section title="1. About the Service">
             <p>
-              MushroomIdentifiers.com ("the Service", "we", "us") provides an AI-powered mushroom identification tool. Users can upload photographs of mushrooms and receive an AI-generated analysis covering probable species, toxicity warnings, look-alike species, and safety guidance.
+              MushroomIdentifiers.com ("the Service", "we", "us") is operated by <strong style={{ color: 'var(--text-primary)' }}>Isloo Marketing</strong> and provides an AI-powered mushroom identification tool. Users can upload photographs of mushrooms and receive an AI-generated analysis covering probable species, toxicity warnings, look-alike species, and safety guidance.
             </p>
             <p>
               The Service is intended for <strong style={{ color: 'var(--text-primary)' }}>educational and informational purposes only</strong>. It is not a substitute for expert mycological identification. Never consume any wild mushroom based solely on AI analysis.
@@ -96,10 +96,15 @@ export default function TermsOfServicePage() {
 
           <Section title="5. Refund Policy">
             <p>
-              We offer a <strong style={{ color: 'var(--text-primary)' }}>7-day refund window</strong> for unused credit packs. To request a refund, contact us at <a href="mailto:support@mushroomidentifiers.com" className="hover:underline" style={{ color: 'var(--accent)' }}>support@mushroomidentifiers.com</a> within 7 days of purchase.
+              All payments are processed by <strong style={{ color: 'var(--text-primary)' }}>Paddle.com</strong> as our authorised reseller and Merchant of Record. We offer a <strong style={{ color: 'var(--text-primary)' }}>14-day refund window</strong> on all purchases. If you are not satisfied with your purchase for any reason, you may request a full refund within 14 days of the transaction date.
             </p>
             <p>
-              Refunds are not available for partially used credit packs or credits that have already been consumed. Refunds are issued to the original payment method and may take 5–10 business days to appear depending on your bank or payment provider.
+              To request a refund, contact us at{' '}
+              <a href="mailto:support@mushroomidentifiers.com" className="hover:underline" style={{ color: 'var(--accent)' }}>support@mushroomidentifiers.com</a>{' '}
+              or contact Paddle directly at{' '}
+              <a href="https://paddle.net" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>paddle.net</a>.
+              Refunds are processed by Paddle and may take 5–10 business days to appear on your statement.
+              For full details, see our <Link href="/refund" className="hover:underline" style={{ color: 'var(--accent)' }}>Refund Policy</Link>.
             </p>
           </Section>
 
@@ -179,6 +184,7 @@ export default function TermsOfServicePage() {
           <Section title="13. Contact">
             <p>If you have questions about these Terms, please contact us:</p>
             <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+              <p><strong style={{ color: 'var(--text-primary)' }}>Isloo Marketing</strong></p>
               <p><strong style={{ color: 'var(--text-primary)' }}>MushroomIdentifiers.com</strong></p>
               <p>Email: <a href="mailto:support@mushroomidentifiers.com" className="hover:underline" style={{ color: 'var(--accent)' }}>support@mushroomidentifiers.com</a></p>
               <p>Website: <Link href="/contact" className="hover:underline" style={{ color: 'var(--accent)' }}>Contact Form</Link></p>
