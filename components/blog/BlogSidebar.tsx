@@ -261,7 +261,9 @@ function PremiumBanner() {
 // ── Fixed Banner Wrapper (uses JS position:fixed) ────────────────────────────
 function FixedBanner() {
   const markerRef = useRef<HTMLDivElement>(null)
+  const bannerRef = useRef<HTMLDivElement>(null)
   const [pos, setPos] = useState<{ left: number; width: number } | null>(null)
+  const [bannerH, setBannerH] = useState(0)
 
   useEffect(() => {
     const measure = () => {
@@ -275,6 +277,13 @@ function FixedBanner() {
     return () => window.removeEventListener('resize', measure)
   }, [])
 
+  // Measure banner height once rendered
+  useEffect(() => {
+    if (bannerRef.current) {
+      setBannerH(bannerRef.current.offsetHeight)
+    }
+  }, [pos])
+
   return (
     <>
       {/* Invisible marker to measure sidebar position */}
@@ -282,6 +291,7 @@ function FixedBanner() {
       {/* Fixed banner */}
       {pos && (
         <div
+          ref={bannerRef}
           style={{
             position: 'fixed',
             top: 88,
@@ -293,6 +303,8 @@ function FixedBanner() {
           <PremiumBanner />
         </div>
       )}
+      {/* Spacer so sidebar content doesn't hide behind fixed banner */}
+      {bannerH > 0 && <div style={{ height: bannerH + 16 }} />}
     </>
   )
 }
