@@ -25,8 +25,15 @@ export const metadata: Metadata = {
   title: 'Mushroom Identifier - Fast Mushroom Identification App by Picture',
   description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
   icons: {
-    icon: 'data:image/svg+xml,<svg xmlns="http://w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🍄</text></svg>',
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.png',
   },
+  manifest: '/site.webmanifest',
   openGraph: {
     title: 'Mushroom Identifier - Fast Mushroom Identification App by Picture',
     description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
@@ -66,7 +73,21 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="dipMWRMeOiWrrLH32OCvAQS-wR14IzCVSCLFUt9mH-0" />
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>" />
+        {/* Organization structured data for Google SERP logo */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Mushroom Identifiers",
+              "url": "https://mushroomidentifiers.com",
+              "logo": "https://mushroomidentifiers.com/logo-512.png",
+              "sameAs": [],
+              "description": "AI-powered mushroom identification app. Upload photos for instant fungi identification, toxicity warnings, and species guides."
+            })
+          }}
+        />
         {/* Hint browser to give max priority to the critical CSS chunk on the critical path */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Inline theme script — runs synchronously before any paint to prevent flash of wrong theme */}
