@@ -37,5 +37,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/amanita-muscaria`,                             lastModified: new Date('2026-04-10'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/amanita-pantherina`,                           lastModified: new Date('2026-04-10'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/galerina-marginata`,                           lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/omphalotus-illudens`,                          lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
   ]
 }

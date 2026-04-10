@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 16,
+    title: "Omphalotus illudens (Jack-o'-Lantern Mushroom): Identification & Safety Guide",
+    excerpt:
+      'Omphalotus illudens, commonly known as the jack-o\u2019-lantern mushroom, is a bright orange, bioluminescent fungus found mainly in North America. Learn identification, toxicity, and how to distinguish it from chanterelles.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'US North America',
+    date: 'Apr 11, 2026',
+    readTime: '11 min',
+    slug: '/omphalotus-illudens',
+    image: '/omphalotus-illudens-jack-o-lantern-mushroom-identification.webp',
+    views: 1540,
+    is_premium: false,
+  },
+  {
     id: 15,
     title: 'Galerina marginata (Funeral Bell): Identification, Features, Habitat & Safety Guide',
     excerpt:
