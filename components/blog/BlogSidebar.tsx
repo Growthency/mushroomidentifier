@@ -273,20 +273,8 @@ export default function BlogSidebar() {
   return (
     <aside
       className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0"
-      style={{ position: 'sticky', top: '88px', alignSelf: 'flex-start' }}
+      style={{ alignSelf: 'stretch' }}
     >
-      {/* ── Premium Banner — always visible at top ── */}
-      <PremiumBanner />
-
-      {/* ── Scrollable content below banner ── */}
-      <div
-        style={{
-          maxHeight: 'calc(100vh - 500px)',
-          overflowY: 'auto',
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'var(--border) transparent',
-        }}
-      >
         {/* Search */}
         <div className="relative mb-4">
           <Search
@@ -400,7 +388,11 @@ export default function BlogSidebar() {
 
       {/* ── Table of Contents ── */}
       <TableOfContents />
-      </div>{/* end scrollable */}
+
+      {/* ── Premium Banner — sticky, always visible ── */}
+      <div style={{ position: 'sticky', top: '88px', zIndex: 10 }}>
+        <PremiumBanner />
+      </div>
     </aside>
   )
 }
