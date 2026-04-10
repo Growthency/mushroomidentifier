@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   status      TEXT DEFAULT 'draft',          -- draft, published
   author_name TEXT DEFAULT 'Paul Stamets',
   author_role TEXT DEFAULT 'Mycologist · Author · Fungi Expert',
+  meta_title  TEXT,                          -- SEO meta title (max 60 chars)
+  meta_description TEXT,                     -- SEO meta description (max 155 chars)
   created_at  TIMESTAMPTZ DEFAULT NOW(),
   updated_at  TIMESTAMPTZ DEFAULT NOW(),
   published_at TIMESTAMPTZ
