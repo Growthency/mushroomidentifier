@@ -44,7 +44,6 @@ const schemaData = {
 
 export default async function MushroomPartsExplainedPage() {
   return (
-    <PremiumGate>
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
@@ -95,6 +94,10 @@ export default async function MushroomPartsExplainedPage() {
               Complete mushroom anatomy diagram — cap (pileus), gills (lamellae), stem (stipe), ring (annulus), and volva
             </figcaption>
           </figure>
+
+          {/* ── PREMIUM GATE: body content below requires paid plan ── */}
+          <PremiumGate inline>
+          <>
 
           {/* ── SECTION 1: Introduction ── */}
           <Section>
@@ -599,13 +602,15 @@ export default async function MushroomPartsExplainedPage() {
 
           <RelatedPosts currentSlug="/mushroom-parts-explained" />
 
+          </>
+          </PremiumGate>
+
             </article>
             <BlogSidebar />
           </div>
         </div>
       </div>
     </>
-    </PremiumGate>
   )
 }
 

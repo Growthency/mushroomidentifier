@@ -2,7 +2,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, TrendingUp, Clock, Eye } from 'lucide-react'
+import {
+  Search, TrendingUp, Clock, Eye,
+  Crown, Check, ChevronRight, Sparkles,
+  BookOpen, Zap, ShieldCheck, Star,
+} from 'lucide-react'
+import TableOfContents from '@/components/blog/TableOfContents'
 
 const TRENDING_POSTS = [
   {
@@ -130,10 +135,130 @@ const RECENT_POSTS = [
   },
 ]
 
+const PREMIUM_BENEFITS = [
+  { icon: BookOpen,    text: 'All premium deep-dive articles' },
+  { icon: Zap,         text: 'Priority AI — faster identifications' },
+  { icon: ShieldCheck, text: 'Expert safety warnings & lookalike alerts' },
+  { icon: Star,        text: 'PDF reports + full field journal access' },
+]
+
 function formatViews(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n)
 }
 
+// ── Premium Banner ───────────────────────────────────────────────────────────
+function PremiumBanner() {
+  return (
+    <div
+      className="rounded-2xl overflow-hidden mb-4"
+      style={{
+        background: 'linear-gradient(145deg, #0f2a1a 0%, #1a4a2a 45%, #0d3320 100%)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+      }}
+    >
+      {/* Hero image strip */}
+      <div className="relative w-full overflow-hidden" style={{ height: 110 }}>
+        <Image
+          src="/amanita-phalloides-death-cap-identification.webp"
+          alt="Premium mushroom articles"
+          fill
+          className="object-cover"
+          style={{ opacity: 0.45, filter: 'saturate(0.7)' }}
+        />
+        {/* Gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(15,42,26,0.3) 0%, rgba(15,42,26,0.9) 100%)',
+          }}
+        />
+        {/* Badge on image */}
+        <div className="absolute top-3 left-3">
+          <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+            style={{ background: 'rgba(251,191,36,0.2)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.35)' }}
+          >
+            <Crown className="w-3 h-3" />
+            PREMIUM
+          </span>
+        </div>
+        {/* Stars */}
+        <div className="absolute top-3 right-3 flex gap-0.5">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} className="w-3 h-3 fill-current" style={{ color: '#fbbf24' }} />
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="px-4 pt-3 pb-4">
+        {/* Heading */}
+        <div className="flex items-start gap-2 mb-2">
+          <Sparkles className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#4ade80' }} />
+          <h3 className="font-bold text-sm leading-snug" style={{ color: '#f0fdf4' }}>
+            Unlock All Premium Articles &amp; Features
+          </h3>
+        </div>
+
+        {/* Sub-text */}
+        <p className="text-xs mb-3 leading-relaxed" style={{ color: 'rgba(240,253,244,0.65)' }}>
+          Join thousands of foragers who identify mushrooms safely with expert-level content.
+        </p>
+
+        {/* Benefits */}
+        <ul className="space-y-1.5 mb-4">
+          {PREMIUM_BENEFITS.map(({ icon: Icon, text }) => (
+            <li key={text} className="flex items-center gap-2">
+              <div
+                className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center"
+                style={{ background: 'rgba(74,222,128,0.18)' }}
+              >
+                <Check className="w-2.5 h-2.5" style={{ color: '#4ade80' }} />
+              </div>
+              <span className="text-xs" style={{ color: 'rgba(240,253,244,0.8)' }}>{text}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Price hint */}
+        <div
+          className="flex items-center justify-between mb-3 px-3 py-2 rounded-lg"
+          style={{ background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.15)' }}
+        >
+          <span className="text-xs font-medium" style={{ color: 'rgba(240,253,244,0.7)' }}>
+            Starting from
+          </span>
+          <span className="font-bold text-sm" style={{ color: '#4ade80' }}>
+            $4.99 one-time
+          </span>
+        </div>
+
+        {/* CTA Button */}
+        <Link
+          href="/pricing"
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]"
+          style={{
+            background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+            color: '#fff',
+            boxShadow: '0 2px 12px rgba(34,197,94,0.35)',
+          }}
+        >
+          View Plans
+          <ChevronRight className="w-4 h-4" />
+        </Link>
+
+        {/* Trust note */}
+        <p className="text-center text-xs mt-2" style={{ color: 'rgba(240,253,244,0.4)' }}>
+          14-day money-back guarantee · No subscription
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ── Main Sidebar ─────────────────────────────────────────────────────────────
 export default function BlogSidebar() {
   const [query, setQuery] = useState('')
 
@@ -146,150 +271,138 @@ export default function BlogSidebar() {
     : RECENT_POSTS
 
   return (
-    <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0">
-
-      {/* ── Search ── */}
-      <div className="relative mb-4">
-        <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-          style={{ color: 'var(--text-faint)' }}
-        />
-        <input
-          type="text"
-          placeholder="Search articles…"
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm outline-none transition-colors"
-          style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            color: 'var(--text-primary)',
-          }}
-          onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
-          onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
-        />
+    <aside
+      className="hidden lg:flex flex-col w-[272px] xl:w-[292px] flex-shrink-0"
+      style={{
+        position: 'sticky',
+        top: '88px',
+        maxHeight: 'calc(100vh - 108px)',
+        alignSelf: 'flex-start',
+      }}
+    >
+      {/* ── FIXED TOP SECTION: Premium Banner + Table of Contents ── */}
+      <div className="flex-shrink-0">
+        <PremiumBanner />
+        {/* ToC auto-detects headings from the article DOM */}
+        <TableOfContents />
       </div>
 
-      {/* ── Trending Posts ── */}
+      {/* ── SCROLLABLE SECTION: Search + Trending + Recent ── */}
       <div
-        className="rounded-xl overflow-hidden mb-5"
-        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+        className="flex-1 overflow-y-auto mt-4"
+        style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--border) transparent' }}
       >
-        <div
-          className="flex items-center gap-2 px-4 py-3"
-          style={{ borderBottom: '1px solid var(--border)' }}
-        >
-          <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--accent)' }} />
-          <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
-            Trending Posts
-          </span>
+        {/* Search */}
+        <div className="relative mb-4">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+            style={{ color: 'var(--text-faint)' }}
+          />
+          <input
+            type="text"
+            placeholder="Search articles…"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm outline-none transition-colors"
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-primary)',
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+          />
         </div>
 
-        <ul>
-          {filteredTrending.map((post, i) => (
-            <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
-              <Link
-                href={post.slug}
-                className="flex items-center gap-3 px-3 py-2.5 transition-colors"
-              >
-                <div
-                  className="flex-shrink-0 rounded-lg overflow-hidden"
-                  style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
-                >
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    width={52}
-                    height={44}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start gap-1.5 mb-1">
-                    <span
-                      className="text-xs font-bold flex-shrink-0"
-                      style={{ color: 'var(--accent)', opacity: 0.8 }}
-                    >
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <p className="text-xs leading-snug line-clamp-2" style={{ color: 'var(--text-primary)' }}>
+        {/* Trending Posts */}
+        <div
+          className="rounded-xl overflow-hidden mb-5"
+          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+        >
+          <div
+            className="flex items-center gap-2 px-4 py-3"
+            style={{ borderBottom: '1px solid var(--border)' }}
+          >
+            <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--accent)' }} />
+            <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+              Trending Posts
+            </span>
+          </div>
+          <ul>
+            {filteredTrending.map((post, i) => (
+              <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
+                <Link href={post.slug} className="flex items-center gap-3 px-3 py-2.5 transition-colors">
+                  <div
+                    className="flex-shrink-0 rounded-lg overflow-hidden"
+                    style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
+                  >
+                    <Image src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start gap-1.5 mb-1">
+                      <span className="text-xs font-bold flex-shrink-0" style={{ color: 'var(--accent)', opacity: 0.8 }}>
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <p className="text-xs leading-snug line-clamp-2" style={{ color: 'var(--text-primary)' }}>
+                        {post.title}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Eye className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
+                      <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{formatViews(post.views)} views</span>
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            ))}
+            {filteredTrending.length === 0 && (
+              <li className="px-4 py-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>No articles found</li>
+            )}
+          </ul>
+        </div>
+
+        {/* Recent Posts */}
+        <div
+          className="rounded-xl overflow-hidden mb-5"
+          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+        >
+          <div
+            className="flex items-center gap-2 px-4 py-3"
+            style={{ borderBottom: '1px solid var(--border)' }}
+          >
+            <Clock className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--accent)' }} />
+            <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+              Recent Posts
+            </span>
+          </div>
+          <ul>
+            {filteredRecent.map((post) => (
+              <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
+                <Link href={post.slug} className="flex items-center gap-3 px-3 py-2.5 transition-colors">
+                  <div
+                    className="flex-shrink-0 rounded-lg overflow-hidden"
+                    style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
+                  >
+                    <Image src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs leading-snug line-clamp-2 mb-1" style={{ color: 'var(--text-primary)' }}>
                       {post.title}
                     </p>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
+                      <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{post.date}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Eye className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
-                    <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
-                      {formatViews(post.views)} views
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-          {filteredTrending.length === 0 && (
-            <li className="px-4 py-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>
-              No articles found
-            </li>
-          )}
-        </ul>
-      </div>
-
-      {/* ── Recent Posts ── */}
-      <div
-        className="rounded-xl overflow-hidden mb-5"
-        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
-      >
-        <div
-          className="flex items-center gap-2 px-4 py-3"
-          style={{ borderBottom: '1px solid var(--border)' }}
-        >
-          <Clock className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--accent)' }} />
-          <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
-            Recent Posts
-          </span>
+                </Link>
+              </li>
+            ))}
+            {filteredRecent.length === 0 && (
+              <li className="px-4 py-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>No articles found</li>
+            )}
+          </ul>
         </div>
-
-        <ul>
-          {filteredRecent.map((post) => (
-            <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
-              <Link
-                href={post.slug}
-                className="flex items-center gap-3 px-3 py-2.5 transition-colors"
-              >
-                <div
-                  className="flex-shrink-0 rounded-lg overflow-hidden"
-                  style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
-                >
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    width={52}
-                    height={44}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs leading-snug line-clamp-2 mb-1" style={{ color: 'var(--text-primary)' }}>
-                    {post.title}
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
-                    <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
-                      {post.date}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-          {filteredRecent.length === 0 && (
-            <li className="px-4 py-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>
-              No articles found
-            </li>
-          )}
-        </ul>
       </div>
-
     </aside>
   )
 }
