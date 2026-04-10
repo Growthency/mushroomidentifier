@@ -125,8 +125,8 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   const Divider = () => <div className="w-px h-6 bg-slate-700 mx-1" />
 
   return (
-    <div className="rounded-xl border overflow-hidden" style={{ background: '#1e293b', borderColor: '#334155' }}>
-      {/* Toolbar */}
+    <div className="rounded-xl border max-h-[75vh] overflow-y-auto" style={{ background: '#1e293b', borderColor: '#334155' }}>
+      {/* Toolbar — sticky inside scrollable container */}
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b sticky top-0 z-10" style={{ borderColor: '#334155', background: '#162032' }}>
         {/* Undo / Redo */}
         <ToolBtn onClick={() => exec('undo')} title="Undo"><Undo2 className="w-4 h-4" /></ToolBtn>
