@@ -18,6 +18,8 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   const [uploading, setUploading] = useState(false)
   const onChangeRef = useRef(onChange)
   const initializedRef = useRef(false)
+  const savedSelectionRef = useRef<Range | null>(null)
+  const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set())
 
   // Keep callback ref fresh without re-renders
   useEffect(() => { onChangeRef.current = onChange }, [onChange])
@@ -30,21 +32,105 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     }
   }, [value])
 
-  const exec = useCallback((command: string, val?: string) => {
-    document.execCommand(command, false, val)
+  // MutationObserver to catch ALL DOM changes and sync to parent
+  useEffect(() => {
+    const editor = editorRef.current
+    if (!editor) return
+
+    const observer = new MutationObserver(() => {
+      onChangeRef.current(editor.innerHTML)
+    })
+
+    observer.observe(editor, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
+  const syncContent = useCallback(() => {
     if (editorRef.current) {
       onChangeRef.current(editorRef.current.innerHTML)
     }
   }, [])
+
+  // Save current cursor position
+  const saveSelection = useCallback(() => {
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0) {
+      savedSelectionRef.current = sel.getRangeAt(0).cloneRange()
+    }
+  }, [])
+
+  // Restore saved cursor position
+  const restoreSelection = useCallback(() => {
+    const sel = window.getSelection()
+    if (sel && savedSelectionRef.current) {
+      sel.removeAllRanges()
+      sel.addRange(savedSelectionRef.current)
+    }
+  }, [])
+
+  // Detect active formatting at cursor position
+  const detectFormats = useCallback(() => {
+    const formats = new Set<string>()
+
+    if (document.queryCommandState('bold')) formats.add('bold')
+    if (document.queryCommandState('italic')) formats.add('italic')
+    if (document.queryCommandState('underline')) formats.add('underline')
+    if (document.queryCommandState('strikeThrough')) formats.add('strikeThrough')
+    if (document.queryCommandState('insertUnorderedList')) formats.add('insertUnorderedList')
+    if (document.queryCommandState('insertOrderedList')) formats.add('insertOrderedList')
+
+    // Detect current block format (h1, h2, h3, p, blockquote, pre)
+    const block = document.queryCommandValue('formatBlock')
+    if (block) formats.add(block.toLowerCase())
+
+    setActiveFormats(formats)
+  }, [])
+
+  const exec = useCallback((command: string, val?: string) => {
+    editorRef.current?.focus()
+    document.execCommand(command, false, val)
+    syncContent()
+    detectFormats()
+  }, [syncContent, detectFormats])
 
   const handleInput = useCallback(() => {
-    if (editorRef.current) {
-      onChangeRef.current(editorRef.current.innerHTML)
-    }
-  }, [])
+    syncContent()
+    detectFormats()
+  }, [syncContent, detectFormats])
 
-  const insertHeading = (level: number) => {
-    exec('formatBlock', `h${level}`)
+  const handleKeyUp = useCallback(() => {
+    detectFormats()
+  }, [detectFormats])
+
+  const handleMouseUp = useCallback(() => {
+    detectFormats()
+  }, [detectFormats])
+
+  // Toggle heading: if already that heading, switch to paragraph
+  const toggleHeading = (level: number) => {
+    const tag = `h${level}`
+    const currentBlock = document.queryCommandValue('formatBlock').toLowerCase()
+    if (currentBlock === tag) {
+      exec('formatBlock', 'p')
+    } else {
+      exec('formatBlock', tag)
+    }
+  }
+
+  // Toggle block format (blockquote, pre): if active, switch to paragraph
+  const toggleBlock = (tag: string) => {
+    const currentBlock = document.queryCommandValue('formatBlock').toLowerCase()
+    if (currentBlock === tag) {
+      exec('formatBlock', 'p')
+    } else {
+      exec('formatBlock', tag)
+    }
   }
 
   const insertLink = () => {
@@ -79,7 +165,22 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Upload failed')
 
-      exec('insertHTML', `<img src="${data.url}" alt="${alt.replace(/"/g, '&quot;')}" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;" />`)
+      const imgHtml = `<img src="${data.url}" alt="${alt.replace(/"/g, '&quot;')}" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;" /><p><br></p>`
+
+      // Focus the editor and restore cursor position before inserting
+      editorRef.current?.focus()
+      restoreSelection()
+
+      // Try execCommand first
+      const success = document.execCommand('insertHTML', false, imgHtml)
+
+      // Fallback: if execCommand fails, append directly to editor
+      if (!success && editorRef.current) {
+        editorRef.current.innerHTML += imgHtml
+      }
+
+      // Force sync content to parent state
+      syncContent()
     } catch (err: any) {
       alert('Upload failed: ' + err.message)
     } finally {
@@ -109,14 +210,17 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     exec('insertHTML', html)
   }
 
+  // Check if a format is active
+  const isActive = (fmt: string) => activeFormats.has(fmt)
+
   const ToolBtn = ({ onClick, title, children, active }: {
     onClick: () => void; title: string; children: React.ReactNode; active?: boolean
   }) => (
     <button
       type="button"
-      onMouseDown={e => { e.preventDefault(); onClick() }}
+      onMouseDown={e => { e.preventDefault(); saveSelection(); onClick() }}
       title={title}
-      className={`p-1.5 rounded hover:bg-white/10 transition-colors ${active ? 'bg-white/10 text-emerald-400' : 'text-slate-400 hover:text-white'}`}
+      className={`p-1.5 rounded hover:bg-white/10 transition-colors ${active ? 'bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30' : 'text-slate-400 hover:text-white'}`}
     >
       {children}
     </button>
@@ -134,25 +238,25 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
         <Divider />
 
-        {/* Headings */}
-        <ToolBtn onClick={() => insertHeading(1)} title="Heading 1"><Heading1 className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => insertHeading(2)} title="Heading 2"><Heading2 className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => insertHeading(3)} title="Heading 3"><Heading3 className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => exec('formatBlock', 'p')} title="Paragraph"><Pilcrow className="w-4 h-4" /></ToolBtn>
+        {/* Headings — toggle behavior */}
+        <ToolBtn onClick={() => toggleHeading(1)} title="Heading 1" active={isActive('h1')}><Heading1 className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => toggleHeading(2)} title="Heading 2" active={isActive('h2')}><Heading2 className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => toggleHeading(3)} title="Heading 3" active={isActive('h3')}><Heading3 className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => exec('formatBlock', 'p')} title="Paragraph" active={isActive('p')}><Pilcrow className="w-4 h-4" /></ToolBtn>
 
         <Divider />
 
-        {/* Text formatting */}
-        <ToolBtn onClick={() => exec('bold')} title="Bold"><Bold className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => exec('italic')} title="Italic"><Italic className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => exec('underline')} title="Underline"><Underline className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => exec('strikeThrough')} title="Strikethrough"><Strikethrough className="w-4 h-4" /></ToolBtn>
+        {/* Text formatting — active states */}
+        <ToolBtn onClick={() => exec('bold')} title="Bold" active={isActive('bold')}><Bold className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => exec('italic')} title="Italic" active={isActive('italic')}><Italic className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => exec('underline')} title="Underline" active={isActive('underline')}><Underline className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => exec('strikeThrough')} title="Strikethrough" active={isActive('strikeThrough')}><Strikethrough className="w-4 h-4" /></ToolBtn>
 
         <Divider />
 
-        {/* Lists */}
-        <ToolBtn onClick={() => exec('insertUnorderedList')} title="Bullet List"><List className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => exec('insertOrderedList')} title="Numbered List"><ListOrdered className="w-4 h-4" /></ToolBtn>
+        {/* Lists — active states */}
+        <ToolBtn onClick={() => exec('insertUnorderedList')} title="Bullet List" active={isActive('insertUnorderedList')}><List className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => exec('insertOrderedList')} title="Numbered List" active={isActive('insertOrderedList')}><ListOrdered className="w-4 h-4" /></ToolBtn>
 
         <Divider />
 
@@ -163,9 +267,9 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
         <Divider />
 
-        {/* Block elements */}
-        <ToolBtn onClick={() => exec('formatBlock', 'blockquote')} title="Quote"><Quote className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => exec('formatBlock', 'pre')} title="Code Block"><Code className="w-4 h-4" /></ToolBtn>
+        {/* Block elements — toggle behavior */}
+        <ToolBtn onClick={() => toggleBlock('blockquote')} title="Quote" active={isActive('blockquote')}><Quote className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => toggleBlock('pre')} title="Code Block" active={isActive('pre')}><Code className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertHR} title="Horizontal Line"><Minus className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertTable} title="Insert Table"><Table className="w-4 h-4" /></ToolBtn>
 
@@ -175,7 +279,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         <ToolBtn onClick={insertLink} title="Insert Link"><Link className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertImageUrl} title="Image URL"><ImageIcon className="w-4 h-4" /></ToolBtn>
         <ToolBtn
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => { saveSelection(); fileInputRef.current?.click() }}
           title="Upload Image"
         >
           {uploading
@@ -198,7 +302,9 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         ref={editorRef}
         contentEditable
         onInput={handleInput}
-        onBlur={handleInput}
+        onBlur={() => { saveSelection(); syncContent() }}
+        onKeyUp={handleKeyUp}
+        onMouseUp={handleMouseUp}
         suppressContentEditableWarning
         className="min-h-[500px] px-6 py-5 text-sm text-white leading-relaxed outline-none prose prose-invert prose-sm max-w-none
           [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-white [&_h1]:mt-6 [&_h1]:mb-3
