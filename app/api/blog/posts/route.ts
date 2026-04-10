@@ -2,19 +2,21 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 export async function GET() {
-  // Use anon key for public read — RLS allows reading published posts
+  // Use service role key for reliable server-side reads (bypasses RLS)
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
   const { data: posts, error } = await supabase
     .from('blog_posts')
     .select('id, title, slug, excerpt, featured_image, category, risk_level, region, is_premium, views, read_time, status, created_at, published_at')
     .eq('status', 'published')
-    .order('published_at', { ascending: false })
+    .order('published_at', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
 
   if (error) {
+    console.error('[blog/posts] Supabase error:', error.message)
     return NextResponse.json({ posts: [] })
   }
 

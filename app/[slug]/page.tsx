@@ -16,6 +16,14 @@ function getSupabase() {
   )
 }
 
+/* ── Strip inline styles from rich-editor HTML so Tailwind prose classes apply ── */
+function stripInlineStyles(html: string): string {
+  return html
+    // Remove all style="..." attributes (handles single and double quotes)
+    .replace(/\s*style="[^"]*"/gi, '')
+    .replace(/\s*style='[^']*'/gi, '')
+}
+
 /* ── Fetch one post by slug ── */
 async function getPost(slug: string) {
   const supabase = getSupabase()
@@ -223,17 +231,20 @@ export default async function DynamicPostPage({
 
               {/* ── Main Content (HTML from rich editor) ── */}
               <div
-                className="prose prose-sm sm:prose-base max-w-none
+                className="rich-content prose prose-sm sm:prose-base max-w-none
                   prose-headings:font-playfair prose-headings:font-bold
-                  prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-10 prose-h2:mb-4
-                  prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-                  prose-p:leading-relaxed
+                  prose-h1:text-2xl prose-h1:md:text-3xl prose-h1:mt-8 prose-h1:mb-4
+                  prose-h2:text-xl prose-h2:md:text-2xl prose-h2:mt-10 prose-h2:mb-4
+                  prose-h3:text-lg prose-h3:md:text-xl prose-h3:mt-6 prose-h3:mb-3
+                  prose-p:leading-relaxed prose-p:mb-4
                   prose-li:leading-relaxed
                   prose-a:font-medium prose-a:no-underline hover:prose-a:underline
-                  prose-img:rounded-xl prose-img:mx-auto
-                  prose-table:text-sm
-                  prose-th:p-3 prose-td:p-3
+                  prose-img:rounded-xl prose-img:mx-auto prose-img:max-w-full prose-img:h-auto
+                  prose-table:text-sm prose-table:w-full prose-table:border-collapse
+                  prose-th:p-3 prose-th:text-left prose-td:p-3
                   prose-blockquote:rounded-xl prose-blockquote:px-5 prose-blockquote:py-3
+                  prose-pre:rounded-xl prose-pre:p-4
+                  prose-hr:my-8
                 "
                 style={{
                   color: 'var(--text-muted)',
@@ -244,8 +255,13 @@ export default async function DynamicPostPage({
                   ['--tw-prose-counters' as string]: 'var(--accent)',
                   ['--tw-prose-th-borders' as string]: 'var(--border)',
                   ['--tw-prose-td-borders' as string]: 'var(--border)',
+                  ['--tw-prose-hr' as string]: 'var(--border)',
+                  ['--tw-prose-quote-borders' as string]: 'var(--accent)',
+                  ['--tw-prose-code' as string]: 'var(--accent)',
+                  ['--tw-prose-pre-bg' as string]: 'var(--bg-secondary)',
+                  ['--tw-prose-pre-code' as string]: 'var(--text-muted)',
                 }}
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: stripInlineStyles(post.content || '') }}
               />
 
               <hr

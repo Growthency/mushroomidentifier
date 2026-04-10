@@ -337,17 +337,21 @@ export default function BlogPageClient() {
   useEffect(() => {
     // Fetch admin-created posts from database and merge with hardcoded articles
     fetch('/api/blog/posts')
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`API error: ${r.status}`)
+        return r.json()
+      })
       .then(data => {
-        if (data.posts && data.posts.length > 0) {
+        const dbPosts = data?.posts ?? []
+        if (dbPosts.length > 0) {
           const hardcodedSlugs = new Set(articles.map(a => a.slug))
-          const newPosts = data.posts.filter((p: Article) => !hardcodedSlugs.has(p.slug))
+          const newPosts = dbPosts.filter((p: Article) => !hardcodedSlugs.has(p.slug))
           if (newPosts.length > 0) {
-            setAllArticles([...newPosts, ...articles])
+            setAllArticles(prev => [...newPosts, ...articles])
           }
         }
       })
-      .catch(() => {})
+      .catch(err => console.error('[Blog] Failed to load DB posts:', err))
   }, [])
 
   useEffect(() => {
