@@ -280,16 +280,9 @@ export default function BlogSidebar() {
         alignSelf: 'flex-start',
       }}
     >
-      {/* ── FIXED TOP SECTION: Premium Banner + Table of Contents ── */}
-      <div className="flex-shrink-0">
-        <PremiumBanner />
-        {/* ToC auto-detects headings from the article DOM */}
-        <TableOfContents />
-      </div>
-
       {/* ── SCROLLABLE SECTION: Search + Trending + Recent ── */}
       <div
-        className="flex-1 overflow-y-auto mt-4"
+        className="flex-1 overflow-y-auto"
         style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--border) transparent' }}
       >
         {/* Search */}
@@ -402,6 +395,12 @@ export default function BlogSidebar() {
             )}
           </ul>
         </div>
+      </div>
+
+      {/* ── FIXED BOTTOM SECTION: Premium Banner + Table of Contents ── */}
+      <div className="flex-shrink-0 mt-4">
+        <PremiumBanner />
+        <TableOfContents />
       </div>
     </aside>
   )
