@@ -271,10 +271,13 @@ export default function BlogSidebar() {
     : RECENT_POSTS
 
   return (
-    <aside
-      className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0"
-      style={{ position: 'sticky', top: '88px', alignSelf: 'flex-start' }}
-    >
+    <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0 self-stretch">
+
+      {/* ── Premium Banner — stays fixed while scrolling ── */}
+      <div style={{ position: 'sticky', top: '88px', zIndex: 10 }}>
+        <PremiumBanner />
+      </div>
+
         {/* Search */}
         <div className="relative mb-4">
           <Search
@@ -386,8 +389,7 @@ export default function BlogSidebar() {
           </ul>
         </div>
 
-      {/* ── Premium Banner + Table of Contents (below posts) ── */}
-      <PremiumBanner />
+      {/* ── Table of Contents (below posts, scrolls normally) ── */}
       <TableOfContents />
     </aside>
   )
