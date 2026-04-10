@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 14,
+    title: 'Amanita pantherina (Panther Cap): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Amanita pantherina, commonly known as the Panther Cap, is a toxic Amanita species known for its brown cap with white spots and strong potential for misidentification. Learn identification, habitat, toxicity, and safety tips.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 10, 2026',
+    readTime: '10 min',
+    slug: '/amanita-pantherina',
+    image: '/amanita-pantherina-panther-cap-identification.webp',
+    views: 1420,
+    is_premium: false,
+  },
+  {
     id: 13,
     title: 'Amanita muscaria (Fly Agaric): Identification, Features, Habitat & Safety Guide',
     excerpt:
