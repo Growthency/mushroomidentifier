@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 13,
+    title: 'Amanita muscaria (Fly Agaric): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Amanita muscaria, commonly known as the Fly Agaric, is one of the most recognizable mushrooms in the world due to its bright red cap with white spots. Learn identification, habitat, toxicity, and safety tips.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 10, 2026',
+    readTime: '10 min',
+    slug: '/amanita-muscaria',
+    image: '/amanita-muscaria-fly-agaric-identification.webp',
+    views: 1870,
+    is_premium: false,
+  },
+  {
     id: 12,
     title: 'Amanita ocreata (Toxic Amanita Species): Identification Guide',
     excerpt:

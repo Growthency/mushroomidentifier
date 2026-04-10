@@ -34,5 +34,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/why-are-mushrooms-growing-in-my-yard`,         lastModified: new Date('2026-04-04'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/are-there-any-deadly-leccinum-mushrooms`,      lastModified: new Date('2026-04-05'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/amanita-ocreata`,                              lastModified: new Date('2026-04-10'),     changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/amanita-muscaria`,                             lastModified: new Date('2026-04-10'),     changeFrequency: 'monthly', priority: 0.85 },
   ]
 }
