@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useCallback, useState } from 'react'
+import { useRef, useCallback, useState, useEffect } from 'react'
 import {
   Bold, Italic, Underline, Strikethrough, List, ListOrdered,
   Heading1, Heading2, Heading3, Link, Image as ImageIcon,
@@ -16,19 +16,32 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const onChangeRef = useRef(onChange)
+  const initializedRef = useRef(false)
+
+  // Keep callback ref fresh without re-renders
+  useEffect(() => { onChangeRef.current = onChange }, [onChange])
+
+  // Set initial content only once
+  useEffect(() => {
+    if (editorRef.current && value && !initializedRef.current) {
+      editorRef.current.innerHTML = value
+      initializedRef.current = true
+    }
+  }, [value])
 
   const exec = useCallback((command: string, val?: string) => {
     document.execCommand(command, false, val)
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML)
+      onChangeRef.current(editorRef.current.innerHTML)
     }
-  }, [onChange])
+  }, [])
 
   const handleInput = useCallback(() => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML)
+      onChangeRef.current(editorRef.current.innerHTML)
     }
-  }, [onChange])
+  }, [])
 
   const insertHeading = (level: number) => {
     exec('formatBlock', `h${level}`)
@@ -92,7 +105,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   return (
     <div className="rounded-xl border overflow-hidden" style={{ background: '#1e293b', borderColor: '#334155' }}>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b" style={{ borderColor: '#334155', background: '#162032' }}>
+      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b sticky top-0 z-10" style={{ borderColor: '#334155', background: '#162032' }}>
         {/* Undo / Redo */}
         <ToolBtn onClick={() => exec('undo')} title="Undo"><Undo2 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('redo')} title="Redo"><Redo2 className="w-4 h-4" /></ToolBtn>
@@ -163,7 +176,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         contentEditable
         onInput={handleInput}
         onBlur={handleInput}
-        dangerouslySetInnerHTML={{ __html: value }}
+        suppressContentEditableWarning
         className="min-h-[500px] px-6 py-5 text-sm text-white leading-relaxed outline-none prose prose-invert prose-sm max-w-none
           [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-white [&_h1]:mt-6 [&_h1]:mb-3
           [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-5 [&_h2]:mb-2

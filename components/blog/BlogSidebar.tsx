@@ -324,8 +324,8 @@ export default function BlogSidebar() {
   return (
     <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0">
 
-      {/* ── Fixed Banner — JS position:fixed, always visible ── */}
-      <FixedBanner />
+      {/* ── Premium Banner — normal flow ── */}
+      <PremiumBanner />
 
         {/* Search */}
         <div className="relative mb-4">
