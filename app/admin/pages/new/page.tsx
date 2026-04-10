@@ -40,6 +40,7 @@ export default function NewPageEditor() {
   const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [content, setContent] = useState('')
+  const contentRef = useRef('')
   const [featuredImage, setFeaturedImage] = useState('')
   const [category, setCategory] = useState('Species Guide')
   const [riskLevel, setRiskLevel] = useState('General')
@@ -52,6 +53,11 @@ export default function NewPageEditor() {
   const [metaDescription, setMetaDescription] = useState('')
 
   const [autoSlug, setAutoSlug] = useState(true)
+
+  const handleContentChange = (html: string) => {
+    contentRef.current = html
+    setContent(html)
+  }
 
   const handleTitleChange = (val: string) => {
     setTitle(val)
@@ -99,7 +105,7 @@ export default function NewPageEditor() {
           title: title.trim(),
           slug: slug.trim(),
           excerpt: excerpt.trim(),
-          content,
+          content: contentRef.current || content,
           featured_image: featuredImage.trim(),
           category,
           risk_level: riskLevel,
@@ -252,7 +258,7 @@ export default function NewPageEditor() {
           {/* Rich Content Editor */}
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-2">Content</label>
-            <RichEditor value={content} onChange={setContent} />
+            <RichEditor value={content} onChange={handleContentChange} />
           </div>
         </div>
 

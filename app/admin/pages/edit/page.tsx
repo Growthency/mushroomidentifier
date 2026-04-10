@@ -35,6 +35,7 @@ export default function EditPageEditor() {
   const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [content, setContent] = useState('')
+  const contentRef = useRef('')
   const [featuredImage, setFeaturedImage] = useState('')
   const [category, setCategory] = useState('Species Guide')
   const [riskLevel, setRiskLevel] = useState('General')
@@ -45,6 +46,11 @@ export default function EditPageEditor() {
   const [authorRole, setAuthorRole] = useState('')
   const [metaTitle, setMetaTitle] = useState('')
   const [metaDescription, setMetaDescription] = useState('')
+
+  const handleContentChange = (html: string) => {
+    contentRef.current = html
+    setContent(html)
+  }
 
   useEffect(() => {
     if (!postId) { router.push('/admin/pages'); return }
@@ -57,7 +63,9 @@ export default function EditPageEditor() {
         setTitle(found.title || '')
         setSlug(found.slug || '')
         setExcerpt(found.excerpt || '')
-        setContent(found.content || '')
+        const loadedContent = found.content || ''
+        setContent(loadedContent)
+        contentRef.current = loadedContent
         setFeaturedImage(found.featured_image || '')
         setCategory(found.category || 'Species Guide')
         setRiskLevel(found.risk_level || 'General')
@@ -109,7 +117,7 @@ export default function EditPageEditor() {
           title: title.trim(),
           slug: slug.trim(),
           excerpt: excerpt.trim(),
-          content,
+          content: contentRef.current || content,
           featured_image: featuredImage.trim(),
           category,
           risk_level: riskLevel,
@@ -306,7 +314,7 @@ export default function EditPageEditor() {
           {/* Rich Content Editor */}
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-2">Content</label>
-            <RichEditor value={content} onChange={setContent} />
+            <RichEditor value={content} onChange={handleContentChange} />
           </div>
         </div>
 
