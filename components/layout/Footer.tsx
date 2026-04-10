@@ -233,6 +233,7 @@ export default function Footer() {
                 { href: "/contact", label: "Contact" },
                 { href: "/privacy", label: "Privacy Policy" },
                 { href: "/terms", label: "Terms of Service" },
+                { href: "/refund", label: "Refund Policy" },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link
@@ -393,9 +394,13 @@ export default function Footer() {
               Terms
             </Link>
             <span style={{ color: "var(--border-hover)" }}>·</span>
-            <span className="text-xs" style={{ color: "var(--text-faint)" }}>
-              English only
-            </span>
+            <Link
+              href="/refund"
+              className="text-xs hover:underline"
+              style={{ color: "var(--text-faint)" }}
+            >
+              Refund Policy
+            </Link>
           </div>
         </div>
       </div>
