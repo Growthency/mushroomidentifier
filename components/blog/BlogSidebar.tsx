@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -258,6 +258,45 @@ function PremiumBanner() {
   )
 }
 
+// ── Fixed Banner Wrapper (uses JS position:fixed) ────────────────────────────
+function FixedBanner() {
+  const markerRef = useRef<HTMLDivElement>(null)
+  const [pos, setPos] = useState<{ left: number; width: number } | null>(null)
+
+  useEffect(() => {
+    const measure = () => {
+      const el = markerRef.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      setPos({ left: rect.left, width: rect.width })
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
+  return (
+    <>
+      {/* Invisible marker to measure sidebar position */}
+      <div ref={markerRef} className="w-full h-0" aria-hidden />
+      {/* Fixed banner */}
+      {pos && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 88,
+            left: pos.left,
+            width: pos.width,
+            zIndex: 20,
+          }}
+        >
+          <PremiumBanner />
+        </div>
+      )}
+    </>
+  )
+}
+
 // ── Main Sidebar ─────────────────────────────────────────────────────────────
 export default function BlogSidebar() {
   const [query, setQuery] = useState('')
@@ -271,10 +310,11 @@ export default function BlogSidebar() {
     : RECENT_POSTS
 
   return (
-    <aside
-      className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0"
-      style={{ alignSelf: 'stretch' }}
-    >
+    <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0">
+
+      {/* ── Fixed Banner — JS position:fixed, always visible ── */}
+      <FixedBanner />
+
         {/* Search */}
         <div className="relative mb-4">
           <Search
@@ -388,11 +428,6 @@ export default function BlogSidebar() {
 
       {/* ── Table of Contents ── */}
       <TableOfContents />
-
-      {/* ── Premium Banner — sticky, always visible ── */}
-      <div style={{ position: 'sticky', top: '88px', zIndex: 10 }}>
-        <PremiumBanner />
-      </div>
     </aside>
   )
 }
