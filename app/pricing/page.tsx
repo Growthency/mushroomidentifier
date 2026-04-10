@@ -1,12 +1,18 @@
 'use client'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { Check, Sparkles } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Check, Sparkles, Loader2, ShieldCheck, RefreshCcw, Infinity } from 'lucide-react'
+import { initializePaddle, type Paddle } from '@paddle/paddle-js'
+import { createClient } from '@/lib/supabase/client'
 
+// ── Pack definitions ────────────────────────────────────────────────
 const PACKS = [
   {
     id: 'starter',
     name: 'Starter Pack',
     price: '$4.99',
+    priceEnv: 'NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID',
     credits: 120,
     identifications: 12,
     popular: false,
@@ -24,6 +30,7 @@ const PACKS = [
     id: 'explorer',
     name: 'Explorer Pack',
     price: '$9.99',
+    priceEnv: 'NEXT_PUBLIC_PADDLE_EXPLORER_PRICE_ID',
     credits: 550,
     identifications: 55,
     popular: true,
@@ -41,6 +48,7 @@ const PACKS = [
     id: 'pro',
     name: 'Pro Pack',
     price: '$19.99',
+    priceEnv: 'NEXT_PUBLIC_PADDLE_PRO_PRICE_ID',
     credits: 1200,
     identifications: 120,
     popular: false,
@@ -55,10 +63,95 @@ const PACKS = [
   },
 ]
 
+// Map pack id → price ID from env
+const PRICE_IDS: Record<string, string> = {
+  starter:  process.env.NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID  ?? '',
+  explorer: process.env.NEXT_PUBLIC_PADDLE_EXPLORER_PRICE_ID ?? '',
+  pro:      process.env.NEXT_PUBLIC_PADDLE_PRO_PRICE_ID      ?? '',
+}
+
 export default function PricingPage() {
+  const router   = useRouter()
+  const [paddle,   setPaddle]   = useState<Paddle | null>(null)
+  const [userId,   setUserId]   = useState<string | null>(null)
+  const [buying,   setBuying]   = useState<string | null>(null)   // packId being purchased
+  const [success,  setSuccess]  = useState<string | null>(null)   // packId just purchased
+  const [authReady, setAuthReady] = useState(false)
+
+  // ── Load Paddle JS SDK ──────────────────────────────────────────
+  useEffect(() => {
+    const env = (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT ?? 'sandbox') as 'sandbox' | 'production'
+    const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? ''
+    if (!token) return
+    initializePaddle({ environment: env, token }).then(p => {
+      if (p) setPaddle(p)
+    })
+  }, [])
+
+  // ── Get current user ────────────────────────────────────────────
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id ?? null)
+      setAuthReady(true)
+    })
+  }, [])
+
+  // ── Handle Paddle checkout callback (success) ───────────────────
+  const handleCheckoutComplete = useCallback((packId: string) => {
+    setBuying(null)
+    setSuccess(packId)
+    setTimeout(() => setSuccess(null), 8000)
+  }, [])
+
+  // ── Open Paddle checkout ────────────────────────────────────────
+  const handleBuy = (packId: string) => {
+    if (!authReady) return
+
+    // Require login
+    if (!userId) {
+      router.push(`/login?next=/pricing`)
+      return
+    }
+
+    const priceId = PRICE_IDS[packId]
+    if (!priceId) {
+      console.error('Paddle price ID not configured for pack:', packId)
+      return
+    }
+
+    if (!paddle) return
+
+    setBuying(packId)
+
+    paddle.Checkout.open({
+      items: [{ priceId, quantity: 1 }],
+      customData: { userId, packId },
+      settings: {
+        theme: 'light',
+        displayMode: 'overlay',
+        locale: 'en',
+      },
+      // Paddle calls this when checkout is closed (success or cancel)
+    })
+
+    // Poll for checkout close — Paddle JS doesn't expose a clean callback
+    // We listen to storage events or just reset buying state after a delay
+    const checkInterval = setInterval(() => {
+      // If overlay is gone, reset
+      if (!document.querySelector('.paddle-frame')) {
+        clearInterval(checkInterval)
+        // Small delay to let webhook process
+        setTimeout(() => setBuying(null), 500)
+      }
+    }, 500)
+  }
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-6" style={{ background: 'var(--bg-primary)' }}>
       <div className="max-w-7xl mx-auto">
+
+        {/* ── Header ── */}
         <div className="text-center mb-16">
           <h1 className="font-playfair text-5xl md:text-6xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
             More Identifications. Better Value.
@@ -68,11 +161,24 @@ export default function PricingPage() {
           </p>
           <div className="inline-block px-6 py-3 rounded-lg" style={{ background: 'var(--accent-bg)', border: '1px solid var(--border)' }}>
             <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-              Most apps give you 10 identifications for $4.99. We give you <span style={{ color: 'var(--accent)' }}>12</span>. Same price, more value.
+              Most apps give you 10 identifications for $4.99. We give you{' '}
+              <span style={{ color: 'var(--accent)' }}>12</span>. Same price, more value.
             </p>
           </div>
         </div>
 
+        {/* ── Success banner ── */}
+        {success && (
+          <div
+            className="mb-8 p-4 rounded-xl flex items-center gap-3 text-sm font-medium"
+            style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e' }}
+          >
+            <ShieldCheck className="w-5 h-5 flex-shrink-0" />
+            Payment received! Your credits are being added — refresh your dashboard in a moment.
+          </div>
+        )}
+
+        {/* ── Pricing cards ── */}
         <div className="grid md:grid-cols-3 gap-8 mb-24 items-start">
           {PACKS.map((pack) => (
             <div key={pack.id} className={`relative ${pack.popular ? 'pt-6' : ''}`}>
@@ -85,41 +191,98 @@ export default function PricingPage() {
                   <span className="text-xs font-bold tracking-wide">MOST POPULAR</span>
                 </div>
               )}
-            <div
-              className="relative p-8 rounded-2xl card-lift card-glow h-full"
-              style={{
-                background: 'var(--bg-card)',
-                border: pack.popular ? '2px solid var(--accent)' : '1px solid var(--border)',
-              }}
-            >
-              <h3 className="font-playfair text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                {pack.name}
-              </h3>
-              <div className="mb-6">
-                <span className="font-playfair text-5xl font-bold" style={{ color: 'var(--text-primary)' }}>{pack.price}</span>
-                <span className="text-sm ml-2" style={{ color: 'var(--text-muted)' }}>one-time</span>
-              </div>
-
-              <ul className="space-y-3 mb-8">
-                {pack.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--accent)' }} />
-                    <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                className="w-full px-6 py-3 rounded-lg font-semibold glow-green hover:opacity-90 transition-opacity"
-                style={{ background: pack.popular ? 'var(--btn-primary)' : 'var(--accent-bg)', color: pack.popular ? '#fff' : 'var(--text-primary)' }}
+              <div
+                className="relative p-8 rounded-2xl card-lift card-glow h-full flex flex-col"
+                style={{
+                  background: 'var(--bg-card)',
+                  border: pack.popular ? '2px solid var(--accent)' : '1px solid var(--border)',
+                }}
               >
-                Buy {pack.name}
-              </button>
-            </div>
+                <h3 className="font-playfair text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                  {pack.name}
+                </h3>
+                <div className="mb-6">
+                  <span className="font-playfair text-5xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                    {pack.price}
+                  </span>
+                  <span className="text-sm ml-2" style={{ color: 'var(--text-muted)' }}>one-time</span>
+                </div>
+
+                <ul className="space-y-3 mb-8 flex-1">
+                  {pack.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--accent)' }} />
+                      <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* ── Buy button ── */}
+                {success === pack.id ? (
+                  <div
+                    className="w-full px-6 py-3 rounded-lg font-semibold text-center text-sm"
+                    style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)' }}
+                  >
+                    ✓ Payment successful!
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleBuy(pack.id)}
+                    disabled={buying !== null || !authReady}
+                    className="w-full px-6 py-3 rounded-lg font-semibold transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
+                    style={{
+                      background: pack.popular ? 'var(--btn-primary)' : 'var(--accent-bg)',
+                      color: pack.popular ? '#fff' : 'var(--text-primary)',
+                    }}
+                  >
+                    {buying === pack.id ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Opening checkout…
+                      </>
+                    ) : !authReady ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : !userId ? (
+                      'Sign in to Buy'
+                    ) : (
+                      `Buy ${pack.name}`
+                    )}
+                  </button>
+                )}
+
+                {/* Paddle badge */}
+                <p className="text-xs text-center mt-3" style={{ color: 'var(--text-faint)' }}>
+                  Secure checkout by{' '}
+                  <a
+                    href="https://paddle.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    Paddle
+                  </a>
+                </p>
+              </div>
             </div>
           ))}
         </div>
 
+        {/* ── Trust badges ── */}
+        <div className="flex flex-wrap justify-center gap-6 mb-24">
+          {[
+            { icon: <ShieldCheck className="w-5 h-5" />, text: '256-bit SSL encryption' },
+            { icon: <RefreshCcw className="w-5 h-5" />, text: '14-day money-back guarantee' },
+            { icon: <Infinity className="w-5 h-5" />, text: 'Credits never expire' },
+          ].map((badge, i) => (
+            <div key={i} className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
+              <span style={{ color: 'var(--accent)' }}>{badge.icon}</span>
+              {badge.text}
+            </div>
+          ))}
+        </div>
+
+        {/* ── How credits work ── */}
         <div className="mb-24 p-8 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
           <h2 className="font-playfair text-3xl font-bold text-center mb-12" style={{ color: 'var(--text-primary)' }}>
             How Credits Work
@@ -141,6 +304,7 @@ export default function PricingPage() {
           </div>
         </div>
 
+        {/* ── Value comparison table ── */}
         <div className="mb-24">
           <h2 className="font-playfair text-3xl font-bold text-center mb-12" style={{ color: 'var(--text-primary)' }}>
             Value Comparison
@@ -158,10 +322,10 @@ export default function PricingPage() {
               </thead>
               <tbody>
                 {[
-                  { label: 'Price', vals: ['$4.99', '$4.99', '$9.99', '$19.99'] },
-                  { label: 'Identifications', vals: ['10', '12', '55', '120'] },
-                  { label: 'Per ID cost', vals: ['$0.50', '$0.42', '$0.18', '$0.17'] },
-                  { label: 'Expiry', vals: ['12 months', 'Never', 'Never', 'Never'] },
+                  { label: 'Price',           vals: ['$4.99', '$4.99',  '$9.99',  '$19.99'] },
+                  { label: 'Identifications', vals: ['10',    '12',     '55',     '120']    },
+                  { label: 'Per ID cost',     vals: ['$0.50', '$0.42',  '$0.18',  '$0.17']  },
+                  { label: 'Expiry',          vals: ['12 months', 'Never', 'Never', 'Never']},
                 ].map((row, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
                     <td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>{row.label}</td>
@@ -177,17 +341,19 @@ export default function PricingPage() {
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto">
+        {/* ── FAQ ── */}
+        <div className="max-w-3xl mx-auto mb-24">
           <h2 className="font-playfair text-3xl font-bold text-center mb-12" style={{ color: 'var(--text-primary)' }}>
             Frequently Asked Questions
           </h2>
           <div className="space-y-6">
             {[
-              { q: 'Do credits expire?', a: 'Never. Use them whenever you want.' },
+              { q: 'Do credits expire?',               a: 'Never. Use them whenever you want.' },
               { q: 'What if the AI fails to identify?', a: 'Full credit refund, automatically.' },
-              { q: 'Can I get a refund?', a: 'Yes, within 7 days if credits are unused.' },
-              { q: 'Is there a free tier?', a: 'Yes, 3 free identifications per day per device.' },
-              { q: 'Can I buy multiple packs?', a: 'Yes, credits stack on your account.' },
+              { q: 'Can I get a refund?',               a: 'Yes — 14-day money-back guarantee, no questions asked. Contact us or Paddle directly.' },
+              { q: 'Is there a free tier?',             a: 'Yes, 3 free identifications per day per device.' },
+              { q: 'Can I buy multiple packs?',         a: 'Yes, credits stack on your account.' },
+              { q: 'Who processes the payment?',        a: 'Paddle.com acts as our Merchant of Record and handles all payments securely.' },
             ].map((faq, i) => (
               <div key={i} className="p-6 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                 <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{faq.q}</h3>
@@ -197,8 +363,12 @@ export default function PricingPage() {
           </div>
         </div>
 
-        <div className="mt-24 text-center">
-          <Link href="/#identifier" className="inline-block px-8 py-4 rounded-full text-lg font-semibold glow-green hover:opacity-90 transition-opacity" style={{ background: 'var(--btn-primary)', color: '#fff' }}>
+        <div className="text-center">
+          <Link
+            href="/#identifier"
+            className="inline-block px-8 py-4 rounded-full text-lg font-semibold glow-green hover:opacity-90 transition-opacity"
+            style={{ background: 'var(--btn-primary)', color: '#fff' }}
+          >
             Start with 3 Free Identifications →
           </Link>
         </div>
