@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 26,
+    title: 'Hypholoma fasciculare (Sulfur Tuft) – Identification, Toxicity & Lookalikes',
+    excerpt:
+      'Hypholoma fasciculare, commonly known as the sulfur tuft, is a toxic woodland mushroom that grows in dense clusters on decaying wood. Learn identification features, greenish gills, toxicity, habitat, and how to distinguish it from edible wood mushrooms.',
+    category: 'Edibility Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '11 min',
+    slug: '/hypholoma-fasciculare',
+    image: '/hypholoma-fasciculare-sulfur-tuft-identification.webp',
+    views: 4580,
+    is_premium: false,
+  },
+  {
     id: 25,
     title: 'Scleroderma citrinum (Earthball Mushroom) – Identification, Toxicity & Lookalikes',
     excerpt:
