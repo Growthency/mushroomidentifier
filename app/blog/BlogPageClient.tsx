@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 21,
+    title: 'Pleurotus ostreatus (Oyster Mushroom): Identification, Edibility & Lookalikes',
+    excerpt:
+      'Pleurotus ostreatus, commonly known as oyster mushrooms, are one of the most popular and easy-to-identify edible wild mushrooms. Learn identification features, habitat, culinary uses, and how to distinguish from toxic lookalikes.',
+    category: 'Edibility Guide',
+    riskLevel: 'Low Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '11 min',
+    slug: '/pleurotus-ostreatus',
+    image: '/pleurotus-ostreatus-oyster-mushroom-identification.webp',
+    views: 6180,
+    is_premium: false,
+  },
+  {
     id: 20,
     title: 'Morchella esculenta (True Morel): Identification, Edibility & Lookalikes',
     excerpt:
