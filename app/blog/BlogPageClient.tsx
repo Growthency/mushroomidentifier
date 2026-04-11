@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 19,
+    title: 'Cantharellus cibarius (Chanterelle): Identification, Edibility & Lookalikes',
+    excerpt:
+      'Cantharellus cibarius, commonly known as the chanterelle, is one of the most popular and highly prized wild edible mushrooms in the world. Learn identification features, habitat, culinary uses, and how to distinguish it from toxic jack-o\u2019-lantern lookalikes.',
+    category: 'Edibility Guide',
+    riskLevel: 'Low Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '11 min',
+    slug: '/cantharellus-cibarius',
+    image: '/cantharellus-cibarius-chanterelle-identification.webp',
+    views: 4120,
+    is_premium: false,
+  },
+  {
     id: 18,
     title: 'Boletus edulis (Porcini Mushroom): Identification, Edibility & Lookalikes',
     excerpt:
