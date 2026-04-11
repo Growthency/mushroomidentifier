@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import PremiumGate from '@/components/PremiumGate'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import AuthorBlock from '@/components/blog/AuthorBlock'

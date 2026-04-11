@@ -85,7 +85,8 @@
       "Bash(cd /d E:mushroomidentifiers)",
       "Bash(magick --version)",
       "Bash(convert --version)",
-      "Bash(ffmpeg -version)"
+      "Bash(ffmpeg -version)",
+      "Bash(do echo:*)"
     ]
   }
 }
