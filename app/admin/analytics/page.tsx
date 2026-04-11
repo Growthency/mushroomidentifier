@@ -312,10 +312,10 @@ export default function AnalyticsPage() {
         <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
             <FileText className="w-4 h-4 text-emerald-400" />
-            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 10 Pages</h2>
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 Pages</h2>
             <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>by pageviews</span>
           </div>
-          <div>
+          <div style={{ maxHeight: '480px', overflowY: 'auto' }}>
             {data.topPages.length > 0 ? data.topPages.map((p, i) => {
               const pct = (p.views / maxBarViews) * 100
               return (
@@ -346,10 +346,10 @@ export default function AnalyticsPage() {
         <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
             <Globe className="w-4 h-4 text-blue-400" />
-            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 10 Countries</h2>
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 Countries</h2>
             <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>by active users</span>
           </div>
-          <div>
+          <div style={{ maxHeight: '480px', overflowY: 'auto' }}>
             {data.topCountries.length > 0 ? data.topCountries.map((c, i) => {
               const pct = (c.users / maxBarUsers) * 100
               return (
@@ -377,12 +377,13 @@ export default function AnalyticsPage() {
         <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
             <Search className="w-4 h-4 text-amber-400" />
-            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 10 Search Keywords</h2>
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 Search Keywords</h2>
             <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Google Search Console</span>
           </div>
+          <div style={{ maxHeight: '480px', overflowY: 'auto' }}>
           {data.topKeywords.length > 0 ? (
             <table className="w-full text-sm">
-              <thead>
+              <thead className="sticky top-0 z-10" style={{ background: cardBg }}>
                 <tr style={{ borderBottom: `1px solid ${cardBorder}` }}>
                   <th className="text-left px-5 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>#</th>
                   <th className="text-left px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Keyword</th>
@@ -408,18 +409,20 @@ export default function AnalyticsPage() {
           ) : (
             <p className="px-5 py-8 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No keyword data available</p>
           )}
+          </div>
         </div>
 
         {/* Top Search Pages */}
         <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
             <MousePointerClick className="w-4 h-4 text-purple-400" />
-            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top Search Pages</h2>
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 Search Pages</h2>
             <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>by clicks</span>
           </div>
+          <div style={{ maxHeight: '480px', overflowY: 'auto' }}>
           {data.topSearchPages.length > 0 ? (
             <table className="w-full text-sm">
-              <thead>
+              <thead className="sticky top-0 z-10" style={{ background: cardBg }}>
                 <tr style={{ borderBottom: `1px solid ${cardBorder}` }}>
                   <th className="text-left px-5 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>#</th>
                   <th className="text-left px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Page</th>
@@ -443,6 +446,7 @@ export default function AnalyticsPage() {
           ) : (
             <p className="px-5 py-8 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No search page data available</p>
           )}
+          </div>
         </div>
       </div>
     </div>
