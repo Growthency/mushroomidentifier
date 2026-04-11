@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 22,
+    title: 'Gyromitra esculenta (False Morel): Identification, Toxicity & Safety Guide',
+    excerpt:
+      'Gyromitra esculenta, commonly known as the false morel, is a highly controversial wild mushroom that resembles edible morels but contains dangerous toxins. Learn identification features, toxicity, habitat, and how to distinguish it from true morels.',
+    category: 'Edibility Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '13 min',
+    slug: '/gyromitra-esculenta',
+    image: '/gyromitra-esculenta-false-morel-identification.webp',
+    views: 3840,
+    is_premium: false,
+  },
+  {
     id: 21,
     title: 'Pleurotus ostreatus (Oyster Mushroom): Identification, Edibility & Lookalikes',
     excerpt:
