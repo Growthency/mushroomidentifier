@@ -158,8 +158,8 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
   const siteUrl = 'https://mushroomidentifiers.com'
 
   try {
-    // Top queries (keywords)
-    const [queriesRes, pagesRes] = await Promise.all([
+    // Top queries (keywords), top pages, daily clicks
+    const [queriesRes, pagesRes, dailyRes] = await Promise.all([
       searchConsole.searchanalytics.query({
         siteUrl,
         requestBody: {
@@ -177,6 +177,15 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
           endDate,
           dimensions: ['page'],
           rowLimit: 10,
+          type: 'web',
+        },
+      }),
+      searchConsole.searchanalytics.query({
+        siteUrl,
+        requestBody: {
+          startDate,
+          endDate,
+          dimensions: ['date'],
           type: 'web',
         },
       }),
@@ -198,7 +207,13 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
       position: Number((row.position || 0).toFixed(1)),
     }))
 
-    return { topKeywords, topSearchPages }
+    const dailyClicks = (dailyRes.data.rows ?? []).map(row => ({
+      date: row.keys?.[0] || '',
+      clicks: row.clicks || 0,
+      impressions: row.impressions || 0,
+    }))
+
+    return { topKeywords, topSearchPages, dailyClicks }
   } catch (err: any) {
     console.error('Search Console API error:', err.message)
     return null

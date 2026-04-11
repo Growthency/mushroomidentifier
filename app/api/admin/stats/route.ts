@@ -1,13 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { isAdminEmail } from '@/lib/admin'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || !isAdminEmail(user.email)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const period = request.nextUrl.searchParams.get('period') || '30d'
 
   // Use service role for full access
   const { createClient: createAdmin } = await import('@supabase/supabase-js')
@@ -17,11 +19,7 @@ export async function GET() {
   )
 
   const now = new Date()
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
-  const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+  const { rangeStart, prevStart, prevEnd } = getPeriodRange(period, now)
 
   // ── Users ──
   const { count: totalUsers } = await admin
@@ -40,21 +38,23 @@ export async function GET() {
 
   const lifetimeEarnings = (allTx ?? []).reduce((s, t) => s + (Number(t.amount_paid) || 0), 0)
 
+  const periodTx = (allTx ?? []).filter(t => new Date(t.created_at) >= rangeStart)
+  const periodEarnings = periodTx.reduce((s, t) => s + (Number(t.amount_paid) || 0), 0)
+
+  const prevTx = (allTx ?? []).filter(t => {
+    const d = new Date(t.created_at)
+    return d >= prevStart && d < prevEnd
+  })
+  const prevEarnings = prevTx.reduce((s, t) => s + (Number(t.amount_paid) || 0), 0)
+
+  const earningsChange = prevEarnings > 0
+    ? (((periodEarnings - prevEarnings) / prevEarnings) * 100).toFixed(1)
+    : periodEarnings > 0 ? '100' : '0'
+
+  // This month (always show separately)
+  const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
   const thisMonthTx = (allTx ?? []).filter(t => new Date(t.created_at) >= thisMonthStart)
   const thisMonthEarnings = thisMonthTx.reduce((s, t) => s + (Number(t.amount_paid) || 0), 0)
-
-  const last30Tx = (allTx ?? []).filter(t => new Date(t.created_at) >= thirtyDaysAgo)
-  const last30Earnings = last30Tx.reduce((s, t) => s + (Number(t.amount_paid) || 0), 0)
-
-  const prev30Tx = (allTx ?? []).filter(t => {
-    const d = new Date(t.created_at)
-    return d >= sixtyDaysAgo && d < thirtyDaysAgo
-  })
-  const prev30Earnings = prev30Tx.reduce((s, t) => s + (Number(t.amount_paid) || 0), 0)
-
-  const earningsChange = prev30Earnings > 0
-    ? (((last30Earnings - prev30Earnings) / prev30Earnings) * 100).toFixed(1)
-    : last30Earnings > 0 ? '100' : '0'
 
   // ── Recent users ──
   const { data: recentUsers } = await admin
@@ -80,10 +80,52 @@ export async function GET() {
     revenue: {
       lifetime: lifetimeEarnings,
       thisMonth: thisMonthEarnings,
-      last30Days: last30Earnings,
+      period: periodEarnings,
       earningsChangePercent: Number(earningsChange),
     },
     recentUsers: recentUsers ?? [],
     recentTransactions: recentTx ?? [],
+    period,
   })
+}
+
+function getPeriodRange(period: string, now: Date) {
+  switch (period) {
+    case '7d': {
+      const rangeStart = new Date(now.getTime() - 7 * 86400000)
+      const prevStart = new Date(now.getTime() - 14 * 86400000)
+      return { rangeStart, prevStart, prevEnd: rangeStart }
+    }
+    case '30d': {
+      const rangeStart = new Date(now.getTime() - 30 * 86400000)
+      const prevStart = new Date(now.getTime() - 60 * 86400000)
+      return { rangeStart, prevStart, prevEnd: rangeStart }
+    }
+    case 'this_month': {
+      const rangeStart = new Date(now.getFullYear(), now.getMonth(), 1)
+      const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      return { rangeStart, prevStart, prevEnd: rangeStart }
+    }
+    case 'last_month': {
+      const rangeStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      const prevStart = new Date(now.getFullYear(), now.getMonth() - 2, 1)
+      const prevEnd = rangeStart
+      return { rangeStart, prevStart, prevEnd }
+    }
+    case '365d': {
+      const rangeStart = new Date(now.getTime() - 365 * 86400000)
+      const prevStart = new Date(now.getTime() - 730 * 86400000)
+      return { rangeStart, prevStart, prevEnd: rangeStart }
+    }
+    case 'year_vs_year': {
+      const rangeStart = new Date(now.getFullYear(), 0, 1)
+      const prevStart = new Date(now.getFullYear() - 1, 0, 1)
+      return { rangeStart, prevStart, prevEnd: rangeStart }
+    }
+    default: {
+      const rangeStart = new Date(now.getTime() - 30 * 86400000)
+      const prevStart = new Date(now.getTime() - 60 * 86400000)
+      return { rangeStart, prevStart, prevEnd: rangeStart }
+    }
+  }
 }

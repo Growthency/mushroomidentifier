@@ -1,15 +1,27 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   Users, DollarSign, TrendingUp, TrendingDown,
   CreditCard, UserCheck, UserX, Percent,
   ArrowUpRight, ArrowDownRight, Loader2,
+  Calendar, ChevronDown,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
+type Period = '7d' | '30d' | 'this_month' | 'last_month' | '365d' | 'year_vs_year'
+
+const PERIOD_LABELS: Record<Period, string> = {
+  '7d': 'Last 7 Days',
+  '30d': 'Last 30 Days',
+  'this_month': 'This Month',
+  'last_month': 'Last Month',
+  '365d': 'Last 365 Days',
+  'year_vs_year': 'Last Year vs This Year',
+}
+
 interface Stats {
   users: { total: number; free: number; paid: number; conversionRate: number }
-  revenue: { lifetime: number; thisMonth: number; last30Days: number; earningsChangePercent: number }
+  revenue: { lifetime: number; thisMonth: number; period: number; earningsChangePercent: number }
   recentUsers: { id: string; email: string; full_name: string; plan: string; created_at: string }[]
   recentTransactions: { id: string; user_id: string; pack_name: string; amount_paid: number; created_at: string }[]
 }
@@ -32,13 +44,22 @@ export default function AdminDashboard() {
   const dark = theme === 'dark'
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [period, setPeriod] = useState<Period>('30d')
+  const [showPeriod, setShowPeriod] = useState(false)
 
-  useEffect(() => {
-    fetch('/api/admin/stats')
+  const loadStats = useCallback((p: Period) => {
+    setLoading(true)
+    fetch(`/api/admin/stats?period=${p}`)
       .then(r => r.json())
       .then(setStats)
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => { loadStats(period) }, [period, loadStats])
+
+  const cardBg = dark ? 'rgba(255,255,255,0.03)' : '#fff'
+  const cardBorder = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
+  const dividerColor = dark ? 'rgba(255,255,255,0.04)' : '#f1f5f9'
 
   if (loading) {
     return (
@@ -51,15 +72,42 @@ export default function AdminDashboard() {
 
   const changeUp = stats.revenue.earningsChangePercent >= 0
 
-  const cardBg = dark ? 'rgba(255,255,255,0.03)' : '#fff'
-  const cardBorder = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
-  const dividerColor = dark ? 'rgba(255,255,255,0.04)' : '#f1f5f9'
-
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-[26px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Dashboard Overview</h1>
-        <p className="text-sm mt-1" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Real-time stats for Mushroom Identifiers</p>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-[26px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Dashboard Overview</h1>
+          <p className="text-sm mt-1" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Real-time stats for Mushroom Identifiers</p>
+        </div>
+        {/* Period Filter */}
+        <div className="relative">
+          <button
+            onClick={() => setShowPeriod(!showPeriod)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-medium transition-colors"
+            style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', border: `1px solid ${cardBorder}`, color: dark ? '#fff' : '#0f172a' }}
+          >
+            <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+            {PERIOD_LABELS[period]}
+            <ChevronDown className="w-3.5 h-3.5" style={{ color: dark ? '#64748b' : '#94a3b8' }} />
+          </button>
+          {showPeriod && (
+            <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl overflow-hidden shadow-xl" style={{ background: dark ? '#1e293b' : '#fff', border: `1px solid ${dark ? '#334155' : '#e2e8f0'}` }}>
+              {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
+                <button
+                  key={p}
+                  onClick={() => { setPeriod(p); setShowPeriod(false) }}
+                  className="w-full text-left px-4 py-2.5 text-[13px] transition-colors"
+                  style={{
+                    color: p === period ? '#10b981' : dark ? '#e2e8f0' : '#334155',
+                    background: p === period ? (dark ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.05)') : 'transparent',
+                  }}
+                >
+                  {PERIOD_LABELS[p]}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── User Stat cards ── */}
@@ -74,10 +122,10 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <GlassCard icon={DollarSign} label="Lifetime Earnings" value={fmt(stats.revenue.lifetime)} color="emerald" dark={dark} />
         <GlassCard icon={CreditCard} label="This Month" value={fmt(stats.revenue.thisMonth)} color="blue" dark={dark} />
-        <GlassCard icon={CreditCard} label="Last 30 Days" value={fmt(stats.revenue.last30Days)} color="purple" dark={dark} />
+        <GlassCard icon={CreditCard} label={PERIOD_LABELS[period]} value={fmt(stats.revenue.period)} color="purple" dark={dark} />
         <div className="p-5 rounded-2xl backdrop-blur-sm" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: dark ? '#64748b' : '#94a3b8' }}>vs Previous 30d</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: dark ? '#64748b' : '#94a3b8' }}>vs Previous Period</span>
             <div className={`p-2 rounded-xl ${changeUp ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
               {changeUp
                 ? <TrendingUp className="w-4 h-4 text-emerald-400" />
@@ -93,7 +141,7 @@ export default function AdminDashboard() {
               ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500/60" />
               : <ArrowDownRight className="w-3.5 h-3.5 text-red-500/60" />
             }
-            <span className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>month over month</span>
+            <span className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>period over period</span>
           </div>
         </div>
       </div>
