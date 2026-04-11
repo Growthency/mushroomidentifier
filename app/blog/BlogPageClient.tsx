@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 25,
+    title: 'Scleroderma citrinum (Earthball Mushroom) – Identification, Toxicity & Lookalikes',
+    excerpt:
+      'Scleroderma citrinum, commonly known as the earthball mushroom, is a toxic puffball-like fungus found in woodlands and sandy soils. Learn how to distinguish it from edible puffballs by its dark interior, thick skin, and warty texture.',
+    category: 'Edibility Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '11 min',
+    slug: '/scleroderma-citrinum',
+    image: '/scleroderma-citrinum-earthball-mushroom-identification.webp',
+    views: 3950,
+    is_premium: false,
+  },
+  {
     id: 24,
     title: 'Chlorophyllum molybdites (Poisonous Lawn Mushroom) – Identification, Symptoms & Lookalikes',
     excerpt:
