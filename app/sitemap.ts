@@ -47,6 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/pleurotus-ostreatus`,                          lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/gyromitra-esculenta`,                          lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/agaricus-xanthodermus`,                        lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/chlorophyllum-molybdites`,                     lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
   ]
 
   // ── Dynamic pages from Supabase (admin-created posts) ──

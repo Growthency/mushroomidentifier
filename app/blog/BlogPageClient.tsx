@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 24,
+    title: 'Chlorophyllum molybdites (Poisonous Lawn Mushroom) – Identification, Symptoms & Lookalikes',
+    excerpt:
+      'Chlorophyllum molybdites, commonly known as the poisonous lawn mushroom or green-spored parasol, is one of the most frequently ingested toxic mushrooms worldwide. Learn green spore print identification, toxicity, habitat, and how to distinguish it from edible parasol mushrooms.',
+    category: 'Edibility Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '12 min',
+    slug: '/chlorophyllum-molybdites',
+    image: '/chlorophyllum-molybdites-poisonous-lawn-mushroom-identification.webp',
+    views: 5120,
+    is_premium: false,
+  },
+  {
     id: 23,
     title: 'Agaricus xanthodermus (Yellow Stainer) – Identification, Toxicity & Lookalikes',
     excerpt:
