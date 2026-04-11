@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 20,
+    title: 'Morchella esculenta (True Morel): Identification, Edibility & Lookalikes',
+    excerpt:
+      'Morchella esculenta, commonly known as the true morel, is one of the most sought-after edible wild mushrooms in the world. Learn identification features, habitat, culinary uses, and how to distinguish it from toxic false morels.',
+    category: 'Edibility Guide',
+    riskLevel: 'Low Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '12 min',
+    slug: '/morchella-esculenta',
+    image: '/morchella-esculenta-true-morel-identification.webp',
+    views: 5230,
+    is_premium: false,
+  },
+  {
     id: 19,
     title: 'Cantharellus cibarius (Chanterelle): Identification, Edibility & Lookalikes',
     excerpt:
