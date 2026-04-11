@@ -116,7 +116,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   )
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" style={{ background: 'var(--bg-card)' }}>
       {/* Logo */}
       <Link href="/" className="flex items-center gap-3 px-6 py-5 mb-2" onClick={() => setSidebarOpen(false)}>
         <span className="text-2xl">🍄</span>
@@ -173,9 +173,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             <p className="text-xs truncate" style={{ color: 'var(--text-faint)' }}>{user?.email}</p>
           </div>
           <button onClick={handleLogout} title="Logout"
-            className="p-1.5 rounded-lg hover:opacity-70 transition-opacity flex-shrink-0"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:opacity-70 transition-opacity flex-shrink-0"
             style={{ color: 'var(--text-faint)' }}>
             <LogOut className="w-4 h-4" />
+            <span className="text-xs font-medium">Logout</span>
           </button>
         </div>
       </div>
