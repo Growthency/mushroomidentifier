@@ -21,18 +21,27 @@ export default function ArticleContent({ html, className, style }: ArticleConten
   useEffect(() => {
     if (!contentRef.current) return
 
-    // Find the first <p> tag in the rendered content
+    // Find the best insertion point for the TOC:
+    // 1. After the first <p> tag (ideal — TOC appears after intro paragraph)
+    // 2. Before the first <h2> heading (fallback — if no <p> found, e.g. rich editor uses <div>)
+    // 3. At the start of the content (last resort)
     const firstP = contentRef.current.querySelector('p')
-    if (!firstP) return
+    const firstH2 = contentRef.current.querySelector('h2')
 
-    // Create a container for the TOC and insert it after the first paragraph
     const container = document.createElement('div')
     container.className = 'toc-portal not-prose'
-    firstP.insertAdjacentElement('afterend', container)
+
+    if (firstP) {
+      firstP.insertAdjacentElement('afterend', container)
+    } else if (firstH2) {
+      firstH2.insertAdjacentElement('beforebegin', container)
+    } else {
+      return // No paragraphs or headings — skip TOC
+    }
+
     setTocContainer(container)
 
     return () => {
-      // Cleanup on unmount
       container.remove()
       setTocContainer(null)
     }
