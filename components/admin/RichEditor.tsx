@@ -8,6 +8,7 @@ import {
   Trash2, X, GripVertical,
 } from 'lucide-react'
 import { useModal } from '@/components/admin/AdminModal'
+import { useTheme } from '@/components/providers/ThemeProvider'
 
 interface RichEditorProps {
   value: string
@@ -16,6 +17,8 @@ interface RichEditorProps {
 
 export default function RichEditor({ value, onChange }: RichEditorProps) {
   const { showPrompt, showAlert } = useModal()
+  const { theme } = useTheme()
+  const dark = theme === 'dark'
   const editorRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -120,6 +123,55 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   const handleMouseUp = useCallback(() => {
     detectFormats()
   }, [detectFormats])
+
+  // ── Image alignment helper ──
+  const alignImage = useCallback((alignment: 'left' | 'center' | 'right') => {
+    if (!selectedImg) return
+
+    // Find or create a wrapper block for the image
+    let parent = selectedImg.parentElement
+    // If the image is directly inside the editor, wrap it in a div
+    if (parent === editorRef.current) {
+      const wrapper = document.createElement('div')
+      selectedImg.parentNode?.insertBefore(wrapper, selectedImg)
+      wrapper.appendChild(selectedImg)
+      parent = wrapper
+    }
+
+    // Set text-align on the parent block
+    if (parent && parent !== editorRef.current) {
+      parent.style.textAlign = alignment
+      // Also set display:block on the image for proper alignment
+      if (alignment === 'center') {
+        selectedImg.style.marginLeft = 'auto'
+        selectedImg.style.marginRight = 'auto'
+        selectedImg.style.display = 'block'
+      } else if (alignment === 'right') {
+        selectedImg.style.marginLeft = 'auto'
+        selectedImg.style.marginRight = '0'
+        selectedImg.style.display = 'block'
+      } else {
+        selectedImg.style.marginLeft = '0'
+        selectedImg.style.marginRight = 'auto'
+        selectedImg.style.display = 'block'
+      }
+    }
+
+    // Update toolbar position after alignment change
+    requestAnimationFrame(() => {
+      const editorRect = editorRef.current?.getBoundingClientRect()
+      const imgRect = selectedImg.getBoundingClientRect()
+      if (editorRect) {
+        setImgToolbarPos({
+          top: imgRect.top - editorRect.top + editorRef.current!.scrollTop,
+          left: imgRect.left - editorRect.left,
+          width: imgRect.width,
+        })
+      }
+    })
+
+    syncContent()
+  }, [selectedImg, syncContent])
 
   // ── Image selection & management ──
 
@@ -269,6 +321,16 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     }
   }
 
+  // Alignment handler — works for both text and images
+  const handleAlign = useCallback((alignment: 'left' | 'center' | 'right') => {
+    if (selectedImg) {
+      alignImage(alignment)
+    } else {
+      const cmd = alignment === 'left' ? 'justifyLeft' : alignment === 'center' ? 'justifyCenter' : 'justifyRight'
+      exec(cmd)
+    }
+  }, [selectedImg, alignImage, exec])
+
   const insertLink = async () => {
     const url = await showPrompt('Insert Link', 'Enter the URL for the link:', { placeholder: 'https://example.com', icon: 'link' })
     if (url) { editorRef.current?.focus(); restoreSelection(); exec('createLink', url) }
@@ -321,7 +383,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     }
   }
 
-  const insertHR = () => exec('insertHTML', '<hr style="border:none;border-top:1px solid #334155;margin:24px 0;" />')
+  const insertHR = () => exec('insertHTML', `<hr style="border:none;border-top:1px solid ${dark ? '#334155' : '#e2e8f0'};margin:24px 0;" />`)
 
   const insertTable = async () => {
     const rows = await showPrompt('Insert Table', 'Number of rows:', { defaultValue: '3', icon: 'table' })
@@ -331,12 +393,17 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     const r = parseInt(rows, 10) || 3
     const c = parseInt(cols, 10) || 3
 
+    const thBg = dark ? '#1e293b' : '#f1f5f9'
+    const thColor = dark ? '#e2e8f0' : '#0f172a'
+    const tdColor = dark ? '#cbd5e1' : '#334155'
+    const borderColor = dark ? '#334155' : '#e2e8f0'
+
     let html = '<table style="width:100%;border-collapse:collapse;margin:16px 0;"><thead><tr>'
-    for (let j = 0; j < c; j++) html += '<th style="border:1px solid #334155;padding:8px 12px;text-align:left;background:#1e293b;color:#e2e8f0;font-weight:600;">Header</th>'
+    for (let j = 0; j < c; j++) html += `<th style="border:1px solid ${borderColor};padding:8px 12px;text-align:left;background:${thBg};color:${thColor};font-weight:600;">Header</th>`
     html += '</tr></thead><tbody>'
     for (let i = 0; i < r - 1; i++) {
       html += '<tr>'
-      for (let j = 0; j < c; j++) html += '<td style="border:1px solid #334155;padding:8px 12px;color:#cbd5e1;">Cell</td>'
+      for (let j = 0; j < c; j++) html += `<td style="border:1px solid ${borderColor};padding:8px 12px;color:${tdColor};">Cell</td>`
       html += '</tr>'
     }
     html += '</tbody></table><p><br></p>'
@@ -347,6 +414,15 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
   const isActive = (fmt: string) => activeFormats.has(fmt)
 
+  // Theme-aware colors
+  const toolbarBg = dark ? '#162032' : '#f8fafc'
+  const toolbarBorder = dark ? '#334155' : '#e2e8f0'
+  const containerBg = dark ? '#1e293b' : '#fff'
+  const editorBg = dark ? '#0f172a' : '#fff'
+  const btnDefault = dark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+  const btnHover = dark ? 'hover:bg-white/10' : 'hover:bg-slate-200'
+  const dividerBg = dark ? 'bg-slate-700' : 'bg-slate-200'
+
   const ToolBtn = ({ onClick, title, children, active }: {
     onClick: () => void; title: string; children: React.ReactNode; active?: boolean
   }) => (
@@ -354,54 +430,54 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
       type="button"
       onMouseDown={e => { e.preventDefault(); saveSelection(); onClick() }}
       title={title}
-      className={`p-1.5 rounded hover:bg-white/10 transition-colors ${active ? 'bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30' : 'text-slate-400 hover:text-white'}`}
+      className={`p-1.5 rounded transition-colors ${btnHover} ${active ? 'bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30' : btnDefault}`}
     >
       {children}
     </button>
   )
 
-  const Divider = () => <div className="w-px h-6 bg-slate-700 mx-1" />
+  const ToolDivider = () => <div className={`w-px h-6 mx-1 ${dividerBg}`} />
 
   return (
-    <div className="rounded-xl border max-h-[75vh] overflow-y-auto relative" style={{ background: '#1e293b', borderColor: '#334155' }}>
+    <div className="rounded-xl border max-h-[75vh] overflow-y-auto relative" style={{ background: containerBg, borderColor: toolbarBorder }}>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b sticky top-0 z-20" style={{ borderColor: '#334155', background: '#162032' }}>
+      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b sticky top-0 z-20" style={{ borderColor: toolbarBorder, background: toolbarBg }}>
         <ToolBtn onClick={() => exec('undo')} title="Undo"><Undo2 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('redo')} title="Redo"><Redo2 className="w-4 h-4" /></ToolBtn>
 
-        <Divider />
+        <ToolDivider />
 
         <ToolBtn onClick={() => toggleHeading(1)} title="Heading 1" active={isActive('h1')}><Heading1 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(2)} title="Heading 2" active={isActive('h2')}><Heading2 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(3)} title="Heading 3" active={isActive('h3')}><Heading3 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('formatBlock', 'p')} title="Paragraph" active={isActive('p')}><Pilcrow className="w-4 h-4" /></ToolBtn>
 
-        <Divider />
+        <ToolDivider />
 
         <ToolBtn onClick={() => exec('bold')} title="Bold" active={isActive('bold')}><Bold className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('italic')} title="Italic" active={isActive('italic')}><Italic className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('underline')} title="Underline" active={isActive('underline')}><Underline className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('strikeThrough')} title="Strikethrough" active={isActive('strikeThrough')}><Strikethrough className="w-4 h-4" /></ToolBtn>
 
-        <Divider />
+        <ToolDivider />
 
         <ToolBtn onClick={() => exec('insertUnorderedList')} title="Bullet List" active={isActive('insertUnorderedList')}><List className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('insertOrderedList')} title="Numbered List" active={isActive('insertOrderedList')}><ListOrdered className="w-4 h-4" /></ToolBtn>
 
-        <Divider />
+        <ToolDivider />
 
-        <ToolBtn onClick={() => exec('justifyLeft')} title="Align Left"><AlignLeft className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => exec('justifyCenter')} title="Align Center"><AlignCenter className="w-4 h-4" /></ToolBtn>
-        <ToolBtn onClick={() => exec('justifyRight')} title="Align Right"><AlignRight className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => handleAlign('left')} title="Align Left"><AlignLeft className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => handleAlign('center')} title="Align Center"><AlignCenter className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => handleAlign('right')} title="Align Right"><AlignRight className="w-4 h-4" /></ToolBtn>
 
-        <Divider />
+        <ToolDivider />
 
         <ToolBtn onClick={() => toggleBlock('blockquote')} title="Quote" active={isActive('blockquote')}><Quote className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleBlock('pre')} title="Code Block" active={isActive('pre')}><Code className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertHR} title="Horizontal Line"><Minus className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertTable} title="Insert Table"><Table className="w-4 h-4" /></ToolBtn>
 
-        <Divider />
+        <ToolDivider />
 
         <ToolBtn onClick={insertLink} title="Insert Link"><Link className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={insertImageUrl} title="Image URL"><ImageIcon className="w-4 h-4" /></ToolBtn>
@@ -435,27 +511,41 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         onMouseUp={handleMouseUp}
         onClick={handleEditorClick}
         suppressContentEditableWarning
-        className="min-h-[500px] px-6 py-5 text-sm text-white leading-relaxed outline-none prose prose-invert prose-sm max-w-none
-          [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-white [&_h1]:mt-6 [&_h1]:mb-3
-          [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-5 [&_h2]:mb-2
-          [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-4 [&_h3]:mb-2
-          [&_p]:text-slate-300 [&_p]:mb-3 [&_p]:leading-relaxed
-          [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3 [&_ul]:text-slate-300
-          [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-3 [&_ol]:text-slate-300
+        className={`min-h-[500px] px-6 py-5 text-sm leading-relaxed outline-none max-w-none
+          ${dark ? 'prose prose-invert prose-sm' : 'prose prose-sm'}
+          ${dark
+            ? `[&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_p]:text-slate-300
+               [&_ul]:text-slate-300 [&_ol]:text-slate-300 [&_strong]:text-white
+               [&_blockquote]:text-slate-400 [&_pre]:bg-slate-800 [&_pre]:text-emerald-300
+               [&_code]:bg-slate-800 [&_code]:text-emerald-300 [&_hr]:border-slate-700
+               [&_td]:text-slate-300 [&_th]:bg-slate-800 [&_th]:text-slate-200
+               [&_td]:border-slate-600 [&_th]:border-slate-600`
+            : `[&_h1]:text-slate-900 [&_h2]:text-slate-900 [&_h3]:text-slate-800 [&_p]:text-slate-700
+               [&_ul]:text-slate-700 [&_ol]:text-slate-700 [&_strong]:text-slate-900
+               [&_blockquote]:text-slate-500 [&_pre]:bg-slate-100 [&_pre]:text-emerald-700
+               [&_code]:bg-slate-100 [&_code]:text-emerald-700 [&_hr]:border-slate-200
+               [&_td]:text-slate-700 [&_th]:bg-slate-50 [&_th]:text-slate-900
+               [&_td]:border-slate-200 [&_th]:border-slate-200`
+          }
+          [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3
+          [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
+          [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2
+          [&_p]:mb-3 [&_p]:leading-relaxed
+          [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3
+          [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-3
           [&_li]:mb-1
           [&_a]:text-emerald-400 [&_a]:underline
-          [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-500 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-400 [&_blockquote]:my-4
-          [&_pre]:bg-slate-800 [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:text-sm [&_pre]:font-mono [&_pre]:text-emerald-300 [&_pre]:my-4
-          [&_code]:bg-slate-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-emerald-300 [&_code]:text-xs
+          [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-500 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4
+          [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:text-sm [&_pre]:font-mono [&_pre]:my-4
+          [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs
           [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-4 [&_img]:cursor-pointer
-          [&_hr]:border-slate-700 [&_hr]:my-6
-          [&_strong]:text-white [&_strong]:font-semibold
+          [&_hr]:my-6
           [&_em]:italic
           [&_table]:w-full [&_table]:border-collapse [&_table]:my-4
-          [&_th]:border [&_th]:border-slate-600 [&_th]:p-2 [&_th]:text-left [&_th]:bg-slate-800 [&_th]:text-slate-200 [&_th]:font-semibold
-          [&_td]:border [&_td]:border-slate-600 [&_td]:p-2 [&_td]:text-slate-300
-        "
-        style={{ background: '#0f172a' }}
+          [&_th]:border [&_th]:p-2 [&_th]:text-left [&_th]:font-semibold
+          [&_td]:border [&_td]:p-2
+        `}
+        style={{ background: editorBg, color: dark ? '#e2e8f0' : '#1e293b' }}
       />
 
       {/* ── Image toolbar (shows when an image is selected) ── */}
@@ -474,8 +564,8 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
           <div
             className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg"
             style={{
-              background: 'rgba(15, 23, 42, 0.95)',
-              border: '1px solid #334155',
+              background: dark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+              border: `1px solid ${toolbarBorder}`,
               backdropFilter: 'blur(8px)',
               marginTop: (selectedImg?.offsetHeight || 0) - 6,
             }}
@@ -488,7 +578,12 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
                 value={imgAlt}
                 onChange={e => updateImgAlt(e.target.value)}
                 placeholder="Enter alt text for SEO…"
-                className="flex-1 min-w-0 px-2 py-1 rounded text-xs bg-slate-800 border border-slate-700 text-white outline-none focus:border-emerald-500"
+                className="flex-1 min-w-0 px-2 py-1 rounded text-xs outline-none focus:border-emerald-500"
+                style={{
+                  background: dark ? '#1e293b' : '#f1f5f9',
+                  border: `1px solid ${dark ? '#475569' : '#cbd5e1'}`,
+                  color: dark ? '#fff' : '#0f172a',
+                }}
                 onClick={e => e.stopPropagation()}
               />
             </div>
@@ -496,7 +591,8 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
             {/* Resize handle */}
             <button
               onMouseDown={startResize}
-              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 cursor-ew-resize"
+              className="p-1 rounded cursor-ew-resize"
+              style={{ color: dark ? '#94a3b8' : '#64748b' }}
               title="Drag to resize"
             >
               <GripVertical className="w-3.5 h-3.5" />
@@ -514,7 +610,8 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
             {/* Close selection */}
             <button
               onClick={e => { e.stopPropagation(); deselectImage() }}
-              className="p-1 rounded text-slate-500 hover:text-white hover:bg-white/10"
+              className="p-1 rounded"
+              style={{ color: dark ? '#64748b' : '#94a3b8' }}
               title="Deselect (Esc)"
             >
               <X className="w-3.5 h-3.5" />
