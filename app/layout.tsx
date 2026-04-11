@@ -131,6 +131,13 @@ export default function RootLayout({
           <ScrollToTop />
         </ThemeProvider>
 
+        {/* Ahrefs Web Analytics */}
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="RrRJnzuHOLbcnlHd/xuO9g"
+          strategy="lazyOnload"
+        />
+
         {/* Google Analytics — lazyOnload so it never blocks main thread */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-X00VE6WCX6"
