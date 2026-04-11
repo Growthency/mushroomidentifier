@@ -109,12 +109,12 @@ export default function RelatedPosts({ currentSlug }: Props) {
           className="w-1 h-8 rounded-full flex-shrink-0"
           style={{ background: 'var(--accent)' }}
         />
-        <h2
-          className="font-playfair text-2xl md:text-3xl font-bold"
-          style={{ color: 'var(--text-primary)' }}
+        <div
+          className="font-playfair font-bold"
+          style={{ color: 'var(--text-primary)', fontSize: 'clamp(1.5rem, 3vw, 1.875rem)' }}
         >
           Related Articles
-        </h2>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -158,12 +158,12 @@ export default function RelatedPosts({ currentSlug }: Props) {
 
             {/* Body */}
             <div className="p-4 flex flex-col flex-1">
-              <h3
+              <div
                 className="font-playfair text-base font-bold mb-2 leading-snug line-clamp-2"
                 style={{ color: 'var(--text-primary)' }}
               >
                 {article.title}
-              </h3>
+              </div>
               <p
                 className="text-xs leading-relaxed flex-1 line-clamp-2 mb-3"
                 style={{ color: 'var(--text-muted)' }}

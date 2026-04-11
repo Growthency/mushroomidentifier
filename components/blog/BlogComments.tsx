@@ -138,9 +138,9 @@ export default function BlogComments({ slug }: BlogCommentsProps) {
     <section className="mt-12" id="comments">
       <div className="flex items-center gap-2 mb-6">
         <MessageCircle className="w-5 h-5" style={{ color: 'var(--accent)' }} />
-        <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
+        <div className="font-bold" style={{ color: 'var(--text-primary)', fontSize: '1.25rem', lineHeight: '1.75rem' }}>
           Comments {comments.length > 0 && <span className="text-base font-normal" style={{ color: 'var(--text-muted)' }}>({comments.length})</span>}
-        </h2>
+        </div>
       </div>
 
       {/* Comment list */}
