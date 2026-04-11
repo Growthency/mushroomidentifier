@@ -5,7 +5,7 @@ import {
   Heading1, Heading2, Heading3, Heading4, Link, Image as ImageIcon,
   AlignLeft, AlignCenter, AlignRight, Quote, Code, Minus,
   Upload, Undo2, Redo2, Type, Pilcrow, Table,
-  Trash2, X, GripVertical,
+  Trash2, X, GripVertical, Pencil, Unlink, ExternalLink,
 } from 'lucide-react'
 import { useModal } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
@@ -33,6 +33,10 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   const [imgToolbarPos, setImgToolbarPos] = useState<{ top: number; left: number; width: number } | null>(null)
   const [resizing, setResizing] = useState(false)
   const resizeStartRef = useRef<{ x: number; width: number } | null>(null)
+
+  // Link selection state
+  const [selectedLink, setSelectedLink] = useState<HTMLAnchorElement | null>(null)
+  const [linkToolbarPos, setLinkToolbarPos] = useState<{ top: number; left: number } | null>(null)
 
   // Keep callback ref fresh without re-renders
   useEffect(() => { onChangeRef.current = onChange }, [onChange])
@@ -206,6 +210,57 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     setImgToolbarPos(null)
   }, [selectedImg])
 
+  // ── Link selection & management ──
+
+  const deselectLink = useCallback(() => {
+    setSelectedLink(null)
+    setLinkToolbarPos(null)
+  }, [])
+
+  const selectLink = useCallback((link: HTMLAnchorElement) => {
+    setSelectedLink(link)
+    const editorRect = editorRef.current?.getBoundingClientRect()
+    const linkRect = link.getBoundingClientRect()
+    if (editorRect) {
+      setLinkToolbarPos({
+        top: linkRect.bottom - editorRect.top + editorRef.current!.scrollTop + 4,
+        left: Math.max(0, linkRect.left - editorRect.left),
+      })
+    }
+  }, [])
+
+  const editSelectedLink = useCallback(async () => {
+    if (!selectedLink) return
+    const currentHref = selectedLink.getAttribute('href') || ''
+    const newUrl = await showPrompt('Edit Link', 'Enter the new URL:', { placeholder: 'https://example.com', icon: 'link', defaultValue: currentHref })
+    if (newUrl) {
+      selectedLink.setAttribute('href', newUrl)
+      syncContent()
+    }
+    deselectLink()
+  }, [selectedLink, showPrompt, syncContent, deselectLink])
+
+  const removeSelectedLink = useCallback(() => {
+    if (!selectedLink || !editorRef.current) return
+    // Select the link text in the editor
+    const sel = window.getSelection()
+    if (sel) {
+      const range = document.createRange()
+      range.selectNodeContents(selectedLink)
+      sel.removeAllRanges()
+      sel.addRange(range)
+      document.execCommand('unlink', false)
+    }
+    syncContent()
+    deselectLink()
+  }, [selectedLink, syncContent, deselectLink])
+
+  const openSelectedLink = useCallback(() => {
+    if (!selectedLink) return
+    const href = selectedLink.getAttribute('href')
+    if (href) window.open(href, '_blank', 'noopener,noreferrer')
+  }, [selectedLink])
+
   const deleteSelectedImage = useCallback(() => {
     if (!selectedImg) return
     selectedImg.remove()
@@ -221,19 +276,31 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     }
   }, [selectedImg, syncContent])
 
-  // Handle click inside editor — select image or deselect
+  // Handle click inside editor — select image, link, or deselect
   const handleEditorClick = useCallback((e: React.MouseEvent) => {
     const target = e.target as HTMLElement
+
     if (target.tagName === 'IMG') {
       e.preventDefault()
       e.stopPropagation()
       deselectImage()
+      deselectLink()
       selectImage(target as HTMLImageElement)
     } else {
       deselectImage()
+
+      // Check if clicked on or inside a link
+      const link = target.closest('a') as HTMLAnchorElement | null
+      if (link && editorRef.current?.contains(link)) {
+        e.preventDefault()
+        deselectLink()
+        selectLink(link)
+      } else {
+        deselectLink()
+      }
     }
     detectFormats()
-  }, [selectImage, deselectImage, detectFormats])
+  }, [selectImage, deselectImage, selectLink, deselectLink, detectFormats])
 
   // Handle keyboard: Delete/Backspace removes selected image
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -246,7 +313,11 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
       deselectImage()
       return
     }
-  }, [selectedImg, deleteSelectedImage, deselectImage])
+    if (selectedLink && e.key === 'Escape') {
+      deselectLink()
+      return
+    }
+  }, [selectedImg, deleteSelectedImage, deselectImage, selectedLink, deselectLink])
 
   // Resize drag handlers
   const startResize = useCallback((e: React.MouseEvent) => {
@@ -287,19 +358,23 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     document.addEventListener('mouseup', onMouseUp)
   }, [selectedImg, syncContent])
 
-  // Click outside editor to deselect image
+  // Click outside editor to deselect image and link
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (editorRef.current && !editorRef.current.contains(e.target as Node)) {
         // Don't deselect if clicking on the image toolbar
-        const toolbar = document.getElementById('img-toolbar')
-        if (toolbar && toolbar.contains(e.target as Node)) return
+        const imgToolbar = document.getElementById('img-toolbar')
+        if (imgToolbar && imgToolbar.contains(e.target as Node)) return
+        // Don't deselect if clicking on the link toolbar
+        const lnkToolbar = document.getElementById('link-toolbar')
+        if (lnkToolbar && lnkToolbar.contains(e.target as Node)) return
         deselectImage()
+        deselectLink()
       }
     }
     document.addEventListener('mousedown', handleOutsideClick)
     return () => document.removeEventListener('mousedown', handleOutsideClick)
-  }, [deselectImage])
+  }, [deselectImage, deselectLink])
 
   // Toggle heading
   const toggleHeading = (level: number) => {
@@ -616,6 +691,86 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
               className="p-1 rounded"
               style={{ color: dark ? '#64748b' : '#94a3b8' }}
               title="Deselect (Esc)"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Link toolbar (shows when a link is clicked) ── */}
+      {selectedLink && linkToolbarPos && (
+        <div
+          id="link-toolbar"
+          className="absolute z-30"
+          style={{
+            top: linkToolbarPos.top + 44, // below sticky toolbar
+            left: linkToolbarPos.left,
+          }}
+          contentEditable={false}
+        >
+          <div
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg shadow-lg"
+            style={{
+              background: dark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+              border: `1px solid ${toolbarBorder}`,
+              backdropFilter: 'blur(8px)',
+            }}
+          >
+            {/* Link icon */}
+            <Link className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
+
+            {/* URL display */}
+            <span
+              className="text-xs truncate max-w-[180px] mx-1.5"
+              style={{ color: dark ? '#94a3b8' : '#64748b' }}
+              title={selectedLink.getAttribute('href') || ''}
+            >
+              {selectedLink.getAttribute('href') || 'No URL'}
+            </span>
+
+            {/* Divider */}
+            <div className={`w-px h-4 mx-0.5 ${dark ? 'bg-slate-700' : 'bg-slate-200'}`} />
+
+            {/* Edit button */}
+            <button
+              onClick={e => { e.stopPropagation(); editSelectedLink() }}
+              className="p-1 rounded transition-colors"
+              style={{ color: dark ? '#94a3b8' : '#64748b' }}
+              title="Edit link URL"
+              onMouseEnter={e => { (e.target as HTMLElement).style.color = '#10b981' }}
+              onMouseLeave={e => { (e.target as HTMLElement).style.color = dark ? '#94a3b8' : '#64748b' }}
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Open in new tab */}
+            <button
+              onClick={e => { e.stopPropagation(); openSelectedLink() }}
+              className="p-1 rounded transition-colors"
+              style={{ color: dark ? '#94a3b8' : '#64748b' }}
+              title="Open link in new tab"
+              onMouseEnter={e => { (e.target as HTMLElement).style.color = '#10b981' }}
+              onMouseLeave={e => { (e.target as HTMLElement).style.color = dark ? '#94a3b8' : '#64748b' }}
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Remove link */}
+            <button
+              onClick={e => { e.stopPropagation(); removeSelectedLink() }}
+              className="p-1 rounded transition-colors text-red-400 hover:text-red-300 hover:bg-red-500/15"
+              title="Remove link (keep text)"
+            >
+              <Unlink className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Close */}
+            <button
+              onClick={e => { e.stopPropagation(); deselectLink() }}
+              className="p-1 rounded"
+              style={{ color: dark ? '#64748b' : '#94a3b8' }}
+              title="Close"
             >
               <X className="w-3.5 h-3.5" />
             </button>

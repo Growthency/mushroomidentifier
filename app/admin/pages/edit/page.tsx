@@ -11,6 +11,7 @@ import { useModal } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
 const RichEditor = dynamic(() => import('@/components/admin/RichEditor'), { ssr: false })
+const InterlinkChecker = dynamic(() => import('@/components/admin/InterlinkChecker'), { ssr: false })
 
 const CATEGORIES = [
   'Species Guide', 'Safety', 'Edibility Guide', 'Guide',
@@ -371,6 +372,9 @@ export default function EditPageEditor() {
               </button>
             </div>
           </div>
+
+          {/* Interlink Checker */}
+          <InterlinkChecker content={content} />
 
           {/* SEO / Meta */}
           <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>

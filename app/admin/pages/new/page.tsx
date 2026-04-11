@@ -11,6 +11,7 @@ import { useModal } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
 const RichEditor = dynamic(() => import('@/components/admin/RichEditor'), { ssr: false })
+const InterlinkChecker = dynamic(() => import('@/components/admin/InterlinkChecker'), { ssr: false })
 
 const CATEGORIES = [
   'Species Guide', 'Safety', 'Edibility Guide', 'Guide',
@@ -459,6 +460,9 @@ export default function NewPageEditor() {
               <strong className="text-emerald-400">Publish</strong> to make it live immediately.
             </p>
           </div>
+
+          {/* Interlink Checker */}
+          <InterlinkChecker content={content} />
         </div>
       </div>
     </div>
