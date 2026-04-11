@@ -262,6 +262,13 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   margin: 2rem 0;
 }
 
+/* ── Identify Banner reset (override rich-content !important rules) ── */
+.rich-content .identify-banner,
+.rich-content .identify-banner:hover { color: inherit !important; text-decoration: none !important; }
+.rich-content .identify-banner p { color: #a7f3d0 !important; line-height: 1.5 !important; margin: 8px 0 0 0 !important; opacity: 0.85; font-family: var(--font-inter), system-ui, sans-serif !important; }
+.rich-content .identify-banner div { color: inherit !important; font-family: var(--font-inter), system-ui, sans-serif !important; }
+.rich-content .identify-banner span { color: inherit !important; }
+
 /* ── Scroll Glow Orbs ── */
 .scroll-orb { position: absolute; border-radius: 50%; will-change: transform; }
 .orb-1 { width: 80vw; height: 80vw; top: -25%; left: -18%; background: radial-gradient(circle, var(--orb-1) 0%, transparent 70%); }
