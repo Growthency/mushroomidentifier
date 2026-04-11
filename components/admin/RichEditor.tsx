@@ -2,7 +2,7 @@
 import { useRef, useCallback, useState, useEffect } from 'react'
 import {
   Bold, Italic, Underline, Strikethrough, List, ListOrdered,
-  Heading1, Heading2, Heading3, Link, Image as ImageIcon,
+  Heading1, Heading2, Heading3, Heading4, Link, Image as ImageIcon,
   AlignLeft, AlignCenter, AlignRight, Quote, Code, Minus,
   Upload, Undo2, Redo2, Type, Pilcrow, Table,
   Trash2, X, GripVertical,
@@ -450,6 +450,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         <ToolBtn onClick={() => toggleHeading(1)} title="Heading 1" active={isActive('h1')}><Heading1 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(2)} title="Heading 2" active={isActive('h2')}><Heading2 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(3)} title="Heading 3" active={isActive('h3')}><Heading3 className="w-4 h-4" /></ToolBtn>
+        <ToolBtn onClick={() => toggleHeading(4)} title="Heading 4" active={isActive('h4')}><Heading4 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('formatBlock', 'p')} title="Paragraph" active={isActive('p')}><Pilcrow className="w-4 h-4" /></ToolBtn>
 
         <ToolDivider />
@@ -514,22 +515,24 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         className={`min-h-[500px] px-6 py-5 text-sm leading-relaxed outline-none max-w-none
           ${dark ? 'prose prose-invert prose-sm' : 'prose prose-sm'}
           ${dark
-            ? `[&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_p]:text-slate-300
-               [&_ul]:text-slate-300 [&_ol]:text-slate-300 [&_strong]:text-white
+            ? `[&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white [&_p]:text-slate-300
+               [&_ul]:text-slate-300 [&_ol]:text-slate-300 [&_strong]:text-white [&_div]:text-slate-300
                [&_blockquote]:text-slate-400 [&_pre]:bg-slate-800 [&_pre]:text-emerald-300
                [&_code]:bg-slate-800 [&_code]:text-emerald-300 [&_hr]:border-slate-700
                [&_td]:text-slate-300 [&_th]:bg-slate-800 [&_th]:text-slate-200
                [&_td]:border-slate-600 [&_th]:border-slate-600`
-            : `[&_h1]:text-black [&_h2]:text-black [&_h3]:text-slate-900 [&_p]:text-slate-900
-               [&_ul]:text-slate-900 [&_ol]:text-slate-900 [&_strong]:text-black
-               [&_blockquote]:text-slate-700 [&_pre]:bg-slate-100 [&_pre]:text-emerald-700
-               [&_code]:bg-slate-100 [&_code]:text-emerald-700 [&_hr]:border-slate-300
-               [&_td]:text-slate-900 [&_th]:bg-slate-100 [&_th]:text-black
+            : `[&_h1]:!text-black [&_h2]:!text-black [&_h3]:!text-black [&_h4]:!text-black
+               [&_p]:!text-black [&_div]:!text-black [&_span]:!text-black [&_li]:!text-black
+               [&_ul]:!text-black [&_ol]:!text-black [&_strong]:!text-black
+               [&_blockquote]:!text-gray-700 [&_pre]:bg-slate-100 [&_pre]:!text-emerald-700
+               [&_code]:bg-slate-100 [&_code]:!text-emerald-700 [&_hr]:border-slate-300
+               [&_td]:!text-black [&_th]:bg-slate-100 [&_th]:!text-black
                [&_td]:border-slate-300 [&_th]:border-slate-300`
           }
           [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3
           [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
           [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2
+          [&_h4]:text-base [&_h4]:font-semibold [&_h4]:mt-3 [&_h4]:mb-2
           [&_p]:mb-3 [&_p]:leading-relaxed
           [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3
           [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-3
