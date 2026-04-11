@@ -1,6 +1,4 @@
 'use client'
-import { useRef, useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
 import TableOfContents from '@/components/blog/TableOfContents'
 
 interface ArticleContentProps {
@@ -10,56 +8,44 @@ interface ArticleContentProps {
 }
 
 /**
- * Renders rich-editor HTML and auto-injects a Table of Contents
- * after the first paragraph using DOM manipulation (no wrapper divs
- * that could break Tailwind prose styling).
+ * Renders rich-editor HTML and injects a Table of Contents
+ * after the first paragraph by splitting the HTML string.
+ * This avoids DOM manipulation / portal timing issues.
  */
 export default function ArticleContent({ html, className, style }: ArticleContentProps) {
-  const contentRef = useRef<HTMLDivElement>(null)
-  const [tocContainer, setTocContainer] = useState<HTMLElement | null>(null)
+  // Find the best insertion point for the TOC:
+  // 1. After the first closing </p> tag (ideal — TOC appears after intro paragraph)
+  // 2. Before the first <h2 heading (fallback)
+  // 3. Before all content (last resort)
+  let beforeToc = ''
+  let afterToc = html
 
-  useEffect(() => {
-    if (!contentRef.current) return
-
-    // Find the best insertion point for the TOC:
-    // 1. After the first <p> tag (ideal — TOC appears after intro paragraph)
-    // 2. Before the first <h2> heading (fallback — if no <p> found, e.g. rich editor uses <div>)
-    // 3. At the start of the content (last resort)
-    const firstP = contentRef.current.querySelector('p')
-    const firstH2 = contentRef.current.querySelector('h2')
-
-    const container = document.createElement('div')
-    container.className = 'toc-portal not-prose'
-
-    if (firstP) {
-      firstP.insertAdjacentElement('afterend', container)
-    } else if (firstH2) {
-      firstH2.insertAdjacentElement('beforebegin', container)
-    } else {
-      return // No paragraphs or headings — skip TOC
+  const firstPEnd = html.indexOf('</p>')
+  if (firstPEnd !== -1) {
+    const splitAt = firstPEnd + '</p>'.length
+    beforeToc = html.slice(0, splitAt)
+    afterToc = html.slice(splitAt)
+  } else {
+    const firstH2 = html.search(/<h2[\s>]/i)
+    if (firstH2 !== -1) {
+      beforeToc = html.slice(0, firstH2)
+      afterToc = html.slice(firstH2)
     }
+  }
 
-    setTocContainer(container)
-
-    return () => {
-      container.remove()
-      setTocContainer(null)
-    }
-  }, [html])
+  const hasToc = html.search(/<h2[\s>]/i) !== -1
 
   return (
-    <>
-      <div
-        ref={contentRef}
-        className={className}
-        style={style}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-      {/* Portal the TOC into the container injected after first paragraph */}
-      {tocContainer && createPortal(
-        <TableOfContents scope="article" />,
-        tocContainer
+    <div className={className} style={style}>
+      {beforeToc && (
+        <div dangerouslySetInnerHTML={{ __html: beforeToc }} />
       )}
-    </>
+      {hasToc && (
+        <div className="not-prose">
+          <TableOfContents scope="article" />
+        </div>
+      )}
+      <div dangerouslySetInnerHTML={{ __html: afterToc }} />
+    </div>
   )
 }
