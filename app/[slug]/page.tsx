@@ -12,11 +12,12 @@ import ArticleViewCount from '@/components/blog/ArticleViewCount'
 import ArticleContent from '@/components/blog/ArticleContent'
 import PremiumGate from '@/components/PremiumGate'
 
-/* ── Supabase admin client (service role reads all rows including drafts for preview) ── */
+/* ── Supabase admin client — no-store ensures deleted posts return 404 immediately ── */
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { global: { fetch: (url: any, init: any) => fetch(url, { ...init, cache: 'no-store' }) } }
   )
 }
 
