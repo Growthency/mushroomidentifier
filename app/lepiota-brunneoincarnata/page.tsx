@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
@@ -292,6 +293,9 @@ export default function LepiotaBrunneoincarnataPage() {
 
           <Divider />
 
+              <div className="not-prose"><IdentifyBanner /></div>
+
+
           {/* Dimensions */}
           <Section>
             <H2 id="dimensions">Physical Dimensions &amp; Structure</H2>
@@ -453,6 +457,9 @@ export default function LepiotaBrunneoincarnataPage() {
           </Section>
 
           <Divider />
+
+              <div className="not-prose"><IdentifyBanner /></div>
+
 
           {/* Economic & Ecological Value */}
           <Section>

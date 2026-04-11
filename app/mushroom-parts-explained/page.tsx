@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
@@ -314,6 +315,9 @@ export default async function MushroomPartsExplainedPage() {
 
           <Divider />
 
+              <div className="not-prose"><IdentifyBanner /></div>
+
+
           {/* ── Cap & Stem Anatomy Image ── */}
           <figure className="my-10">
             <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)', background: 'var(--bg-card)' }}>
@@ -474,6 +478,9 @@ export default async function MushroomPartsExplainedPage() {
           </Section>
 
           <Divider />
+
+              <div className="not-prose"><IdentifyBanner /></div>
+
 
           {/* ── SECTION 10: Common Mistakes ── */}
           <Section>

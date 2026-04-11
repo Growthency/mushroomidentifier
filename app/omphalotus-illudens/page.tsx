@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
@@ -282,6 +283,9 @@ export default function OmphalotusIlludensPage() {
 
               <Divider />
 
+              <div className="not-prose"><IdentifyBanner /></div>
+
+
               {/* ── Toxicity ── */}
               <Section>
                 <H2 id="toxicity">Omphalotus illudens Toxicity &amp; Health Risks</H2>
@@ -449,6 +453,9 @@ export default function OmphalotusIlludensPage() {
               </Section>
 
               <Divider />
+
+              <div className="not-prose"><IdentifyBanner /></div>
+
 
               {/* ── Regions ── */}
               <Section>

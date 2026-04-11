@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
@@ -273,6 +274,9 @@ export default function LeccinumPage() {
 
               <Divider />
 
+              <div className="not-prose"><IdentifyBanner /></div>
+
+
               {/* Section 3 — Why Do Some Cause Illness */}
               <Section>
                 <H2 id="why-cause-illness">Why Do Some Leccinum Mushrooms Cause Illness?</H2>
@@ -378,6 +382,9 @@ export default function LeccinumPage() {
               </Section>
 
               <Divider />
+
+              <div className="not-prose"><IdentifyBanner /></div>
+
 
               {/* Section 6 — How to Safely Identify */}
               <Section>

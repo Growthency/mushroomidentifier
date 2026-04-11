@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
@@ -266,6 +267,9 @@ export default function CortinariusRubellusPage() {
 
           <Divider />
 
+              <div className="not-prose"><IdentifyBanner /></div>
+
+
           {/* Habitat & Distribution */}
           <Section>
             <H2 id="habitat">Environment &amp; Habitat</H2>
@@ -452,6 +456,9 @@ export default function CortinariusRubellusPage() {
           </Section>
 
           <Divider />
+
+              <div className="not-prose"><IdentifyBanner /></div>
+
 
           {/* Economic & Ecological Value */}
           <Section>

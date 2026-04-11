@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import Script from 'next/script'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
@@ -364,6 +365,9 @@ export default function DeathCapVsDestroyingAngelPage() {
 
           <Divider />
 
+              <div className="not-prose"><IdentifyBanner /></div>
+
+
           {/* ── Color, Smell, Visual Differences ──────────── */}
           <Section>
             <H2>Color, Smell, and Visual Differences</H2>
@@ -612,6 +616,9 @@ export default function DeathCapVsDestroyingAngelPage() {
           </Section>
 
           <Divider />
+
+              <div className="not-prose"><IdentifyBanner /></div>
+
 
           {/* ── Mushroom Identifier ───────────────────────── */}
           <Section>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
@@ -454,6 +455,9 @@ export default function MushroomIdentifierBookPage() {
 
           <Divider />
 
+              <div className="not-prose"><IdentifyBanner /></div>
+
+
           {/* ── Best mushroom identification book 2026 ── */}
           <Section>
             <H2 id="best-mushroom-identification-book-2026">Best mushroom identification book 2026</H2>
@@ -807,6 +811,9 @@ export default function MushroomIdentifierBookPage() {
           </Section>
 
           <Divider />
+
+              <div className="not-prose"><IdentifyBanner /></div>
+
 
           {/* ── Regional ── */}
           <Section>

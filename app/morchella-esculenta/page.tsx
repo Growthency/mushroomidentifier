@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
@@ -309,6 +310,9 @@ export default function MorchellaEsculentaPage() {
 
               <Divider />
 
+              <div className="not-prose"><IdentifyBanner /></div>
+
+
               {/* ── Edibility & Nutrition ── */}
               <Section>
                 <H2 id="edibility-nutrition">Edibility &amp; Nutritional Value</H2>
@@ -464,6 +468,9 @@ export default function MorchellaEsculentaPage() {
               </Section>
 
               <Divider />
+
+              <div className="not-prose"><IdentifyBanner /></div>
+
 
               {/* ── Pros and Cons ── */}
               <Section>

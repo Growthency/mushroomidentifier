@@ -1,5 +1,6 @@
 'use client'
 import TableOfContents from '@/components/blog/TableOfContents'
+import IdentifyBanner from '@/components/blog/IdentifyBanner'
 
 interface ArticleContentProps {
   html: string
@@ -8,15 +9,62 @@ interface ArticleContentProps {
 }
 
 /**
- * Renders rich-editor HTML and injects a Table of Contents
- * after the first paragraph by splitting the HTML string.
- * This avoids DOM manipulation / portal timing issues.
+ * Shortcode registry — add new shortcodes here.
+ * Each key is the shortcode tag (without brackets).
+ * The value is the React component to render.
+ *
+ * Usage in admin editor:  [identify-banner]
+ */
+const SHORTCODES: Record<string, () => React.ReactNode> = {
+  'identify-banner': () => <IdentifyBanner />,
+}
+
+/** Split HTML at shortcode placeholders and interleave React components */
+function renderWithShortcodes(html: string) {
+  // Build a regex that matches any registered shortcode
+  const tags = Object.keys(SHORTCODES).map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  if (tags.length === 0) return <div dangerouslySetInnerHTML={{ __html: html }} />
+
+  const regex = new RegExp(`\\[(${tags.join('|')})\\]`, 'gi')
+  const parts: React.ReactNode[] = []
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+  let key = 0
+
+  while ((match = regex.exec(html)) !== null) {
+    // HTML before this shortcode
+    if (match.index > lastIndex) {
+      parts.push(
+        <div key={`html-${key}`} dangerouslySetInnerHTML={{ __html: html.slice(lastIndex, match.index) }} />
+      )
+    }
+    // Render the shortcode component
+    const tag = match[1].toLowerCase()
+    const renderer = SHORTCODES[tag]
+    if (renderer) {
+      parts.push(<div key={`sc-${key}`} className="not-prose">{renderer()}</div>)
+    }
+    lastIndex = match.index + match[0].length
+    key++
+  }
+
+  // Remaining HTML after last shortcode
+  if (lastIndex < html.length) {
+    parts.push(
+      <div key={`html-${key}`} dangerouslySetInnerHTML={{ __html: html.slice(lastIndex) }} />
+    )
+  }
+
+  return parts.length > 0 ? <>{parts}</> : <div dangerouslySetInnerHTML={{ __html: html }} />
+}
+
+/**
+ * Renders rich-editor HTML with:
+ * 1. Table of Contents (auto-injected after first paragraph)
+ * 2. Shortcode expansion ([identify-banner] etc.)
  */
 export default function ArticleContent({ html, className, style }: ArticleContentProps) {
-  // Find the best insertion point for the TOC:
-  // 1. After the first closing </p> tag (ideal — TOC appears after intro paragraph)
-  // 2. Before the first <h2 heading (fallback)
-  // 3. Before all content (last resort)
+  // ── Step 1: Find TOC insertion point ──
   let beforeToc = ''
   let afterToc = html
 
@@ -35,17 +83,16 @@ export default function ArticleContent({ html, className, style }: ArticleConten
 
   const hasToc = html.search(/<h2[\s>]/i) !== -1
 
+  // ── Step 2: Render with shortcode expansion ──
   return (
     <div className={className} style={style}>
-      {beforeToc && (
-        <div dangerouslySetInnerHTML={{ __html: beforeToc }} />
-      )}
+      {beforeToc && renderWithShortcodes(beforeToc)}
       {hasToc && (
         <div className="not-prose">
           <TableOfContents scope="article" />
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: afterToc }} />
+      {renderWithShortcodes(afterToc)}
     </div>
   )
 }
