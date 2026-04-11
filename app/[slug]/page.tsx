@@ -8,6 +8,7 @@ import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
 import ArticleViewCount from '@/components/blog/ArticleViewCount'
 import ArticleContent from '@/components/blog/ArticleContent'
+import PremiumGate from '@/components/PremiumGate'
 
 /* ── Supabase admin client (service role reads all rows including drafts for preview) ── */
 function getSupabase() {
@@ -98,6 +99,37 @@ export default async function DynamicPostPage({
     mainEntityOfPage: `https://mushroomidentifiers.com${post.slug}`,
     datePublished: post.published_at || post.created_at,
     dateModified: post.updated_at || post.published_at || post.created_at,
+    ...(post.is_premium && { isAccessibleForFree: false }),
+  }
+
+  const articleContentClasses = `rich-content prose prose-sm sm:prose-base max-w-none
+    prose-headings:font-playfair prose-headings:font-bold
+    prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-10 prose-h2:mb-4
+    prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
+    prose-p:leading-relaxed prose-p:mb-4
+    prose-li:leading-relaxed
+    prose-a:font-medium prose-a:no-underline hover:prose-a:underline
+    prose-img:rounded-xl prose-img:mx-auto prose-img:max-w-full prose-img:h-auto
+    prose-table:text-sm prose-table:w-full prose-table:border-collapse
+    prose-th:p-3 prose-th:text-left prose-td:p-3
+    prose-blockquote:rounded-xl prose-blockquote:px-5 prose-blockquote:py-3
+    prose-pre:rounded-xl prose-pre:p-4
+    prose-hr:my-8`
+
+  const articleContentStyles = {
+    color: 'var(--text-muted)',
+    ['--tw-prose-headings' as string]: 'var(--text-primary)',
+    ['--tw-prose-links' as string]: 'var(--accent)',
+    ['--tw-prose-bold' as string]: 'var(--text-primary)',
+    ['--tw-prose-bullets' as string]: 'var(--accent)',
+    ['--tw-prose-counters' as string]: 'var(--accent)',
+    ['--tw-prose-th-borders' as string]: 'var(--border)',
+    ['--tw-prose-td-borders' as string]: 'var(--border)',
+    ['--tw-prose-hr' as string]: 'var(--border)',
+    ['--tw-prose-quote-borders' as string]: 'var(--accent)',
+    ['--tw-prose-code' as string]: 'var(--accent)',
+    ['--tw-prose-pre-bg' as string]: 'var(--bg-secondary)',
+    ['--tw-prose-pre-code' as string]: 'var(--text-muted)',
   }
 
   return (
@@ -231,38 +263,21 @@ export default async function DynamicPostPage({
               )}
 
               {/* ── Main Content (HTML from rich editor) + auto TOC ── */}
-              <ArticleContent
-                html={stripInlineStyles(post.content || '')}
-                className="rich-content prose prose-sm sm:prose-base max-w-none
-                  prose-headings:font-playfair prose-headings:font-bold
-                  prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-10 prose-h2:mb-4
-                  prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-                  prose-p:leading-relaxed prose-p:mb-4
-                  prose-li:leading-relaxed
-                  prose-a:font-medium prose-a:no-underline hover:prose-a:underline
-                  prose-img:rounded-xl prose-img:mx-auto prose-img:max-w-full prose-img:h-auto
-                  prose-table:text-sm prose-table:w-full prose-table:border-collapse
-                  prose-th:p-3 prose-th:text-left prose-td:p-3
-                  prose-blockquote:rounded-xl prose-blockquote:px-5 prose-blockquote:py-3
-                  prose-pre:rounded-xl prose-pre:p-4
-                  prose-hr:my-8
-                "
-                style={{
-                  color: 'var(--text-muted)',
-                  ['--tw-prose-headings' as string]: 'var(--text-primary)',
-                  ['--tw-prose-links' as string]: 'var(--accent)',
-                  ['--tw-prose-bold' as string]: 'var(--text-primary)',
-                  ['--tw-prose-bullets' as string]: 'var(--accent)',
-                  ['--tw-prose-counters' as string]: 'var(--accent)',
-                  ['--tw-prose-th-borders' as string]: 'var(--border)',
-                  ['--tw-prose-td-borders' as string]: 'var(--border)',
-                  ['--tw-prose-hr' as string]: 'var(--border)',
-                  ['--tw-prose-quote-borders' as string]: 'var(--accent)',
-                  ['--tw-prose-code' as string]: 'var(--accent)',
-                  ['--tw-prose-pre-bg' as string]: 'var(--bg-secondary)',
-                  ['--tw-prose-pre-code' as string]: 'var(--text-muted)',
-                }}
-              />
+              {post.is_premium ? (
+                <PremiumGate inline>
+                  <ArticleContent
+                    html={stripInlineStyles(post.content || '')}
+                    className={articleContentClasses}
+                    style={articleContentStyles}
+                  />
+                </PremiumGate>
+              ) : (
+                <ArticleContent
+                  html={stripInlineStyles(post.content || '')}
+                  className={articleContentClasses}
+                  style={articleContentStyles}
+                />
+              )}
 
               <hr
                 className="my-10 border-0 border-t"
