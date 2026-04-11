@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { isAdminEmail } from '@/lib/admin'
 import { createClient as createAdmin } from '@supabase/supabase-js'
@@ -87,6 +88,12 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Bust cache so new post appears on blog listing immediately
+  if (data?.slug) revalidatePath(data.slug)
+  revalidatePath('/blog')
+  revalidatePath('/sitemap.xml')
+
   return NextResponse.json(data)
 }
 
@@ -114,6 +121,12 @@ export async function PATCH(req: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Bust cache so changes appear immediately
+  if (data?.slug) revalidatePath(data.slug)
+  revalidatePath('/blog')
+  revalidatePath('/sitemap.xml')
+
   return NextResponse.json(data)
 }
 
@@ -125,7 +138,20 @@ export async function DELETE(req: NextRequest) {
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: 'Post ID required' }, { status: 400 })
 
+  // Get slug before deleting so we can bust the cache
+  const { data: post } = await admin
+    .from('blog_posts')
+    .select('slug')
+    .eq('id', id)
+    .single()
+
   const { error } = await admin.from('blog_posts').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Bust cached pages so deleted post returns 404 immediately
+  if (post?.slug) revalidatePath(post.slug)
+  revalidatePath('/blog')
+  revalidatePath('/sitemap.xml')
+
   return NextResponse.json({ success: true })
 }
