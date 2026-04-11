@@ -374,7 +374,7 @@ export default function EditPageEditor() {
           </div>
 
           {/* Interlink Checker */}
-          <InterlinkChecker content={content} />
+          <InterlinkChecker content={content} currentSlug={slug} />
 
           {/* SEO / Meta */}
           <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>

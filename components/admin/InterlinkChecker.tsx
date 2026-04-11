@@ -5,6 +5,7 @@ import { useTheme } from '@/components/providers/ThemeProvider'
 
 interface InterlinkCheckerProps {
   content: string
+  currentSlug?: string
 }
 
 interface ArticleEntry {
@@ -76,7 +77,7 @@ interface InterlinkMatch {
   title: string
 }
 
-export default function InterlinkChecker({ content }: InterlinkCheckerProps) {
+export default function InterlinkChecker({ content, currentSlug }: InterlinkCheckerProps) {
   const { theme } = useTheme()
   const dark = theme === 'dark'
 
@@ -132,7 +133,14 @@ export default function InterlinkChecker({ content }: InterlinkCheckerProps) {
     const found: InterlinkMatch[] = []
     const matchedSlugs = new Set<string>()
 
+    // Normalise current slug for comparison (ensure leading slash)
+    const normCurrent = currentSlug
+      ? (currentSlug.startsWith('/') ? currentSlug : `/${currentSlug}`)
+      : null
+
     for (const article of allArticles) {
+      // Skip the article we're currently editing
+      if (normCurrent && article.slug === normCurrent) continue
       // Skip if already linked
       if (existingLinks.some(href => href.includes(article.slug))) continue
       if (matchedSlugs.has(article.slug)) continue
