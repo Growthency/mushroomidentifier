@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 27,
+    title: 'Cortinarius rubellus (Deadly Cortinarius) – Identification, Toxicity & Lookalikes',
+    excerpt:
+      'Cortinarius rubellus, commonly known as the deadly webcap, is one of the most dangerous mushrooms in existence. Learn identification features, orellanine toxicity with delayed kidney failure, habitat in coniferous forests, and how to distinguish it from edible species.',
+    category: 'Edibility Guide',
+    riskLevel: 'High Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '12 min',
+    slug: '/cortinarius-rubellus',
+    image: '/cortinarius-rubellus-deadly-webcap-identification.webp',
+    views: 6240,
+    is_premium: false,
+  },
+  {
     id: 26,
     title: 'Hypholoma fasciculare (Sulfur Tuft) – Identification, Toxicity & Lookalikes',
     excerpt:
