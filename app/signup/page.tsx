@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { validateEmailQuality } from '@/lib/email-validation'
+import { COUNTRIES } from '@/lib/countries'
 
 function genCode(uid: string) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -24,6 +25,7 @@ function genCode(uid: string) {
 function SignupForm() {
   const [fullName, setFullName]               = useState('')
   const [email, setEmail]                     = useState('')
+  const [country, setCountry]                 = useState('')
   const [password, setPassword]               = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading]                 = useState(false)
@@ -95,6 +97,7 @@ function SignupForm() {
           userId:       data.user.id,
           email,
           fullName,
+          country:      country || null,
           referralCode: refCode || null,   // referral applied server-side too
         }),
       })
@@ -190,6 +193,28 @@ function SignupForm() {
                 className="w-full px-4 py-3 rounded-lg text-sm"
                 style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', outline: 'none' }}
               />
+            </div>
+
+            <div>
+              <label className="block mb-1.5 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Country</label>
+              <select
+                required value={country} onChange={e => setCountry(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg text-sm appearance-none"
+                style={{
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
+                  color: country ? 'var(--text-primary)' : 'var(--text-faint)',
+                  outline: 'none',
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 14px center',
+                }}
+              >
+                <option value="" disabled>Select your country</option>
+                {COUNTRIES.map(c => (
+                  <option key={c} value={c} style={{ color: '#0f172a' }}>{c}</option>
+                ))}
+              </select>
             </div>
 
             <div>

@@ -32,6 +32,15 @@ export async function GET(request: NextRequest) {
   const paidUsers = (totalUsers ?? 0) - (freeUsers ?? 0)
   const conversionRate = totalUsers ? ((paidUsers / totalUsers) * 100).toFixed(1) : '0'
 
+  // ── Unique countries ──
+  const { data: countryRows } = await admin
+    .from('profiles')
+    .select('country')
+    .not('country', 'is', null)
+    .neq('country', '')
+
+  const uniqueCountries = new Set((countryRows ?? []).map(r => r.country)).size
+
   // ── Revenue ──
   const { data: allTx } = await admin
     .from('transactions').select('amount_paid, created_at')
@@ -59,7 +68,7 @@ export async function GET(request: NextRequest) {
   // ── Recent users ──
   const { data: recentUsers } = await admin
     .from('profiles')
-    .select('id, email, full_name, plan, created_at')
+    .select('id, email, full_name, plan, created_at, country')
     .order('created_at', { ascending: false })
     .limit(10)
 
@@ -76,6 +85,7 @@ export async function GET(request: NextRequest) {
       free: freeUsers ?? 0,
       paid: paidUsers,
       conversionRate: Number(conversionRate),
+      uniqueCountries,
     },
     revenue: {
       lifetime: lifetimeEarnings,

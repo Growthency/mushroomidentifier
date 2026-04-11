@@ -4,7 +4,7 @@ import {
   Users, DollarSign, TrendingUp, TrendingDown,
   CreditCard, UserCheck, UserX, Percent,
   ArrowUpRight, ArrowDownRight, Loader2,
-  Calendar, ChevronDown,
+  Calendar, ChevronDown, Globe,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
@@ -20,9 +20,9 @@ const PERIOD_LABELS: Record<Period, string> = {
 }
 
 interface Stats {
-  users: { total: number; free: number; paid: number; conversionRate: number }
+  users: { total: number; free: number; paid: number; conversionRate: number; uniqueCountries: number }
   revenue: { lifetime: number; thisMonth: number; period: number; earningsChangePercent: number }
-  recentUsers: { id: string; email: string; full_name: string; plan: string; created_at: string }[]
+  recentUsers: { id: string; email: string; full_name: string; plan: string; created_at: string; country: string | null }[]
   recentTransactions: { id: string; user_id: string; pack_name: string; amount_paid: number; created_at: string }[]
 }
 
@@ -111,10 +111,11 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── User Stat cards ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <GlassCard icon={Users} label="Total Users" value={stats.users.total} color="blue" dark={dark} />
         <GlassCard icon={UserCheck} label="Paid Users" value={stats.users.paid} color="emerald" dark={dark} />
         <GlassCard icon={UserX} label="Free Users" value={stats.users.free} color="slate" dark={dark} />
+        <GlassCard icon={Globe} label="Countries" value={stats.users.uniqueCountries} color="purple" dark={dark} />
         <GlassCard icon={Percent} label="Conversion Rate" value={`${stats.users.conversionRate}%`} color="amber" dark={dark} />
       </div>
 
@@ -159,6 +160,9 @@ export default function AdminDashboard() {
                 <div>
                   <p className="text-[13px] font-medium" style={{ color: dark ? '#fff' : '#0f172a' }}>{u.full_name || u.email}</p>
                   <p className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{u.email}</p>
+                  {u.country && (
+                    <p className="text-[10px] mt-0.5" style={{ color: dark ? '#475569' : '#a1a1aa' }}>{u.country}</p>
+                  )}
                 </div>
                 <div className="text-right">
                   <span className={`text-[11px] px-2 py-0.5 rounded-lg font-semibold ${

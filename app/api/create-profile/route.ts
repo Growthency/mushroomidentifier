@@ -32,7 +32,7 @@ function getClientIp(request: NextRequest): string | null {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, email, fullName, referralCode } = await request.json()
+    const { userId, email, fullName, referralCode, country } = await request.json()
 
     if (!userId || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
       total_identifications: 0,
       referral_code:        myCode,
       signup_ip:            clientIp,
+      country:              country || null,
     })
 
     if (insertErr) throw insertErr
