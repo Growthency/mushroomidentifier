@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 28,
+    title: 'Lepiota brunneoincarnata (Toxic Small White Mushroom) – Identification, Risks & Lookalikes',
+    excerpt:
+      'Lepiota brunneoincarnata, commonly known as the deadly dapperling, is a highly poisonous small mushroom containing amatoxins. Learn identification features, scaly cap, white gills, toxicity, habitat in grasslands and gardens, and how to distinguish it from harmless species.',
+    category: 'Edibility Guide',
+    riskLevel: 'High Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '12 min',
+    slug: '/lepiota-brunneoincarnata',
+    image: '/lepiota-brunneoincarnata-deadly-dapperling-identification.webp',
+    views: 5180,
+    is_premium: false,
+  },
+  {
     id: 27,
     title: 'Cortinarius rubellus (Deadly Cortinarius) – Identification, Toxicity & Lookalikes',
     excerpt:
