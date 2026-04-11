@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 23,
+    title: 'Agaricus xanthodermus (Yellow Stainer) – Identification, Toxicity & Lookalikes',
+    excerpt:
+      'Agaricus xanthodermus, commonly called the yellow stainer, is a widespread toxic mushroom often mistaken for edible species. Learn yellow staining reaction, toxicity, habitat, and how to distinguish it from edible Agaricus species.',
+    category: 'Edibility Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '12 min',
+    slug: '/agaricus-xanthodermus',
+    image: '/agaricus-xanthodermus-yellow-stainer-identification.webp',
+    views: 4260,
+    is_premium: false,
+  },
+  {
     id: 22,
     title: 'Gyromitra esculenta (False Morel): Identification, Toxicity & Safety Guide',
     excerpt:
