@@ -520,12 +520,12 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
                [&_code]:bg-slate-800 [&_code]:text-emerald-300 [&_hr]:border-slate-700
                [&_td]:text-slate-300 [&_th]:bg-slate-800 [&_th]:text-slate-200
                [&_td]:border-slate-600 [&_th]:border-slate-600`
-            : `[&_h1]:text-slate-900 [&_h2]:text-slate-900 [&_h3]:text-slate-800 [&_p]:text-slate-700
-               [&_ul]:text-slate-700 [&_ol]:text-slate-700 [&_strong]:text-slate-900
-               [&_blockquote]:text-slate-500 [&_pre]:bg-slate-100 [&_pre]:text-emerald-700
-               [&_code]:bg-slate-100 [&_code]:text-emerald-700 [&_hr]:border-slate-200
-               [&_td]:text-slate-700 [&_th]:bg-slate-50 [&_th]:text-slate-900
-               [&_td]:border-slate-200 [&_th]:border-slate-200`
+            : `[&_h1]:text-black [&_h2]:text-black [&_h3]:text-slate-900 [&_p]:text-slate-900
+               [&_ul]:text-slate-900 [&_ol]:text-slate-900 [&_strong]:text-black
+               [&_blockquote]:text-slate-700 [&_pre]:bg-slate-100 [&_pre]:text-emerald-700
+               [&_code]:bg-slate-100 [&_code]:text-emerald-700 [&_hr]:border-slate-300
+               [&_td]:text-slate-900 [&_th]:bg-slate-100 [&_th]:text-black
+               [&_td]:border-slate-300 [&_th]:border-slate-300`
           }
           [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3
           [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2
@@ -545,7 +545,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
           [&_th]:border [&_th]:p-2 [&_th]:text-left [&_th]:font-semibold
           [&_td]:border [&_td]:p-2
         `}
-        style={{ background: editorBg, color: dark ? '#e2e8f0' : '#1e293b' }}
+        style={{ background: editorBg, color: dark ? '#e2e8f0' : '#000000' }}
       />
 
       {/* ── Image toolbar (shows when an image is selected) ── */}
