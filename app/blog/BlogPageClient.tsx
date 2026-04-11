@@ -32,6 +32,21 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 18,
+    title: 'Boletus edulis (Porcini Mushroom): Identification, Edibility & Lookalikes',
+    excerpt:
+      'Boletus edulis, commonly known as porcini, cep, or king bolete, is one of the most prized edible mushrooms in the world. Learn identification features, habitat, culinary uses, and how to avoid bitter bolete lookalikes.',
+    category: 'Edibility Guide',
+    riskLevel: 'Low Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '12 min',
+    slug: '/boletus-edulis',
+    image: '/boletus-edulis-porcini-mushroom-identification.webp',
+    views: 3450,
+    is_premium: false,
+  },
+  {
     id: 17,
     title: 'Agaricus campestris (Meadow Mushroom): Identification, Edibility & Lookalikes',
     excerpt:

@@ -41,6 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/galerina-marginata`,                           lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/omphalotus-illudens`,                          lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/agaricus-campestris`,                          lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/boletus-edulis`,                               lastModified: new Date('2026-04-11'),     changeFrequency: 'monthly', priority: 0.85 },
   ]
 
   // ── Dynamic pages from Supabase (admin-created posts) ──
