@@ -5,6 +5,7 @@ import {
   CreditCard, UserCheck, UserX, Percent,
   ArrowUpRight, ArrowDownRight, Loader2,
 } from 'lucide-react'
+import { useTheme } from '@/components/providers/ThemeProvider'
 
 interface Stats {
   users: { total: number; free: number; paid: number; conversionRate: number }
@@ -27,6 +28,8 @@ function timeAgo(d: string) {
 }
 
 export default function AdminDashboard() {
+  const { theme } = useTheme()
+  const dark = theme === 'dark'
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -48,29 +51,33 @@ export default function AdminDashboard() {
 
   const changeUp = stats.revenue.earningsChangePercent >= 0
 
+  const cardBg = dark ? 'rgba(255,255,255,0.03)' : '#fff'
+  const cardBorder = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
+  const dividerColor = dark ? 'rgba(255,255,255,0.04)' : '#f1f5f9'
+
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-[26px] font-bold text-white tracking-tight">Dashboard Overview</h1>
-        <p className="text-sm text-slate-500 mt-1">Real-time stats for Mushroom Identifiers</p>
+        <h1 className="text-[26px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Dashboard Overview</h1>
+        <p className="text-sm mt-1" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Real-time stats for Mushroom Identifiers</p>
       </div>
 
       {/* ── User Stat cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <GlassCard icon={Users} label="Total Users" value={stats.users.total} color="blue" />
-        <GlassCard icon={UserCheck} label="Paid Users" value={stats.users.paid} color="emerald" />
-        <GlassCard icon={UserX} label="Free Users" value={stats.users.free} color="slate" />
-        <GlassCard icon={Percent} label="Conversion Rate" value={`${stats.users.conversionRate}%`} color="amber" />
+        <GlassCard icon={Users} label="Total Users" value={stats.users.total} color="blue" dark={dark} />
+        <GlassCard icon={UserCheck} label="Paid Users" value={stats.users.paid} color="emerald" dark={dark} />
+        <GlassCard icon={UserX} label="Free Users" value={stats.users.free} color="slate" dark={dark} />
+        <GlassCard icon={Percent} label="Conversion Rate" value={`${stats.users.conversionRate}%`} color="amber" dark={dark} />
       </div>
 
       {/* ── Revenue cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <GlassCard icon={DollarSign} label="Lifetime Earnings" value={fmt(stats.revenue.lifetime)} color="emerald" />
-        <GlassCard icon={CreditCard} label="This Month" value={fmt(stats.revenue.thisMonth)} color="blue" />
-        <GlassCard icon={CreditCard} label="Last 30 Days" value={fmt(stats.revenue.last30Days)} color="purple" />
-        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+        <GlassCard icon={DollarSign} label="Lifetime Earnings" value={fmt(stats.revenue.lifetime)} color="emerald" dark={dark} />
+        <GlassCard icon={CreditCard} label="This Month" value={fmt(stats.revenue.thisMonth)} color="blue" dark={dark} />
+        <GlassCard icon={CreditCard} label="Last 30 Days" value={fmt(stats.revenue.last30Days)} color="purple" dark={dark} />
+        <div className="p-5 rounded-2xl backdrop-blur-sm" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">vs Previous 30d</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: dark ? '#64748b' : '#94a3b8' }}>vs Previous 30d</span>
             <div className={`p-2 rounded-xl ${changeUp ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
               {changeUp
                 ? <TrendingUp className="w-4 h-4 text-emerald-400" />
@@ -86,7 +93,7 @@ export default function AdminDashboard() {
               ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500/60" />
               : <ArrowDownRight className="w-3.5 h-3.5 text-red-500/60" />
             }
-            <span className="text-[11px] text-slate-500">month over month</span>
+            <span className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>month over month</span>
           </div>
         </div>
       </div>
@@ -94,52 +101,54 @@ export default function AdminDashboard() {
       {/* ── Recent tables ── */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Users */}
-        <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/[0.06]">
-            <h2 className="font-semibold text-white text-[13px] tracking-tight">Recent Users</h2>
+        <div className="rounded-2xl overflow-hidden" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+            <h2 className="font-semibold text-[13px] tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Recent Users</h2>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div>
             {stats.recentUsers.map(u => (
-              <div key={u.id} className="px-5 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+              <div key={u.id} className="px-5 py-3.5 flex items-center justify-between transition-colors" style={{ borderBottom: `1px solid ${dividerColor}` }}>
                 <div>
-                  <p className="text-[13px] text-white font-medium">{u.full_name || u.email}</p>
-                  <p className="text-[11px] text-slate-500">{u.email}</p>
+                  <p className="text-[13px] font-medium" style={{ color: dark ? '#fff' : '#0f172a' }}>{u.full_name || u.email}</p>
+                  <p className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{u.email}</p>
                 </div>
                 <div className="text-right">
                   <span className={`text-[11px] px-2 py-0.5 rounded-lg font-semibold ${
                     u.plan && u.plan !== 'free'
                       ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
-                      : 'bg-white/[0.04] text-slate-500 ring-1 ring-white/[0.06]'
+                      : dark
+                        ? 'bg-white/[0.04] text-slate-500 ring-1 ring-white/[0.06]'
+                        : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200'
                   }`}>
                     {u.plan || 'free'}
                   </span>
-                  <p className="text-[10px] text-slate-600 mt-1">{timeAgo(u.created_at)}</p>
+                  <p className="text-[10px] mt-1" style={{ color: dark ? '#334155' : '#94a3b8' }}>{timeAgo(u.created_at)}</p>
                 </div>
               </div>
             ))}
             {stats.recentUsers.length === 0 && (
-              <p className="px-5 py-8 text-[13px] text-slate-600 text-center">No users yet</p>
+              <p className="px-5 py-8 text-[13px] text-center" style={{ color: dark ? '#334155' : '#94a3b8' }}>No users yet</p>
             )}
           </div>
         </div>
 
         {/* Recent Transactions */}
-        <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/[0.06]">
-            <h2 className="font-semibold text-white text-[13px] tracking-tight">Recent Transactions</h2>
+        <div className="rounded-2xl overflow-hidden" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+            <h2 className="font-semibold text-[13px] tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Recent Transactions</h2>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div>
             {stats.recentTransactions.map(tx => (
-              <div key={tx.id} className="px-5 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+              <div key={tx.id} className="px-5 py-3.5 flex items-center justify-between transition-colors" style={{ borderBottom: `1px solid ${dividerColor}` }}>
                 <div>
-                  <p className="text-[13px] text-white font-medium capitalize">{tx.pack_name} Pack</p>
-                  <p className="text-[11px] text-slate-500">{timeAgo(tx.created_at)}</p>
+                  <p className="text-[13px] font-medium capitalize" style={{ color: dark ? '#fff' : '#0f172a' }}>{tx.pack_name} Pack</p>
+                  <p className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{timeAgo(tx.created_at)}</p>
                 </div>
                 <span className="text-[14px] font-bold text-emerald-400">{fmt(tx.amount_paid)}</span>
               </div>
             ))}
             {stats.recentTransactions.length === 0 && (
-              <p className="px-5 py-8 text-[13px] text-slate-600 text-center">No transactions yet</p>
+              <p className="px-5 py-8 text-[13px] text-center" style={{ color: dark ? '#334155' : '#94a3b8' }}>No transactions yet</p>
             )}
           </div>
         </div>
@@ -149,26 +158,26 @@ export default function AdminDashboard() {
 }
 
 // ── Glass Card component ──
-function GlassCard({ icon: Icon, label, value, color }: {
-  icon: any; label: string; value: string | number; color: string
+function GlassCard({ icon: Icon, label, value, color, dark }: {
+  icon: any; label: string; value: string | number; color: string; dark: boolean
 }) {
   const iconBg: Record<string, string> = {
     blue:    'bg-blue-500/10 text-blue-400',
     emerald: 'bg-emerald-500/10 text-emerald-400',
     amber:   'bg-amber-500/10 text-amber-400',
     purple:  'bg-purple-500/10 text-purple-400',
-    slate:   'bg-white/[0.05] text-slate-400',
+    slate:   dark ? 'bg-white/[0.05] text-slate-400' : 'bg-slate-100 text-slate-500',
     red:     'bg-red-500/10 text-red-400',
   }
   return (
-    <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+    <div className="p-5 rounded-2xl backdrop-blur-sm" style={{ background: dark ? 'rgba(255,255,255,0.03)' : '#fff', border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}` }}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">{label}</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{label}</span>
         <div className={`p-2 rounded-xl ${iconBg[color] ?? iconBg.blue}`}>
           <Icon className="w-4 h-4" />
         </div>
       </div>
-      <p className="text-[28px] font-bold text-white tracking-tight">{value}</p>
+      <p className="text-[28px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>{value}</p>
     </div>
   )
 }

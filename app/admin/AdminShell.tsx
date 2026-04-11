@@ -3,10 +3,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, FileText, BarChart3,
-  LogOut, ChevronRight, Menu, X,
+  LogOut, ChevronRight, Menu, X, Sun, Moon,
 } from 'lucide-react'
 import { useState } from 'react'
 import { AdminModalProvider } from '@/components/admin/AdminModal'
+import { useTheme } from '@/components/providers/ThemeProvider'
 
 const NAV = [
   { href: '/admin',           label: 'Dashboard',  icon: LayoutDashboard },
@@ -17,26 +18,29 @@ const NAV = [
 export default function AdminShell({ children, userEmail }: { children: React.ReactNode; userEmail: string }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const { theme, toggle } = useTheme()
 
   const isActive = (href: string) => {
     if (href === '/admin') return pathname === '/admin'
     return pathname.startsWith(href)
   }
 
+  const dark = theme === 'dark'
+
   return (
     <AdminModalProvider>
-    <div className="min-h-screen flex bg-[#080c14]">
+    <div className="min-h-screen flex transition-colors duration-300" style={{ background: dark ? '#080c14' : '#f1f5f9' }}>
 
       {/* ── Sidebar (desktop) ── */}
-      <aside className="hidden lg:flex flex-col w-[260px] border-r border-white/[0.06] bg-[#0c1120]">
+      <aside className="hidden lg:flex flex-col w-[260px] border-r transition-colors duration-300" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0', background: dark ? '#0c1120' : '#ffffff' }}>
         {/* Logo */}
-        <div className="px-6 py-5 border-b border-white/[0.06]">
+        <div className="px-6 py-5 border-b" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0' }}>
           <Link href="/admin" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-emerald-500/20">
               M
             </div>
             <div>
-              <span className="text-[15px] font-bold text-white tracking-tight">Admin</span>
+              <span className="text-[15px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Admin</span>
               <span className="text-[10px] ml-1.5 px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20">
                 PRO
               </span>
@@ -46,7 +50,7 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-5 space-y-1">
-          <p className="px-3 mb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Menu</p>
+          <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Menu</p>
           {NAV.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
@@ -54,8 +58,9 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
                 isActive(href)
                   ? 'bg-gradient-to-r from-emerald-500/15 to-emerald-500/5 text-emerald-400 shadow-sm shadow-emerald-500/5'
-                  : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                  : ''
               }`}
+              style={!isActive(href) ? { color: dark ? '#94a3b8' : '#64748b' } : undefined}
             >
               <Icon className="w-[18px] h-[18px]" />
               {label}
@@ -65,19 +70,28 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
         </nav>
 
         {/* Footer */}
-        <div className="px-4 py-4 border-t border-white/[0.06]">
+        <div className="px-4 py-4 border-t" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0' }}>
           <div className="flex items-center gap-3 mb-3 px-1">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400/20 to-emerald-600/20 flex items-center justify-center text-emerald-400 text-xs font-bold ring-1 ring-emerald-500/20">
               {userEmail[0].toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-[12px] font-semibold text-white truncate">{userEmail}</p>
-              <p className="text-[10px] text-slate-500 font-medium">Administrator</p>
+              <p className="text-[12px] font-semibold truncate" style={{ color: dark ? '#fff' : '#0f172a' }}>{userEmail}</p>
+              <p className="text-[10px] font-medium" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Administrator</p>
             </div>
           </div>
+          <button
+            onClick={toggle}
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-[12px] transition-colors mb-1"
+            style={{ color: dark ? '#64748b' : '#64748b' }}
+          >
+            {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            {dark ? 'Light mode' : 'Dark mode'}
+          </button>
           <Link
             href="/"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] text-slate-500 hover:text-slate-300 hover:bg-white/[0.03] transition-colors"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] transition-colors"
+            style={{ color: dark ? '#64748b' : '#64748b' }}
           >
             <LogOut className="w-3.5 h-3.5" />
             Back to site
@@ -86,19 +100,27 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
       </aside>
 
       {/* ── Mobile header ── */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-[#0c1120]/95 backdrop-blur-xl">
+      <div
+        className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 border-b backdrop-blur-xl transition-colors duration-300"
+        style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0', background: dark ? 'rgba(12,17,32,0.95)' : 'rgba(255,255,255,0.95)' }}
+      >
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white text-xs font-bold">M</div>
-          <span className="text-sm font-bold text-white">Admin</span>
+          <span className="text-sm font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>Admin</span>
         </div>
-        <button onClick={() => setOpen(!open)} className="text-slate-400 p-1">
-          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={toggle} className="p-1.5 rounded-lg transition-colors" style={{ color: dark ? '#94a3b8' : '#64748b' }}>
+            {dark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
+          </button>
+          <button onClick={() => setOpen(!open)} className="p-1" style={{ color: dark ? '#94a3b8' : '#64748b' }}>
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile nav overlay */}
       {open && (
-        <div className="lg:hidden fixed inset-0 z-40 pt-14 bg-[#0c1120]/98 backdrop-blur-xl">
+        <div className="lg:hidden fixed inset-0 z-40 pt-14 backdrop-blur-xl" style={{ background: dark ? 'rgba(12,17,32,0.98)' : 'rgba(255,255,255,0.98)' }}>
           <nav className="px-4 py-4 space-y-1">
             {NAV.map(({ href, label, icon: Icon }) => (
               <Link
@@ -106,8 +128,9 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
                 href={href}
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
-                  isActive(href) ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-400'
+                  isActive(href) ? 'bg-emerald-500/10 text-emerald-400' : ''
                 }`}
+                style={!isActive(href) ? { color: dark ? '#94a3b8' : '#64748b' } : undefined}
               >
                 <Icon className="w-[18px] h-[18px]" />
                 {label}
