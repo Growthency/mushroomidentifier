@@ -32,6 +32,111 @@ const ARTICLES_PER_PAGE = 9
 
 const articles: Article[] = [
   {
+    id: 18,
+    title: 'Boletus edulis (Porcini Mushroom): Identification, Edibility & Lookalikes',
+    excerpt:
+      'Boletus edulis, commonly known as porcini, cep, or king bolete, is one of the most prized edible mushrooms in the world. Learn identification features, habitat, culinary uses, and how to avoid bitter bolete lookalikes.',
+    category: 'Edibility Guide',
+    riskLevel: 'Low Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '12 min',
+    slug: '/boletus-edulis',
+    image: '/boletus-edulis-porcini-mushroom-identification.webp',
+    views: 3450,
+    is_premium: false,
+  },
+  {
+    id: 17,
+    title: 'Agaricus campestris (Meadow Mushroom): Identification, Edibility & Lookalikes',
+    excerpt:
+      'Agaricus campestris, commonly known as the meadow mushroom or field mushroom, is a widely recognized edible wild mushroom found in grasslands, pastures, and open fields. Learn identification, edibility, and how to avoid toxic lookalikes.',
+    category: 'Edibility Guide',
+    riskLevel: 'Low Risk',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '10 min',
+    slug: '/agaricus-campestris',
+    image: '/agaricus-campestris-meadow-mushroom-identification.webp',
+    views: 2130,
+    is_premium: false,
+  },
+  {
+    id: 16,
+    title: "Omphalotus illudens (Jack-o'-Lantern Mushroom): Identification & Safety Guide",
+    excerpt:
+      'Omphalotus illudens, commonly known as the jack-o\u2019-lantern mushroom, is a bright orange, bioluminescent fungus found mainly in North America. Learn identification, toxicity, and how to distinguish it from chanterelles.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'US North America',
+    date: 'Apr 11, 2026',
+    readTime: '11 min',
+    slug: '/omphalotus-illudens',
+    image: '/omphalotus-illudens-jack-o-lantern-mushroom-identification.webp',
+    views: 1540,
+    is_premium: false,
+  },
+  {
+    id: 15,
+    title: 'Galerina marginata (Funeral Bell): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Galerina marginata, commonly known as the Funeral Bell, is a small brown poisonous mushroom that contains deadly amatoxins, the same toxins found in the Death Cap. Learn identification, habitat, toxicity, and safety tips.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 11, 2026',
+    readTime: '10 min',
+    slug: '/galerina-marginata',
+    image: '/galerina-marginata-funeral-bell-identification.webp',
+    views: 1680,
+    is_premium: false,
+  },
+  {
+    id: 14,
+    title: 'Amanita pantherina (Panther Cap): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Amanita pantherina, commonly known as the Panther Cap, is a toxic Amanita species known for its brown cap with white spots and strong potential for misidentification. Learn identification, habitat, toxicity, and safety tips.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 10, 2026',
+    readTime: '10 min',
+    slug: '/amanita-pantherina',
+    image: '/amanita-pantherina-panther-cap-identification.webp',
+    views: 1420,
+    is_premium: false,
+  },
+  {
+    id: 13,
+    title: 'Amanita muscaria (Fly Agaric): Identification, Features, Habitat & Safety Guide',
+    excerpt:
+      'Amanita muscaria, commonly known as the Fly Agaric, is one of the most recognizable mushrooms in the world due to its bright red cap with white spots. Learn identification, habitat, toxicity, and safety tips.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'Worldwide',
+    date: 'Apr 10, 2026',
+    readTime: '10 min',
+    slug: '/amanita-muscaria',
+    image: '/amanita-muscaria-fly-agaric-identification.webp',
+    views: 1870,
+    is_premium: false,
+  },
+  {
+    id: 12,
+    title: 'Amanita ocreata (Toxic Amanita Species): Identification Guide',
+    excerpt:
+      'Amanita ocreata, commonly known as the Western Destroying Angel, is a highly toxic Amanita species found in North America. It contains deadly amatoxins that can cause severe liver and kidney failure.',
+    category: 'Species Guide',
+    riskLevel: 'Toxic',
+    region: 'US North America',
+    date: 'Apr 10, 2026',
+    readTime: '8 min',
+    slug: '/amanita-ocreata',
+    image: '/amanita-ocreata-western-destroying-angel-identification.webp',
+    views: 2341,
+    is_premium: false,
+  },
+  {
     id: 11,
     title: 'Are There Any Deadly Leccinum Mushrooms?',
     excerpt:
@@ -242,6 +347,27 @@ export default function BlogPageClient() {
   const [isLoggedIn, setIsLoggedIn]   = useState(false)
   const [favorites, setFavorites]     = useState<Set<string>>(new Set())
   const [loadingFav, setLoadingFav]   = useState<string | null>(null)
+  const [allArticles, setAllArticles] = useState<Article[]>(articles)
+
+  useEffect(() => {
+    // Fetch admin-created posts from database and merge with hardcoded articles
+    fetch('/api/blog/posts')
+      .then(r => {
+        if (!r.ok) throw new Error(`API error: ${r.status}`)
+        return r.json()
+      })
+      .then(data => {
+        const dbPosts = data?.posts ?? []
+        if (dbPosts.length > 0) {
+          const hardcodedSlugs = new Set(articles.map(a => a.slug))
+          const newPosts = dbPosts.filter((p: Article) => !hardcodedSlugs.has(p.slug))
+          if (newPosts.length > 0) {
+            setAllArticles(prev => [...newPosts, ...articles])
+          }
+        }
+      })
+      .catch(err => console.error('[Blog] Failed to load DB posts:', err))
+  }, [])
 
   useEffect(() => {
     const supabase = createClient()
@@ -313,7 +439,7 @@ export default function BlogPageClient() {
   }
 
   const filtered = useMemo(() => {
-    return articles.filter(a => {
+    return allArticles.filter(a => {
       const q      = activeFilters.query.toLowerCase()
       const matchQ = !q || a.title.toLowerCase().includes(q) || a.excerpt.toLowerCase().includes(q)
       const matchR = activeFilters.risk === 'All Levels' || a.riskLevel === activeFilters.risk
@@ -323,7 +449,7 @@ export default function BlogPageClient() {
         (activeFilters.pricing === 'Premium' && a.is_premium)
       return matchQ && matchR && matchReg && matchP
     })
-  }, [activeFilters])
+  }, [activeFilters, allArticles])
 
   const totalPages = Math.ceil(filtered.length / ARTICLES_PER_PAGE)
   const pageItems  = filtered.slice((currentPage - 1) * ARTICLES_PER_PAGE, currentPage * ARTICLES_PER_PAGE)
