@@ -356,31 +356,31 @@ export default function BlogSidebar() {
         <div className="rounded-xl overflow-hidden mb-5 relative"
           style={{ border: '1px solid var(--border)' }}>
           {/* Cover — author avatar as blurred background */}
-          <div className="relative w-full overflow-hidden" style={{ height: 160 }}>
+          <div className="relative w-full overflow-hidden" style={{ height: 210 }}>
             <Image
               src="/author-avatar.webp"
               alt=""
               fill
               className="object-cover"
-              style={{ filter: 'blur(14px) brightness(0.45) saturate(1.3)', transform: 'scale(1.2)' }}
+              style={{ filter: 'blur(16px) brightness(0.4) saturate(1.3)', transform: 'scale(1.2)' }}
             />
             <div className="absolute inset-0"
-              style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.4) 100%)' }} />
+              style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.35) 100%)' }} />
 
             {/* Avatar centered on cover */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="rounded-full p-[3px]"
                 style={{
                   background: 'linear-gradient(135deg, #34d399, #10b981, #059669)',
-                  boxShadow: '0 6px 24px rgba(0,0,0,0.4)',
+                  boxShadow: '0 8px 28px rgba(0,0,0,0.45)',
                 }}>
                 <Image
                   src="/author-avatar.webp"
                   alt="Paul Stamets — Mushroom Expert"
-                  width={130}
-                  height={130}
+                  width={180}
+                  height={180}
                   className="rounded-full object-cover"
-                  style={{ width: 130, height: 130, border: '3px solid rgba(255,255,255,0.9)' }}
+                  style={{ width: 180, height: 180, border: '4px solid rgba(255,255,255,0.9)' }}
                 />
               </div>
             </div>
