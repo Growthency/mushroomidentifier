@@ -2,6 +2,10 @@ import type { Metadata } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import BlogPageClient from './BlogPageClient'
 
+// Always fetch fresh data — never serve a cached/stale article count
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export const metadata: Metadata = {
   title: 'Blog | Mushroom Identifier',
   description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
