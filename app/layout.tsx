@@ -73,6 +73,10 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="dipMWRMeOiWrrLH32OCvAQS-wR14IzCVSCLFUt9mH-0" />
+        {/* Preconnect to external origins — saves DNS+TCP+TLS time */}
+        <link rel="preconnect" href="https://i.pravatar.cc" />
+        <link rel="dns-prefetch" href="https://i.pravatar.cc" />
+        <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
         {/* Organization structured data for Google SERP logo */}
         <script
           type="application/ld+json"

@@ -102,7 +102,7 @@ export default function HeroCanvas() {
       animId = requestAnimationFrame(animate)
     }
 
-    const startTimer = setTimeout(() => { animate() }, 2500)
+    const startTimer = setTimeout(() => { animate() }, 300)
 
     return () => {
       clearTimeout(startTimer)
