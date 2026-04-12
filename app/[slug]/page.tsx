@@ -11,6 +11,7 @@ import BlogComments from '@/components/blog/BlogComments'
 import ArticleViewCount from '@/components/blog/ArticleViewCount'
 import ArticleContent from '@/components/blog/ArticleContent'
 import PremiumGate from '@/components/PremiumGate'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 /* ── Supabase admin client — no-store ensures deleted posts return 404 immediately ── */
 function getSupabase() {
@@ -317,6 +318,7 @@ export default async function DynamicPostPage({
                 style={{ borderColor: 'var(--border)' }}
               />
 
+              <ViewTracker slug={post.slug} />
               <BlogComments slug={post.slug} />
             </article>
 
