@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   Search, Plus, Trash2, Play, Loader2, TrendingUp, TrendingDown,
   Minus, Target, Trophy, AlertCircle, Clock, BarChart3, X, Zap,
+  ArrowUpDown, ArrowUp, ArrowDown,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
@@ -171,6 +172,8 @@ export default function RankTrackerPage() {
   const [checkingSingle, setCheckingSingle] = useState<number | null>(null)
   const [editingVol, setEditingVol] = useState<number | null>(null)
   const [volInput, setVolInput] = useState('')
+  const [sortBy, setSortBy] = useState<'volume' | 'position' | null>(null)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
   const fetchData = useCallback(async () => {
     try {
@@ -183,6 +186,25 @@ export default function RankTrackerPage() {
   }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
+
+  const toggleSort = (col: 'volume' | 'position') => {
+    if (sortBy === col) {
+      if (sortDir === 'desc') setSortDir('asc')
+      else { setSortBy(null); setSortDir('desc') } // third click resets
+    } else {
+      setSortBy(col)
+      setSortDir('desc')
+    }
+  }
+
+  const sortedKeywords = useMemo(() => {
+    if (!sortBy) return keywords
+    return [...keywords].sort((a, b) => {
+      const aVal = sortBy === 'volume' ? (a.volume ?? 0) : (a.position ?? 999)
+      const bVal = sortBy === 'volume' ? (b.volume ?? 0) : (b.position ?? 999)
+      return sortDir === 'desc' ? bVal - aVal : aVal - bVal
+    })
+  }, [keywords, sortBy, sortDir])
 
   const handleAdd = async () => {
     if (!newKeyword.trim()) return
@@ -529,10 +551,14 @@ export default function RankTrackerPage() {
             style={{ gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 44px 40px', color: textSecondary, borderBottom: `1px solid ${cardBorder}`, background: dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}>
             <div>#</div>
             <div>Keyword</div>
-            <div className="text-center">Volume</div>
-            <div className="text-center flex items-center justify-center gap-1.5">
+            <button onClick={() => toggleSort('volume')} className="text-center flex items-center justify-center gap-1 cursor-pointer hover:opacity-70 transition-opacity" title="Sort by volume">
+              Volume
+              {sortBy === 'volume' ? (sortDir === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
+            </button>
+            <button onClick={() => toggleSort('position')} className="text-center flex items-center justify-center gap-1 cursor-pointer hover:opacity-70 transition-opacity" title="Sort by position">
               <span className="text-base leading-none">🇺🇸</span> Position
-            </div>
+              {sortBy === 'position' ? (sortDir === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
+            </button>
             <div className="text-center">Change</div>
             <div>Ranking URL</div>
             <div className="text-center">Checked</div>
@@ -541,13 +567,13 @@ export default function RankTrackerPage() {
           </div>
 
           {/* Rows */}
-          {keywords.map((kw, idx) => (
+          {sortedKeywords.map((kw, idx) => (
             <div
               key={kw.id}
               className="grid gap-4 px-6 py-4 items-center transition-colors group"
               style={{
                 gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 44px 40px',
-                borderBottom: idx < keywords.length - 1 ? `1px solid ${cardBorder}` : 'none',
+                borderBottom: idx < sortedKeywords.length - 1 ? `1px solid ${cardBorder}` : 'none',
                 background: 'transparent',
               }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}
