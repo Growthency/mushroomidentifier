@@ -54,9 +54,11 @@ export async function generateMetadata({
   return {
     title: post.meta_title || post.title,
     description: post.meta_description || post.excerpt || '',
+    alternates: { canonical: `https://mushroomidentifiers.com${post.slug}` },
     openGraph: {
       title: post.meta_title || post.title,
       description: post.meta_description || post.excerpt || '',
+      url: `https://mushroomidentifiers.com${post.slug}`,
       images: post.featured_image ? [post.featured_image] : [],
     },
   }

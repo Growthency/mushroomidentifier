@@ -12,6 +12,13 @@ import ArticleViewCount from '@/components/blog/ArticleViewCount'
 export const metadata: Metadata = {
   title: 'Amanita pantherina (Amanita Lookalike Danger) - Identification Guide',
   description: 'Amanita pantherina, commonly known as the Panther Cap, is a toxic Amanita species known for its brown cap with white spots and strong potential for misidentification.',
+  alternates: { canonical: 'https://mushroomidentifiers.com/amanita-pantherina' },
+  openGraph: {
+    title: 'Amanita pantherina (Amanita Lookalike Danger) - Identification Guide',
+    description: 'Amanita pantherina, commonly known as the Panther Cap, is a toxic Amanita species known for its brown cap with white spots and strong potential for misidentification.',
+    url: 'https://mushroomidentifiers.com/amanita-pantherina',
+    images: [{ url: 'https://mushroomidentifiers.com/amanita-pantherina-panther-cap-identification.webp', width: 1200, height: 630 }],
+  },
 }
 
 const schemaData = {

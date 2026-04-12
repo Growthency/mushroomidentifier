@@ -7,8 +7,20 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export const metadata: Metadata = {
-  title: 'Blog | Mushroom Identifier',
+  title: 'Mushroom Identification Blog – Guides, Safety Tips & Foraging Insights',
   description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
+  alternates: { canonical: 'https://mushroomidentifiers.com/blog' },
+  openGraph: {
+    title: 'Mushroom Identification Blog – Guides, Safety Tips & Foraging Insights',
+    description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
+    url: 'https://mushroomidentifiers.com/blog',
+    images: [{ url: 'https://mushroomidentifiers.com/mushroom-fungi-identifier.webp', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mushroom Identification Blog – Guides & Safety Tips',
+    description: 'Expert guides, safety tips, regional foraging insights from mycology experts.',
+  },
 }
 
 // Fetch admin-published posts at request time so the count is correct on first paint

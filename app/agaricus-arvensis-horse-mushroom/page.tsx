@@ -13,6 +13,13 @@ export const metadata: Metadata = {
   title: 'Horse Mushroom (Agaricus arvensis) - Mushroom Identifier',
   description:
     'The Horse Mushroom (Agaricus arvensis) is a large, edible mushroom commonly found in grasslands and pastures.',
+  alternates: { canonical: 'https://mushroomidentifiers.com/agaricus-arvensis-horse-mushroom' },
+  openGraph: {
+    title: 'Horse Mushroom (Agaricus arvensis) - Mushroom Identifier',
+    description: 'The Horse Mushroom (Agaricus arvensis) is a large, edible mushroom commonly found in grasslands and pastures.',
+    url: 'https://mushroomidentifiers.com/agaricus-arvensis-horse-mushroom',
+    images: [{ url: 'https://mushroomidentifiers.com/agaricus-arvensis-horse-mushroom.webp', width: 1200, height: 630 }],
+  },
 }
 
 const schemaData = {

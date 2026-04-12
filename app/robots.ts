@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/dashboard', '/api/'],
+        disallow: ['/dashboard', '/admin', '/api/', '/login', '/signup', '/checkout/', '/account/'],
       },
     ],
     sitemap: 'https://mushroomidentifiers.com/sitemap.xml',

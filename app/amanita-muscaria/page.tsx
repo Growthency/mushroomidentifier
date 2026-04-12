@@ -12,6 +12,13 @@ import ArticleViewCount from '@/components/blog/ArticleViewCount'
 export const metadata: Metadata = {
   title: 'Amanita muscaria: (Mushroom with White Spots) - Identification Guide',
   description: 'Amanita muscaria, commonly known as the Fly Agaric, is one of the most recognizable mushrooms in the world due to its bright red cap with white spots.',
+  alternates: { canonical: 'https://mushroomidentifiers.com/amanita-muscaria' },
+  openGraph: {
+    title: 'Amanita muscaria: (Mushroom with White Spots) - Identification Guide',
+    description: 'Amanita muscaria, commonly known as the Fly Agaric, is one of the most recognizable mushrooms in the world due to its bright red cap with white spots.',
+    url: 'https://mushroomidentifiers.com/amanita-muscaria',
+    images: [{ url: 'https://mushroomidentifiers.com/amanita-muscaria-fly-agaric-identification.webp', width: 1200, height: 630 }],
+  },
 }
 
 const schemaData = {

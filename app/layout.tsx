@@ -23,7 +23,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL('https://mushroomidentifiers.com'),
   title: 'Mushroom Identifier - Free Mushroom Identification App by Picture',
-  description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
+  description: 'Free mushroom identifier by photo with AI. Upload images to instantly identify fungi, get toxicity warnings, and similar species alerts.',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '48x48' },
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
   openGraph: {
     title: 'Mushroom Identifier - Free Mushroom Identification App by Picture',
-    description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
+    description: 'Free mushroom identifier by photo with AI. Upload images to instantly identify fungi, get toxicity warnings, and similar species alerts.',
     url: 'https://mushroomidentifiers.com',
     siteName: 'Mushroom Identifier',
     type: 'website',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Mushroom Identifier - Free Mushroom Identification App by Picture',
-    description: 'Use our Free mushroom identifier by photo for fast mushrooms identification, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identifier app.',
+    description: 'Free mushroom identifier by photo with AI. Upload images to instantly identify fungi, get toxicity warnings, and similar species alerts.',
     images: ['https://mushroomidentifiers.com/mushroom-fungi-identifier.webp'],
   },
   robots: {
@@ -77,26 +77,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://i.pravatar.cc" />
         <link rel="dns-prefetch" href="https://i.pravatar.cc" />
         <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
-        {/* Organization structured data for Google SERP logo */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Mushroom Identifiers",
-              "url": "https://mushroomidentifiers.com",
-              "logo": "https://mushroomidentifiers.com/logo-512.png",
-              "sameAs": [],
-              "description": "AI-powered mushroom identification app. Upload photos for instant fungi identification, toxicity warnings, and species guides."
-            })
-          }}
-        />
         {/* Hint browser to give max priority to the critical CSS chunk on the critical path */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Inline theme script — runs synchronously before any paint to prevent flash of wrong theme */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('mi-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();` }} />
-        {/* Site-wide identity schema only — page-specific schemas live in each page component */}
+        {/* Site-wide identity schema — single Organization + WebSite */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -106,9 +91,11 @@ export default function RootLayout({
                 {
                   "@type": "Organization",
                   "@id": "https://mushroomidentifiers.com/#organization",
-                  "name": "Mushroom Identifier",
+                  "name": "Mushroom Identifiers",
                   "url": "https://mushroomidentifiers.com/",
+                  "logo": "https://mushroomidentifiers.com/logo-512.png",
                   "email": "support@mushroomidentifiers.com",
+                  "description": "AI-powered mushroom identification app. Upload photos for instant fungi identification, toxicity warnings, and species guides.",
                   "sameAs": [
                     "https://www.instagram.com/mushroomidentifiers/",
                     "https://x.com/MIdentifiers",

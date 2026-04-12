@@ -12,6 +12,13 @@ import ArticleViewCount from '@/components/blog/ArticleViewCount'
 export const metadata: Metadata = {
   title: 'Agaricus campestris (Meadow Mushroom) \u2013 Identification Guide',
   description: 'Agaricus campestris, commonly known as the meadow mushroom or field mushroom, is a widely recognized edible wild mushroom found in grasslands, pastures, and open fields.',
+  alternates: { canonical: 'https://mushroomidentifiers.com/agaricus-campestris' },
+  openGraph: {
+    title: 'Agaricus campestris (Meadow Mushroom) \u2013 Identification Guide',
+    description: 'Agaricus campestris, commonly known as the meadow mushroom or field mushroom, is a widely recognized edible wild mushroom found in grasslands, pastures, and open fields.',
+    url: 'https://mushroomidentifiers.com/agaricus-campestris',
+    images: [{ url: 'https://mushroomidentifiers.com/agaricus-campestris-meadow-mushroom-identification.webp', width: 1200, height: 630 }],
+  },
 }
 
 const schemaData = {

@@ -17,13 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/about`,     lastModified: lastMod, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/contact`,   lastModified: lastMod, changeFrequency: 'monthly', priority: 0.7 },
 
-    // Auth pages
-    { url: `${BASE_URL}/login`,     lastModified: lastMod, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/signup`,    lastModified: lastMod, changeFrequency: 'monthly', priority: 0.5 },
-
     // Legal pages
     { url: `${BASE_URL}/privacy`,   lastModified: lastMod, changeFrequency: 'yearly',  priority: 0.4 },
     { url: `${BASE_URL}/terms`,     lastModified: lastMod, changeFrequency: 'yearly',  priority: 0.4 },
+    { url: `${BASE_URL}/refund`,    lastModified: lastMod, changeFrequency: 'yearly',  priority: 0.4 },
 
     // Hardcoded blog / article pages
     { url: `${BASE_URL}/death-cap-vs-destroying-angel`,                lastModified: lastMod,                    changeFrequency: 'monthly', priority: 0.85 },

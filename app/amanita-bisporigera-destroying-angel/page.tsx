@@ -13,6 +13,13 @@ export const metadata: Metadata = {
   title: 'Amanita bisporigera (destroying angel identification) - Mushroom Identifier',
   description:
     'Amanita bisporigera: The Deadly Destroying Angel! \ud83d\udc80 identify this lethal beauty before it\u2019s too late. Expert identification tips & warning signs inside!',
+  alternates: { canonical: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel' },
+  openGraph: {
+    title: 'Amanita bisporigera (destroying angel identification) - Mushroom Identifier',
+    description: 'Amanita bisporigera: The Deadly Destroying Angel! \ud83d\udc80 identify this lethal beauty before it\u2019s too late. Expert identification tips & warning signs inside!',
+    url: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel',
+    images: [{ url: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel-identification.webp', width: 1200, height: 630 }],
+  },
 }
 
 const schemaData = {
