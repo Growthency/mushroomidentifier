@@ -257,31 +257,44 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  // ─── Sitemap Ping — notify Google & Bing ──────────────────────────────────
-  if (action === 'ping-sitemap') {
-    const sitemapUrl = encodeURIComponent(`${SITE_URL}/sitemap.xml`)
-    const results: { engine: string; status: number; ok: boolean }[] = []
+  // ─── Sitemap Submit — submit sitemap to Google Search Console ────────────
+  if (action === 'submit-sitemap') {
+    const results: { engine: string; ok: boolean; detail: string }[] = []
 
-    const endpoints = [
-      { name: 'Google', url: `https://www.google.com/ping?sitemap=${sitemapUrl}` },
-      { name: 'Bing', url: `https://www.bing.com/ping?sitemap=${sitemapUrl}` },
-    ]
+    // Google: Submit via Search Console API
+    try {
+      const auth = getAuth(['https://www.googleapis.com/auth/webmasters'])
+      const sc = google.searchconsole({ version: 'v1', auth })
+      await (sc as any).sitemaps.submit({
+        siteUrl: `${SITE_URL}/`,
+        feedpath: `${SITE_URL}/sitemap.xml`,
+      })
+      results.push({ engine: 'Google Search Console', ok: true, detail: 'Sitemap submitted' })
+    } catch (err: any) {
+      results.push({ engine: 'Google Search Console', ok: false, detail: err.message?.slice(0, 100) || 'Failed' })
+    }
 
-    for (const ep of endpoints) {
-      try {
-        const res = await fetch(ep.url, {
-          method: 'GET',
-          signal: AbortSignal.timeout(10000),
-        })
-        results.push({ engine: ep.name, status: res.status, ok: res.ok })
-      } catch {
-        results.push({ engine: ep.name, status: 0, ok: false })
-      }
+    // Bing: Submit via IndexNow (Bing deprecated ping endpoint)
+    try {
+      const res = await fetch('https://www.bing.com/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify({
+          host: 'mushroomidentifiers.com',
+          key: INDEXNOW_KEY,
+          keyLocation: `${SITE_URL}/${INDEXNOW_KEY}.txt`,
+          urlList: [`${SITE_URL}/sitemap.xml`],
+        }),
+        signal: AbortSignal.timeout(10000),
+      })
+      results.push({ engine: 'Bing (IndexNow)', ok: res.ok || res.status === 202, detail: `Status ${res.status}` })
+    } catch {
+      results.push({ engine: 'Bing (IndexNow)', ok: false, detail: 'Request failed' })
     }
 
     return NextResponse.json({
       success: true,
-      pinged: results,
+      submitted: results,
       sitemapUrl: `${SITE_URL}/sitemap.xml`,
       timestamp: new Date().toISOString(),
     })
