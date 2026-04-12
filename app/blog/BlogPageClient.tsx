@@ -476,7 +476,7 @@ const pricingOptions: { value: PricingFilter; label: string }[] = [
   { value: 'Premium', label: 'Premium' },
 ]
 
-export default function BlogPageClient() {
+export default function BlogPageClient({ dbPosts = [] }: { dbPosts?: Article[] }) {
   const [searchQuery, setSearchQuery]         = useState('')
   const [selectedRisk, setSelectedRisk]       = useState<RiskLevel>('All Levels')
   const [selectedRegion, setSelectedRegion]   = useState<Region>('All Regions')
@@ -497,27 +497,13 @@ export default function BlogPageClient() {
   const [isLoggedIn, setIsLoggedIn]   = useState(false)
   const [favorites, setFavorites]     = useState<Set<string>>(new Set())
   const [loadingFav, setLoadingFav]   = useState<string | null>(null)
-  const [allArticles, setAllArticles] = useState<Article[]>(articles)
-
-  useEffect(() => {
-    // Fetch admin-created posts from database and merge with hardcoded articles
-    fetch('/api/blog/posts')
-      .then(r => {
-        if (!r.ok) throw new Error(`API error: ${r.status}`)
-        return r.json()
-      })
-      .then(data => {
-        const dbPosts = data?.posts ?? []
-        if (dbPosts.length > 0) {
-          const hardcodedSlugs = new Set(articles.map(a => a.slug))
-          const newPosts = dbPosts.filter((p: Article) => !hardcodedSlugs.has(p.slug))
-          if (newPosts.length > 0) {
-            setAllArticles(prev => [...newPosts, ...articles])
-          }
-        }
-      })
-      .catch(err => console.error('[Blog] Failed to load DB posts:', err))
-  }, [])
+  // Merge server-fetched DB posts with hardcoded articles (instant, no flash)
+  const allArticles = useMemo(() => {
+    if (!dbPosts.length) return articles
+    const hardcodedSlugs = new Set(articles.map(a => a.slug))
+    const newPosts = dbPosts.filter(p => !hardcodedSlugs.has(p.slug))
+    return newPosts.length > 0 ? [...newPosts, ...articles] : articles
+  }, [dbPosts])
 
   useEffect(() => {
     const supabase = createClient()
