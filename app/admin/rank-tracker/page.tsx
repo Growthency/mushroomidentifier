@@ -14,8 +14,17 @@ interface Keyword {
   prev_position: number | null
   change: number | null
   rank_url: string | null
+  volume: number | null
   checked_at: string | null
   created_at: string
+}
+
+// Format volume: 1200 → "1.2K", 54000 → "54K"
+function fmtVol(v: number | null) {
+  if (!v) return '—'
+  if (v >= 1000000) return `${(v / 1000000).toFixed(1).replace(/\.0$/, '')}M`
+  if (v >= 1000) return `${(v / 1000).toFixed(1).replace(/\.0$/, '')}K`
+  return String(v)
 }
 
 interface Quota {
@@ -159,6 +168,8 @@ export default function RankTrackerPage() {
   const [error, setError] = useState('')
   const [showInput, setShowInput] = useState(false)
   const [checkProgress, setCheckProgress] = useState(0)
+  const [editingVol, setEditingVol] = useState<number | null>(null)
+  const [volInput, setVolInput] = useState('')
 
   const fetchData = useCallback(async () => {
     try {
@@ -234,6 +245,20 @@ export default function RankTrackerPage() {
       setCheckProgress(0)
     }
     clearInterval(progressInterval)
+  }
+
+  const handleVolSave = async (id: number) => {
+    const vol = volInput.trim() ? parseInt(volInput.replace(/[^0-9]/g, ''), 10) || null : null
+    try {
+      await fetch('/api/admin/rank-tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update_volume', id, volume: vol }),
+      })
+      setKeywords(prev => prev.map(k => k.id === id ? { ...k, volume: vol } : k))
+    } catch {}
+    setEditingVol(null)
+    setVolInput('')
   }
 
   // Stats
@@ -465,23 +490,27 @@ export default function RankTrackerPage() {
       ) : (
         <div className="rounded-2xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           {/* Table header */}
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 text-xs font-medium uppercase tracking-wider"
-            style={{ color: textSecondary, borderBottom: `1px solid ${cardBorder}`, background: dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}>
-            <div className="col-span-1">#</div>
-            <div className="col-span-4">Keyword</div>
-            <div className="col-span-2 text-center">Position</div>
-            <div className="col-span-1 text-center">Change</div>
-            <div className="col-span-2">Ranking URL</div>
-            <div className="col-span-1 text-center">Checked</div>
-            <div className="col-span-1"></div>
+          <div className="grid gap-4 px-6 py-3 text-xs font-medium uppercase tracking-wider"
+            style={{ gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 40px', color: textSecondary, borderBottom: `1px solid ${cardBorder}`, background: dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}>
+            <div>#</div>
+            <div>Keyword</div>
+            <div className="text-center">Volume</div>
+            <div className="text-center flex items-center justify-center gap-1.5">
+              <span className="text-base leading-none">🇺🇸</span> Position
+            </div>
+            <div className="text-center">Change</div>
+            <div>Ranking URL</div>
+            <div className="text-center">Checked</div>
+            <div></div>
           </div>
 
           {/* Rows */}
           {keywords.map((kw, idx) => (
             <div
               key={kw.id}
-              className="grid grid-cols-12 gap-4 px-6 py-4 items-center transition-colors group"
+              className="grid gap-4 px-6 py-4 items-center transition-colors group"
               style={{
+                gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 40px',
                 borderBottom: idx < keywords.length - 1 ? `1px solid ${cardBorder}` : 'none',
                 background: 'transparent',
               }}
@@ -489,29 +518,55 @@ export default function RankTrackerPage() {
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
             >
               {/* Index */}
-              <div className="col-span-1">
+              <div>
                 <span className="text-sm font-mono opacity-40">{idx + 1}</span>
               </div>
 
               {/* Keyword */}
-              <div className="col-span-4">
+              <div>
                 <p className="text-sm font-semibold truncate" style={{ color: textPrimary }}>
                   {kw.keyword}
                 </p>
               </div>
 
+              {/* Volume */}
+              <div className="flex justify-center">
+                {editingVol === kw.id ? (
+                  <input
+                    type="text"
+                    value={volInput}
+                    onChange={e => setVolInput(e.target.value)}
+                    onBlur={() => handleVolSave(kw.id)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleVolSave(kw.id); if (e.key === 'Escape') { setEditingVol(null); setVolInput('') } }}
+                    autoFocus
+                    placeholder="0"
+                    className="w-16 text-center text-xs px-1.5 py-1 rounded-lg outline-none"
+                    style={{ background: inputBg, border: `1px solid ${cardBorder}`, color: textPrimary }}
+                  />
+                ) : (
+                  <button
+                    onClick={() => { setEditingVol(kw.id); setVolInput(kw.volume ? String(kw.volume) : '') }}
+                    className="text-xs font-medium px-2 py-1 rounded-lg transition-colors hover:bg-emerald-500/10"
+                    style={{ color: kw.volume ? textPrimary : textSecondary }}
+                    title="Click to edit search volume"
+                  >
+                    {fmtVol(kw.volume)}
+                  </button>
+                )}
+              </div>
+
               {/* Position Badge */}
-              <div className="col-span-2 flex justify-center">
+              <div className="flex justify-center">
                 <PositionBadge position={kw.position} />
               </div>
 
               {/* Change */}
-              <div className="col-span-1 flex justify-center">
+              <div className="flex justify-center">
                 <ChangeIndicator change={kw.change} />
               </div>
 
               {/* URL */}
-              <div className="col-span-2">
+              <div>
                 {kw.rank_url ? (
                   <a
                     href={kw.rank_url}
@@ -527,14 +582,14 @@ export default function RankTrackerPage() {
               </div>
 
               {/* Checked */}
-              <div className="col-span-1 text-center">
+              <div className="text-center">
                 <span className="text-xs" style={{ color: textSecondary }}>
                   {timeAgo(kw.checked_at)}
                 </span>
               </div>
 
               {/* Delete */}
-              <div className="col-span-1 flex justify-end">
+              <div className="flex justify-end">
                 <button
                   onClick={() => handleDelete(kw.id)}
                   className="p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/10 text-red-400"

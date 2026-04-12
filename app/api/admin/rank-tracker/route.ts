@@ -141,6 +141,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ results, checked: results.length })
   }
 
+  // --- Update volume ---
+  if (body.action === 'update_volume') {
+    const { id, volume } = body
+    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+
+    const { error } = await supabase
+      .from('rank_keywords')
+      .update({ volume: volume || null })
+      .eq('id', id)
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
   return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
 }
 

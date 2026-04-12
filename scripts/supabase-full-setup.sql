@@ -261,6 +261,7 @@ CREATE TABLE IF NOT EXISTS rank_keywords (
   position      INTEGER,
   prev_position INTEGER,
   change        INTEGER,
+  volume        INTEGER,
   rank_url      TEXT,
   checked_at    TIMESTAMPTZ,
   created_at    TIMESTAMPTZ DEFAULT NOW()
