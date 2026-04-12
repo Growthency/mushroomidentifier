@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     canonical: 'https://mushroomidentifiers.com/how-to-get-rid-of-mushrooms-in-grass',
   },
   openGraph: {
+    type: 'article',
     title: 'How to Get Rid of Mushrooms in Grass (Easy Lawn Fix Guide)',
     description:
       'Learn how to remove mushrooms from your lawn fast. Fix moisture, soil, and drainage issues to stop mushrooms from coming back permanently.',

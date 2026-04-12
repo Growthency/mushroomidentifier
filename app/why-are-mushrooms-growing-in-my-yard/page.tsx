@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     canonical: 'https://mushroomidentifiers.com/why-are-mushrooms-growing-in-my-yard',
   },
   openGraph: {
+    type: 'article',
     title: 'Why Are Mushrooms Growing in My Yard?',
     description:
       'Mushrooms grow in your yard because underground fungi (mycelium) are actively breaking down organic matter in moist, shaded soil.',
