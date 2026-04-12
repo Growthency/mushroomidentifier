@@ -30,6 +30,17 @@ function getClientIp(request: NextRequest): string | null {
   return request.headers.get('x-real-ip') || null
 }
 
+async function getCountryFromIp(ip: string): Promise<string | null> {
+  try {
+    const res = await fetch(`https://ipapi.co/${ip}/json/`, { signal: AbortSignal.timeout(3000) })
+    if (!res.ok) return null
+    const data = await res.json()
+    return data.country_name || null
+  } catch {
+    return null
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { userId, email, fullName, referralCode, country } = await request.json()
@@ -80,7 +91,7 @@ export async function POST(request: NextRequest) {
       total_identifications: 0,
       referral_code:        myCode,
       signup_ip:            clientIp,
-      country:              country || null,
+      country:              country || (clientIp ? await getCountryFromIp(clientIp) : null),
     })
 
     if (insertErr) throw insertErr

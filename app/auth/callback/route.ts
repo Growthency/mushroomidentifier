@@ -7,6 +7,23 @@ const adminSupabase = createServerClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 )
 
+function getClientIp(request: NextRequest): string | null {
+  const forwarded = request.headers.get('x-forwarded-for')
+  if (forwarded) return forwarded.split(',')[0].trim()
+  return request.headers.get('x-real-ip') || null
+}
+
+async function getCountryFromIp(ip: string): Promise<string | null> {
+  try {
+    const res = await fetch(`https://ipapi.co/${ip}/json/`, { signal: AbortSignal.timeout(3000) })
+    if (!res.ok) return null
+    const data = await res.json()
+    return data.country_name || null
+  } catch {
+    return null
+  }
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code  = searchParams.get('code')
@@ -49,6 +66,10 @@ export async function GET(request: NextRequest) {
           h = Math.floor(h / chars.length) || (h * 31 + i)
         }
 
+        // Detect IP + country for Google OAuth users
+        const clientIp = getClientIp(request)
+        const country = clientIp ? await getCountryFromIp(clientIp) : null
+
         await adminSupabase.from('profiles').insert({
           id: data.user.id,
           email,
@@ -57,6 +78,8 @@ export async function GET(request: NextRequest) {
           plan: 'free',
           total_identifications: 0,
           referral_code: myCode,
+          signup_ip: clientIp,
+          country,
         })
       }
 
