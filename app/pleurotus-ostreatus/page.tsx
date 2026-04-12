@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description: 'Pleurotus ostreatus, commonly known as oyster mushrooms, are one of the most popular and easy-to-identify edible wild mushrooms.',
   alternates: { canonical: 'https://mushroomidentifiers.com/pleurotus-ostreatus' },
   openGraph: {
+    type: 'article',
     title: 'Pleurotus ostreatus \u2013 Oyster Mushroom Identification Guide',
     description: 'Pleurotus ostreatus, commonly known as oyster mushrooms, are one of the most popular and easy-to-identify edible wild mushrooms.',
     url: 'https://mushroomidentifiers.com/pleurotus-ostreatus',

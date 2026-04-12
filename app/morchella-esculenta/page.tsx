@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description: 'Morchella esculenta, commonly known as the true morel, is one of the most sought-after edible wild mushrooms in the world.',
   alternates: { canonical: 'https://mushroomidentifiers.com/morchella-esculenta' },
   openGraph: {
+    type: 'article',
     title: 'Morchella esculenta (True Morel) \u2013 Identification Guide',
     description: 'Morchella esculenta, commonly known as the true morel, is one of the most sought-after edible wild mushrooms in the world.',
     url: 'https://mushroomidentifiers.com/morchella-esculenta',

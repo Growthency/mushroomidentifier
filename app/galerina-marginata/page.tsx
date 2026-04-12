@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   description: 'Galerina marginata, commonly known as the Funeral Bell, is a small brown poisonous mushroom that contains deadly amatoxins, the same toxins found in the Death Cap.',
   alternates: { canonical: 'https://mushroomidentifiers.com/galerina-marginata' },
   openGraph: {
+    type: 'article',
     title: 'Galerina marginata (Small Brown Poisonous Mushroom) - Identification Guide',
     description: 'Galerina marginata, commonly known as the Funeral Bell, is a small brown poisonous mushroom that contains deadly amatoxins, the same toxins found in the Death Cap.',
     url: 'https://mushroomidentifiers.com/galerina-marginata',

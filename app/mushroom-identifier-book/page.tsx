@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     canonical: 'https://mushroomidentifiers.com/mushroom-identifier-book',
   },
   openGraph: {
+    type: 'article',
     title: 'Mushroom Identifier Book - Fungi Identification Guidebooks Review',
     description:
       'A mushroom identifier book helps you recognize fungi by combining photos or illustrations with key traits such as cap shape, gills, stem structure, habitat, season, and spore print.',

@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
   alternates: { canonical: 'https://mushroomidentifiers.com/blog' },
   openGraph: {
+    type: 'website',
     title: 'Mushroom Identification Blog – Guides, Safety Tips & Foraging Insights',
     description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
     url: 'https://mushroomidentifiers.com/blog',

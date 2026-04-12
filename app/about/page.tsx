@@ -6,9 +6,11 @@ export const metadata: Metadata = {
   title: 'About MushroomIdentifiers – AI Mushroom Identification Platform',
   description: 'MushroomIdentifiers uses Claude AI and computer vision to identify 10,000+ mushroom species with 95% accuracy. Built by foragers, mycologists & AI researchers committed to safe foraging worldwide.',
   openGraph: {
+    type: 'website',
     title: 'About MushroomIdentifiers – AI-Powered Fungi Identification',
     description: 'Our mission: make safe mushroom identification accessible to everyone. Powered by Claude AI from Anthropic, trained on expert mycological databases.',
     url: 'https://mushroomidentifiers.com/about',
+    images: [{ url: 'https://mushroomidentifiers.com/mushroom-fungi-identifier.webp', width: 1200, height: 630 }],
   },
 }
 

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     'Amanita ocreata, commonly known as the Western Destroying Angel, is a highly toxic Amanita species found in North America.',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-ocreata' },
   openGraph: {
+    type: 'article',
     title: 'Amanita ocreata (Toxic Amanita Species): Identification Guide',
     description: 'Amanita ocreata, commonly known as the Western Destroying Angel, is a highly toxic Amanita species found in North America.',
     url: 'https://mushroomidentifiers.com/amanita-ocreata',

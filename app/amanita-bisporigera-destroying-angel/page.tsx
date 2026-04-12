@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     'Amanita bisporigera: The Deadly Destroying Angel! \ud83d\udc80 identify this lethal beauty before it\u2019s too late. Expert identification tips & warning signs inside!',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel' },
   openGraph: {
+    type: 'article',
     title: 'Amanita bisporigera (destroying angel identification) - Mushroom Identifier',
     description: 'Amanita bisporigera: The Deadly Destroying Angel! \ud83d\udc80 identify this lethal beauty before it\u2019s too late. Expert identification tips & warning signs inside!',
     url: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel',

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     'Amanita bisporigera, commonly known as the Destroying Angel, is one of the most dangerous toxic mushrooms in North America.',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-phalloides-death-cap' },
   openGraph: {
+    type: 'article',
     title: 'Amanita phalloides (death cap identification) - Mushroom Identifier',
     description: 'Amanita bisporigera, commonly known as the Destroying Angel, is one of the most dangerous toxic mushrooms in North America.',
     url: 'https://mushroomidentifiers.com/amanita-phalloides-death-cap',

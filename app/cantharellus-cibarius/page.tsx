@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description: 'Cantharellus cibarius, commonly known as the chanterelle, is one of the most popular and highly prized wild edible mushrooms in the world.',
   alternates: { canonical: 'https://mushroomidentifiers.com/cantharellus-cibarius' },
   openGraph: {
+    type: 'article',
     title: 'Cantharellus cibarius (Chanterelle) \u2013 Identification Guide',
     description: 'Cantharellus cibarius, commonly known as the chanterelle, is one of the most popular and highly prized wild edible mushrooms in the world.',
     url: 'https://mushroomidentifiers.com/cantharellus-cibarius',

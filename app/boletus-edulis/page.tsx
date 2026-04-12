@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description: 'Boletus edulis, commonly known as porcini, cep, or king bolete, is one of the most prized edible mushrooms in the world.',
   alternates: { canonical: 'https://mushroomidentifiers.com/boletus-edulis' },
   openGraph: {
+    type: 'article',
     title: 'Boletus edulis (Porcini Mushroom) \u2013 Identification Guide',
     description: 'Boletus edulis, commonly known as porcini, cep, or king bolete, is one of the most prized edible mushrooms in the world.',
     url: 'https://mushroomidentifiers.com/boletus-edulis',

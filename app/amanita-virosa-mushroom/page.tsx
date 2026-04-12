@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     'Amanita virosa: The White Death! \ud83d\udc80 One bite can be fatal. Learn to identify the deadly Destroying Angel mushroom before it\u2019s too late. See the signs now!',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-virosa-mushroom' },
   openGraph: {
+    type: 'article',
     title: 'Amanita virosa (Destroying Angel) - Mushroom Identifier',
     description: 'Amanita virosa: The White Death! \ud83d\udc80 One bite can be fatal. Learn to identify the deadly Destroying Angel mushroom before it\u2019s too late. See the signs now!',
     url: 'https://mushroomidentifiers.com/amanita-virosa-mushroom',

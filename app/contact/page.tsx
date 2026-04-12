@@ -6,9 +6,11 @@ export const metadata: Metadata = {
   title: 'Contact MushroomIdentifiers – Support & Inquiries',
   description: 'Contact the MushroomIdentifiers team for support, bug reports, feature requests, or partnership inquiries. We respond within 24 hours. Includes poison emergency contacts.',
   openGraph: {
+    type: 'website',
     title: 'Contact MushroomIdentifiers – We\'re Here to Help',
     description: 'Reach our support team, find poison emergency contacts, and browse our FAQ. Response within 24 hours.',
     url: 'https://mushroomidentifiers.com/contact',
+    images: [{ url: 'https://mushroomidentifiers.com/mushroom-fungi-identifier.webp', width: 1200, height: 630 }],
   },
 }
 

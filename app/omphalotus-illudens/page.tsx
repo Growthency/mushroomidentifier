@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   description: 'Omphalotus illudens, commonly known as the jack-o\u2019-lantern mushroom, is a bright orange, bioluminescent fungus found mainly in North America.',
   alternates: { canonical: 'https://mushroomidentifiers.com/omphalotus-illudens' },
   openGraph: {
+    type: 'article',
     title: "Omphalotus illudens (Jack-o'-Lantern Mushroom) - Identification Guide",
     description: 'Omphalotus illudens, commonly known as the jack-o\u2019-lantern mushroom, is a bright orange, bioluminescent fungus found mainly in North America.',
     url: 'https://mushroomidentifiers.com/omphalotus-illudens',
