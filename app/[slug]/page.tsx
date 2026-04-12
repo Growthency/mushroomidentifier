@@ -8,7 +8,7 @@ import { createClient } from '@supabase/supabase-js'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
 import ArticleContent from '@/components/blog/ArticleContent'
 import PremiumGate from '@/components/PremiumGate'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -258,7 +258,7 @@ export default async function DynamicPostPage({
                 </h1>
 
                 <AuthorBlock updatedAt={publishedDate} />
-                <ArticleViewCount views={post.views || 0} className="mb-2" />
+                <LiveViewCount slug={post.slug} className="mb-2" />
 
                 {/* Excerpt */}
                 {post.excerpt && (

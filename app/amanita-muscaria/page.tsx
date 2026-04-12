@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Amanita muscaria: (Mushroom with White Spots) - Identification Guide',
@@ -153,7 +154,7 @@ export default function AmanitaMuscariaPage() {
                   <em>Amanita muscaria</em>: Identification, Features, Habitat &amp; Safety Guide (Mushroom with White Spots)
                 </h1>
                 <AuthorBlock updatedAt="Apr 10, 2026" />
-                <ArticleViewCount views={1850} className="mb-2" />
+                <LiveViewCount slug="/amanita-muscaria" className="mb-2" />
                 <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   <em>Amanita muscaria</em>, commonly known as the Fly Agaric, is one of the most recognizable mushrooms in the world due to its bright red cap with white spots. It belongs to the Amanita genus and is considered toxic, though not typically deadly like other Amanita species. It contains psychoactive compounds such as ibotenic acid and muscimol, which can cause neurological symptoms. This mushroom is commonly found in forests and is associated with trees like birch and pine. Proper identification using features like cap, gills, stem, ring, and volva is essential, and tools like a{' '}
                   <Link href="/" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
@@ -604,6 +605,7 @@ export default function AmanitaMuscariaPage() {
               </Section>
 
               <Divider />
+              <ViewTracker slug="/amanita-muscaria" />
               <BlogComments slug="/amanita-muscaria" />
 
             </article>

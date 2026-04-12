@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Cortinarius rubellus (Deadly Cortinarius) – Identification Guide',
@@ -93,7 +94,7 @@ export default function CortinariusRubellusPage() {
               <em>Cortinarius rubellus</em> (Deadly Cortinarius) &ndash; Identification, Toxicity &amp; Lookalikes
             </h1>
             <AuthorBlock updatedAt="Apr 11, 2026" />
-            <ArticleViewCount views={4730} className="mb-2" />
+            <LiveViewCount slug="/cortinarius-rubellus" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Cortinarius rubellus</em>, commonly known as the deadly cortinarius or deadly webcap, is one of
               the most dangerous poisonous mushrooms in the world. It contains orellanine, a toxin that causes
@@ -623,7 +624,8 @@ export default function CortinariusRubellusPage() {
           </Section>
 
           <RelatedPosts currentSlug="/cortinarius-rubellus" />
-          <BlogComments slug="/cortinarius-rubellus" />
+          <ViewTracker slug="/cortinarius-rubellus" />
+              <BlogComments slug="/cortinarius-rubellus" />
 
             </article>
             <BlogSidebar />

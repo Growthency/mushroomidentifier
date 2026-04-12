@@ -6,7 +6,8 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Boletus edulis (Porcini Mushroom) \u2013 Identification Guide',
@@ -89,7 +90,7 @@ export default function BoletusEdulisPage() {
                   <em>Boletus edulis</em> (Porcini Mushroom) &ndash; Identification, Edibility &amp; Lookalikes
                 </h1>
                 <AuthorBlock updatedAt="Apr 11, 2026" />
-                <ArticleViewCount views={3450} className="mb-2" />
+                <LiveViewCount slug="/boletus-edulis" className="mb-2" />
               </div>
 
               {/* Featured Image */}
@@ -580,6 +581,7 @@ export default function BoletusEdulisPage() {
               </Section>
 
               <Divider />
+              <ViewTracker slug="/boletus-edulis" />
               <BlogComments slug="/boletus-edulis" />
 
             </article>

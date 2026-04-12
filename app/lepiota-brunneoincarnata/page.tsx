@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Lepiota brunneoincarnata (Toxic Small White Mushroom) – Identification Guide',
@@ -93,7 +94,7 @@ export default function LepiotaBrunneoincarnataPage() {
               <em>Lepiota brunneoincarnata</em> (Toxic Small White Mushroom) &ndash; Identification, Risks &amp; Lookalikes
             </h1>
             <AuthorBlock updatedAt="Apr 11, 2026" />
-            <ArticleViewCount views={5180} className="mb-2" />
+            <LiveViewCount slug="/lepiota-brunneoincarnata" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Lepiota brunneoincarnata</em>, commonly known as a toxic small white mushroom or deadly dapperling,
               is a highly poisonous species responsible for severe and sometimes fatal mushroom poisoning. It belongs
@@ -624,7 +625,8 @@ export default function LepiotaBrunneoincarnataPage() {
           </Section>
 
           <RelatedPosts currentSlug="/lepiota-brunneoincarnata" />
-          <BlogComments slug="/lepiota-brunneoincarnata" />
+          <ViewTracker slug="/lepiota-brunneoincarnata" />
+              <BlogComments slug="/lepiota-brunneoincarnata" />
 
             </article>
             <BlogSidebar />

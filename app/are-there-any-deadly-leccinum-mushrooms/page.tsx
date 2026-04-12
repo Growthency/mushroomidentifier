@@ -6,7 +6,8 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Are There Any Deadly Leccinum Mushrooms?',
@@ -140,7 +141,7 @@ export default function LeccinumPage() {
                   Are There Any Deadly Leccinum Mushrooms?
                 </h1>
                 <AuthorBlock updatedAt="Apr 5, 2026" />
-                <ArticleViewCount views={1240} className="mb-2" />
+                <LiveViewCount slug="/are-there-any-deadly-leccinum-mushrooms" className="mb-2" />
                 <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   There are no confirmed deadly species in the genus <em>Leccinum</em>. However, that does not
                   automatically make them safe. Several Leccinum mushrooms have been linked to gastrointestinal
@@ -531,7 +532,8 @@ export default function LeccinumPage() {
                 </div>
               </Section>
 
-          <BlogComments slug="/are-there-any-deadly-leccinum-mushrooms" />
+          <ViewTracker slug="/are-there-any-deadly-leccinum-mushrooms" />
+              <BlogComments slug="/are-there-any-deadly-leccinum-mushrooms" />
             </article>
 
             <BlogSidebar />

@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'How to Get Rid of Mushrooms in Grass (Easy Lawn Fix Guide)',
@@ -195,7 +196,7 @@ export default function MushroomsInGrassPage() {
               How Do I Get Rid of Mushrooms in My Grass? (Complete Lawn Guide)
             </h1>
             <AuthorBlock updatedAt="Apr 4, 2026" />
-            <ArticleViewCount views={2740} className="mb-2" />
+            <LiveViewCount slug="/how-to-get-rid-of-mushrooms-in-grass" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Mushrooms in grass are caused by underground fungal networks called mycelium, which thrive in moist soil rich in organic matter. To get rid of them effectively, you need to remove visible mushrooms, reduce moisture, improve soil drainage, and eliminate decaying material like roots and thatch. Simply removing mushrooms is not enough—long-term control comes from changing the lawn conditions that allow fungi to grow.
             </p>
@@ -555,7 +556,8 @@ export default function MushroomsInGrassPage() {
           </Section>
 
           <RelatedPosts currentSlug="/how-to-get-rid-of-mushrooms-in-grass" />
-          <BlogComments slug="/how-to-get-rid-of-mushrooms-in-grass" />
+          <ViewTracker slug="/how-to-get-rid-of-mushrooms-in-grass" />
+              <BlogComments slug="/how-to-get-rid-of-mushrooms-in-grass" />
             </article>
             <BlogSidebar />
           </div>

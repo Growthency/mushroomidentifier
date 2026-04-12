@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Amanita pantherina (Amanita Lookalike Danger) - Identification Guide',
@@ -109,7 +110,7 @@ export default function AmanitaPantherinaPage() {
                   <em>Amanita pantherina</em>: Identification, Features, Habitat &amp; Safety Guide (Amanita Lookalike Danger)
                 </h1>
                 <AuthorBlock updatedAt="Apr 10, 2026" />
-                <ArticleViewCount views={1420} className="mb-2" />
+                <LiveViewCount slug="/amanita-pantherina" className="mb-2" />
                 <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   <em>Amanita pantherina</em>, commonly known as the Panther Cap, is a toxic Amanita species known for its brown cap with white spots and strong potential for misidentification. It contains psychoactive compounds similar to <em>Amanita muscaria</em>, but is considered more dangerous due to stronger toxicity and unpredictable effects. This mushroom is often mistaken for edible species, making it a major amanita lookalike danger. Accurate identification requires examining cap, gills, stem, ring, volva, and habitat, or using a{' '}
                   <Link href="/" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
@@ -589,6 +590,7 @@ export default function AmanitaPantherinaPage() {
               </Section>
 
               <Divider />
+              <ViewTracker slug="/amanita-pantherina" />
               <BlogComments slug="/amanita-pantherina" />
 
             </article>

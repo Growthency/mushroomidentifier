@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Chlorophyllum molybdites (Poisonous Lawn Mushroom) – Identification Guide',
@@ -93,7 +94,7 @@ export default function ChlorophyllumMolybditesPage() {
               <em>Chlorophyllum molybdites</em> (Poisonous Lawn Mushroom) &ndash; Identification, Symptoms &amp; Lookalikes
             </h1>
             <AuthorBlock updatedAt="Apr 11, 2026" />
-            <ArticleViewCount views={5120} className="mb-2" />
+            <LiveViewCount slug="/chlorophyllum-molybdites" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Chlorophyllum molybdites</em>, commonly known as the poisonous lawn mushroom or green-spored
               parasol, is one of the most frequently ingested toxic mushrooms worldwide. It commonly grows in
@@ -623,7 +624,8 @@ export default function ChlorophyllumMolybditesPage() {
           </Section>
 
           <RelatedPosts currentSlug="/chlorophyllum-molybdites" />
-          <BlogComments slug="/chlorophyllum-molybdites" />
+          <ViewTracker slug="/chlorophyllum-molybdites" />
+              <BlogComments slug="/chlorophyllum-molybdites" />
 
             </article>
             <BlogSidebar />

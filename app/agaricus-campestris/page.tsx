@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Agaricus campestris (Meadow Mushroom) \u2013 Identification Guide',
@@ -116,7 +117,7 @@ export default function AgaricusCampestrisPage() {
                   <em>Agaricus campestris</em> (Meadow Mushroom) &ndash; Identification, Edibility &amp; Lookalikes
                 </h1>
                 <AuthorBlock updatedAt="Apr 11, 2026" />
-                <ArticleViewCount views={2130} className="mb-2" />
+                <LiveViewCount slug="/agaricus-campestris" className="mb-2" />
               </div>
 
               {/* ── What is Agaricus campestris? ── */}
@@ -570,6 +571,7 @@ export default function AgaricusCampestrisPage() {
               </Section>
 
               <Divider />
+              <ViewTracker slug="/agaricus-campestris" />
               <BlogComments slug="/agaricus-campestris" />
 
             </article>

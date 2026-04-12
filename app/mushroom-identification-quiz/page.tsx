@@ -4,7 +4,8 @@ import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import PremiumGate from '@/components/PremiumGate'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import AuthorBlock from '@/components/blog/AuthorBlock'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 import QuizClient from './QuizClient'
 
 export const metadata: Metadata = {
@@ -43,7 +44,7 @@ export default function MushroomQuizPage() {
                 Mushroom Identification Quiz — 50 Expert Questions
               </h1>
               <AuthorBlock updatedAt="Apr 4, 2026" />
-              <ArticleViewCount views={1540} className="mb-2" />
+              <LiveViewCount slug="/mushroom-identification-quiz" className="mb-2" />
               <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                 Test your knowledge of mushroom identification with 50 expert-curated questions covering toxic species, edible mushrooms, look-alike dangers, and fungal anatomy. Each question has a 30-second timer. How well do you know your fungi?
               </p>

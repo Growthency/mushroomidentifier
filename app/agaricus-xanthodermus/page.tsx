@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Agaricus xanthodermus (Yellow Stainer Mushroom) – Identification Guide',
@@ -93,7 +94,7 @@ export default function AgaricusXanthodermusPage() {
               <em>Agaricus xanthodermus</em> (Yellow Stainer Mushroom) &ndash; Identification, Toxicity &amp; Lookalikes
             </h1>
             <AuthorBlock updatedAt="Apr 11, 2026" />
-            <ArticleViewCount views={4260} className="mb-2" />
+            <LiveViewCount slug="/agaricus-xanthodermus" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Agaricus xanthodermus</em>, commonly called the yellow stainer, is a widespread toxic mushroom
               often mistaken for edible species in the same genus, such as <em>Agaricus bisporus</em>. It is known
@@ -629,7 +630,8 @@ export default function AgaricusXanthodermusPage() {
           </Section>
 
           <RelatedPosts currentSlug="/agaricus-xanthodermus" />
-          <BlogComments slug="/agaricus-xanthodermus" />
+          <ViewTracker slug="/agaricus-xanthodermus" />
+              <BlogComments slug="/agaricus-xanthodermus" />
 
             </article>
             <BlogSidebar />

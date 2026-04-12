@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Hypholoma fasciculare (Sulfur Tuft) – Identification Guide',
@@ -93,7 +94,7 @@ export default function HypholomaFascicularePage() {
               <em>Hypholoma fasciculare</em> (Sulfur Tuft) &ndash; Identification, Toxicity &amp; Lookalikes
             </h1>
             <AuthorBlock updatedAt="Apr 11, 2026" />
-            <ArticleViewCount views={4580} className="mb-2" />
+            <LiveViewCount slug="/hypholoma-fasciculare" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Hypholoma fasciculare</em>, commonly known as the sulfur tuft, is a toxic woodland mushroom
               that grows in dense clusters on decaying wood. It is easily recognized by its bright yellow color,
@@ -620,7 +621,8 @@ export default function HypholomaFascicularePage() {
           </Section>
 
           <RelatedPosts currentSlug="/hypholoma-fasciculare" />
-          <BlogComments slug="/hypholoma-fasciculare" />
+          <ViewTracker slug="/hypholoma-fasciculare" />
+              <BlogComments slug="/hypholoma-fasciculare" />
 
             </article>
             <BlogSidebar />

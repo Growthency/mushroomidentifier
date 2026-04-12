@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Amanita virosa (Destroying Angel) - Mushroom Identifier',
@@ -101,7 +102,7 @@ export default function AmanitaVirosaPage() {
               <em>Amanita virosa</em> (Destroying Angel): Identification, Features, Habitat &amp; Safety Guide
             </h1>
             <AuthorBlock updatedAt="Mar 31, 2026" />
-            <ArticleViewCount views={2980} className="mb-2" />
+            <LiveViewCount slug="/amanita-virosa-mushroom" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita virosa</em>, commonly known as the European Destroying Angel, is one of the most
               dangerous toxic mushrooms in Europe. It is responsible for many fatal poisonings due to its potent
@@ -567,7 +568,8 @@ export default function AmanitaVirosaPage() {
           </Section>
 
           <RelatedPosts currentSlug="/amanita-virosa-mushroom" />
-          <BlogComments slug="/amanita-virosa-mushroom" />
+          <ViewTracker slug="/amanita-virosa-mushroom" />
+              <BlogComments slug="/amanita-virosa-mushroom" />
 
             </article>
             <BlogSidebar />

@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Scleroderma citrinum (Earthball Mushroom) – Identification Guide',
@@ -93,7 +94,7 @@ export default function SclerodermaClitrinumPage() {
               <em>Scleroderma citrinum</em> (Earthball Mushroom) &ndash; Identification, Toxicity &amp; Lookalikes
             </h1>
             <AuthorBlock updatedAt="Apr 11, 2026" />
-            <ArticleViewCount views={3950} className="mb-2" />
+            <LiveViewCount slug="/scleroderma-citrinum" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Scleroderma citrinum</em>, commonly known as the earthball mushroom, is a toxic, puffball-like
               fungus found in woodlands, gardens, and sandy soils across many parts of the world. Unlike true
@@ -603,7 +604,8 @@ export default function SclerodermaClitrinumPage() {
           </Section>
 
           <RelatedPosts currentSlug="/scleroderma-citrinum" />
-          <BlogComments slug="/scleroderma-citrinum" />
+          <ViewTracker slug="/scleroderma-citrinum" />
+              <BlogComments slug="/scleroderma-citrinum" />
 
             </article>
             <BlogSidebar />

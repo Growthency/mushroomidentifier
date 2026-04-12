@@ -8,7 +8,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Death Cap vs Destroying Angel Identification: Full Guide 2026',
@@ -147,7 +148,7 @@ export default function DeathCapVsDestroyingAngelPage() {
               Death Cap vs Destroying Angel: Key Differences, Identification &amp; Safety Guide
             </h1>
             <AuthorBlock updatedAt="Mar 31, 2026" />
-            <ArticleViewCount views={3920} className="mb-2" />
+            <LiveViewCount slug="/death-cap-vs-destroying-angel" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               The difference between the <strong style={{ color: 'var(--text-primary)' }}>Death Cap</strong> (<em>Amanita phalloides</em>) and the <strong style={{ color: 'var(--text-primary)' }}>Destroying Angel</strong> (<em>Amanita bisporigera</em>, <em>Amanita virosa</em>) comes down to cap color, shape, and subtle structural features — but both are among the most deadly toxic mushrooms in the world.
             </p>
@@ -780,7 +781,8 @@ export default function DeathCapVsDestroyingAngelPage() {
           </div>
 
           <RelatedPosts currentSlug="/death-cap-vs-destroying-angel" />
-          <BlogComments slug="/death-cap-vs-destroying-angel" />
+          <ViewTracker slug="/death-cap-vs-destroying-angel" />
+              <BlogComments slug="/death-cap-vs-destroying-angel" />
 
             </article>
             <BlogSidebar />

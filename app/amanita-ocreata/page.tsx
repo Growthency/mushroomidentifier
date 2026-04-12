@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Amanita ocreata (Toxic Amanita Species): Identification Guide',
@@ -172,7 +173,7 @@ export default function AmanitaOcreatePage() {
                   <em>Amanita ocreata</em>: Identification, Features, Habitat &amp; Safety Guide (Toxic Amanita Species)
                 </h1>
                 <AuthorBlock updatedAt="Apr 10, 2026" />
-                <ArticleViewCount views={2341} className="mb-2" />
+                <LiveViewCount slug="/amanita-ocreata" className="mb-2" />
                 <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   <em>Amanita ocreata</em>, commonly known as the Western Destroying Angel, is a highly toxic Amanita
                   species found in North America. It contains deadly amatoxins that can cause severe liver and kidney
@@ -718,6 +719,7 @@ export default function AmanitaOcreatePage() {
               </Section>
 
               <RelatedPosts currentSlug="/amanita-ocreata" />
+              <ViewTracker slug="/amanita-ocreata" />
               <BlogComments slug="/amanita-ocreata" />
 
             </article>

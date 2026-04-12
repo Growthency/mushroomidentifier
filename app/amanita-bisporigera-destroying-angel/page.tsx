@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Amanita bisporigera (destroying angel identification) - Mushroom Identifier',
@@ -100,7 +101,7 @@ export default function DestroyingAngelPage() {
               <em>Amanita bisporigera</em> (Destroying Angel): Identification, Features, Habitat &amp; Safety Guide
             </h1>
             <AuthorBlock updatedAt="Mar 31, 2026" />
-            <ArticleViewCount views={3450} className="mb-2" />
+            <LiveViewCount slug="/amanita-bisporigera-destroying-angel" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita bisporigera</em>, commonly known as the Destroying Angel, is one of the most dangerous
               toxic mushrooms in North America. It is responsible for many fatal poisonings due to its potent
@@ -565,7 +566,8 @@ export default function DestroyingAngelPage() {
           </Section>
 
           <RelatedPosts currentSlug="/amanita-bisporigera-destroying-angel" />
-          <BlogComments slug="/amanita-bisporigera-destroying-angel" />
+          <ViewTracker slug="/amanita-bisporigera-destroying-angel" />
+              <BlogComments slug="/amanita-bisporigera-destroying-angel" />
 
             </article>
             <BlogSidebar />

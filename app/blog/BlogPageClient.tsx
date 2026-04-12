@@ -497,13 +497,30 @@ export default function BlogPageClient({ dbPosts = [] }: { dbPosts?: Article[] }
   const [isLoggedIn, setIsLoggedIn]   = useState(false)
   const [favorites, setFavorites]     = useState<Set<string>>(new Set())
   const [loadingFav, setLoadingFav]   = useState<string | null>(null)
-  // Merge server-fetched DB posts with hardcoded articles (instant, no flash)
+  // Fetch real view counts from page_views table
+  const [realViews, setRealViews] = useState<Record<string, number>>({})
+  useEffect(() => {
+    const slugs = articles.map(a => a.slug).join(',')
+    fetch(`/api/views?slugs=${encodeURIComponent(slugs)}`)
+      .then(r => r.json())
+      .then(d => setRealViews(d.views || {}))
+      .catch(() => {})
+  }, [])
+
+  // Merge server-fetched DB posts with hardcoded articles, overlay real views
   const allArticles = useMemo(() => {
-    if (!dbPosts.length) return articles
-    const hardcodedSlugs = new Set(articles.map(a => a.slug))
-    const newPosts = dbPosts.filter(p => !hardcodedSlugs.has(p.slug))
-    return newPosts.length > 0 ? [...newPosts, ...articles] : articles
-  }, [dbPosts])
+    let base: Article[]
+    if (!dbPosts.length) {
+      base = articles
+    } else {
+      const hardcodedSlugs = new Set(articles.map(a => a.slug))
+      const newPosts = dbPosts.filter(p => !hardcodedSlugs.has(p.slug))
+      base = newPosts.length > 0 ? [...newPosts, ...articles] : articles
+    }
+    // Override hardcoded views with real page_views data
+    if (Object.keys(realViews).length === 0) return base
+    return base.map(a => realViews[a.slug] !== undefined ? { ...a, views: realViews[a.slug] } : a)
+  }, [dbPosts, realViews])
 
   useEffect(() => {
     const supabase = createClient()

@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Galerina marginata (Small Brown Poisonous Mushroom) - Identification Guide',
@@ -109,7 +110,7 @@ export default function GalerinaMarginataPage() {
                   <em>Galerina marginata</em>: Identification, Features, Habitat &amp; Safety Guide (Small Brown Poisonous Mushroom)
                 </h1>
                 <AuthorBlock updatedAt="Apr 11, 2026" />
-                <ArticleViewCount views={1680} className="mb-2" />
+                <LiveViewCount slug="/galerina-marginata" className="mb-2" />
                 <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                   <em>Galerina marginata</em>, commonly known as the Funeral Bell, is a small brown poisonous mushroom that contains deadly amatoxins, the same toxins found in the Death Cap. Despite its small size, it is extremely dangerous and often confused with edible mushrooms like honey fungus (Armillaria). It can be identified by its brown cap, brown gills, thin stem, and growth on wood. Because of its similarity to edible species, accurate mushroom identification — including habitat, cap, gills, and stem — is critical. Using a{' '}
                   <Link href="/" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
@@ -570,6 +571,7 @@ export default function GalerinaMarginataPage() {
               </Section>
 
               <Divider />
+              <ViewTracker slug="/galerina-marginata" />
               <BlogComments slug="/galerina-marginata" />
 
             </article>

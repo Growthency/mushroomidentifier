@@ -6,7 +6,8 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Morchella esculenta (True Morel) \u2013 Identification Guide',
@@ -90,7 +91,7 @@ export default function MorchellaEsculentaPage() {
                   <em>Morchella esculenta</em> (True Morel) &ndash; Identification, Edibility &amp; Lookalikes
                 </h1>
                 <AuthorBlock updatedAt="Apr 11, 2026" />
-                <ArticleViewCount views={5230} className="mb-2" />
+                <LiveViewCount slug="/morchella-esculenta" className="mb-2" />
               </div>
 
               {/* Featured Image */}
@@ -585,6 +586,7 @@ export default function MorchellaEsculentaPage() {
               </Section>
 
               <Divider />
+              <ViewTracker slug="/morchella-esculenta" />
               <BlogComments slug="/morchella-esculenta" />
 
             </article>

@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Horse Mushroom (Agaricus arvensis) - Mushroom Identifier',
@@ -76,7 +77,7 @@ export default function HorseMushroomPage() {
               Horse Mushroom (<em>Agaricus arvensis</em>): Identification, Features, Habitat &amp; Safety Guide
             </h1>
             <AuthorBlock updatedAt="Mar 31, 2026" />
-            <ArticleViewCount views={1860} className="mb-2" />
+            <LiveViewCount slug="/agaricus-arvensis-horse-mushroom" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               The <strong style={{ color: 'var(--text-primary)' }}>Horse Mushroom (<em>Agaricus arvensis</em>)</strong> is a large, edible mushroom commonly found in grasslands and pastures. It is known for its white cap, pink-to-brown gills, strong anise-like smell, and prominent ring on the stem. While it is considered edible and popular among foragers, it closely resembles toxic look-alikes such as <em>Agaricus xanthodermus</em>. Correct identification requires examining cap, gills, stem, smell, habitat, and growth pattern, which tools like a{' '}
               <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> can help analyze using AI and image recognition.
@@ -484,7 +485,8 @@ export default function HorseMushroomPage() {
           </Section>
 
           <RelatedPosts currentSlug="/agaricus-arvensis-horse-mushroom" />
-          <BlogComments slug="/agaricus-arvensis-horse-mushroom" />
+          <ViewTracker slug="/agaricus-arvensis-horse-mushroom" />
+              <BlogComments slug="/agaricus-arvensis-horse-mushroom" />
 
             </article>
             <BlogSidebar />

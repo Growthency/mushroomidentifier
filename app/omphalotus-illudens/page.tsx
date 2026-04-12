@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: "Omphalotus illudens (Jack-o'-Lantern Mushroom) - Identification Guide",
@@ -110,7 +111,7 @@ export default function OmphalotusIlludensPage() {
                   <em>Omphalotus illudens</em> (Jack-o&apos;-Lantern Mushroom)
                 </h1>
                 <AuthorBlock updatedAt="Apr 11, 2026" />
-                <ArticleViewCount views={1540} className="mb-2" />
+                <LiveViewCount slug="/omphalotus-illudens" className="mb-2" />
               </div>
 
               {/* ── What is Omphalotus illudens? ── */}
@@ -551,6 +552,7 @@ export default function OmphalotusIlludensPage() {
               </Section>
 
               <Divider />
+              <ViewTracker slug="/omphalotus-illudens" />
               <BlogComments slug="/omphalotus-illudens" />
 
             </article>

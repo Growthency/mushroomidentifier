@@ -7,7 +7,8 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
-import ArticleViewCount from '@/components/blog/ArticleViewCount'
+import LiveViewCount from '@/components/blog/LiveViewCount'
+import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Gyromitra esculenta (False Morel) - Identification Guide | Mushroom Identifier',
@@ -93,7 +94,7 @@ export default function GyromitraEsculentaPage() {
               <em>Gyromitra esculenta</em> (False Morel): Identification, Toxicity, Habitat &amp; Safety Guide
             </h1>
             <AuthorBlock updatedAt="Apr 11, 2026" />
-            <ArticleViewCount views={3840} className="mb-2" />
+            <LiveViewCount slug="/gyromitra-esculenta" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Gyromitra esculenta</em>, commonly known as the false morel, is a highly controversial wild
               mushroom that superficially resembles edible true morels but contains dangerous toxins. Found in
@@ -631,7 +632,8 @@ export default function GyromitraEsculentaPage() {
           </Section>
 
           <RelatedPosts currentSlug="/gyromitra-esculenta" />
-          <BlogComments slug="/gyromitra-esculenta" />
+          <ViewTracker slug="/gyromitra-esculenta" />
+              <BlogComments slug="/gyromitra-esculenta" />
 
             </article>
             <BlogSidebar />
