@@ -87,20 +87,37 @@ export async function POST(req: NextRequest) {
 
     for (const kw of keywords) {
       try {
-        const url = `https://serpapi.com/search.json?q=${encodeURIComponent(kw.keyword)}&location=United+States&gl=us&hl=en&num=100&api_key=${SERPAPI_KEY}`
-        const res = await fetch(url)
+        const serpUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(kw.keyword)}&location=United+States&gl=us&hl=en&num=100&api_key=${SERPAPI_KEY}`
+        const res = await fetch(serpUrl)
         const data = await res.json()
+
+        // Check for SerpAPI errors
+        if (data.error) {
+          results.push({ id: kw.id, keyword: kw.keyword, error: data.error })
+          continue
+        }
 
         let position: number | null = null
         let rankUrl = ''
 
-        // Search organic results for our domain
+        // Search organic results for our domain (flexible matching)
         const organic = data.organic_results || []
         for (const result of organic) {
-          if (result.link && result.link.includes(SITE_DOMAIN)) {
+          const link = (result.link || '').toLowerCase()
+          const displayed = (result.displayed_link || '').toLowerCase()
+          if (link.includes(SITE_DOMAIN) || displayed.includes(SITE_DOMAIN)) {
             position = result.position
             rankUrl = result.link
             break
+          }
+        }
+
+        // Also check local results, featured snippets, etc.
+        if (!position) {
+          const featured = data.answer_box || data.knowledge_graph
+          if (featured?.link?.toLowerCase().includes(SITE_DOMAIN)) {
+            position = 1
+            rankUrl = featured.link
           }
         }
 
@@ -128,6 +145,7 @@ export async function POST(req: NextRequest) {
           prev_position: prevPosition,
           change,
           rank_url: rankUrl,
+          total_organic: organic.length,
         })
       } catch (err: any) {
         results.push({
@@ -139,6 +157,32 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ results, checked: results.length })
+  }
+
+  // --- Debug: test a single keyword and return raw results ---
+  if (body.action === 'debug') {
+    const keyword = (body.keyword || '').trim()
+    if (!keyword) return NextResponse.json({ error: 'Missing keyword' }, { status: 400 })
+
+    const serpUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(keyword)}&location=United+States&gl=us&hl=en&num=10&api_key=${SERPAPI_KEY}`
+    const res = await fetch(serpUrl)
+    const data = await res.json()
+
+    // Extract just the info we need for debugging
+    const organic = (data.organic_results || []).map((r: any, i: number) => ({
+      pos: r.position,
+      title: r.title?.slice(0, 60),
+      link: r.link,
+      displayed: r.displayed_link,
+    }))
+
+    return NextResponse.json({
+      error: data.error || null,
+      search_info: data.search_information,
+      total_organic: organic.length,
+      top_results: organic.slice(0, 15),
+      our_match: organic.find((r: any) => r.link?.includes(SITE_DOMAIN)) || null,
+    })
   }
 
   // --- Update volume ---
