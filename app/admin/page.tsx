@@ -24,6 +24,7 @@ interface Stats {
   revenue: { lifetime: number; thisMonth: number; period: number; earningsChangePercent: number }
   recentUsers: { id: string; email: string; full_name: string; plan: string; created_at: string; country: string | null }[]
   recentTransactions: { id: string; user_id: string; pack_name: string; amount_paid: number; created_at: string }[]
+  countryUsers: { country: string; users: number }[]
 }
 
 function fmt(n: number) {
@@ -148,23 +149,26 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Recent tables ── */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Recent Users */}
-        <div className="rounded-2xl overflow-hidden" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-          <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Recent Users (top 25) */}
+        <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${cardBorder}` }}>
             <h2 className="font-semibold text-[13px] tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Recent Users</h2>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', color: dark ? '#64748b' : '#94a3b8' }}>
+              Top 25
+            </span>
           </div>
-          <div>
+          <div className="overflow-y-auto" style={{ maxHeight: '520px' }}>
             {stats.recentUsers.map(u => (
               <div key={u.id} className="px-5 py-3.5 flex items-center justify-between transition-colors" style={{ borderBottom: `1px solid ${dividerColor}` }}>
-                <div>
-                  <p className="text-[13px] font-medium" style={{ color: dark ? '#fff' : '#0f172a' }}>{u.full_name || u.email}</p>
-                  <p className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{u.email}</p>
+                <div className="min-w-0 flex-1 mr-3">
+                  <p className="text-[13px] font-medium truncate" style={{ color: dark ? '#fff' : '#0f172a' }}>{u.full_name || u.email}</p>
+                  <p className="text-[11px] truncate" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{u.email}</p>
                   {u.country && (
                     <p className="text-[10px] mt-0.5" style={{ color: dark ? '#475569' : '#a1a1aa' }}>{u.country}</p>
                   )}
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <span className={`text-[11px] px-2 py-0.5 rounded-lg font-semibold ${
                     u.plan && u.plan !== 'free'
                       ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
@@ -184,12 +188,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Recent Transactions */}
-        <div className="rounded-2xl overflow-hidden" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-          <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+        {/* Recent Transactions (top 25) */}
+        <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${cardBorder}` }}>
             <h2 className="font-semibold text-[13px] tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Recent Transactions</h2>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', color: dark ? '#64748b' : '#94a3b8' }}>
+              Top 25
+            </span>
           </div>
-          <div>
+          <div className="overflow-y-auto" style={{ maxHeight: '520px' }}>
             {stats.recentTransactions.map(tx => (
               <div key={tx.id} className="px-5 py-3.5 flex items-center justify-between transition-colors" style={{ borderBottom: `1px solid ${dividerColor}` }}>
                 <div>
@@ -201,6 +208,38 @@ export default function AdminDashboard() {
             ))}
             {stats.recentTransactions.length === 0 && (
               <p className="px-5 py-8 text-[13px] text-center" style={{ color: dark ? '#334155' : '#94a3b8' }}>No transactions yet</p>
+            )}
+          </div>
+        </div>
+
+        {/* Users by Country */}
+        <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+            <h2 className="font-semibold text-[13px] tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Users by Country</h2>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', color: dark ? '#64748b' : '#94a3b8' }}>
+              {stats.countryUsers.length} {stats.countryUsers.length === 1 ? 'country' : 'countries'}
+            </span>
+          </div>
+          <div className="overflow-y-auto" style={{ maxHeight: '520px' }}>
+            {stats.countryUsers.map((c, i) => (
+              <div key={c.country} className="px-5 py-3 flex items-center justify-between transition-colors" style={{ borderBottom: `1px solid ${dividerColor}` }}>
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] font-mono w-5 text-right" style={{ color: dark ? '#475569' : '#94a3b8' }}>{i + 1}</span>
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-3.5 h-3.5" style={{ color: i === 0 ? '#10b981' : i < 3 ? '#3b82f6' : dark ? '#475569' : '#94a3b8' }} />
+                    <span className="text-[13px] font-medium" style={{ color: dark ? '#fff' : '#0f172a' }}>{c.country}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>{c.users}</span>
+                  <span className="text-[10px]" style={{ color: dark ? '#475569' : '#94a3b8' }}>
+                    {stats.users.total > 0 ? `${Math.round((c.users / stats.users.total) * 100)}%` : '0%'}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {stats.countryUsers.length === 0 && (
+              <p className="px-5 py-8 text-[13px] text-center" style={{ color: dark ? '#334155' : '#94a3b8' }}>No country data yet</p>
             )}
           </div>
         </div>

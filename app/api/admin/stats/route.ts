@@ -65,19 +65,28 @@ export async function GET(request: NextRequest) {
   const thisMonthTx = (allTx ?? []).filter(t => new Date(t.created_at) >= thisMonthStart)
   const thisMonthEarnings = thisMonthTx.reduce((s, t) => s + (Number(t.amount_paid) || 0), 0)
 
-  // ── Recent users ──
+  // ── Recent users (top 25) ──
   const { data: recentUsers } = await admin
     .from('profiles')
     .select('id, email, full_name, plan, created_at, country')
     .order('created_at', { ascending: false })
-    .limit(10)
+    .limit(25)
 
-  // ── Recent transactions ──
+  // ── Recent transactions (top 25) ──
   const { data: recentTx } = await admin
     .from('transactions')
     .select('id, user_id, pack_name, amount_paid, created_at')
     .order('created_at', { ascending: false })
-    .limit(10)
+    .limit(25)
+
+  // ── Users by country (ranked) ──
+  const countryMap: Record<string, number> = {}
+  for (const r of countryRows ?? []) {
+    if (r.country) countryMap[r.country] = (countryMap[r.country] || 0) + 1
+  }
+  const countryUsers = Object.entries(countryMap)
+    .map(([country, users]) => ({ country, users }))
+    .sort((a, b) => b.users - a.users)
 
   return NextResponse.json({
     users: {
@@ -95,6 +104,7 @@ export async function GET(request: NextRequest) {
     },
     recentUsers: recentUsers ?? [],
     recentTransactions: recentTx ?? [],
+    countryUsers,
     period,
   })
 }
