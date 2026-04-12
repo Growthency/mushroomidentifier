@@ -65,12 +65,13 @@ export default async function PremiumGate({ children, inline = false }: PremiumG
 function InlinePaywallUI({ reason }: { reason: 'login' | 'upgrade' }) {
   return (
     <div className="my-10">
-      {/* Blurred content teaser */}
+      {/* Blurred content teaser + Paywall card */}
       <div
         className="relative rounded-2xl overflow-hidden mb-6"
         style={{
           border: '1px solid var(--border)',
           background: 'var(--bg-card)',
+          minHeight: 520,
         }}
       >
         {/* Fake blurred text lines */}
@@ -78,6 +79,8 @@ function InlinePaywallUI({ reason }: { reason: 'login' | 'upgrade' }) {
           {[
             'w-full', 'w-11/12', 'w-4/5', 'w-full', 'w-3/4',
             'w-full', 'w-5/6', 'w-11/12', 'w-2/3',
+            'w-full', 'w-4/5', 'w-11/12', 'w-3/4',
+            'w-full', 'w-5/6',
           ].map((w, i) => (
             <div
               key={i}
@@ -92,15 +95,15 @@ function InlinePaywallUI({ reason }: { reason: 'login' | 'upgrade' }) {
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(to bottom, transparent 0%, rgba(var(--bg-card-rgb, 255,255,255), 0.1) 40%, var(--bg-card) 100%)',
+              'linear-gradient(to bottom, transparent 0%, rgba(var(--bg-card-rgb, 255,255,255), 0.1) 30%, var(--bg-card) 85%)',
             backdropFilter: 'blur(4px)',
           }}
         />
 
         {/* Paywall card centred on overlay */}
-        <div className="absolute inset-0 flex items-center justify-center p-6">
+        <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
           <div
-            className="w-full max-w-md rounded-2xl px-7 py-6 text-center"
+            className="w-full max-w-md rounded-2xl px-6 sm:px-7 py-6 text-center"
             style={{
               background: 'var(--bg-primary)',
               border: '1px solid var(--border)',
