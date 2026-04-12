@@ -312,14 +312,43 @@ function FixedBanner() {
 // ── Main Sidebar ─────────────────────────────────────────────────────────────
 export default function BlogSidebar() {
   const [query, setQuery] = useState('')
+  const [popular, setPopular] = useState(TRENDING_POSTS)
+  const [recent, setRecent] = useState(RECENT_POSTS)
+
+  useEffect(() => {
+    fetch('/api/blog/sidebar')
+      .then(r => r.json())
+      .then((data: { popular?: typeof TRENDING_POSTS; recent?: typeof RECENT_POSTS }) => {
+        if (data.popular && data.popular.length > 0) {
+          // Pad with hardcoded if fewer than 10 from Supabase
+          const seen = new Set(data.popular.map(p => p.slug))
+          const padded = [...data.popular]
+          for (const fp of TRENDING_POSTS) {
+            if (padded.length >= 10) break
+            if (!seen.has(fp.slug)) { padded.push(fp); seen.add(fp.slug) }
+          }
+          setPopular(padded.slice(0, 10))
+        }
+        if (data.recent && data.recent.length > 0) {
+          const seen = new Set(data.recent.map(p => p.slug))
+          const padded = [...data.recent]
+          for (const fp of RECENT_POSTS) {
+            if (padded.length >= 10) break
+            if (!seen.has(fp.slug)) { padded.push(fp); seen.add(fp.slug) }
+          }
+          setRecent(padded.slice(0, 10))
+        }
+      })
+      .catch(() => {}) // keep hardcoded fallback on error
+  }, [])
 
   const filteredTrending = query.trim()
-    ? TRENDING_POSTS.filter(p => p.title.toLowerCase().includes(query.toLowerCase()))
-    : TRENDING_POSTS
+    ? popular.filter(p => p.title.toLowerCase().includes(query.toLowerCase()))
+    : popular
 
   const filteredRecent = query.trim()
-    ? RECENT_POSTS.filter(p => p.title.toLowerCase().includes(query.toLowerCase()))
-    : RECENT_POSTS
+    ? recent.filter(p => p.title.toLowerCase().includes(query.toLowerCase()))
+    : recent
 
   return (
     <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0">
