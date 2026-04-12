@@ -26,31 +26,49 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // Find users with signup_ip but no country
-  const { data: users } = await admin
+  // Get ALL profiles to diagnose
+  const { data: allUsers, error: fetchErr } = await admin
     .from('profiles')
-    .select('id, signup_ip, country')
-    .not('signup_ip', 'is', null)
-    .or('country.is.null,country.eq.')
+    .select('id, email, signup_ip, country')
 
-  if (!users || users.length === 0) {
-    return NextResponse.json({ message: 'No users to backfill', updated: 0 })
+  if (fetchErr) {
+    return NextResponse.json({ error: fetchErr.message }, { status: 500 })
   }
 
-  let updated = 0
-  const results: { id: string; ip: string; country: string | null }[] = []
+  // Filter: users with signup_ip but missing country
+  const toBackfill = (allUsers ?? []).filter(u => u.signup_ip && !u.country)
 
-  for (const u of users) {
-    if (!u.signup_ip) continue
+  let updated = 0
+  const results: { email: string; ip: string | null; country: string | null; status: string }[] = []
+
+  // Show all users' status for diagnostics
+  for (const u of allUsers ?? []) {
+    if (!u.signup_ip) {
+      results.push({ email: u.email, ip: null, country: u.country, status: 'no_ip' })
+    } else if (u.country) {
+      results.push({ email: u.email, ip: u.signup_ip, country: u.country, status: 'already_has_country' })
+    }
+  }
+
+  // Backfill users that have IP but no country
+  for (const u of toBackfill) {
     const country = await getCountryFromIp(u.signup_ip)
     if (country) {
       await admin.from('profiles').update({ country }).eq('id', u.id)
       updated++
+      results.push({ email: u.email, ip: u.signup_ip, country, status: 'backfilled' })
+    } else {
+      results.push({ email: u.email, ip: u.signup_ip, country: null, status: 'lookup_failed' })
     }
-    results.push({ id: u.id, ip: u.signup_ip, country })
     // Small delay to avoid rate limiting on ipapi.co
     await new Promise(r => setTimeout(r, 500))
   }
 
-  return NextResponse.json({ message: `Backfilled ${updated} users`, updated, results })
+  return NextResponse.json({
+    totalUsers: allUsers?.length ?? 0,
+    usersWithIp: (allUsers ?? []).filter(u => u.signup_ip).length,
+    usersWithCountry: (allUsers ?? []).filter(u => u.country).length,
+    backfilled: updated,
+    results,
+  })
 }
