@@ -10,12 +10,12 @@ export default function AuthorBlock({ updatedAt }: AuthorBlockProps = {}) {
       className="flex items-center gap-3 my-6 px-4 py-3 rounded-xl"
       style={{ background: 'var(--accent-bg)', border: '1px solid var(--border-hover)' }}
     >
-      <div className="flex-shrink-0 rounded-full overflow-hidden" style={{ width: 48, height: 48 }}>
+      <div className="flex-shrink-0 rounded-full overflow-hidden" style={{ width: 72, height: 72 }}>
         <Image
           src="/author-avatar.webp"
-          alt="Dr. Didier Borgarino - Mycologist & Field Expert"
-          width={48}
-          height={48}
+          alt="Paul Stamets — Mycologist & Fungi Expert"
+          width={72}
+          height={72}
           className="w-full h-full object-cover"
         />
       </div>

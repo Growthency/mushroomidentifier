@@ -356,7 +356,7 @@ export default function BlogSidebar() {
         <div className="rounded-xl overflow-hidden mb-5 relative"
           style={{ border: '1px solid var(--border)' }}>
           {/* Cover — author avatar as blurred background */}
-          <div className="relative w-full overflow-hidden" style={{ height: 210 }}>
+          <div className="relative w-full overflow-hidden" style={{ height: 230 }}>
             <Image
               src="/author-avatar.webp"
               alt=""
@@ -377,10 +377,10 @@ export default function BlogSidebar() {
                 <Image
                   src="/author-avatar.webp"
                   alt="Paul Stamets — Mushroom Expert"
-                  width={180}
-                  height={180}
+                  width={200}
+                  height={200}
                   className="rounded-full object-cover"
-                  style={{ width: 180, height: 180, border: '4px solid rgba(255,255,255,0.9)' }}
+                  style={{ width: 200, height: 200, border: '4px solid rgba(255,255,255,0.9)' }}
                 />
               </div>
             </div>
