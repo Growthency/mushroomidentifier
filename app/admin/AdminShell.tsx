@@ -2,8 +2,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, FileText, BarChart3, Trophy, ShieldCheck,
-  LogOut, ChevronRight, Menu, X, Sun, Moon, Globe,
+  LayoutDashboard, FileText, BarChart3, Trophy, Globe,
+  LogOut, ChevronRight, Menu, X, Sun, Moon,
 } from 'lucide-react'
 import { useState } from 'react'
 import { AdminModalProvider } from '@/components/admin/AdminModal'
@@ -14,7 +14,6 @@ const NAV = [
   { href: '/admin/pages',     label: 'Pages',      icon: FileText },
   { href: '/admin/analytics', label: 'Analytics',  icon: BarChart3 },
   { href: '/admin/rank-tracker', label: 'Rank Tracker', icon: Trophy },
-  { href: '/admin/seo-health',      label: 'SEO Health',      icon: ShieldCheck },
   { href: '/admin/indexing-report', label: 'Indexing Report', icon: Globe },
 ]
 

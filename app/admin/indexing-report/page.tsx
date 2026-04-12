@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import {
   Globe, CheckCircle2, XCircle, AlertTriangle, Search, RefreshCw,
   Loader2, ChevronLeft, ChevronRight, Send, ExternalLink, Clock,
-  FileSearch, ArrowUpRight, Sparkles, Shield,
+  FileSearch, ArrowUpRight, Sparkles, Shield, Zap, Radio, Rss,
+  ChevronDown, ChevronUp,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
@@ -48,16 +49,13 @@ function DonutChart({ indexed, total, dark }: { indexed: number; total: number; 
   const r = 58
   const circ = 2 * Math.PI * r
   const indexedDash = (pct / 100) * circ
-  const notIndexedDash = circ - indexedDash
 
   return (
     <div className="relative inline-flex items-center justify-center">
       <svg width="180" height="180" viewBox="0 0 140 140">
-        {/* Background track */}
         <circle cx="70" cy="70" r={r} fill="none"
           stroke={dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}
           strokeWidth="14" />
-        {/* Not indexed arc (red) */}
         <circle cx="70" cy="70" r={r} fill="none"
           stroke={dark ? '#ef4444' : '#f87171'}
           strokeWidth="14"
@@ -66,7 +64,6 @@ function DonutChart({ indexed, total, dark }: { indexed: number; total: number; 
           transform="rotate(-90 70 70)"
           strokeLinecap="round"
           style={{ transition: 'stroke-dasharray 1s ease' }} />
-        {/* Indexed arc (green) */}
         <circle cx="70" cy="70" r={r} fill="none"
           stroke="#10b981"
           strokeWidth="14"
@@ -76,7 +73,6 @@ function DonutChart({ indexed, total, dark }: { indexed: number; total: number; 
           strokeLinecap="round"
           style={{ transition: 'stroke-dasharray 1s ease' }} />
       </svg>
-      {/* Center text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-3xl font-bold" style={{ color: '#10b981' }}>
           {pct.toFixed(1)}%
@@ -200,6 +196,13 @@ export default function IndexingReportPage() {
   const [scanError, setScanError] = useState('')
   const [toast, setToast] = useState('')
 
+  // New feature states
+  const [indexNowLoading, setIndexNowLoading] = useState(false)
+  const [indexNowResults, setIndexNowResults] = useState<{ engine: string; status: number; ok: boolean }[] | null>(null)
+  const [pingLoading, setPingLoading] = useState(false)
+  const [pingResults, setPingResults] = useState<{ engine: string; status: number; ok: boolean }[] | null>(null)
+  const [toolsExpanded, setToolsExpanded] = useState(true)
+
   // Fetch cached results
   const fetchResults = useCallback(async () => {
     try {
@@ -226,7 +229,6 @@ export default function IndexingReportPage() {
     setScanProgress({ done: 0, total: 0 })
 
     try {
-      // Step 1: Get all URLs from sitemap
       const urlRes = await fetch('/api/admin/indexing-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -238,7 +240,6 @@ export default function IndexingReportPage() {
 
       setScanProgress({ done: 0, total: urls.length })
 
-      // Step 2: Check in batches of 5
       for (let i = 0; i < urls.length; i += 5) {
         const batch = urls.slice(i, i + 5)
         const res = await fetch('/api/admin/indexing-report', {
@@ -254,8 +255,6 @@ export default function IndexingReportPage() {
         }
 
         setScanProgress(prev => ({ ...prev, done: Math.min(prev.total, i + batch.length) }))
-
-        // Refresh cached results after each batch
         await fetchResults()
       }
 
@@ -278,18 +277,18 @@ export default function IndexingReportPage() {
       })
       const data = await res.json()
       if (data.success) {
-        showToast(`✓ Indexing requested: ${extractPath(url)}`)
+        showToast(`Indexing requested: ${extractPath(url)}`)
         await fetchResults()
       } else {
-        showToast(`✗ Failed: ${data.error || 'Unknown error'}`)
+        showToast(`Failed: ${data.error || 'Unknown error'}`)
       }
     } catch {
-      showToast('✗ Network error')
+      showToast('Network error')
     }
     setRequestingUrl(null)
   }
 
-  // ─── Bulk request not-indexed URLs (batched to avoid timeout) ────────────
+  // ─── Bulk request not-indexed URLs ────────────────────────────────────────
   const bulkRequestNotIndexed = async () => {
     const notIndexedUrls = results
       .filter(r => r.status !== 'indexed')
@@ -302,7 +301,6 @@ export default function IndexingReportPage() {
     let totalSuccess = 0
     let totalFailed = 0
 
-    // Send in batches of 10 to stay within Vercel timeout
     for (let i = 0; i < notIndexedUrls.length; i += 10) {
       const batch = notIndexedUrls.slice(i, i + 10)
       try {
@@ -320,10 +318,66 @@ export default function IndexingReportPage() {
       setScanProgress({ done: Math.min(i + 10, notIndexedUrls.length), total: notIndexedUrls.length })
     }
 
-    showToast(`✓ Bulk complete: ${totalSuccess} sent, ${totalFailed} failed`)
+    showToast(`Bulk complete: ${totalSuccess} sent, ${totalFailed} failed`)
     setScanProgress({ done: 0, total: 0 })
     await fetchResults()
     setRequestingUrl(null)
+  }
+
+  // ─── IndexNow — submit all not-indexed URLs ──────────────────────────────
+  const submitIndexNow = async () => {
+    setIndexNowLoading(true)
+    setIndexNowResults(null)
+
+    try {
+      // Get all sitemap URLs
+      const urlRes = await fetch('/api/admin/indexing-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get-urls' }),
+      })
+      const { urls } = await urlRes.json()
+      if (!urls?.length) {
+        showToast('No URLs found in sitemap')
+        setIndexNowLoading(false)
+        return
+      }
+
+      // Submit all to IndexNow
+      const res = await fetch('/api/admin/indexing-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'indexnow-submit', urls }),
+      })
+      const data = await res.json()
+      setIndexNowResults(data.engines || [])
+      showToast(`IndexNow: ${data.submitted} URLs submitted to ${data.engines?.length || 0} engines`)
+    } catch {
+      showToast('IndexNow submission failed')
+    }
+
+    setIndexNowLoading(false)
+  }
+
+  // ─── Sitemap Ping ─────────────────────────────────────────────────────────
+  const pingSitemap = async () => {
+    setPingLoading(true)
+    setPingResults(null)
+
+    try {
+      const res = await fetch('/api/admin/indexing-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'ping-sitemap' }),
+      })
+      const data = await res.json()
+      setPingResults(data.pinged || [])
+      showToast(`Sitemap pinged: ${data.pinged?.filter((p: any) => p.ok).length || 0}/${data.pinged?.length || 0} successful`)
+    } catch {
+      showToast('Sitemap ping failed')
+    }
+
+    setPingLoading(false)
   }
 
   // ─── Filtered & paginated data ─────────────────────────────────────────────
@@ -360,11 +414,11 @@ export default function IndexingReportPage() {
 
       {/* ── Toast notification ── */}
       {toast && (
-        <div className="fixed top-5 right-5 z-50 px-4 py-3 rounded-xl text-sm font-medium shadow-2xl animate-in slide-in-from-right"
+        <div className="fixed top-5 right-5 z-50 px-4 py-3 rounded-xl text-sm font-medium shadow-2xl"
           style={{
-            background: toast.startsWith('✓') ? (dark ? '#065f46' : '#d1fae5') : (dark ? '#7f1d1d' : '#fee2e2'),
-            color: toast.startsWith('✓') ? (dark ? '#a7f3d0' : '#065f46') : (dark ? '#fecaca' : '#991b1b'),
-            border: `1px solid ${toast.startsWith('✓') ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
+            background: dark ? '#065f46' : '#d1fae5',
+            color: dark ? '#a7f3d0' : '#065f46',
+            border: '1px solid rgba(16,185,129,0.3)',
           }}>
           {toast}
         </div>
@@ -424,6 +478,27 @@ export default function IndexingReportPage() {
         </div>
       )}
 
+      {/* ── Bulk Progress Bar ── */}
+      {requestingUrl === '__bulk__' && scanProgress.total > 0 && (
+        <div className="rounded-xl p-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium" style={{ color: textPrimary }}>
+              Requesting indexing… {scanProgress.done} / {scanProgress.total}
+            </span>
+            <span className="text-xs font-bold" style={{ color: '#3b82f6' }}>
+              {Math.round((scanProgress.done / scanProgress.total) * 100)}%
+            </span>
+          </div>
+          <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0' }}>
+            <div className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${(scanProgress.done / scanProgress.total) * 100}%`,
+                background: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+              }} />
+          </div>
+        </div>
+      )}
+
       {/* ── Scan Error ── */}
       {scanError && (
         <div className="rounded-xl p-4 flex items-start gap-3"
@@ -435,6 +510,174 @@ export default function IndexingReportPage() {
           </div>
         </div>
       )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* ── SEO Tools Section — IndexNow + Sitemap Ping + RSS Feed ────────── */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${cardBorder}` }}>
+        {/* Section Header */}
+        <button
+          onClick={() => setToolsExpanded(!toolsExpanded)}
+          className="w-full px-5 py-4 flex items-center justify-between transition-colors"
+          style={{
+            background: dark ? 'rgba(139,92,246,0.08)' : '#f5f3ff',
+            borderBottom: toolsExpanded ? `1px solid ${cardBorder}` : 'none',
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(139,92,246,0.15)' }}>
+              <Zap className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+            </div>
+            <div className="text-left">
+              <h2 className="text-sm font-bold" style={{ color: textPrimary }}>
+                SEO Boost Tools
+              </h2>
+              <p className="text-[11px]" style={{ color: textSecondary }}>
+                IndexNow, Sitemap Ping, RSS Feed
+              </p>
+            </div>
+          </div>
+          {toolsExpanded
+            ? <ChevronUp className="w-4 h-4" style={{ color: textSecondary }} />
+            : <ChevronDown className="w-4 h-4" style={{ color: textSecondary }} />
+          }
+        </button>
+
+        {toolsExpanded && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0" style={{ background: cardBg }}>
+
+            {/* ── IndexNow Card ── */}
+            <div className="p-5 flex flex-col" style={{ borderRight: `1px solid ${cardBorder}` }}>
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: dark ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.08)' }}>
+                  <Zap className="w-4.5 h-4.5" style={{ color: '#3b82f6' }} />
+                </div>
+                <div>
+                  <h3 className="text-[13px] font-bold" style={{ color: textPrimary }}>IndexNow</h3>
+                  <p className="text-[10px]" style={{ color: textSecondary }}>Instant crawl notification</p>
+                </div>
+              </div>
+
+              <p className="text-[11px] leading-relaxed mb-4" style={{ color: textSecondary }}>
+                Notify Bing, Yandex &amp; search engines about all your URLs instantly. No daily limit.
+              </p>
+
+              <button onClick={submitIndexNow} disabled={indexNowLoading}
+                className="mt-auto flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
+                style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
+                {indexNowLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                {indexNowLoading ? 'Submitting…' : 'Submit All URLs'}
+              </button>
+
+              {/* IndexNow Results */}
+              {indexNowResults && (
+                <div className="mt-3 space-y-1.5">
+                  {indexNowResults.map(r => (
+                    <div key={r.engine} className="flex items-center justify-between px-3 py-1.5 rounded-lg"
+                      style={{ background: dark ? 'rgba(255,255,255,0.03)' : '#f8fafc' }}>
+                      <span className="text-[11px] font-medium" style={{ color: textPrimary }}>{r.engine}</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        style={{
+                          background: r.ok ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                          color: r.ok ? '#10b981' : '#ef4444',
+                        }}>
+                        {r.ok ? 'Sent' : `Error ${r.status}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* ── Sitemap Ping Card ── */}
+            <div className="p-5 flex flex-col" style={{ borderRight: `1px solid ${cardBorder}` }}>
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: dark ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.08)' }}>
+                  <Radio className="w-4.5 h-4.5" style={{ color: '#10b981' }} />
+                </div>
+                <div>
+                  <h3 className="text-[13px] font-bold" style={{ color: textPrimary }}>Sitemap Ping</h3>
+                  <p className="text-[10px]" style={{ color: textSecondary }}>Notify search engines</p>
+                </div>
+              </div>
+
+              <p className="text-[11px] leading-relaxed mb-4" style={{ color: textSecondary }}>
+                Ping Google &amp; Bing to re-crawl your sitemap. Use after publishing new content.
+              </p>
+
+              <button onClick={pingSitemap} disabled={pingLoading}
+                className="mt-auto flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
+                style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                {pingLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Radio className="w-3.5 h-3.5" />}
+                {pingLoading ? 'Pinging…' : 'Ping Sitemap'}
+              </button>
+
+              {/* Ping Results */}
+              {pingResults && (
+                <div className="mt-3 space-y-1.5">
+                  {pingResults.map(r => (
+                    <div key={r.engine} className="flex items-center justify-between px-3 py-1.5 rounded-lg"
+                      style={{ background: dark ? 'rgba(255,255,255,0.03)' : '#f8fafc' }}>
+                      <span className="text-[11px] font-medium" style={{ color: textPrimary }}>{r.engine}</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        style={{
+                          background: r.ok ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+                          color: r.ok ? '#10b981' : '#ef4444',
+                        }}>
+                        {r.ok ? 'Pinged' : `Error ${r.status}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* ── RSS Feed Card ── */}
+            <div className="p-5 flex flex-col">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: dark ? 'rgba(245,158,11,0.12)' : 'rgba(245,158,11,0.08)' }}>
+                  <Rss className="w-4.5 h-4.5" style={{ color: '#f59e0b' }} />
+                </div>
+                <div>
+                  <h3 className="text-[13px] font-bold" style={{ color: textPrimary }}>RSS Feed</h3>
+                  <p className="text-[10px]" style={{ color: textSecondary }}>Auto-discovery for crawlers</p>
+                </div>
+              </div>
+
+              <p className="text-[11px] leading-relaxed mb-3" style={{ color: textSecondary }}>
+                RSS feed helps search engines discover new content automatically. Active at:
+              </p>
+
+              <div className="rounded-lg px-3 py-2 mb-3 font-mono text-[11px] flex items-center gap-2"
+                style={{
+                  background: dark ? 'rgba(255,255,255,0.04)' : '#f8fafc',
+                  border: `1px solid ${cardBorder}`,
+                  color: '#f59e0b',
+                }}>
+                <Rss className="w-3 h-3 flex-shrink-0" />
+                /feed.xml
+              </div>
+
+              <a href="https://mushroomidentifiers.com/feed.xml" target="_blank" rel="noopener"
+                className="mt-auto flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:brightness-110"
+                style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
+                <ExternalLink className="w-3.5 h-3.5" />
+                View RSS Feed
+              </a>
+
+              <div className="mt-3 px-3 py-1.5 rounded-lg flex items-center gap-2"
+                style={{ background: dark ? 'rgba(255,255,255,0.03)' : '#f8fafc' }}>
+                <CheckCircle2 className="w-3.5 h-3.5" style={{ color: '#10b981' }} />
+                <span className="text-[10px] font-medium" style={{ color: '#10b981' }}>Active — Auto-linked in &lt;head&gt;</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* ── Empty State ── */}
       {results.length === 0 && !scanning && (
@@ -554,14 +797,11 @@ export default function IndexingReportPage() {
 
             {/* ── INDEXED Column ── */}
             <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${cardBorder}` }}>
-              {/* Header */}
               <div className="px-5 py-3.5 flex items-center justify-between"
                 style={{ background: dark ? 'rgba(16,185,129,0.08)' : '#ecfdf5', borderBottom: `1px solid ${cardBorder}` }}>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4" style={{ color: '#10b981' }} />
-                  <span className="text-sm font-bold" style={{ color: '#10b981' }}>
-                    Indexed Pages
-                  </span>
+                  <span className="text-sm font-bold" style={{ color: '#10b981' }}>Indexed Pages</span>
                   <span className="text-xs px-2 py-0.5 rounded-full font-bold"
                     style={{ background: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
                     {indexed.length}
@@ -569,12 +809,9 @@ export default function IndexingReportPage() {
                 </div>
               </div>
 
-              {/* Table */}
               <div style={{ background: cardBg, maxHeight: '600px', overflowY: 'auto' }}>
                 {indexedSlice.length === 0 ? (
-                  <div className="p-8 text-center text-xs" style={{ color: textSecondary }}>
-                    No indexed pages found
-                  </div>
+                  <div className="p-8 text-center text-xs" style={{ color: textSecondary }}>No indexed pages found</div>
                 ) : (
                   <table className="w-full text-left">
                     <thead>
@@ -621,7 +858,6 @@ export default function IndexingReportPage() {
                 )}
               </div>
 
-              {/* Pagination */}
               <div className="px-4 py-3" style={{ borderTop: `1px solid ${cardBorder}`, background: cardBg }}>
                 <Pagination page={indexedPage} totalPages={indexedTotalPages} onPage={setIndexedPage} dark={dark} />
               </div>
@@ -629,14 +865,11 @@ export default function IndexingReportPage() {
 
             {/* ── NOT INDEXED Column ── */}
             <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${cardBorder}` }}>
-              {/* Header */}
               <div className="px-5 py-3.5 flex items-center justify-between"
                 style={{ background: dark ? 'rgba(239,68,68,0.08)' : '#fef2f2', borderBottom: `1px solid ${cardBorder}` }}>
                 <div className="flex items-center gap-2">
                   <XCircle className="w-4 h-4" style={{ color: '#ef4444' }} />
-                  <span className="text-sm font-bold" style={{ color: '#ef4444' }}>
-                    Not Indexed Pages
-                  </span>
+                  <span className="text-sm font-bold" style={{ color: '#ef4444' }}>Not Indexed Pages</span>
                   <span className="text-xs px-2 py-0.5 rounded-full font-bold"
                     style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>
                     {notIndexed.length}
@@ -644,19 +877,16 @@ export default function IndexingReportPage() {
                 </div>
               </div>
 
-              {/* Table */}
               <div style={{ background: cardBg, maxHeight: '600px', overflowY: 'auto' }}>
                 {notIndexedSlice.length === 0 ? (
-                  <div className="p-8 text-center text-xs" style={{ color: textSecondary }}>
-                    {results.length > 0 ? '🎉 All pages are indexed!' : 'No data yet'}
-                  </div>
+                  <div className="p-8 text-center text-xs" style={{ color: textSecondary }}>All pages are indexed!</div>
                 ) : (
                   <table className="w-full text-left">
                     <thead>
                       <tr style={{ borderBottom: `1px solid ${cardBorder}` }}>
                         <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: textSecondary }}>#</th>
                         <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: textSecondary }}>URL</th>
-                        <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: textSecondary }}>Reason</th>
+                        <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-center" style={{ color: textSecondary }}>Status</th>
                         <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-right" style={{ color: textSecondary }}>Action</th>
                       </tr>
                     </thead>
@@ -676,27 +906,21 @@ export default function IndexingReportPage() {
                               {extractPath(row.url)}
                               <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-40" />
                             </a>
-                            {row.index_requested_at && (
-                              <p className="text-[10px] mt-0.5" style={{ color: '#f59e0b' }}>
-                                Requested {timeAgo(row.index_requested_at)}
-                              </p>
-                            )}
                           </td>
-                          <td className="px-4 py-2.5">
-                            <span className="text-[10px] px-2 py-1 rounded-md inline-block max-w-[150px] truncate"
+                          <td className="px-4 py-2.5 text-center">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium truncate max-w-[120px] inline-block"
                               style={{
-                                background: row.status === 'error'
-                                  ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)',
-                                color: row.status === 'error' ? '#ef4444' : '#f59e0b',
+                                background: dark ? 'rgba(245,158,11,0.1)' : '#fef9c3',
+                                color: '#f59e0b',
                               }}>
-                              {row.coverage_state || row.status}
+                              {(row.coverage_state || 'Unknown').slice(0, 30)}
                             </span>
                           </td>
                           <td className="px-4 py-2.5 text-right">
                             <button onClick={() => requestIndex(row.url)}
                               disabled={requestingUrl === row.url}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-white transition-all hover:brightness-110 disabled:opacity-50"
-                              style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:brightness-110 disabled:opacity-50"
+                              style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>
                               {requestingUrl === row.url ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
                               Index Now
                             </button>
@@ -708,12 +932,10 @@ export default function IndexingReportPage() {
                 )}
               </div>
 
-              {/* Pagination */}
               <div className="px-4 py-3" style={{ borderTop: `1px solid ${cardBorder}`, background: cardBg }}>
                 <Pagination page={notIndexedPage} totalPages={notIndexedTotalPages} onPage={setNotIndexedPage} dark={dark} />
               </div>
             </div>
-
           </div>
         </>
       )}

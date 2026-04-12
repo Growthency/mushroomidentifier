@@ -4,6 +4,7 @@ import { isAdminEmail } from '@/lib/admin'
 import { google } from 'googleapis'
 
 const SITE_URL = 'https://mushroomidentifiers.com'
+const INDEXNOW_KEY = 'a1b2c3d4e5f6g7h8i9j0mushroomid2026'
 
 function getAuth(scopes: string[]) {
   return new google.auth.GoogleAuth({
@@ -67,7 +68,7 @@ export async function GET(request: NextRequest) {
   })
 }
 
-// ── POST — actions: get-urls, check-batch, request-index ────────────────────
+// ── POST — actions ─────────────────────────────────────────────────────────
 export async function POST(request: NextRequest) {
   if (!(await adminCheck(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -211,6 +212,79 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success, failed, total: success + failed })
+  }
+
+  // ─── IndexNow — submit URLs to Bing/Yandex/Google ─────────────────────────
+  if (action === 'indexnow-submit') {
+    const { urls } = body
+    if (!urls?.length) return NextResponse.json({ error: 'No URLs' }, { status: 400 })
+
+    const batch = urls.slice(0, 100) // IndexNow allows up to 10,000 but we batch
+    const results: { engine: string; status: number; ok: boolean }[] = []
+
+    const payload = {
+      host: 'mushroomidentifiers.com',
+      key: INDEXNOW_KEY,
+      keyLocation: `${SITE_URL}/${INDEXNOW_KEY}.txt`,
+      urlList: batch,
+    }
+
+    // Submit to multiple IndexNow endpoints
+    const engines = [
+      { name: 'Bing', url: 'https://www.bing.com/indexnow' },
+      { name: 'Yandex', url: 'https://yandex.com/indexnow' },
+      { name: 'IndexNow.org', url: 'https://api.indexnow.org/indexnow' },
+    ]
+
+    for (const engine of engines) {
+      try {
+        const res = await fetch(engine.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(10000),
+        })
+        results.push({ engine: engine.name, status: res.status, ok: res.ok || res.status === 200 || res.status === 202 })
+      } catch (err: any) {
+        results.push({ engine: engine.name, status: 0, ok: false })
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      submitted: batch.length,
+      engines: results,
+    })
+  }
+
+  // ─── Sitemap Ping — notify Google & Bing ──────────────────────────────────
+  if (action === 'ping-sitemap') {
+    const sitemapUrl = encodeURIComponent(`${SITE_URL}/sitemap.xml`)
+    const results: { engine: string; status: number; ok: boolean }[] = []
+
+    const endpoints = [
+      { name: 'Google', url: `https://www.google.com/ping?sitemap=${sitemapUrl}` },
+      { name: 'Bing', url: `https://www.bing.com/ping?sitemap=${sitemapUrl}` },
+    ]
+
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep.url, {
+          method: 'GET',
+          signal: AbortSignal.timeout(10000),
+        })
+        results.push({ engine: ep.name, status: res.status, ok: res.ok })
+      } catch {
+        results.push({ engine: ep.name, status: 0, ok: false })
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      pinged: results,
+      sitemapUrl: `${SITE_URL}/sitemap.xml`,
+      timestamp: new Date().toISOString(),
+    })
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
