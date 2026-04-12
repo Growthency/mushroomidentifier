@@ -260,10 +260,28 @@ function FixedBanner() {
 }
 
 // ── Main Sidebar ─────────────────────────────────────────────────────────────
+// Skeleton row used while data is loading
+function SidebarSkeleton({ rows = 5 }: { rows?: number }) {
+  return (
+    <ul>
+      {Array.from({ length: rows }).map((_, i) => (
+        <li key={i} className="flex items-center gap-3 px-3 py-2.5" style={{ borderBottom: '1px solid var(--border)' }}>
+          <div className="flex-shrink-0 rounded-lg animate-pulse" style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }} />
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="h-3 rounded-full animate-pulse" style={{ background: 'var(--bg-secondary)', width: '90%' }} />
+            <div className="h-2.5 rounded-full animate-pulse" style={{ background: 'var(--bg-secondary)', width: '40%' }} />
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 export default function BlogSidebar() {
   const [query, setQuery] = useState('')
   const [popular, setPopular] = useState(TRENDING_POSTS)
   const [recent, setRecent] = useState(RECENT_POSTS)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     // Fetch sidebar posts + real view counts in parallel
@@ -298,7 +316,7 @@ export default function BlogSidebar() {
         }
         setRecent(padded.slice(0, 10))
       }
-    })
+    }).finally(() => setLoaded(true))
   }, [])
 
   const filteredTrending = query.trim()
@@ -348,37 +366,39 @@ export default function BlogSidebar() {
               Popular Posts
             </span>
           </div>
-          <ul>
-            {filteredTrending.map((post, i) => (
-              <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
-                <Link href={post.slug} className="flex items-center gap-3 px-3 py-2.5 transition-colors">
-                  <div
-                    className="flex-shrink-0 rounded-lg overflow-hidden"
-                    style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
-                  >
-                    <Image src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-1.5 mb-1">
-                      <span className="text-xs font-bold flex-shrink-0" style={{ color: 'var(--accent)', opacity: 0.8 }}>
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <p className="text-xs leading-snug line-clamp-2" style={{ color: 'var(--text-primary)' }}>
-                        {post.title}
-                      </p>
+          {!loaded ? <SidebarSkeleton rows={5} /> : (
+            <ul>
+              {filteredTrending.map((post, i) => (
+                <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <Link href={post.slug} className="flex items-center gap-3 px-3 py-2.5 transition-colors">
+                    <div
+                      className="flex-shrink-0 rounded-lg overflow-hidden"
+                      style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
+                    >
+                      <Image src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" />
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Eye className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
-                      <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{formatViews(post.views)} views</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start gap-1.5 mb-1">
+                        <span className="text-xs font-bold flex-shrink-0" style={{ color: 'var(--accent)', opacity: 0.8 }}>
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <p className="text-xs leading-snug line-clamp-2" style={{ color: 'var(--text-primary)' }}>
+                          {post.title}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Eye className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
+                        <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{formatViews(post.views)} views</span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
-            {filteredTrending.length === 0 && (
-              <li className="px-4 py-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>No articles found</li>
-            )}
-          </ul>
+                  </Link>
+                </li>
+              ))}
+              {filteredTrending.length === 0 && (
+                <li className="px-4 py-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>No articles found</li>
+              )}
+            </ul>
+          )}
         </div>
 
         {/* 3. Premium Banner */}
@@ -398,32 +418,34 @@ export default function BlogSidebar() {
               Recent Posts
             </span>
           </div>
-          <ul>
-            {filteredRecent.map((post) => (
-              <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
-                <Link href={post.slug} className="flex items-center gap-3 px-3 py-2.5 transition-colors">
-                  <div
-                    className="flex-shrink-0 rounded-lg overflow-hidden"
-                    style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
-                  >
-                    <Image src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs leading-snug line-clamp-2 mb-1" style={{ color: 'var(--text-primary)' }}>
-                      {post.title}
-                    </p>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
-                      <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{post.date}</span>
+          {!loaded ? <SidebarSkeleton rows={5} /> : (
+            <ul>
+              {filteredRecent.map((post) => (
+                <li key={post.slug} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <Link href={post.slug} className="flex items-center gap-3 px-3 py-2.5 transition-colors">
+                    <div
+                      className="flex-shrink-0 rounded-lg overflow-hidden"
+                      style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
+                    >
+                      <Image src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" />
                     </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
-            {filteredRecent.length === 0 && (
-              <li className="px-4 py-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>No articles found</li>
-            )}
-          </ul>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs leading-snug line-clamp-2 mb-1" style={{ color: 'var(--text-primary)' }}>
+                        {post.title}
+                      </p>
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
+                        <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{post.date}</span>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+              {filteredRecent.length === 0 && (
+                <li className="px-4 py-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>No articles found</li>
+              )}
+            </ul>
+          )}
         </div>
 
     </aside>

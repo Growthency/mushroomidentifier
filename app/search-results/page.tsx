@@ -129,6 +129,71 @@ function SearchResultsContent() {
           </div>
         )}
 
+        {/* ── Upsell Banner — convert free users to pro ── */}
+        <div className="relative rounded-2xl overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+            border: '1px solid rgba(16,185,129,0.25)',
+          }}>
+          {/* Accent bar */}
+          <div className="absolute top-0 left-0 right-0 h-1"
+            style={{ background: 'linear-gradient(90deg, #10b981, #34d399, #10b981)' }} />
+
+          <div className="px-5 py-5 sm:px-6 sm:py-6">
+            {/* Header row */}
+            <div className="flex items-start gap-3 mb-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: 'rgba(16,185,129,0.15)' }}>
+                <Zap className="w-5 h-5" style={{ color: '#10b981' }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider"
+                    style={{ background: 'rgba(16,185,129,0.2)', color: '#34d399' }}>
+                    PRO
+                  </span>
+                  <h3 className="font-playfair text-base sm:text-lg font-bold text-white leading-snug">
+                    Want a More Accurate Identification?
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  This analysis used our <span style={{ color: 'rgba(255,255,255,0.85)' }}>standard AI model</span>.
+                  Upgrade to unlock our <span style={{ color: '#34d399', fontWeight: 600 }}>advanced identification engine</span> for
+                  higher accuracy, detailed toxicity reports, and expert-level lookalike comparisons.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefits pills */}
+            <div className="flex flex-wrap gap-2 mb-4 pl-13">
+              {[
+                { icon: Shield, text: 'Advanced AI Model' },
+                { icon: Crown, text: 'PDF Reports' },
+                { icon: Check, text: 'Lookalike Alerts' },
+                { icon: Sparkles, text: 'Priority Scans' },
+              ].map(({ icon: Icon, text }) => (
+                <span key={text} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
+                  style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.8)' }}>
+                  <Icon className="w-3 h-3" style={{ color: '#34d399' }} /> {text}
+                </span>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div className="flex items-center gap-3 pl-13 flex-wrap">
+              <Link href="/pricing"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110"
+                style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                <Crown className="w-4 h-4" /> Upgrade Now — From $4.99
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                One-time · No subscription · 14-day money-back
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Main result card */}
         <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
           <div className="flex items-start justify-between mb-4 flex-wrap gap-4">
@@ -251,82 +316,6 @@ function SearchResultsContent() {
           }}>
           <h2 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Recommended Action</h2>
           <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{result.recommendedAction}</p>
-        </div>
-
-        {/* ── Upsell Banner — convert free users to pro ── */}
-        <div className="rounded-2xl overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, #0f2a1a 0%, #1a3a28 40%, #122e3a 100%)',
-            border: '1px solid rgba(111,207,127,0.15)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-          }}>
-          {/* Top accent bar */}
-          <div style={{ height: 3, background: 'linear-gradient(90deg, #22c55e, #4ade80, #a3e635)' }} />
-
-          <div className="px-6 py-6">
-            {/* Header */}
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.2)' }}>
-                <Zap className="w-5 h-5" style={{ color: '#4ade80' }} />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide"
-                    style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.25)' }}>
-                    <Crown className="w-2.5 h-2.5" /> PRO
-                  </span>
-                  <span className="text-[10px] font-medium tracking-wide" style={{ color: 'rgba(240,253,244,0.4)' }}>
-                    UPGRADE YOUR ACCURACY
-                  </span>
-                </div>
-                <h3 className="font-bold text-base leading-snug" style={{ color: '#f0fdf4' }}>
-                  Want a More Accurate Identification?
-                </h3>
-              </div>
-            </div>
-
-            {/* Description */}
-            <p className="text-sm leading-relaxed mb-4" style={{ color: 'rgba(240,253,244,0.65)' }}>
-              This analysis was performed by our <span style={{ color: 'rgba(240,253,244,0.85)' }}>standard AI model</span>.
-              Upgrade to unlock our <span className="font-semibold" style={{ color: '#4ade80' }}>advanced intelligence engine</span> for
-              higher-confidence species matching, detailed toxicity analysis, and expert-level safety recommendations.
-            </p>
-
-            {/* Benefits */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
-              {[
-                { icon: Zap, text: 'Higher accuracy AI model' },
-                { icon: Shield, text: 'Detailed toxicity reports' },
-                { icon: Sparkles, text: 'Expert safety analysis' },
-                { icon: Check, text: 'Priority identification speed' },
-              ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'rgba(74,222,128,0.15)' }}>
-                    <Icon className="w-2.5 h-2.5" style={{ color: '#4ade80' }} />
-                  </div>
-                  <span className="text-xs" style={{ color: 'rgba(240,253,244,0.8)' }}>{text}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* CTA */}
-            <Link href="/pricing"
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-[1.01] active:scale-[0.99]"
-              style={{
-                background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-                color: '#fff',
-                boxShadow: '0 4px 16px rgba(34,197,94,0.35)',
-              }}>
-              Upgrade Now — From $4.99
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-
-            <p className="text-center text-[11px] mt-2.5" style={{ color: 'rgba(240,253,244,0.35)' }}>
-              One-time purchase · No subscription · 14-day money-back guarantee
-            </p>
-          </div>
         </div>
 
         {/* Actions */}
