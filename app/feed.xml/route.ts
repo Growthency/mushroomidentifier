@@ -11,7 +11,7 @@ export async function GET() {
   // Fetch published blog posts
   const { data: posts } = await supabase
     .from('blog_posts')
-    .select('title, slug, excerpt, featured_image, published_at, updated_at, created_at, category')
+    .select('title, slug, published_at, created_at')
     .eq('status', 'published')
     .order('published_at', { ascending: false, nullsFirst: false })
     .limit(50)
@@ -50,7 +50,7 @@ export async function GET() {
 
   const now = new Date().toUTCString()
 
-  // Build RSS items from blog posts
+  // Build RSS items from blog posts — title + link only (no content/excerpt/images)
   const blogItems = (posts || []).map(post => {
     const pubDate = new Date(post.published_at || post.created_at).toUTCString()
     const link = `${SITE_URL}${post.slug.startsWith('/') ? '' : '/blog/'}${post.slug}`
@@ -58,21 +58,16 @@ export async function GET() {
       <title><![CDATA[${post.title}]]></title>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
-      <description><![CDATA[${post.excerpt || ''}]]></description>
-      <category>${post.category || 'Blog'}</category>
-      ${post.featured_image ? `<enclosure url="${post.featured_image.startsWith('http') ? post.featured_image : SITE_URL + post.featured_image}" type="image/webp" />` : ''}
       <pubDate>${pubDate}</pubDate>
     </item>`
   })
 
-  // Build RSS items from species pages
+  // Build RSS items from species pages — title + link only
   const speciesItems = speciesPages.map(page => {
     return `    <item>
       <title><![CDATA[${page.title}]]></title>
       <link>${SITE_URL}${page.slug}</link>
       <guid isPermaLink="true">${SITE_URL}${page.slug}</guid>
-      <description><![CDATA[Complete identification guide for ${page.title.split('—')[0].trim()}. Learn key features, habitat, edibility, and look-alikes.]]></description>
-      <category>${page.category}</category>
       <pubDate>${now}</pubDate>
     </item>`
   })
