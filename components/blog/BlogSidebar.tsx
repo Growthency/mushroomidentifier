@@ -354,60 +354,56 @@ export default function BlogSidebar() {
 
         {/* 2. About the Author */}
         <div className="rounded-xl overflow-hidden mb-5 relative"
-          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-          {/* Decorative top accent */}
-          <div className="h-16 relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, #065f46 0%, #047857 40%, #059669 100%)',
-            }}>
-            {/* Subtle pattern overlay */}
-            <div className="absolute inset-0" style={{
-              background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%)',
-            }} />
-          </div>
+          style={{ border: '1px solid var(--border)' }}>
+          {/* Cover — author avatar as blurred background */}
+          <div className="relative w-full overflow-hidden" style={{ height: 120 }}>
+            <Image
+              src="/author-avatar.webp"
+              alt=""
+              fill
+              className="object-cover"
+              style={{ filter: 'blur(12px) brightness(0.5) saturate(1.3)', transform: 'scale(1.2)' }}
+            />
+            {/* Gradient fade to card bg */}
+            <div className="absolute inset-0"
+              style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.45) 100%)' }} />
 
-          {/* Avatar — overlapping the accent bar */}
-          <div className="flex justify-center -mt-10 relative z-10">
-            <div className="rounded-full p-[3px]"
-              style={{
-                background: 'linear-gradient(135deg, #10b981, #059669, #047857)',
-                boxShadow: '0 4px 14px rgba(5,150,105,0.3)',
-              }}>
-              <Image
-                src="/author-avatar.webp"
-                alt="Paul Stamets — Mushroom Expert"
-                width={80}
-                height={80}
-                className="rounded-full object-cover"
+            {/* Avatar centered on cover */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="rounded-full p-[2.5px]"
                 style={{
-                  width: 80,
-                  height: 80,
-                  border: '3px solid var(--bg-card)',
-                }}
-              />
+                  background: 'linear-gradient(135deg, #34d399, #10b981, #059669)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
+                }}>
+                <Image
+                  src="/author-avatar.webp"
+                  alt="Paul Stamets — Mushroom Expert"
+                  width={96}
+                  height={96}
+                  className="rounded-full object-cover"
+                  style={{ width: 96, height: 96, border: '3px solid rgba(255,255,255,0.9)' }}
+                />
+              </div>
             </div>
           </div>
 
           {/* Content */}
-          <div className="px-4 pt-3 pb-4 text-center">
-            <h3 className="font-bold text-sm mb-0.5" style={{ color: 'var(--text-primary)' }}>
+          <div className="px-4 pt-3.5 pb-4 text-center" style={{ background: 'var(--bg-card)' }}>
+            <h3 className="font-bold text-[15px] mb-0.5" style={{ color: 'var(--text-primary)' }}>
               Paul Stamets
             </h3>
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2.5"
-              style={{
-                background: 'rgba(16,185,129,0.1)',
-                color: 'var(--accent)',
-              }}>
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-0.5 rounded-full mb-2.5"
+              style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--accent)' }}>
               <Sparkles className="w-2.5 h-2.5" />
               Mycologist &amp; Author
             </span>
-            <p className="text-xs leading-relaxed mb-3" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-xs leading-relaxed mb-3.5" style={{ color: 'var(--text-muted)' }}>
               Renowned mycologist with over 40 years of experience studying fungi.
               Dedicated to mushroom identification, cultivation, and the role of fungi in ecosystem health.
             </p>
             <Link href="/about"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
-              style={{ color: 'var(--accent)' }}>
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:brightness-110"
+              style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--accent)' }}>
               More about me
               <ChevronRight className="w-3.5 h-3.5" />
             </Link>
