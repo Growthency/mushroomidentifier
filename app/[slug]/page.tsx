@@ -51,15 +51,31 @@ export async function generateMetadata({
   const { slug } = await params
   const post = await getPost(slug)
   if (!post) return { title: 'Not Found' }
+  const title = post.meta_title || post.title
+  const description = post.meta_description || post.excerpt || ''
+  const url = `https://mushroomidentifiers.com${post.slug}`
+  const image = post.featured_image
+    ? { url: `https://mushroomidentifiers.com${post.featured_image}`, width: 1200, height: 630 }
+    : null
+
   return {
-    title: post.meta_title || post.title,
-    description: post.meta_description || post.excerpt || '',
-    alternates: { canonical: `https://mushroomidentifiers.com${post.slug}` },
+    title,
+    description,
+    alternates: { canonical: url },
     openGraph: {
-      title: post.meta_title || post.title,
-      description: post.meta_description || post.excerpt || '',
-      url: `https://mushroomidentifiers.com${post.slug}`,
-      images: post.featured_image ? [post.featured_image] : [],
+      title,
+      description,
+      url,
+      type: 'article',
+      publishedTime: post.published_at || post.created_at,
+      modifiedTime: post.updated_at || post.published_at || post.created_at,
+      images: image ? [image] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: image ? [image.url] : [],
     },
   }
 }
@@ -82,29 +98,41 @@ export default async function DynamicPostPage({
       })
     : 'Draft'
 
-  /* Build Article + FAQ schema */
-  const schemaData: Record<string, unknown> = {
+  /* Build Article schema */
+  const schemaData = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: post.meta_title || post.title,
-    description: post.meta_description || post.excerpt || '',
-    image: post.featured_image
-      ? `https://mushroomidentifiers.com${post.featured_image}`
-      : undefined,
-    author: {
-      '@type': 'Organization',
-      name: 'Mushroom Identifiers',
-      url: 'https://mushroomidentifiers.com/',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Mushroom Identifiers',
-      url: 'https://mushroomidentifiers.com/',
-    },
-    mainEntityOfPage: `https://mushroomidentifiers.com${post.slug}`,
-    datePublished: post.published_at || post.created_at,
-    dateModified: post.updated_at || post.published_at || post.created_at,
-    ...(post.is_premium && { isAccessibleForFree: false }),
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: post.meta_title || post.title,
+        description: post.meta_description || post.excerpt || '',
+        image: post.featured_image
+          ? `https://mushroomidentifiers.com${post.featured_image}`
+          : undefined,
+        author: {
+          '@type': 'Organization',
+          name: 'Mushroom Identifiers',
+          url: 'https://mushroomidentifiers.com/',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Mushroom Identifiers',
+          url: 'https://mushroomidentifiers.com/',
+        },
+        mainEntityOfPage: `https://mushroomidentifiers.com${post.slug}`,
+        datePublished: post.published_at || post.created_at,
+        dateModified: post.updated_at || post.published_at || post.created_at,
+        ...(post.is_premium && { isAccessibleForFree: false }),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://mushroomidentifiers.com/' },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://mushroomidentifiers.com/blog' },
+          { '@type': 'ListItem', position: 3, name: post.title },
+        ],
+      },
+    ],
   }
 
   const articleContentClasses = `rich-content prose prose-sm sm:prose-base max-w-none
