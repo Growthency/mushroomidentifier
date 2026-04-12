@@ -408,54 +408,19 @@ function pageScore(issues: Issue[]): number {
   return Math.max(0, Math.round(((max - lost) / max) * 100))
 }
 
-/* ──────────────────── Main handler ─────────────────────────── */
-export async function POST(request: NextRequest) {
-  // Auth check
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user || !isAdminEmail(user.email)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const BASE_URL = 'https://mushroomidentifiers.com'
-
-  // Step 1: Fetch sitemap and extract URLs
-  let urls: string[] = []
-  try {
-    const sitemapRes = await fetch(`${BASE_URL}/sitemap.xml`, { signal: AbortSignal.timeout(10000) })
-    if (sitemapRes.ok) {
-      const xml = await sitemapRes.text()
-      const urlMatches = xml.matchAll(/<loc>(.*?)<\/loc>/g)
-      for (const m of urlMatches) {
-        if (m[1]) urls.push(m[1])
-      }
-    }
-  } catch {
-    // Fallback: use hardcoded key pages
-  }
-
-  if (urls.length === 0) {
-    urls = [
-      `${BASE_URL}/`,
-      `${BASE_URL}/blog`,
-      `${BASE_URL}/pricing`,
-      `${BASE_URL}/about`,
-      `${BASE_URL}/contact`,
-    ]
-  }
-
-  // Step 2: Fetch pages in batches of 5
-  const pageResults: PageResult[] = []
-
-  for (let i = 0; i < urls.length; i += 5) {
-    const batch = urls.slice(i, i + 5)
-    const results = await Promise.all(
-      batch.map(async (url): Promise<PageResult> => {
-        const path = url.replace(BASE_URL, '') || '/'
+/* ──────────────────── Fetch a batch of pages ───────────────── */
+async function fetchBatch(urls: string[], baseUrl: string): Promise<PageResult[]> {
+  const results: PageResult[] = []
+  // 10 parallel per sub-batch for speed within Vercel 10s limit
+  for (let i = 0; i < urls.length; i += 10) {
+    const chunk = urls.slice(i, i + 10)
+    const batch = await Promise.all(
+      chunk.map(async (url): Promise<PageResult> => {
+        const path = url.replace(baseUrl, '') || '/'
         try {
           const start = Date.now()
           const res = await fetch(url, {
-            signal: AbortSignal.timeout(8000),
+            signal: AbortSignal.timeout(6000),
             headers: { 'User-Agent': 'MushroomIdentifiers-SEO-Health/1.0' },
           })
           const loadTime = Date.now() - start
@@ -469,7 +434,6 @@ export async function POST(request: NextRequest) {
           const issues = checkPage(html, url)
           const title = extractTitle(html) || ''
 
-          // Load time check
           if (loadTime > 5000) {
             issues.push({
               check: 'slow-load', severity: 'warning',
@@ -490,67 +454,70 @@ export async function POST(request: NextRequest) {
         }
       })
     )
-    pageResults.push(...results)
+    results.push(...batch)
+  }
+  return results
+}
+
+/* ──────────────────── Main handler (paginated) ─────────────── */
+export async function POST(request: NextRequest) {
+  // Auth check
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || !isAdminEmail(user.email)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Step 3: Global checks
-  const globalChecks = await runGlobalChecks(BASE_URL, pageResults)
+  const body = await request.json().catch(() => ({}))
+  const offset: number = body.offset ?? 0
+  const limit: number  = Math.min(body.limit ?? 50, 50) // cap at 50 per request
 
-  // Step 4: Calculate overall score
-  const overallScore = calculateScore(pageResults, globalChecks)
+  const BASE_URL = 'https://mushroomidentifiers.com'
 
-  // Step 5: Build category summary
-  const categories: Record<string, { total: number; passed: number }> = {}
-  for (const page of pageResults) {
-    if (page.status >= 400) continue
-    // Count how many checks each category could have
-    const catChecks: Record<string, number> = {
-      'Meta Tags': 6, 'Open Graph': 5, 'Twitter Cards': 4,
-      'Headings': 5, 'Images': 2, 'Structured Data': 2,
-      'Technical': 5, 'Performance': 2,
-    }
-    for (const cat of Object.keys(catChecks)) {
-      if (!categories[cat]) categories[cat] = { total: 0, passed: 0 }
-      categories[cat].total += catChecks[cat]
-      const catIssues = page.issues.filter(i => i.category === cat).length
-      categories[cat].passed += catChecks[cat] - catIssues
-    }
-  }
-
-  // Step 6: Top issues by frequency
-  const issueFreq: Record<string, { count: number; issue: Issue }> = {}
-  for (const page of pageResults) {
-    for (const issue of page.issues) {
-      if (!issueFreq[issue.check]) {
-        issueFreq[issue.check] = { count: 0, issue }
+  // Step 1: Fetch sitemap and extract all URLs
+  let allUrls: string[] = []
+  try {
+    const sitemapRes = await fetch(`${BASE_URL}/sitemap.xml`, { signal: AbortSignal.timeout(8000) })
+    if (sitemapRes.ok) {
+      const xml = await sitemapRes.text()
+      const urlMatches = xml.matchAll(/<loc>(.*?)<\/loc>/g)
+      for (const m of urlMatches) {
+        if (m[1]) allUrls.push(m[1])
       }
-      issueFreq[issue.check].count++
     }
+  } catch {
+    // Fallback
   }
-  const topIssues = Object.values(issueFreq)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 15)
-    .map(({ count, issue }) => ({ ...issue, count }))
 
-  // Summary counts
-  const totalIssues = pageResults.reduce((sum, p) => sum + p.issues.length, 0)
-  const criticalCount = pageResults.reduce((sum, p) => sum + p.issues.filter(i => i.severity === 'critical').length, 0)
-  const warningCount = pageResults.reduce((sum, p) => sum + p.issues.filter(i => i.severity === 'warning').length, 0)
-  const infoCount = pageResults.reduce((sum, p) => sum + p.issues.filter(i => i.severity === 'info').length, 0)
-  const passedPages = pageResults.filter(p => p.status === 200 && p.issues.filter(i => i.severity === 'critical').length === 0).length
+  if (allUrls.length === 0) {
+    allUrls = [
+      `${BASE_URL}/`,
+      `${BASE_URL}/blog`,
+      `${BASE_URL}/pricing`,
+      `${BASE_URL}/about`,
+      `${BASE_URL}/contact`,
+    ]
+  }
+
+  const totalUrls = allUrls.length
+  const batchUrls = allUrls.slice(offset, offset + limit)
+
+  // Step 2: Scan the current batch
+  const pageResults = await fetchBatch(batchUrls, BASE_URL)
+
+  // Step 3: Global checks only on first batch (offset === 0)
+  let globalChecks: GlobalCheckResult[] | null = null
+  if (offset === 0) {
+    globalChecks = await runGlobalChecks(BASE_URL, pageResults)
+  }
 
   return NextResponse.json({
-    score: overallScore,
-    pagesScanned: pageResults.length,
-    totalIssues,
-    criticalCount,
-    warningCount,
-    infoCount,
-    passedPages,
-    pages: pageResults.sort((a, b) => a.score - b.score),
+    totalUrls,
+    offset,
+    limit,
+    hasMore: offset + limit < totalUrls,
+    pages: pageResults,
     globalChecks,
-    categories,
-    topIssues,
     scannedAt: new Date().toISOString(),
   })
 }
