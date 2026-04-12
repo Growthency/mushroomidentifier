@@ -254,7 +254,25 @@ CREATE POLICY "Users can unsave articles"
 CREATE INDEX IF NOT EXISTS idx_saved_articles_user ON saved_articles(user_id);
 
 
--- ── 9. STORAGE BUCKETS ──────────────────────────────────────
+-- ── 9. RANK TRACKER (keywords + positions) ───────────────────
+CREATE TABLE IF NOT EXISTS rank_keywords (
+  id            SERIAL PRIMARY KEY,
+  keyword       TEXT NOT NULL UNIQUE,
+  position      INTEGER,
+  prev_position INTEGER,
+  change        INTEGER,
+  rank_url      TEXT,
+  checked_at    TIMESTAMPTZ,
+  created_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE rank_keywords ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Service role full access rank_keywords"
+  ON rank_keywords FOR ALL TO service_role USING (true);
+
+
+-- ── 10. STORAGE BUCKETS ──────────────────────────────────────
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('images', 'images', true)
 ON CONFLICT (id) DO NOTHING;

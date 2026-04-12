@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, FileText, BarChart3,
+  LayoutDashboard, FileText, BarChart3, Trophy,
   LogOut, ChevronRight, Menu, X, Sun, Moon,
 } from 'lucide-react'
 import { useState } from 'react'
@@ -13,6 +13,7 @@ const NAV = [
   { href: '/admin',           label: 'Dashboard',  icon: LayoutDashboard },
   { href: '/admin/pages',     label: 'Pages',      icon: FileText },
   { href: '/admin/analytics', label: 'Analytics',  icon: BarChart3 },
+  { href: '/admin/rank-tracker', label: 'Rank Tracker', icon: Trophy },
 ]
 
 export default function AdminShell({ children, userEmail }: { children: React.ReactNode; userEmail: string }) {
