@@ -105,12 +105,14 @@ export async function POST(req: NextRequest) {
           }
 
           // Search organic results for our domain
+          // SerpAPI returns positions relative to each page (1,2,3...),
+          // so we calculate absolute position: start + relative position
           const organic = data.organic_results || []
           for (const result of organic) {
             const link = (result.link || '').toLowerCase()
             const displayed = (result.displayed_link || '').toLowerCase()
             if (link.includes(SITE_DOMAIN) || displayed.includes(SITE_DOMAIN)) {
-              position = result.position
+              position = start + result.position
               rankUrl = result.link
               break
             }
@@ -204,7 +206,7 @@ export async function POST(req: NextRequest) {
           const link = (result.link || '').toLowerCase()
           const displayed = (result.displayed_link || '').toLowerCase()
           if (link.includes(SITE_DOMAIN) || displayed.includes(SITE_DOMAIN)) {
-            position = result.position
+            position = start + result.position
             rankUrl = result.link
             break
           }
