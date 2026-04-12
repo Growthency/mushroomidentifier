@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
     let success = 0
     let failed = 0
 
-    for (const url of urls.slice(0, 20)) {
+    for (const url of urls.slice(0, 10)) {
       try {
         await indexing.urlNotifications.publish({
           requestBody: { url, type: 'URL_UPDATED' },

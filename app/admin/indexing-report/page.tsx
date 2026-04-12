@@ -289,7 +289,7 @@ export default function IndexingReportPage() {
     setRequestingUrl(null)
   }
 
-  // ─── Bulk request not-indexed URLs ─────────────────────────────────────────
+  // ─── Bulk request not-indexed URLs (batched to avoid timeout) ────────────
   const bulkRequestNotIndexed = async () => {
     const notIndexedUrls = results
       .filter(r => r.status !== 'indexed')
@@ -298,18 +298,31 @@ export default function IndexingReportPage() {
     if (!notIndexedUrls.length) return
 
     setRequestingUrl('__bulk__')
-    try {
-      const res = await fetch('/api/admin/indexing-report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'bulk-request', urls: notIndexedUrls }),
-      })
-      const data = await res.json()
-      showToast(`✓ Bulk request: ${data.success} sent, ${data.failed} failed`)
-      await fetchResults()
-    } catch {
-      showToast('✗ Bulk request failed')
+    setScanProgress({ done: 0, total: notIndexedUrls.length })
+    let totalSuccess = 0
+    let totalFailed = 0
+
+    // Send in batches of 10 to stay within Vercel timeout
+    for (let i = 0; i < notIndexedUrls.length; i += 10) {
+      const batch = notIndexedUrls.slice(i, i + 10)
+      try {
+        const res = await fetch('/api/admin/indexing-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'bulk-request', urls: batch }),
+        })
+        const data = await res.json()
+        totalSuccess += data.success || 0
+        totalFailed += data.failed || 0
+      } catch {
+        totalFailed += batch.length
+      }
+      setScanProgress({ done: Math.min(i + 10, notIndexedUrls.length), total: notIndexedUrls.length })
     }
+
+    showToast(`✓ Bulk complete: ${totalSuccess} sent, ${totalFailed} failed`)
+    setScanProgress({ done: 0, total: 0 })
+    await fetchResults()
     setRequestingUrl(null)
   }
 
