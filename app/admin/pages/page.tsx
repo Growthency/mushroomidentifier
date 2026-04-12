@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
-  Plus, Pencil, Trash2, Eye, Loader2,
+  Plus, Pencil, Trash2, Eye, Loader2, Link2,
   ChevronLeft, ChevronRight, Search, Globe, Lock, ExternalLink,
 } from 'lucide-react'
 import { useModal } from '@/components/admin/AdminModal'
@@ -12,6 +12,13 @@ interface Post {
   id: number; title: string; slug: string; status: string;
   is_premium: boolean; category: string; risk_level: string;
   region: string; views: number; created_at: string; updated_at: string;
+  content: string;
+}
+
+function countInternalLinks(html: string): number {
+  if (!html) return 0
+  const matches = html.match(/<a\s[^>]*href=["'](\/[^"']*|https?:\/\/mushroomidentifiers\.com[^"']*)["'][^>]*>/gi)
+  return matches?.length || 0
 }
 
 export default function AdminPagesPage() {
@@ -119,6 +126,7 @@ export default function AdminPagesPage() {
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden lg:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Status</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Date</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Views</th>
+                <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Links</th>
                 <th className="text-right px-5 py-3.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Actions</th>
               </tr>
             </thead>
@@ -159,6 +167,23 @@ export default function AdminPagesPage() {
                   </td>
                   <td className="px-4 py-3.5 hidden md:table-cell">
                     <span className="text-[12px] font-medium" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{post.views.toLocaleString()}</span>
+                  </td>
+                  <td className="px-4 py-3.5 hidden md:table-cell">
+                    {(() => {
+                      const count = countInternalLinks(post.content)
+                      return (
+                        <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-lg font-semibold ${
+                          count >= 5
+                            ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
+                            : count >= 1
+                              ? 'bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20'
+                              : 'bg-red-500/10 text-red-400 ring-1 ring-red-500/20'
+                        }`}>
+                          <Link2 className="w-3 h-3" />
+                          {count}
+                        </span>
+                      )
+                    })()}
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center justify-end gap-1">
