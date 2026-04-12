@@ -922,6 +922,12 @@ export default function IndexingReportPage() {
                               {extractPath(row.url)}
                               <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-40" />
                             </a>
+                            {row.index_requested_at && (
+                              <p className="text-[9px] mt-0.5 flex items-center gap-1" style={{ color: '#10b981' }}>
+                                <Send className="w-2.5 h-2.5" />
+                                Requested {timeAgo(row.index_requested_at)}
+                              </p>
+                            )}
                           </td>
                           <td className="px-4 py-2.5 text-center">
                             <span className="text-[10px] px-2 py-0.5 rounded-full font-medium truncate max-w-[120px] inline-block"
