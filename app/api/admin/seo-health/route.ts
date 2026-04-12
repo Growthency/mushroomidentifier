@@ -242,6 +242,12 @@ function checkPage(html: string, url: string): Issue[] {
     add('large-html', 'info', `HTML is ${sizeKb}KB (recommended < 500KB)`, 'Reduce HTML size by removing unused code or lazy-loading content', 'Performance')
   }
 
+  // 13. Internal Links — flag pages with fewer than 5
+  const internalLinkMatches = html.match(/<a\s[^>]*href=["'](\/[^"'#]*|https?:\/\/mushroomidentifiers\.com[^"']*)["'][^>]*>/gi) || []
+  if (isContentPage && internalLinkMatches.length < 5) {
+    add('low-internal-links', 'warning', `Only ${internalLinkMatches.length} internal link(s) (recommended: 5+)`, 'Add at least 5 internal links to related species pages and articles for better SEO crawlability', 'Internal Links')
+  }
+
   return issues
 }
 

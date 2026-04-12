@@ -6,7 +6,7 @@ import {
   ShieldCheck, RefreshCw, AlertTriangle, AlertCircle, Info,
   CheckCircle2, ChevronDown, ChevronRight, Search, Globe,
   FileText, Share2, Type, Image as ImageIcon, Zap, Code2,
-  ArrowUpRight, XCircle, ExternalLink, Twitter, Play, Square,
+  ArrowUpRight, XCircle, ExternalLink, Twitter, Play, Square, Link2,
 } from 'lucide-react'
 
 /* ─────────────── Types ─────────────── */
@@ -76,6 +76,7 @@ const categoryIcon = (cat: string) => {
     case 'Structured Data': return <Code2 size={18} />
     case 'Technical': return <ShieldCheck size={18} />
     case 'Performance': return <Zap size={18} />
+    case 'Internal Links': return <Link2 size={18} />
     default: return <Globe size={18} />
   }
 }
@@ -109,7 +110,7 @@ function aggregate(pages: PageResult[], globalChecks: GlobalCheck[]) {
   const catChecks: Record<string, number> = {
     'Meta Tags': 6, 'Open Graph': 5, 'Twitter Cards': 4,
     'Headings': 5, 'Images': 2, 'Structured Data': 2,
-    'Technical': 5, 'Performance': 2,
+    'Technical': 5, 'Performance': 2, 'Internal Links': 1,
   }
   for (const page of pages) {
     if (page.status >= 400) continue
