@@ -324,34 +324,31 @@ export default function IndexingReportPage() {
     setRequestingUrl(null)
   }
 
-  // ─── IndexNow — submit all not-indexed URLs ──────────────────────────────
+  // ─── IndexNow — submit only NOT-indexed URLs ─────────────────────────────
   const submitIndexNow = async () => {
     setIndexNowLoading(true)
     setIndexNowResults(null)
 
-    try {
-      // Get all sitemap URLs
-      const urlRes = await fetch('/api/admin/indexing-report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get-urls' }),
-      })
-      const { urls } = await urlRes.json()
-      if (!urls?.length) {
-        showToast('No URLs found in sitemap')
-        setIndexNowLoading(false)
-        return
-      }
+    // Only send not-indexed URLs
+    const notIndexedUrls = results
+      .filter(r => r.status !== 'indexed')
+      .map(r => r.url)
 
-      // Submit all to IndexNow
+    if (!notIndexedUrls.length) {
+      showToast('All pages are already indexed!')
+      setIndexNowLoading(false)
+      return
+    }
+
+    try {
       const res = await fetch('/api/admin/indexing-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'indexnow-submit', urls }),
+        body: JSON.stringify({ action: 'indexnow-submit', urls: notIndexedUrls }),
       })
       const data = await res.json()
       setIndexNowResults(data.engines || [])
-      showToast(`IndexNow: ${data.submitted} URLs submitted to ${data.engines?.length || 0} engines`)
+      showToast(`IndexNow: ${data.submitted} not-indexed URLs submitted`)
     } catch {
       showToast('IndexNow submission failed')
     }
@@ -359,8 +356,26 @@ export default function IndexingReportPage() {
     setIndexNowLoading(false)
   }
 
-  // ─── Sitemap Ping ─────────────────────────────────────────────────────────
-  const pingSitemap = async () => {
+  // ─── IndexNow — submit single URL ────────────────────────────────────────
+  const submitSingleIndexNow = async (url: string) => {
+    setRequestingUrl(`indexnow-${url}`)
+    try {
+      const res = await fetch('/api/admin/indexing-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'indexnow-submit', urls: [url] }),
+      })
+      const data = await res.json()
+      const allOk = data.engines?.every((e: any) => e.ok)
+      showToast(allOk ? `IndexNow sent: ${extractPath(url)}` : `IndexNow partial: check results`)
+    } catch {
+      showToast('IndexNow failed')
+    }
+    setRequestingUrl(null)
+  }
+
+  // ─── Sitemap Submit — Google Search Console + Bing ────────────────────────
+  const submitSitemap = async () => {
     setPingLoading(true)
     setPingResults(null)
 
@@ -368,13 +383,14 @@ export default function IndexingReportPage() {
       const res = await fetch('/api/admin/indexing-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'ping-sitemap' }),
+        body: JSON.stringify({ action: 'submit-sitemap' }),
       })
       const data = await res.json()
-      setPingResults(data.pinged || [])
-      showToast(`Sitemap pinged: ${data.pinged?.filter((p: any) => p.ok).length || 0}/${data.pinged?.length || 0} successful`)
+      setPingResults(data.submitted || [])
+      const okCount = data.submitted?.filter((p: any) => p.ok).length || 0
+      showToast(`Sitemap submitted: ${okCount}/${data.submitted?.length || 0} successful`)
     } catch {
-      showToast('Sitemap ping failed')
+      showToast('Sitemap submission failed')
     }
 
     setPingLoading(false)
@@ -534,7 +550,7 @@ export default function IndexingReportPage() {
                 SEO Boost Tools
               </h2>
               <p className="text-[11px]" style={{ color: textSecondary }}>
-                IndexNow, Sitemap Ping, RSS Feed
+                IndexNow, Sitemap Submit, RSS Feed
               </p>
             </div>
           </div>
@@ -561,14 +577,14 @@ export default function IndexingReportPage() {
               </div>
 
               <p className="text-[11px] leading-relaxed mb-4" style={{ color: textSecondary }}>
-                Notify Bing, Yandex &amp; search engines about all your URLs instantly. No daily limit.
+                Submit only not-indexed URLs to Bing, Yandex &amp; search engines. No daily limit.
               </p>
 
               <button onClick={submitIndexNow} disabled={indexNowLoading}
                 className="mt-auto flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
                 {indexNowLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
-                {indexNowLoading ? 'Submitting…' : 'Submit All URLs'}
+                {indexNowLoading ? 'Submitting…' : `Submit Not-Indexed (${results.filter(r => r.status !== 'indexed').length})`}
               </button>
 
               {/* IndexNow Results */}
@@ -591,7 +607,7 @@ export default function IndexingReportPage() {
               )}
             </div>
 
-            {/* ── Sitemap Ping Card ── */}
+            {/* ── Sitemap Submit Card ── */}
             <div className="p-5 flex flex-col" style={{ borderRight: `1px solid ${cardBorder}` }}>
               <div className="flex items-center gap-2.5 mb-3">
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -599,26 +615,26 @@ export default function IndexingReportPage() {
                   <Radio className="w-4.5 h-4.5" style={{ color: '#10b981' }} />
                 </div>
                 <div>
-                  <h3 className="text-[13px] font-bold" style={{ color: textPrimary }}>Sitemap Ping</h3>
-                  <p className="text-[10px]" style={{ color: textSecondary }}>Notify search engines</p>
+                  <h3 className="text-[13px] font-bold" style={{ color: textPrimary }}>Sitemap Submit</h3>
+                  <p className="text-[10px]" style={{ color: textSecondary }}>Google Search Console + Bing</p>
                 </div>
               </div>
 
               <p className="text-[11px] leading-relaxed mb-4" style={{ color: textSecondary }}>
-                Ping Google &amp; Bing to re-crawl your sitemap. Use after publishing new content.
+                Submit sitemap to Google Search Console &amp; Bing. Use after publishing new content.
               </p>
 
-              <button onClick={pingSitemap} disabled={pingLoading}
+              <button onClick={submitSitemap} disabled={pingLoading}
                 className="mt-auto flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-all hover:brightness-110 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
                 {pingLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Radio className="w-3.5 h-3.5" />}
-                {pingLoading ? 'Pinging…' : 'Ping Sitemap'}
+                {pingLoading ? 'Submitting…' : 'Submit Sitemap'}
               </button>
 
-              {/* Ping Results */}
+              {/* Submit Results */}
               {pingResults && (
                 <div className="mt-3 space-y-1.5">
-                  {pingResults.map(r => (
+                  {pingResults.map((r: any) => (
                     <div key={r.engine} className="flex items-center justify-between px-3 py-1.5 rounded-lg"
                       style={{ background: dark ? 'rgba(255,255,255,0.03)' : '#f8fafc' }}>
                       <span className="text-[11px] font-medium" style={{ color: textPrimary }}>{r.engine}</span>
@@ -627,7 +643,7 @@ export default function IndexingReportPage() {
                           background: r.ok ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
                           color: r.ok ? '#10b981' : '#ef4444',
                         }}>
-                        {r.ok ? 'Pinged' : `Error ${r.status}`}
+                        {r.ok ? 'Submitted' : 'Error'}
                       </span>
                     </div>
                   ))}
@@ -917,13 +933,22 @@ export default function IndexingReportPage() {
                             </span>
                           </td>
                           <td className="px-4 py-2.5 text-right">
-                            <button onClick={() => requestIndex(row.url)}
-                              disabled={requestingUrl === row.url}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:brightness-110 disabled:opacity-50"
-                              style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>
-                              {requestingUrl === row.url ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-                              Index Now
-                            </button>
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button onClick={() => requestIndex(row.url)}
+                                disabled={requestingUrl === row.url}
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:brightness-110 disabled:opacity-50"
+                                style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>
+                                {requestingUrl === row.url ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                                Google
+                              </button>
+                              <button onClick={() => submitSingleIndexNow(row.url)}
+                                disabled={requestingUrl === `indexnow-${row.url}`}
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:brightness-110 disabled:opacity-50"
+                                style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6' }}>
+                                {requestingUrl === `indexnow-${row.url}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
+                                IndexNow
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
