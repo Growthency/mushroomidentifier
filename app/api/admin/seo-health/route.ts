@@ -179,7 +179,6 @@ function checkPage(html: string, url: string): Issue[] {
     add('missing-h1', 'critical', 'Page is missing an H1 heading', 'Add exactly one <h1> tag with your primary keyword', 'Headings')
   } else {
     if (h1s.length > 1) add('multiple-h1', 'warning', `Page has ${h1s.length} H1 tags (should be exactly 1)`, 'Use only one <h1> per page for clear hierarchy', 'Headings')
-    if (h1s[0] && h1s[0].length > 70) add('h1-long', 'info', `H1 is too long (${h1s[0].length} chars, max 70)`, 'Keep H1 concise and under 70 characters', 'Headings')
   }
 
   const h2s = extractTag(html, 'h2')

@@ -2,7 +2,7 @@
 import { useRef, useCallback, useState, useEffect } from 'react'
 import {
   Bold, Italic, Underline, Strikethrough, List, ListOrdered,
-  Heading1, Heading2, Heading3, Heading4, Link, Image as ImageIcon,
+  Heading2, Heading3, Heading4, Link, Image as ImageIcon,
   AlignLeft, AlignCenter, AlignRight, Quote, Code, Minus,
   Upload, Undo2, Redo2, Type, Pilcrow, Table,
   Trash2, X, GripVertical, Pencil, Unlink, ExternalLink,
@@ -522,7 +522,6 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
 
         <ToolDivider />
 
-        <ToolBtn onClick={() => toggleHeading(1)} title="Heading 1" active={isActive('h1')}><Heading1 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(2)} title="Heading 2" active={isActive('h2')}><Heading2 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(3)} title="Heading 3" active={isActive('h3')}><Heading3 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => toggleHeading(4)} title="Heading 4" active={isActive('h4')}><Heading4 className="w-4 h-4" /></ToolBtn>
