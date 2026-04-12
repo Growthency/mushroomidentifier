@@ -379,7 +379,7 @@ export default function RankTrackerPage() {
             {keywords[0]?.checked_at ? timeAgo(keywords[0].checked_at) : 'Never'}
           </p>
           <p className="text-xs mt-1" style={{ color: textSecondary }}>
-            {keywords.length > 0 ? `uses ${keywords.length} searches` : 'add keywords first'}
+            {keywords.length > 0 ? `uses ${keywords.length}-${keywords.length * 5} searches` : 'add keywords first'}
           </p>
         </div>
       </div>

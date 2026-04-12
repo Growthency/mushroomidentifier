@@ -87,38 +87,46 @@ export async function POST(req: NextRequest) {
 
     for (const kw of keywords) {
       try {
-        const serpUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(kw.keyword)}&location=United+States&gl=us&hl=en&num=100&api_key=${SERPAPI_KEY}`
-        const res = await fetch(serpUrl)
-        const data = await res.json()
-
-        // Check for SerpAPI errors
-        if (data.error) {
-          results.push({ id: kw.id, keyword: kw.keyword, error: data.error })
-          continue
-        }
-
         let position: number | null = null
         let rankUrl = ''
 
-        // Search organic results for our domain (flexible matching)
-        const organic = data.organic_results || []
-        for (const result of organic) {
-          const link = (result.link || '').toLowerCase()
-          const displayed = (result.displayed_link || '').toLowerCase()
-          if (link.includes(SITE_DOMAIN) || displayed.includes(SITE_DOMAIN)) {
-            position = result.position
-            rankUrl = result.link
+        // Search up to 5 pages (50 results) to find our domain
+        // Each page uses 1 SerpAPI credit, so we stop as soon as we find a match
+        const MAX_PAGES = 5
+        for (let page = 0; page < MAX_PAGES; page++) {
+          const start = page * 10
+          const serpUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(kw.keyword)}&location=United+States&gl=us&hl=en&num=10&start=${start}&api_key=${SERPAPI_KEY}`
+          const res = await fetch(serpUrl)
+          const data = await res.json()
+
+          if (data.error) {
+            if (page === 0) results.push({ id: kw.id, keyword: kw.keyword, error: data.error })
             break
           }
-        }
 
-        // Also check local results, featured snippets, etc.
-        if (!position) {
-          const featured = data.answer_box || data.knowledge_graph
-          if (featured?.link?.toLowerCase().includes(SITE_DOMAIN)) {
-            position = 1
-            rankUrl = featured.link
+          // Search organic results for our domain
+          const organic = data.organic_results || []
+          for (const result of organic) {
+            const link = (result.link || '').toLowerCase()
+            const displayed = (result.displayed_link || '').toLowerCase()
+            if (link.includes(SITE_DOMAIN) || displayed.includes(SITE_DOMAIN)) {
+              position = result.position
+              rankUrl = result.link
+              break
+            }
           }
+
+          // Also check featured snippets on first page
+          if (page === 0 && !position) {
+            const featured = data.answer_box || data.knowledge_graph
+            if (featured?.link?.toLowerCase().includes(SITE_DOMAIN)) {
+              position = 1
+              rankUrl = featured.link
+            }
+          }
+
+          // Found it or no more results — stop paginating
+          if (position || organic.length === 0) break
         }
 
         const prevPosition = kw.position
