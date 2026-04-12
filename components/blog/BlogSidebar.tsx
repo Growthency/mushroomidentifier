@@ -10,66 +10,16 @@ import {
 // TableOfContents removed from sidebar — now auto-injected inside article content
 
 const TRENDING_POSTS = [
-  {
-    title: 'Amanita phalloides (Death Cap): Identification Guide',
-    slug: '/amanita-phalloides-death-cap',
-    image: '/amanita-phalloides-death-cap-identification.webp',
-    views: 4821,
-  },
-  {
-    title: 'Death Cap vs Destroying Angel: Key Differences',
-    slug: '/death-cap-vs-destroying-angel',
-    image: '/death-cap-vs-destroying-angel-comparison.webp',
-    views: 3920,
-  },
-  {
-    title: 'Amanita bisporigera (Destroying Angel) Guide',
-    slug: '/amanita-bisporigera-destroying-angel',
-    image: '/amanita-bisporigera-destroying-angel-identification.webp',
-    views: 3450,
-  },
-  {
-    title: 'Amanita virosa Mushroom: Identification & Safety',
-    slug: '/amanita-virosa-mushroom',
-    image: '/amanita-virosa-mushroom-destroying-angel.webp',
-    views: 2980,
-  },
-  {
-    title: 'How to Get Rid of Mushrooms in Grass',
-    slug: '/how-to-get-rid-of-mushrooms-in-grass',
-    image: '/how-to-get-rid-of-mushrooms-in-grass-fairy-ring-lawn.webp',
-    views: 2740,
-  },
-  {
-    title: 'Why Are Mushrooms Growing in My Yard?',
-    slug: '/why-are-mushrooms-growing-in-my-yard',
-    image: '/why-are-mushrooms-growing-in-my-yard-fairy-ring-lawn.webp',
-    views: 2510,
-  },
-  {
-    title: 'Mushroom Identifier Book: Best Field Guides',
-    slug: '/mushroom-identifier-book',
-    image: '/mushroom-identifier-book-chanterelle-cantharellus-cibarius.webp',
-    views: 2230,
-  },
-  {
-    title: 'Mushroom Parts Explained: Cap, Gills, Stem',
-    slug: '/mushroom-parts-explained',
-    image: '/parts-of-mushrooms.webp',
-    views: 2180,
-  },
-  {
-    title: 'Horse Mushroom (Agaricus arvensis) Guide',
-    slug: '/agaricus-arvensis-horse-mushroom',
-    image: '/agaricus-arvensis-horse-mushroom.webp',
-    views: 1860,
-  },
-  {
-    title: 'Mushroom Identification Quiz — 50 Questions',
-    slug: '/mushroom-identification-quiz',
-    image: '/mushroom-identification-quiz-various-species.webp',
-    views: 1540,
-  },
+  { title: 'Amanita phalloides (Death Cap): Identification Guide', slug: '/amanita-phalloides-death-cap', image: '/amanita-phalloides-death-cap-identification.webp', views: 0 },
+  { title: 'Death Cap vs Destroying Angel: Key Differences', slug: '/death-cap-vs-destroying-angel', image: '/death-cap-vs-destroying-angel-comparison.webp', views: 0 },
+  { title: 'Amanita bisporigera (Destroying Angel) Guide', slug: '/amanita-bisporigera-destroying-angel', image: '/amanita-bisporigera-destroying-angel-identification.webp', views: 0 },
+  { title: 'Amanita virosa Mushroom: Identification & Safety', slug: '/amanita-virosa-mushroom', image: '/amanita-virosa-mushroom-destroying-angel.webp', views: 0 },
+  { title: 'How to Get Rid of Mushrooms in Grass', slug: '/how-to-get-rid-of-mushrooms-in-grass', image: '/how-to-get-rid-of-mushrooms-in-grass-fairy-ring-lawn.webp', views: 0 },
+  { title: 'Why Are Mushrooms Growing in My Yard?', slug: '/why-are-mushrooms-growing-in-my-yard', image: '/why-are-mushrooms-growing-in-my-yard-fairy-ring-lawn.webp', views: 0 },
+  { title: 'Mushroom Identifier Book: Best Field Guides', slug: '/mushroom-identifier-book', image: '/mushroom-identifier-book-chanterelle-cantharellus-cibarius.webp', views: 0 },
+  { title: 'Mushroom Parts Explained: Cap, Gills, Stem', slug: '/mushroom-parts-explained', image: '/parts-of-mushrooms.webp', views: 0 },
+  { title: 'Horse Mushroom (Agaricus arvensis) Guide', slug: '/agaricus-arvensis-horse-mushroom', image: '/agaricus-arvensis-horse-mushroom.webp', views: 0 },
+  { title: 'Mushroom Identification Quiz — 50 Questions', slug: '/mushroom-identification-quiz', image: '/mushroom-identification-quiz-various-species.webp', views: 0 },
 ]
 
 const RECENT_POSTS = [
@@ -316,30 +266,39 @@ export default function BlogSidebar() {
   const [recent, setRecent] = useState(RECENT_POSTS)
 
   useEffect(() => {
-    fetch('/api/blog/sidebar')
-      .then(r => r.json())
-      .then((data: { popular?: typeof TRENDING_POSTS; recent?: typeof RECENT_POSTS }) => {
-        if (data.popular && data.popular.length > 0) {
-          // Pad with hardcoded if fewer than 10 from Supabase
-          const seen = new Set(data.popular.map(p => p.slug))
-          const padded = [...data.popular]
-          for (const fp of TRENDING_POSTS) {
-            if (padded.length >= 10) break
-            if (!seen.has(fp.slug)) { padded.push(fp); seen.add(fp.slug) }
-          }
-          setPopular(padded.slice(0, 10))
+    // Fetch sidebar posts + real view counts in parallel
+    const allSlugs = TRENDING_POSTS.map(p => p.slug).join(',')
+    Promise.all([
+      fetch('/api/blog/sidebar').then(r => r.json()).catch(() => ({})),
+      fetch(`/api/views?slugs=${encodeURIComponent(allSlugs)}`).then(r => r.json()).catch(() => ({ views: {} })),
+    ]).then(([data, viewsData]) => {
+      const realViews: Record<string, number> = viewsData.views || {}
+
+      // Build popular list: API data first, pad with hardcoded, overlay real views
+      let popularList = TRENDING_POSTS as typeof TRENDING_POSTS
+      if (data.popular && data.popular.length > 0) {
+        const seen = new Set(data.popular.map((p: any) => p.slug))
+        const padded = [...data.popular]
+        for (const fp of TRENDING_POSTS) {
+          if (padded.length >= 10) break
+          if (!seen.has(fp.slug)) { padded.push(fp); seen.add(fp.slug) }
         }
-        if (data.recent && data.recent.length > 0) {
-          const seen = new Set(data.recent.map(p => p.slug))
-          const padded = [...data.recent]
-          for (const fp of RECENT_POSTS) {
-            if (padded.length >= 10) break
-            if (!seen.has(fp.slug)) { padded.push(fp); seen.add(fp.slug) }
-          }
-          setRecent(padded.slice(0, 10))
+        popularList = padded.slice(0, 10)
+      }
+      // Override views with real page_views data
+      setPopular(popularList.map(p => realViews[p.slug] !== undefined ? { ...p, views: realViews[p.slug] } : p))
+
+      // Build recent list
+      if (data.recent && data.recent.length > 0) {
+        const seen = new Set(data.recent.map((p: any) => p.slug))
+        const padded = [...data.recent]
+        for (const fp of RECENT_POSTS) {
+          if (padded.length >= 10) break
+          if (!seen.has(fp.slug)) { padded.push(fp); seen.add(fp.slug) }
         }
-      })
-      .catch(() => {}) // keep hardcoded fallback on error
+        setRecent(padded.slice(0, 10))
+      }
+    })
   }, [])
 
   const filteredTrending = query.trim()
