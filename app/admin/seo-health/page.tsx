@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import {
   ShieldCheck, RefreshCw, AlertTriangle, AlertCircle, Info,
@@ -156,6 +156,28 @@ function ScoreRing({ score, size = 160, stroke = 10 }: { score: number; size?: n
 }
 
 const BATCH_SIZE = 50
+const STORAGE_KEY = 'seo-health-scan'
+
+/* ─────────────── LocalStorage helpers ─────────────── */
+interface StoredScan {
+  allPages: PageResult[]
+  globalChecks: GlobalCheck[]
+  totalUrls: number
+  scannedCount: number
+  scannedAt: string
+}
+
+function saveScan(data: StoredScan) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)) } catch {}
+}
+
+function loadScan(): StoredScan | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as StoredScan
+  } catch { return null }
+}
 
 /* ─────────────── Main Component ─────────────── */
 export default function SeoHealthPage() {
@@ -177,6 +199,18 @@ export default function SeoHealthPage() {
   const [expandedPage, setExpandedPage] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [error, setError] = useState('')
+
+  // Load saved scan on mount
+  useEffect(() => {
+    const saved = loadScan()
+    if (saved && saved.allPages.length > 0) {
+      setAllPages(saved.allPages)
+      setGlobalChecks(saved.globalChecks)
+      setTotalUrls(saved.totalUrls)
+      setScannedCount(saved.scannedCount)
+      setScannedAt(saved.scannedAt)
+    }
+  }, [])
 
   const hasResults = allPages.length > 0
   const hasMore = scannedCount < totalUrls
@@ -205,19 +239,38 @@ export default function SeoHealthPage() {
     if (!res.ok) throw new Error('Scan failed')
     const data = await res.json()
 
+    let newPages: PageResult[]
+    let newGlobal: GlobalCheck[]
+    let newCount: number
+
     if (isFirst) {
-      setAllPages(data.pages)
+      newPages = data.pages
+      newGlobal = data.globalChecks || []
+      newCount = data.pages.length
+      setAllPages(newPages)
       setTotalUrls(data.totalUrls)
-      setScannedCount(data.pages.length)
-      if (data.globalChecks) setGlobalChecks(data.globalChecks)
+      setScannedCount(newCount)
+      setGlobalChecks(newGlobal)
     } else {
-      setAllPages(prev => [...prev, ...data.pages])
-      setScannedCount(prev => prev + data.pages.length)
+      newPages = [...allPages, ...data.pages]
+      newGlobal = globalChecks
+      newCount = scannedCount + data.pages.length
+      setAllPages(newPages)
+      setScannedCount(newCount)
     }
     setScannedAt(data.scannedAt)
 
+    // Persist to localStorage
+    saveScan({
+      allPages: newPages,
+      globalChecks: newGlobal,
+      totalUrls: data.totalUrls,
+      scannedCount: newCount,
+      scannedAt: data.scannedAt,
+    })
+
     return { hasMore: data.hasMore, nextOffset: offset + BATCH_SIZE }
-  }, [])
+  }, [allPages, globalChecks, scannedCount])
 
   /* ── Run first batch (fresh scan) ── */
   const runScan = async () => {
