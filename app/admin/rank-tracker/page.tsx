@@ -168,6 +168,7 @@ export default function RankTrackerPage() {
   const [error, setError] = useState('')
   const [showInput, setShowInput] = useState(false)
   const [checkProgress, setCheckProgress] = useState(0)
+  const [checkingSingle, setCheckingSingle] = useState<number | null>(null)
   const [editingVol, setEditingVol] = useState<number | null>(null)
   const [volInput, setVolInput] = useState('')
 
@@ -245,6 +246,40 @@ export default function RankTrackerPage() {
       setCheckProgress(0)
     }
     clearInterval(progressInterval)
+  }
+
+  const handleRunSingle = async (id: number) => {
+    setCheckingSingle(id)
+    setError('')
+    try {
+      const res = await fetch('/api/admin/rank-tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'check_single', id }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      // Update the keyword in state
+      if (data.result) {
+        setKeywords(prev => prev.map(k => k.id === id ? {
+          ...k,
+          position: data.result.position,
+          prev_position: data.result.prev_position,
+          change: data.result.change,
+          rank_url: data.result.rank_url,
+          checked_at: new Date().toISOString(),
+        } : k))
+      }
+      // Refresh quota
+      try {
+        const qRes = await fetch('/api/admin/rank-tracker')
+        const qData = await qRes.json()
+        if (qData.quota) setQuota(qData.quota)
+      } catch {}
+    } catch (err: any) {
+      setError(err.message)
+    }
+    setCheckingSingle(null)
   }
 
   const handleVolSave = async (id: number) => {
@@ -379,7 +414,7 @@ export default function RankTrackerPage() {
             {keywords[0]?.checked_at ? timeAgo(keywords[0].checked_at) : 'Never'}
           </p>
           <p className="text-xs mt-1" style={{ color: textSecondary }}>
-            {keywords.length > 0 ? `uses ${keywords.length}-${keywords.length * 5} searches` : 'add keywords first'}
+            {keywords.length > 0 ? `uses ${keywords.length}-${keywords.length * 10} searches` : 'add keywords first'}
           </p>
         </div>
       </div>
@@ -491,7 +526,7 @@ export default function RankTrackerPage() {
         <div className="rounded-2xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           {/* Table header */}
           <div className="grid gap-4 px-6 py-3 text-xs font-medium uppercase tracking-wider"
-            style={{ gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 40px', color: textSecondary, borderBottom: `1px solid ${cardBorder}`, background: dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}>
+            style={{ gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 44px 40px', color: textSecondary, borderBottom: `1px solid ${cardBorder}`, background: dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}>
             <div>#</div>
             <div>Keyword</div>
             <div className="text-center">Volume</div>
@@ -502,6 +537,7 @@ export default function RankTrackerPage() {
             <div>Ranking URL</div>
             <div className="text-center">Checked</div>
             <div></div>
+            <div></div>
           </div>
 
           {/* Rows */}
@@ -510,7 +546,7 @@ export default function RankTrackerPage() {
               key={kw.id}
               className="grid gap-4 px-6 py-4 items-center transition-colors group"
               style={{
-                gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 40px',
+                gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 44px 40px',
                 borderBottom: idx < keywords.length - 1 ? `1px solid ${cardBorder}` : 'none',
                 background: 'transparent',
               }}
@@ -586,6 +622,22 @@ export default function RankTrackerPage() {
                 <span className="text-xs" style={{ color: textSecondary }}>
                   {timeAgo(kw.checked_at)}
                 </span>
+              </div>
+
+              {/* Run Single */}
+              <div className="flex justify-center">
+                <button
+                  onClick={() => handleRunSingle(kw.id)}
+                  disabled={checkingSingle === kw.id || checking}
+                  className="p-2 rounded-lg transition-all hover:bg-emerald-500/10 text-emerald-400 disabled:opacity-40"
+                  title="Check this keyword"
+                >
+                  {checkingSingle === kw.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Play className="w-3.5 h-3.5" fill="currentColor" />
+                  )}
+                </button>
               </div>
 
               {/* Delete */}

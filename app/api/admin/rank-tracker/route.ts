@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
 
         // Search up to 5 pages (50 results) to find our domain
         // Each page uses 1 SerpAPI credit, so we stop as soon as we find a match
-        const MAX_PAGES = 5
+        const MAX_PAGES = 10
         for (let page = 0; page < MAX_PAGES; page++) {
           const start = page * 10
           const serpUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(kw.keyword)}&location=United+States&gl=us&hl=en&num=10&start=${start}&api_key=${SERPAPI_KEY}`
@@ -165,6 +165,91 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ results, checked: results.length })
+  }
+
+  // --- Check single keyword ---
+  if (body.action === 'check_single') {
+    if (!SERPAPI_KEY) {
+      return NextResponse.json({ error: 'SERPAPI_KEY not configured' }, { status: 500 })
+    }
+
+    const { id } = body
+    if (!id) return NextResponse.json({ error: 'Missing keyword id' }, { status: 400 })
+
+    const { data: kw, error: kwErr } = await supabase
+      .from('rank_keywords')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (kwErr || !kw) return NextResponse.json({ error: 'Keyword not found' }, { status: 404 })
+
+    try {
+      let position: number | null = null
+      let rankUrl = ''
+
+      const MAX_PAGES = 10
+      for (let page = 0; page < MAX_PAGES; page++) {
+        const start = page * 10
+        const serpUrl = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(kw.keyword)}&location=United+States&gl=us&hl=en&num=10&start=${start}&api_key=${SERPAPI_KEY}`
+        const res = await fetch(serpUrl)
+        const data = await res.json()
+
+        if (data.error) {
+          return NextResponse.json({ error: data.error }, { status: 500 })
+        }
+
+        const organic = data.organic_results || []
+        for (const result of organic) {
+          const link = (result.link || '').toLowerCase()
+          const displayed = (result.displayed_link || '').toLowerCase()
+          if (link.includes(SITE_DOMAIN) || displayed.includes(SITE_DOMAIN)) {
+            position = result.position
+            rankUrl = result.link
+            break
+          }
+        }
+
+        if (page === 0 && !position) {
+          const featured = data.answer_box || data.knowledge_graph
+          if (featured?.link?.toLowerCase().includes(SITE_DOMAIN)) {
+            position = 1
+            rankUrl = featured.link
+          }
+        }
+
+        if (position || organic.length === 0) break
+      }
+
+      const prevPosition = kw.position
+      const change = (prevPosition && position)
+        ? prevPosition - position
+        : null
+
+      await supabase
+        .from('rank_keywords')
+        .update({
+          prev_position: prevPosition,
+          position,
+          rank_url: rankUrl || null,
+          change,
+          checked_at: new Date().toISOString(),
+        })
+        .eq('id', kw.id)
+
+      return NextResponse.json({
+        result: {
+          id: kw.id,
+          keyword: kw.keyword,
+          position,
+          prev_position: prevPosition,
+          change,
+          rank_url: rankUrl,
+        },
+      })
+    } catch (err: any) {
+      return NextResponse.json({ error: err.message }, { status: 500 })
+    }
   }
 
   // --- Debug: test a single keyword and return raw results ---
