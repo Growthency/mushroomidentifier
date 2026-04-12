@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent theme flash: hide body until ThemeProvider sets the correct theme */
+body:not(.theme-ready) {
+  opacity: 0 !important;
+}
+body.theme-ready {
+  opacity: 1;
+  transition: opacity 0.05s ease;
+}
+
 :root, [data-theme="dark"] {
   --body-bg: linear-gradient(145deg, #0b1912 0%, #0d1623 43%, #190e28 73%, #0b1912 100%);
   --bg-primary: rgba(11, 25, 18, 0.88);

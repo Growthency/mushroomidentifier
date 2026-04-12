@@ -18,12 +18,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
     const saved = localStorage.getItem('mi-theme') as Theme | null
     if (saved) setTheme(saved)
-    // Add class after mount so body transition only fires on user toggle, not initial load
+    setMounted(true)
+    // Double rAF ensures React has flushed the theme state to DOM before revealing
     requestAnimationFrame(() => {
-      document.body.classList.add('theme-ready')
+      requestAnimationFrame(() => {
+        document.body.classList.add('theme-ready')
+      })
     })
   }, [])
 
