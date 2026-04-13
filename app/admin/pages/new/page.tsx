@@ -110,7 +110,6 @@ export default function NewPageEditor() {
         body: JSON.stringify({
           title: title.trim(),
           slug: slug.trim(),
-          excerpt: excerpt.trim(),
           content: contentRef.current || content,
           featured_image: featuredImage.trim(),
           category,
@@ -263,19 +262,6 @@ export default function NewPageEditor() {
                 <img src={featuredImage} alt="Preview" className="w-full h-48 object-cover" />
               </div>
             )}
-          </div>
-
-          {/* Excerpt */}
-          <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
-            <label className="block text-xs font-medium mb-2" style={{ color: textLabel }}>Excerpt</label>
-            <textarea
-              value={excerpt}
-              onChange={e => setExcerpt(e.target.value)}
-              placeholder="Short description for search results and previews…"
-              rows={3}
-              className="w-full px-4 py-3 rounded-lg text-sm outline-none resize-none"
-              style={{ background: inputBg, border: `1px solid ${inputBorder}`, color: textPrimary }}
-            />
           </div>
 
           {/* Rich Content Editor */}

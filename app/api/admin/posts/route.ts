@@ -51,6 +51,14 @@ export async function GET(req: NextRequest) {
   })
 }
 
+// Auto-generate excerpt from HTML content (strip tags, first ~160 chars)
+function autoExcerpt(html: string): string {
+  if (!html) return ''
+  const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+  if (text.length <= 160) return text
+  return text.slice(0, 157).replace(/\s+\S*$/, '') + '...'
+}
+
 // POST — create new post
 export async function POST(req: NextRequest) {
   const admin = await getAdmin()
@@ -72,7 +80,7 @@ export async function POST(req: NextRequest) {
     .insert({
       title,
       slug: slug.startsWith('/') ? slug : `/${slug}`,
-      excerpt: excerpt || '',
+      excerpt: autoExcerpt(content || ''),
       content: content || '',
       featured_image: featured_image || '',
       category: category || 'Species Guide',
@@ -106,6 +114,11 @@ export async function PATCH(req: NextRequest) {
   const { id, ...updates } = body
 
   if (!id) return NextResponse.json({ error: 'Post ID required' }, { status: 400 })
+
+  // Auto-generate excerpt from content
+  if (updates.content) {
+    updates.excerpt = autoExcerpt(updates.content)
+  }
 
   // If publishing for first time, set published_at
   if (updates.status === 'published') {
