@@ -319,7 +319,7 @@ export default function Home() {
                   learning and research aid, not as a final identification
                   authority. Some poisonous mushrooms closely resemble edible
                   ones. For example,{" "}
-                  <strong>Amanita phalloides (death cap)</strong> — one of the
+                  <Link href="/amanita-phalloides-death-cap" style={{ color: "var(--accent)" }} className="hover:underline"><strong>Amanita phalloides (death cap)</strong></Link> — one of the
                   most toxic mushrooms in the world — can look similar to edible
                   species when young.
                 </p>
@@ -693,7 +693,7 @@ export default function Home() {
               }}
             >
               <h3 className="font-semibold mb-2 text-red-500">
-                Amanita phalloides (death cap)
+                <Link href="/amanita-phalloides-death-cap" className="hover:underline">Amanita phalloides (death cap)</Link>
               </h3>
               <p className="text-sm" style={{ color: "var(--text-primary)" }}>
                 Responsible for many fatal mushroom poisonings worldwide
@@ -714,6 +714,20 @@ export default function Home() {
               </p>
             </div>
           </div>
+          <p
+            className="text-base sm:text-lg leading-relaxed mb-4"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Other highly dangerous species include{" "}
+            <Link href="/amanita-virosa-mushroom" style={{ color: "var(--accent)" }} className="hover:underline">Amanita virosa (destroying angel)</Link>,{" "}
+            <Link href="/amanita-ocreata" style={{ color: "var(--accent)" }} className="hover:underline">Amanita ocreata (western destroying angel)</Link>,{" "}
+            <Link href="/cortinarius-rubellus" style={{ color: "var(--accent)" }} className="hover:underline">Cortinarius rubellus (deadly webcap)</Link>,{" "}
+            <Link href="/galerina-marginata" style={{ color: "var(--accent)" }} className="hover:underline">Galerina marginata (funeral bell)</Link>, and{" "}
+            <Link href="/lepiota-brunneoincarnata" style={{ color: "var(--accent)" }} className="hover:underline">Lepiota brunneoincarnata (deadly dapperling)</Link>.
+            Toxic mushrooms in the Amanita genus, such as{" "}
+            <Link href="/amanita-muscaria" style={{ color: "var(--accent)" }} className="hover:underline">Amanita muscaria (fly agaric)</Link> and{" "}
+            <Link href="/amanita-pantherina" style={{ color: "var(--accent)" }} className="hover:underline">Amanita pantherina (panther cap)</Link>, can also cause severe poisoning.
+          </p>
           <p
             className="text-base sm:text-lg leading-relaxed"
             style={{ color: "var(--text-muted)" }}
@@ -1090,6 +1104,17 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          <p
+            className="text-center text-base sm:text-lg leading-relaxed mt-8 max-w-3xl mx-auto"
+            style={{ color: "var(--text-muted)" }}
+          >
+            In lawns and grassy areas, common species include{" "}
+            <Link href="/chlorophyllum-molybdites" style={{ color: "var(--accent)" }} className="hover:underline">Chlorophyllum molybdites</Link>, one of the most frequently misidentified poisonous mushrooms in North America, and the edible{" "}
+            <Link href="/agaricus-campestris" style={{ color: "var(--accent)" }} className="hover:underline">Agaricus campestris (field mushroom)</Link>.
+            If you find unexpected fungi in your yard, our guide explains{" "}
+            <Link href="/why-are-mushrooms-growing-in-my-yard" style={{ color: "var(--accent)" }} className="hover:underline">why mushrooms grow in your yard</Link> and how to identify them safely.
+          </p>
         </div>
       </section>
 
@@ -1109,7 +1134,9 @@ export default function Home() {
             <p>
               Yes. Many distinctive fungi grow on logs, tree trunks, and woody
               debris, and the mushroom identifier can often recognize these
-              species when clear images are provided.
+              species when clear images are provided. Wood-growing species like{" "}
+              <Link href="/hypholoma-fasciculare" style={{ color: "var(--accent)" }} className="hover:underline">Hypholoma fasciculare (sulfur tuft)</Link> form dense clusters on stumps, while{" "}
+              <Link href="/pleurotus-ostreatus" style={{ color: "var(--accent)" }} className="hover:underline">oyster mushrooms</Link> colonize hardwood logs.
             </p>
             <p>
               However, the AI needs to see how the mushroom attaches to the
@@ -1406,6 +1433,12 @@ export default function Home() {
             className="text-base sm:text-lg leading-relaxed text-center"
             style={{ color: "var(--text-muted)" }}
           >
+            <p className="mb-4">
+              For example, the edible{" "}
+              <Link href="/agaricus-arvensis-horse-mushroom" style={{ color: "var(--accent)" }} className="hover:underline">Agaricus arvensis (horse mushroom)</Link>{" "}
+              can be confused with the toxic{" "}
+              <Link href="/agaricus-xanthodermus" style={{ color: "var(--accent)" }} className="hover:underline">Agaricus xanthodermus (yellow stainer)</Link>, which causes gastrointestinal distress.
+            </p>
             <p>
               Remember that even experienced foragers often verify their
               findings with multiple references or expert advice.
@@ -1597,6 +1630,15 @@ export default function Home() {
               </tbody>
             </table>
           </div>
+
+          <p
+            className="text-base sm:text-lg leading-relaxed mt-6 text-center"
+            style={{ color: "var(--text-muted)" }}
+          >
+            When identifying boletes, note that most are safe but some can cause illness. Learn whether{" "}
+            <Link href="/are-there-any-deadly-leccinum-mushrooms" style={{ color: "var(--accent)" }} className="hover:underline">any Leccinum mushrooms are deadly</Link> and how to distinguish edible species like{" "}
+            <Link href="/boletus-edulis" style={{ color: "var(--accent)" }} className="hover:underline">Boletus edulis (king bolete)</Link> from bitter lookalikes.
+          </p>
         </div>
       </section>
 
@@ -2147,7 +2189,7 @@ export default function Home() {
                 className="text-sm mb-4"
                 style={{ color: "var(--text-muted)" }}
               >
-                (Cantharellus cibarius vs Hygrophoropsis aurantiaca)
+                (<Link href="/cantharellus-cibarius" style={{ color: "var(--accent)" }} className="hover:underline">Cantharellus cibarius</Link> vs Hygrophoropsis aurantiaca)
               </p>
               <p
                 className="text-base leading-relaxed mb-6"
@@ -2264,6 +2306,10 @@ export default function Home() {
                   and substrate (soil vs wood) for accurate differentiation.
                 </p>
               </div>
+              <p className="text-sm mt-3" style={{ color: "var(--text-muted)" }}>
+                Another dangerous chanterelle look-alike is{" "}
+                <Link href="/omphalotus-illudens" style={{ color: "var(--accent)" }} className="hover:underline">Omphalotus illudens (Jack O&apos;Lantern)</Link>, which grows in clusters on wood and has true gills instead of ridges.
+              </p>
             </div>
 
             <div
@@ -2304,7 +2350,7 @@ export default function Home() {
                 className="text-sm mb-4"
                 style={{ color: "var(--text-muted)" }}
               >
-                (Pleurotus ostreatus vs Pleurocybella porrigens)
+                (<Link href="/pleurotus-ostreatus" style={{ color: "var(--accent)" }} className="hover:underline">Pleurotus ostreatus</Link> vs Pleurocybella porrigens)
               </p>
               <p
                 className="text-base leading-relaxed mb-6"
@@ -2463,7 +2509,7 @@ export default function Home() {
                 className="text-sm mb-4"
                 style={{ color: "var(--text-muted)" }}
               >
-                (Morchella esculenta vs Gyromitra esculenta)
+                (<Link href="/morchella-esculenta" style={{ color: "var(--accent)" }} className="hover:underline">Morchella esculenta</Link> vs <Link href="/gyromitra-esculenta" style={{ color: "var(--accent)" }} className="hover:underline">Gyromitra esculenta</Link>)
               </p>
               <p
                 className="text-base leading-relaxed mb-6"
@@ -2727,6 +2773,9 @@ export default function Home() {
                   growth pattern, and base features to avoid misidentification.
                 </p>
               </div>
+              <p className="text-sm mt-3" style={{ color: "var(--text-muted)" }}>
+                <Link href="/scleroderma-citrinum" style={{ color: "var(--accent)" }} className="hover:underline">Scleroderma citrinum (common earthball)</Link> is another round fungus sometimes confused with puffballs, but it has a tough, dark interior unlike true puffballs.
+              </p>
             </div>
           </div>
 
@@ -2769,7 +2818,7 @@ export default function Home() {
                 className="text-sm mb-4"
                 style={{ color: "var(--text-muted)" }}
               >
-                (Boletus edulis vs Tylopilus felleus)
+                (<Link href="/boletus-edulis" style={{ color: "var(--accent)" }} className="hover:underline">Boletus edulis</Link> vs Tylopilus felleus)
               </p>
               <p
                 className="text-base leading-relaxed mb-6"
