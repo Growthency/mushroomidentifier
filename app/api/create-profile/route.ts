@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { validateEmailQuality } from '@/lib/email-validation'
+import { getClientIp, resolveCountry } from '@/lib/geo'
 
 // Service role — bypasses RLS, only used server-side
 const adminSupabase = createClient(
@@ -22,23 +23,6 @@ function genCode(uid: string) {
     h = Math.floor(h / chars.length) || (h * 31 + i)
   }
   return code
-}
-
-function getClientIp(request: NextRequest): string | null {
-  const forwarded = request.headers.get('x-forwarded-for')
-  if (forwarded) return forwarded.split(',')[0].trim()
-  return request.headers.get('x-real-ip') || null
-}
-
-async function getCountryFromIp(ip: string): Promise<string | null> {
-  try {
-    const res = await fetch(`https://ipapi.co/${ip}/json/`, { signal: AbortSignal.timeout(3000) })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data.country_name || null
-  } catch {
-    return null
-  }
 }
 
 export async function POST(request: NextRequest) {
@@ -91,7 +75,7 @@ export async function POST(request: NextRequest) {
       total_identifications: 0,
       referral_code:        myCode,
       signup_ip:            clientIp,
-      country:              country || (clientIp ? await getCountryFromIp(clientIp) : null),
+      country:              country || (await resolveCountry(request)),
     })
 
     if (insertErr) throw insertErr
