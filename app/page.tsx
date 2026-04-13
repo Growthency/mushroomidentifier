@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import HeroH1 from "./HeroH1";
+import IdentifyBanner from "@/components/blog/IdentifyBanner";
 
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
 const HomeIdentifier = dynamic(() => import("./HomeIdentifier"), {
@@ -290,8 +291,26 @@ export default function Home() {
               reference books.
             </p>
           </div>
+
+          {/* Visual break — forest floor mushrooms */}
+          <div className="relative rounded-2xl overflow-hidden mb-4" style={{ border: '1px solid var(--border)' }}>
+            <NextImage
+              src="/wild-mushrooms-forest-floor.webp"
+              alt="Free mushroom identification app - wild mushrooms growing naturally on forest floor"
+              width={1200}
+              height={500}
+              loading="lazy"
+              className="w-full h-auto"
+              style={{ display: 'block', maxHeight: '400px', objectFit: 'cover' }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+              <p className="text-xs text-white/70 m-0">Photo by Jesse Bauer · Unsplash</p>
+            </div>
+          </div>
         </div>
       </section>
+
+      <IdentifyBanner />
 
       <section
         className="py-10 sm:py-14 px-6"
@@ -540,6 +559,28 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Visual break — person foraging mushrooms */}
+      <section className="py-8 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+            <NextImage
+              src="/person-foraging-mushroom-nature.webp"
+              alt="Mushroom identification app in action - forager photographing wild mushrooms in autumn forest"
+              width={1200}
+              height={500}
+              loading="lazy"
+              className="w-full h-auto"
+              style={{ display: 'block', maxHeight: '420px', objectFit: 'cover' }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+              <p className="text-xs text-white/70 m-0">Photo by drB drB · Pexels</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <IdentifyBanner />
+
       <section
         className="py-10 sm:py-14 px-6"
         style={{ background: "var(--bg-secondary)" }}
@@ -661,6 +702,26 @@ export default function Home() {
             distinguish closely related fungi and identify potential look-alike
             species, which are common in the fungal world.
           </p>
+        </div>
+      </section>
+
+      {/* Visual break — mushroom gills close-up */}
+      <section className="py-8 px-6" style={{ background: "var(--bg-secondary)" }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+            <NextImage
+              src="/mushroom-gills-closeup-macro.webp"
+              alt="Mushroom identification app - close-up macro view of mushroom gill structure for species identification"
+              width={1200}
+              height={500}
+              loading="lazy"
+              className="w-full h-auto"
+              style={{ display: 'block', maxHeight: '380px', objectFit: 'cover' }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+              <p className="text-xs text-white/70 m-0">Photo by Oliver Stoer · Unsplash</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1013,6 +1074,28 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Visual break — mushroom cluster on wood */}
+      <section className="py-8 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+            <NextImage
+              src="/mushroom-cluster-growing-on-wood.webp"
+              alt="Mushroom identification app - cluster of white mushrooms growing on fallen wood log"
+              width={1200}
+              height={500}
+              loading="lazy"
+              className="w-full h-auto"
+              style={{ display: 'block', maxHeight: '400px', objectFit: 'cover' }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+              <p className="text-xs text-white/70 m-0">Photo by Tarikul Raana · Pexels</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <IdentifyBanner />
 
       <section
         className="py-10 sm:py-14 px-6"
@@ -1447,6 +1530,28 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Visual break — colorful mushrooms */}
+      <section className="py-8 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+            <NextImage
+              src="/colorful-wild-mushrooms-nature.webp"
+              alt="Mushroom identification app - colorful wild mushrooms in natural forest habitat"
+              width={1200}
+              height={500}
+              loading="lazy"
+              className="w-full h-auto"
+              style={{ display: 'block', maxHeight: '420px', objectFit: 'cover' }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+              <p className="text-xs text-white/70 m-0">Photo by Greyerbaby · Pixabay</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <IdentifyBanner />
+
       <section
         className="py-10 sm:py-14 px-6"
         style={{ background: "var(--bg-secondary)" }}
@@ -1639,6 +1744,26 @@ export default function Home() {
             <Link href="/are-there-any-deadly-leccinum-mushrooms" style={{ color: "var(--accent)" }} className="hover:underline">any Leccinum mushrooms are deadly</Link> and how to distinguish edible species like{" "}
             <Link href="/boletus-edulis" style={{ color: "var(--accent)" }} className="hover:underline">Boletus edulis (king bolete)</Link> from bitter lookalikes.
           </p>
+        </div>
+      </section>
+
+      {/* Visual break — wild mushroom basket */}
+      <section className="py-8 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+            <NextImage
+              src="/wild-mushroom-basket-foraging.webp"
+              alt="Mushroom identification app - freshly foraged wild mushrooms in a rustic basket"
+              width={1200}
+              height={500}
+              loading="lazy"
+              className="w-full h-auto"
+              style={{ display: 'block', maxHeight: '400px', objectFit: 'cover' }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+              <p className="text-xs text-white/70 m-0">Photo by Irina Novikova · Pexels</p>
+            </div>
+          </div>
         </div>
       </section>
 
