@@ -310,8 +310,6 @@ export default function Home() {
         </div>
       </section>
 
-      <IdentifyBanner />
-
       <section
         className="py-10 sm:py-14 px-6"
         style={{ background: "var(--bg-primary)" }}
@@ -444,6 +442,8 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      <IdentifyBanner />
 
       <section id="how-it-works" className="py-12 sm:py-16 px-6">
         <div className="max-w-6xl mx-auto">
@@ -579,8 +579,6 @@ export default function Home() {
         </div>
       </section>
 
-      <IdentifyBanner />
-
       <section
         className="py-10 sm:py-14 px-6"
         style={{ background: "var(--bg-secondary)" }}
@@ -651,6 +649,8 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      <IdentifyBanner />
 
       <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
@@ -1095,8 +1095,6 @@ export default function Home() {
         </div>
       </section>
 
-      <IdentifyBanner />
-
       <section
         className="py-10 sm:py-14 px-6"
         style={{ background: "var(--bg-secondary)" }}
@@ -1277,6 +1275,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <IdentifyBanner />
 
       <section
         className="py-10 sm:py-14 px-6"
@@ -1550,8 +1550,6 @@ export default function Home() {
         </div>
       </section>
 
-      <IdentifyBanner />
-
       <section
         className="py-10 sm:py-14 px-6"
         style={{ background: "var(--bg-secondary)" }}
@@ -1628,6 +1626,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <IdentifyBanner />
 
       <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
