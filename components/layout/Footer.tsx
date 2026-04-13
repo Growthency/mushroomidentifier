@@ -96,6 +96,53 @@ function PaymentBadge({
 
 export default function Footer() {
   return (
+    <>
+      {/* Sitewide CTA — appears above footer on every page */}
+      <section
+        className="py-12 sm:py-16 px-6 relative overflow-hidden"
+        style={{ background: "var(--bg-primary)" }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center opacity-20">
+          <div
+            className="w-96 h-96 rounded-full blur-3xl"
+            style={{
+              background:
+                "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
+            }}
+          />
+        </div>
+        <div className="relative z-10 max-w-3xl mx-auto text-center">
+          <h2
+            className="font-playfair text-4xl md:text-5xl font-bold mb-6"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Start Identifying Safely Today
+          </h2>
+          <p className="text-lg mb-8" style={{ color: "var(--text-muted)" }}>
+            Join thousands of foragers using AI-powered identification
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/#identifier"
+              className="px-8 py-4 rounded-full text-lg font-semibold glow-green hover:opacity-90 transition-opacity"
+              style={{ background: "var(--btn-primary)", color: "#fff" }}
+            >
+              Try Free — No Signup →
+            </Link>
+            <Link
+              href="/pricing"
+              className="px-8 py-4 rounded-full text-lg font-semibold hover:opacity-70 transition-opacity"
+              style={{
+                border: "1px solid var(--border)",
+                color: "var(--text-primary)",
+              }}
+            >
+              View Pricing
+            </Link>
+          </div>
+        </div>
+      </section>
+
     <footer
       style={{
         borderTop: "1px solid var(--border)",
@@ -422,5 +469,6 @@ export default function Footer() {
         </p>
       </div>
     </footer>
+    </>
   );
 }

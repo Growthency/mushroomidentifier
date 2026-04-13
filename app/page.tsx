@@ -292,8 +292,8 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Visual break — forest floor mushrooms */}
-          <div className="relative rounded-2xl overflow-hidden mb-4" style={{ border: '1px solid var(--border)' }}>
+              {/* Visual break — forest floor mushrooms */}
+          <div className="relative rounded-2xl overflow-hidden mt-8" style={{ border: '1px solid var(--border)' }}>
             <NextImage
               src="/wild-mushrooms-forest-floor.webp"
               alt="Free mushroom identification app - wild mushrooms growing naturally on forest floor"
@@ -560,7 +560,7 @@ export default function Home() {
       </section>
 
       {/* Visual break — person foraging mushrooms */}
-      <section className="py-8 px-6">
+      <section className="py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
@@ -706,7 +706,7 @@ export default function Home() {
       </section>
 
       {/* Visual break — mushroom gills close-up */}
-      <section className="py-8 px-6" style={{ background: "var(--bg-secondary)" }}>
+      <section className="py-4 px-6" style={{ background: "var(--bg-secondary)" }}>
         <div className="max-w-4xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
@@ -1076,7 +1076,7 @@ export default function Home() {
       </section>
 
       {/* Visual break — mushroom cluster on wood */}
-      <section className="py-8 px-6">
+      <section className="py-4 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
@@ -1531,7 +1531,7 @@ export default function Home() {
       </section>
 
       {/* Visual break — colorful mushrooms */}
-      <section className="py-8 px-6">
+      <section className="py-4 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
@@ -1748,7 +1748,7 @@ export default function Home() {
       </section>
 
       {/* Visual break — wild mushroom basket */}
-      <section className="py-8 px-6">
+      <section className="py-4 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
@@ -3355,51 +3355,6 @@ export default function Home() {
       </section>
 
       <HomeReviews />
-
-      <section
-        className="py-12 sm:py-16 px-6 relative overflow-hidden"
-        style={{ background: "var(--bg-primary)" }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center opacity-20">
-          <div
-            className="w-96 h-96 rounded-full blur-3xl"
-            style={{
-              background:
-                "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
-            }}
-          />
-        </div>
-        <div className="relative z-10 max-w-3xl mx-auto text-center">
-          <h2
-            className="font-playfair text-4xl md:text-5xl font-bold mb-6"
-            style={{ color: "var(--text-primary)" }}
-          >
-            Start Identifying Safely Today
-          </h2>
-          <p className="text-lg mb-8" style={{ color: "var(--text-muted)" }}>
-            Join thousands of foragers using AI-powered identification
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="#identifier"
-              className="px-8 py-4 rounded-full text-lg font-semibold glow-green hover:opacity-90 transition-opacity"
-              style={{ background: "var(--btn-primary)", color: "#fff" }}
-            >
-              Try Free — No Signup →
-            </a>
-            <Link
-              href="/pricing"
-              className="px-8 py-4 rounded-full text-lg font-semibold hover:opacity-70 transition-opacity"
-              style={{
-                border: "1px solid var(--border)",
-                color: "var(--text-primary)",
-              }}
-            >
-              View Pricing
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

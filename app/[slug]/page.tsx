@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
+import { ArrowRight } from 'lucide-react'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
@@ -41,6 +42,35 @@ async function getPost(slug: string) {
     .eq('status', 'published')
     .single()
   return data
+}
+
+/* ── Fetch related posts (same category preferred, else random published) ── */
+async function getRelatedPosts(currentSlug: string, category?: string) {
+  const supabase = getSupabase()
+  const fullSlug = currentSlug.startsWith('/') ? currentSlug : `/${currentSlug}`
+
+  // Try same category first
+  if (category) {
+    const { data } = await supabase
+      .from('blog_posts')
+      .select('slug, title, excerpt, featured_image, category, risk_level')
+      .eq('status', 'published')
+      .eq('category', category)
+      .neq('slug', fullSlug)
+      .order('published_at', { ascending: false })
+      .limit(3)
+    if (data && data.length >= 2) return data
+  }
+
+  // Fallback: any published posts
+  const { data } = await supabase
+    .from('blog_posts')
+    .select('slug, title, excerpt, featured_image, category, risk_level')
+    .eq('status', 'published')
+    .neq('slug', fullSlug)
+    .order('published_at', { ascending: false })
+    .limit(3)
+  return data || []
 }
 
 /* ── Dynamic metadata for SEO ── */
@@ -90,6 +120,8 @@ export default async function DynamicPostPage({
   const { slug } = await params
   const post = await getPost(slug)
   if (!post) notFound()
+
+  const relatedPosts = await getRelatedPosts(slug, post.category)
 
   const publishedDate = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-US', {
@@ -320,6 +352,99 @@ export default async function DynamicPostPage({
 
               <ViewTracker slug={post.slug} />
               <BlogComments slug={post.slug} />
+
+              {/* Related Articles */}
+              {relatedPosts.length > 0 && (
+                <div className="mt-16 pt-12 not-prose" style={{ borderTop: '2px solid var(--border)' }}>
+                  <div className="flex items-center gap-3 mb-8">
+                    <div
+                      className="w-1 h-8 rounded-full flex-shrink-0"
+                      style={{ background: 'var(--accent)' }}
+                    />
+                    <div
+                      className="font-playfair font-bold"
+                      style={{ color: 'var(--text-primary)', fontSize: 'clamp(1.5rem, 3vw, 1.875rem)' }}
+                    >
+                      Related Articles
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {relatedPosts.map((article: any) => {
+                      const riskColor = article.risk_level === 'Deadly' || article.risk_level === 'Toxic'
+                        ? '#ef4444'
+                        : article.risk_level === 'High Risk'
+                        ? '#f97316'
+                        : '#7ec88a'
+                      return (
+                        <Link
+                          key={article.slug}
+                          href={article.slug}
+                          className="group rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
+                          style={{
+                            background: 'var(--bg-card)',
+                            border: '1px solid var(--border)',
+                            textDecoration: 'none',
+                            boxShadow: '0 2px 12px var(--shadow)',
+                          }}
+                        >
+                          <div
+                            className="relative flex-shrink-0 overflow-hidden"
+                            style={{ height: '180px', background: 'var(--bg-secondary)' }}
+                          >
+                            {article.featured_image && (
+                              <img
+                                src={article.featured_image}
+                                alt={article.title}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              />
+                            )}
+                            {article.risk_level && article.risk_level !== 'General' && (
+                              <span
+                                className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold text-white"
+                                style={{ background: riskColor }}
+                              >
+                                {article.risk_level}
+                              </span>
+                            )}
+                            {article.category && (
+                              <span
+                                className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold"
+                                style={{ background: 'rgba(0,0,0,0.55)', color: '#fff', backdropFilter: 'blur(4px)' }}
+                              >
+                                {article.category}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="p-4 flex flex-col flex-1">
+                            <div
+                              className="font-playfair text-base font-bold mb-2 leading-snug line-clamp-2"
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              {article.title}
+                            </div>
+                            {article.excerpt && (
+                              <p
+                                className="text-xs leading-relaxed flex-1 line-clamp-2 mb-3"
+                                style={{ color: 'var(--text-muted)' }}
+                              >
+                                {article.excerpt}
+                              </p>
+                            )}
+                            <div
+                              className="flex items-center gap-1 text-xs font-semibold mt-auto transition-gap group-hover:gap-2"
+                              style={{ color: 'var(--accent)' }}
+                            >
+                              Read Article <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                            </div>
+                          </div>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
             </article>
 
             {/* Sidebar — hidden for full-page layout */}

@@ -10,7 +10,7 @@ export default function IdentifyBanner() {
   return (
     <Link
       href="/#identifier"
-      className="identify-banner group block my-10 rounded-2xl overflow-hidden relative"
+      className="identify-banner group block my-6 rounded-2xl overflow-hidden relative"
       style={{
         maxWidth: '420px',
         marginLeft: 'auto',
