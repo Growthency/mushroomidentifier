@@ -250,6 +250,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Save indexnow_requested_at for each URL in batch
+    const anyOk = results.some(r => r.ok)
+    if (anyOk) {
+      const now = new Date().toISOString()
+      for (const url of batch) {
+        await admin.from('indexing_cache').upsert(
+          { url, indexnow_requested_at: now },
+          { onConflict: 'url' }
+        )
+      }
+    }
+
     return NextResponse.json({
       success: true,
       submitted: batch.length,

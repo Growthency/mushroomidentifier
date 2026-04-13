@@ -5,7 +5,7 @@ import {
   Globe, CheckCircle2, XCircle, AlertTriangle, Search, RefreshCw,
   Loader2, ChevronLeft, ChevronRight, Send, ExternalLink, Clock,
   FileSearch, ArrowUpRight, Sparkles, Shield, Zap, Radio, Rss,
-  ChevronDown, ChevronUp,
+  ChevronDown, ChevronUp, Copy, Check,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
@@ -19,6 +19,7 @@ interface CacheRow {
   robots_txt_state: string | null
   checked_at: string | null
   index_requested_at: string | null
+  indexnow_requested_at: string | null
 }
 
 const PER_PAGE = 100
@@ -195,6 +196,7 @@ export default function IndexingReportPage() {
   const [lastScan, setLastScan] = useState<string | null>(null)
   const [scanError, setScanError] = useState('')
   const [toast, setToast] = useState('')
+  const [copied, setCopied] = useState(false)
 
   // New feature states
   const [indexNowLoading, setIndexNowLoading] = useState(false)
@@ -220,6 +222,18 @@ export default function IndexingReportPage() {
   const showToast = (msg: string) => {
     setToast(msg)
     setTimeout(() => setToast(''), 3000)
+  }
+
+  // ─── Copy not-indexed URLs to clipboard ─────────────────────────────────────
+  const copyNotIndexedUrls = async () => {
+    const urls = results
+      .filter(r => r.status !== 'indexed')
+      .map(r => r.url)
+      .join('\n')
+    await navigator.clipboard.writeText(urls)
+    setCopied(true)
+    showToast(`${results.filter(r => r.status !== 'indexed').length} URLs copied to clipboard`)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   // ─── Scan all URLs ─────────────────────────────────────────────────────────
@@ -368,6 +382,7 @@ export default function IndexingReportPage() {
       const data = await res.json()
       const allOk = data.engines?.every((e: any) => e.ok)
       showToast(allOk ? `IndexNow sent: ${extractPath(url)}` : `IndexNow partial: check results`)
+      await fetchResults()
     } catch {
       showToast('IndexNow failed')
     }
@@ -890,6 +905,14 @@ export default function IndexingReportPage() {
                     style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>
                     {notIndexed.length}
                   </span>
+                  <button onClick={copyNotIndexedUrls} title="Copy all not-indexed URLs"
+                    className="ml-1 p-1.5 rounded-lg transition-all hover:brightness-110"
+                    style={{ background: copied ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.08)' }}>
+                    {copied
+                      ? <Check className="w-3.5 h-3.5" style={{ color: '#10b981' }} />
+                      : <Copy className="w-3.5 h-3.5" style={{ color: '#ef4444' }} />
+                    }
+                  </button>
                 </div>
               </div>
 
@@ -925,7 +948,13 @@ export default function IndexingReportPage() {
                             {row.index_requested_at && (
                               <p className="text-[9px] mt-0.5 flex items-center gap-1" style={{ color: '#10b981' }}>
                                 <Send className="w-2.5 h-2.5" />
-                                Requested {timeAgo(row.index_requested_at)}
+                                Google {timeAgo(row.index_requested_at)}
+                              </p>
+                            )}
+                            {row.indexnow_requested_at && (
+                              <p className="text-[9px] mt-0.5 flex items-center gap-1" style={{ color: '#3b82f6' }}>
+                                <Zap className="w-2.5 h-2.5" />
+                                IndexNow {timeAgo(row.indexnow_requested_at)}
                               </p>
                             )}
                           </td>
