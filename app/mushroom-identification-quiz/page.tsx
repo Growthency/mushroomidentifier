@@ -9,9 +9,9 @@ import ViewTracker from '@/components/blog/ViewTracker'
 import QuizClient from './QuizClient'
 
 export const metadata: Metadata = {
-  title: 'Mushroom Identification Quiz — Test Your Fungi Knowledge | Mushroom Identifier',
+  title: 'Mushroom Identification Quiz — 50 Expert Questions',
   description:
-    'Take our free mushroom identification quiz with 50 expert questions. Test your knowledge of toxic, edible, and look-alike mushroom species. 30-second timer per question!',
+    'Take our free mushroom identification quiz with 50 expert questions. Test your knowledge of toxic vs edible species and look-alike dangers. 30-second timer!',
 }
 
 export default function MushroomQuizPage() {

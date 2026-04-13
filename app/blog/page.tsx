@@ -7,12 +7,12 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export const metadata: Metadata = {
-  title: 'Mushroom Identification Blog – Guides, Safety Tips & Foraging Insights',
+  title: 'Mushroom Blog – ID Guides, Safety & Foraging Tips',
   description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
   alternates: { canonical: 'https://mushroomidentifiers.com/blog' },
   openGraph: {
     type: 'website',
-    title: 'Mushroom Identification Blog – Guides, Safety Tips & Foraging Insights',
+    title: 'Mushroom Blog – ID Guides, Safety & Foraging Tips',
     description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
     url: 'https://mushroomidentifiers.com/blog',
     images: [{ url: 'https://mushroomidentifiers.com/mushroom-fungi-identifier.webp', width: 1200, height: 630 }],

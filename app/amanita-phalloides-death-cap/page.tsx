@@ -11,13 +11,13 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Amanita phalloides (death cap identification) - Mushroom Identifier',
+  title: 'Amanita phalloides: Death Cap Identification Guide',
   description:
     'Amanita bisporigera, commonly known as the Destroying Angel, is one of the most dangerous toxic mushrooms in North America.',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-phalloides-death-cap' },
   openGraph: {
     type: 'article',
-    title: 'Amanita phalloides (death cap identification) - Mushroom Identifier',
+    title: 'Amanita phalloides: Death Cap Identification Guide',
     description: 'Amanita bisporigera, commonly known as the Destroying Angel, is one of the most dangerous toxic mushrooms in North America.',
     url: 'https://mushroomidentifiers.com/amanita-phalloides-death-cap',
     images: [{ url: 'https://mushroomidentifiers.com/amanita-phalloides-death-cap-identification.webp', width: 1200, height: 630 }],
@@ -367,7 +367,7 @@ export default function DeathCapPage() {
                 { title: 'Taste', items: ['Not distinctive', '⚠️ Tasting is dangerous — not recommended'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul className="space-y-1">
                     {items.map(item => (
                       <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -385,14 +385,14 @@ export default function DeathCapPage() {
             <H2 id="growth-pattern">Growth Pattern and Seasonality</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h3>
                 <ul>
                   <li>Typically grows single or scattered</li>
                   <li>Occasionally in small groups</li>
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Seasonality</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Seasonality</h3>
                 <ul>
                   <li>Late summer to autumn</li>
                   <li>Appears after rain</li>
@@ -413,7 +413,7 @@ export default function DeathCapPage() {
                 { title: 'Tree Association', items: ['Oak', 'Beech', 'Birch', 'Chestnut'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul>
                     {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                   </ul>
@@ -556,7 +556,7 @@ export default function DeathCapPage() {
             <H2>Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                 <ul className="space-y-2">
                   {['Scientifically valuable', 'Important for ecosystem balance', 'Educational importance in mycology'].map(p => (
                     <li key={p} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -566,7 +566,7 @@ export default function DeathCapPage() {
                 </ul>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                 <ul className="space-y-2">
                   {['Highly toxic — potentially fatal', 'Easy to misidentify with edible species', 'Responsible for most mushroom-related deaths worldwide'].map(c => (
                     <li key={c} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>

@@ -11,9 +11,9 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Gyromitra esculenta (False Morel) - Identification Guide | Mushroom Identifier',
+  title: 'Gyromitra esculenta (False Morel) ID Guide',
   description:
-    'Gyromitra esculenta, commonly known as the false morel, is a highly controversial wild mushroom that resembles edible morels but contains dangerous toxins. Learn identification, toxicity, habitat, and how to tell it apart from true morels.',
+    'Gyromitra esculenta (false morel) looks like true morels but is deadly toxic. Learn identification, toxicity, habitat, and how to distinguish it from morels.',
   alternates: { canonical: 'https://mushroomidentifiers.com/gyromitra-esculenta' },
   openGraph: {
     title: 'Gyromitra esculenta (False Morel) - Identification Guide',
@@ -276,7 +276,7 @@ export default function GyromitraEsculentaPage() {
                 { title: 'Taste', items: ['Mild when raw', '⚠️ Do not taste — contains toxic gyromitrin'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul className="space-y-1">
                     {items.map(item => (
                       <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -294,7 +294,7 @@ export default function GyromitraEsculentaPage() {
             <H2 id="growth-pattern">Growth Pattern and Seasonality</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h3>
                 <ul>
                   <li>Grows solitary or in small groups</li>
                   <li>Often found on or near decaying wood</li>
@@ -302,7 +302,7 @@ export default function GyromitraEsculentaPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Seasonality</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Seasonality</h3>
                 <ul>
                   <li>Spring (March–May in Northern Hemisphere)</li>
                   <li>Appears at the same time as true morels</li>
@@ -324,7 +324,7 @@ export default function GyromitraEsculentaPage() {
                 { title: 'Tree Association', items: ['Pine', 'Spruce', 'Fir', 'Occasionally hardwoods'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul>
                     {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                   </ul>
@@ -484,7 +484,7 @@ export default function GyromitraEsculentaPage() {
             <H2 id="pros-cons">Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                 <ul className="space-y-2">
                   {['Scientifically valuable for toxicology research', 'Important in forest ecosystem decomposition', 'Educational value — teaches look-alike awareness', 'Cultural significance in Nordic cuisine traditions'].map(p => (
                     <li key={p} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -494,7 +494,7 @@ export default function GyromitraEsculentaPage() {
                 </ul>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                 <ul className="space-y-2">
                   {['Toxic — contains carcinogenic gyromitrin (MMH)', 'Easily confused with edible true morels', 'Even cooking vapors can cause poisoning', 'Responsible for serious poisonings and fatalities', 'Traditional preparation does not fully eliminate toxins'].map(c => (
                     <li key={c} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>

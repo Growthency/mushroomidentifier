@@ -11,7 +11,7 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Cortinarius rubellus (Deadly Cortinarius) – Identification Guide',
+  title: 'Cortinarius rubellus: Deadly Webcap ID Guide',
   description:
     'Cortinarius rubellus, commonly known as the deadly cortinarius or deadly webcap, is one of the most dangerous poisonous mushrooms in the world.',
   alternates: { canonical: 'https://mushroomidentifiers.com/cortinarius-rubellus' },
@@ -235,7 +235,7 @@ export default function CortinariusRubellusPage() {
                 { title: 'Texture', items: ['Dry, fibrous cap surface', 'Slender fibrous stem', '⚠️ Do not taste — deadly toxic'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul className="space-y-1">
                     {items.map(item => (
                       <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -281,7 +281,7 @@ export default function CortinariusRubellusPage() {
                 { title: 'Growth Pattern', items: ['Singly or in small groups', 'Mycorrhizal (associated with tree roots)'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul>
                     {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                   </ul>
@@ -437,7 +437,7 @@ export default function CortinariusRubellusPage() {
             <H2 id="growth-life-cycle">Growth Pattern &amp; Life Cycle</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h3>
                 <ul>
                   <li>Mycorrhizal fungus</li>
                   <li>Forms symbiotic relationships with tree roots</li>
@@ -445,7 +445,7 @@ export default function CortinariusRubellusPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h3>
                 <ul>
                   <li>Spores disperse through wind</li>
                   <li>Mycelium forms connections with tree roots</li>
@@ -466,7 +466,7 @@ export default function CortinariusRubellusPage() {
             <H2 id="ecological-value">Economic &amp; Ecological Value</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h3>
                 <ul>
                   <li>Supports forest ecosystems through mycorrhizal networks</li>
                   <li>Enhances nutrient exchange between soil and trees</li>
@@ -474,7 +474,7 @@ export default function CortinariusRubellusPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h3>
                 <ul>
                   <li>No edible value (deadly toxic)</li>
                   <li>Important in toxicology research</li>
@@ -491,7 +491,7 @@ export default function CortinariusRubellusPage() {
             <H2 id="pros-cons">Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                 <ul className="space-y-2">
                   {['Important ecological role in forest ecosystems', 'Significant scientific research value', 'Helps forest nutrient cycles through mycorrhizal networks'].map(p => (
                     <li key={p} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -501,7 +501,7 @@ export default function CortinariusRubellusPage() {
                 </ul>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                 <ul className="space-y-2">
                   {['Extremely toxic — can cause fatal kidney failure', 'Delayed symptoms (2–14 days) increase danger', 'Difficult to identify accurately — genus has thousands of species'].map(c => (
                     <li key={c} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>

@@ -11,13 +11,13 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Amanita bisporigera (destroying angel identification) - Mushroom Identifier',
+  title: 'Amanita bisporigera: Destroying Angel ID Guide',
   description:
     'Amanita bisporigera: The Deadly Destroying Angel! \ud83d\udc80 identify this lethal beauty before it\u2019s too late. Expert identification tips & warning signs inside!',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel' },
   openGraph: {
     type: 'article',
-    title: 'Amanita bisporigera (destroying angel identification) - Mushroom Identifier',
+    title: 'Amanita bisporigera: Destroying Angel ID Guide',
     description: 'Amanita bisporigera: The Deadly Destroying Angel! \ud83d\udc80 identify this lethal beauty before it\u2019s too late. Expert identification tips & warning signs inside!',
     url: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel',
     images: [{ url: 'https://mushroomidentifiers.com/amanita-bisporigera-destroying-angel-identification.webp', width: 1200, height: 630 }],
@@ -289,7 +289,7 @@ export default function DestroyingAngelPage() {
                 { title: 'Taste', items: ['⚠️ Not recommended', 'Tasting toxic mushrooms is dangerous'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul className="space-y-1">
                     {items.map(item => (
                       <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -307,14 +307,14 @@ export default function DestroyingAngelPage() {
             <H2>Growth Pattern and Seasonality</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h3>
                 <ul>
                   <li>Usually grows single or scattered</li>
                   <li>Occasionally in small groups</li>
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Seasonality</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Seasonality</h3>
                 <ul>
                   <li>Summer to fall</li>
                   <li>Appears after rainfall</li>
@@ -335,7 +335,7 @@ export default function DestroyingAngelPage() {
                 { title: 'Tree Association', items: ['Oak', 'Beech', 'Birch'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul>
                     {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                   </ul>
@@ -472,7 +472,7 @@ export default function DestroyingAngelPage() {
             <H2>Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                 <ul className="space-y-2">
                   {['Scientifically valuable', 'Important in ecological systems', 'Educational importance in mycology'].map(p => (
                     <li key={p} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -482,7 +482,7 @@ export default function DestroyingAngelPage() {
                 </ul>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                 <ul className="space-y-2">
                   {['Extremely toxic — potentially fatal', 'Easily confused with edible mushrooms', 'Responsible for fatal poisonings'].map(c => (
                     <li key={c} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>

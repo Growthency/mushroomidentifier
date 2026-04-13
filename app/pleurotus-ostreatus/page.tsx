@@ -480,7 +480,7 @@ export default function PleurotusOstreatusPage() {
                 <H2 id="pros-cons">Pros and Cons</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: '#22c55e08', border: '1px solid #22c55e25' }}>
-                    <h4 className="text-sm font-bold mb-3" style={{ color: '#86efac' }}>Pros</h4>
+                    <h3 className="text-sm font-bold mb-3" style={{ color: '#86efac' }}>Pros</h3>
                     <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li className="flex gap-2"><span style={{ color: '#22c55e' }}>&#x2713;</span> Easy to identify for beginners</li>
                       <li className="flex gap-2"><span style={{ color: '#22c55e' }}>&#x2713;</span> Highly edible and nutritious</li>
@@ -489,7 +489,7 @@ export default function PleurotusOstreatusPage() {
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: '#ef444408', border: '1px solid #ef444425' }}>
-                    <h4 className="text-sm font-bold mb-3" style={{ color: '#fca5a5' }}>Cons</h4>
+                    <h3 className="text-sm font-bold mb-3" style={{ color: '#fca5a5' }}>Cons</h3>
                     <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li className="flex gap-2"><span style={{ color: '#ef4444' }}>&#x2717;</span> Can be confused with some toxic species</li>
                       <li className="flex gap-2"><span style={{ color: '#ef4444' }}>&#x2717;</span> Short shelf life after harvesting</li>

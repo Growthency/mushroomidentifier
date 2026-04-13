@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Terms of Service | MushroomIdentifiers.com',
-  description: 'Read the MushroomIdentifiers.com Terms of Service. By using our AI mushroom identification service, you agree to these terms covering accounts, credits, payments, and liability.',
+  description: 'Read the MushroomIdentifiers.com Terms of Service. Using our AI mushroom identification service means you agree to terms on accounts, credits, and liability.',
 }
 
 const LAST_UPDATED = 'March 31, 2026'

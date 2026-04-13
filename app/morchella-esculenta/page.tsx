@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: 'Morchella esculenta (True Morel) \u2013 Identification Guide',
     description: 'Morchella esculenta, commonly known as the true morel, is one of the most sought-after edible wild mushrooms in the world.',
     url: 'https://mushroomidentifiers.com/morchella-esculenta',
-    images: [{ url: 'https://mushroomidentifiers.com/morchella-esculenta-true-morel-identification.webp', width: 1200, height: 630 }],
+    images: [{ url: 'https://mushroomidentifiers.com/morchella-esculenta-true-morel-identification.webp', width: 1200, height: 630, alt: 'Morchella esculenta true morel mushroom identification guide' }],
   },
 }
 
@@ -485,7 +485,7 @@ export default function MorchellaEsculentaPage() {
                 <H2 id="pros-cons">Pros and Cons</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: '#22c55e08', border: '1px solid #22c55e25' }}>
-                    <h4 className="text-sm font-bold mb-3" style={{ color: '#86efac' }}>Pros</h4>
+                    <h3 className="text-sm font-bold mb-3" style={{ color: '#86efac' }}>Pros</h3>
                     <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li className="flex gap-2"><span style={{ color: '#22c55e' }}>&#x2713;</span> Highly edible and flavorful</li>
                       <li className="flex gap-2"><span style={{ color: '#22c55e' }}>&#x2713;</span> Nutritionally beneficial</li>
@@ -494,7 +494,7 @@ export default function MorchellaEsculentaPage() {
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: '#ef444408', border: '1px solid #ef444425' }}>
-                    <h4 className="text-sm font-bold mb-3" style={{ color: '#fca5a5' }}>Cons</h4>
+                    <h3 className="text-sm font-bold mb-3" style={{ color: '#fca5a5' }}>Cons</h3>
                     <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li className="flex gap-2"><span style={{ color: '#ef4444' }}>&#x2717;</span> Seasonal and unpredictable</li>
                       <li className="flex gap-2"><span style={{ color: '#ef4444' }}>&#x2717;</span> Easily confused with toxic false morels</li>

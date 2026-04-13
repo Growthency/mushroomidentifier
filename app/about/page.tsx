@@ -3,8 +3,8 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'About MushroomIdentifiers – AI Mushroom Identification Platform',
-  description: 'MushroomIdentifiers uses Claude AI and computer vision to identify 10,000+ mushroom species with 95% accuracy. Built by foragers, mycologists & AI researchers committed to safe foraging worldwide.',
+  title: 'About MushroomIdentifiers – AI Mushroom ID',
+  description: 'Learn about MushroomIdentifiers — AI-powered mushroom identification with 95% accuracy, 10,000+ species, free for foragers worldwide.',
   openGraph: {
     type: 'website',
     title: 'About MushroomIdentifiers – AI-Powered Fungi Identification',

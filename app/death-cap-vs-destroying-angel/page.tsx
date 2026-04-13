@@ -12,7 +12,7 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Death Cap vs Destroying Angel Identification: Full Guide 2026',
+  title: 'Death Cap vs Destroying Angel: ID Guide',
   description:
     'Compare Death Cap vs Destroying Angel mushrooms. Learn key differences, identification tips, habitat, and deadly risks to avoid toxic look-alikes.',
 }

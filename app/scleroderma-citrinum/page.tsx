@@ -11,12 +11,12 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Scleroderma citrinum (Earthball Mushroom) – Identification Guide',
+  title: 'Scleroderma citrinum — Earthball Mushroom ID Guide',
   description:
-    'Scleroderma citrinum, commonly known as the earthball mushroom, is a toxic, puffball-like fungus found in woodlands, gardens, and sandy soils across many parts of the world.',
+    'Identify scleroderma citrinum (earthball mushroom) safely. Learn its dark interior, toxic traits, puffball lookalikes, and woodland habitats before foraging.',
   alternates: { canonical: 'https://mushroomidentifiers.com/scleroderma-citrinum' },
   openGraph: {
-    title: 'Scleroderma citrinum (Earthball Mushroom) – Identification Guide',
+    title: 'Scleroderma citrinum — Earthball Mushroom ID Guide',
     description: 'Complete identification guide for Scleroderma citrinum (common earthball). Learn key features, dark interior, toxicity, habitat, and how to distinguish it from edible puffballs.',
     url: 'https://mushroomidentifiers.com/scleroderma-citrinum',
     images: [{ url: 'https://mushroomidentifiers.com/scleroderma-citrinum-earthball-mushroom-identification.webp', width: 820, height: 550, alt: 'Scleroderma citrinum earthball mushroom identification guide' }],
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Scleroderma citrinum (Earthball Mushroom) – Identification Guide',
+    title: 'Scleroderma citrinum — Earthball Mushroom ID Guide',
     description: 'Complete identification guide for Scleroderma citrinum — features, dark interior, toxicity, and how to distinguish from edible puffballs.',
     images: ['https://mushroomidentifiers.com/scleroderma-citrinum-earthball-mushroom-identification.webp'],
   },
@@ -220,7 +220,7 @@ export default function SclerodermaClitrinumPage() {
                 { title: 'Texture', items: ['Hard, tough outer skin', 'Powdery spore mass inside when mature', 'Firm and dense when young'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul className="space-y-1">
                     {items.map(item => (
                       <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -266,7 +266,7 @@ export default function SclerodermaClitrinumPage() {
                 { title: 'Growth Pattern', items: ['Singly or in clusters', 'Often near tree roots (ectomycorrhizal)'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul>
                     {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                   </ul>
@@ -417,7 +417,7 @@ export default function SclerodermaClitrinumPage() {
             <H2 id="growth-life-cycle">Growth Pattern &amp; Life Cycle</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h3>
                 <ul>
                   <li>Ectomycorrhizal fungus</li>
                   <li>Forms symbiotic relationships with tree roots</li>
@@ -425,7 +425,7 @@ export default function SclerodermaClitrinumPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h3>
                 <ul>
                   <li>Spore release through cracks in outer skin</li>
                   <li>Mycelium connects with tree roots</li>
@@ -446,7 +446,7 @@ export default function SclerodermaClitrinumPage() {
             <H2 id="ecological-value">Economic &amp; Ecological Value</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h3>
                 <ul>
                   <li>Supports forest ecosystems through mycorrhizal networks</li>
                   <li>Improves soil health and structure</li>
@@ -454,7 +454,7 @@ export default function SclerodermaClitrinumPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h3>
                 <ul>
                   <li>No culinary value (toxic)</li>
                   <li>Studied for ecological roles in forestry</li>
@@ -471,7 +471,7 @@ export default function SclerodermaClitrinumPage() {
             <H2 id="pros-cons">Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                 <ul className="space-y-2">
                   {['Important ecological role in forest ecosystems', 'Easy to recognize with practice (thick skin + dark interior)', 'Helps tree nutrient cycles through mycorrhizal networks'].map(p => (
                     <li key={p} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -481,7 +481,7 @@ export default function SclerodermaClitrinumPage() {
                 </ul>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                 <ul className="space-y-2">
                   {['Toxic and inedible', 'Easily confused with edible puffballs by beginners', 'Can cause gastrointestinal illness if consumed'].map(c => (
                     <li key={c} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>

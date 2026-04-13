@@ -11,9 +11,9 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Lepiota brunneoincarnata (Toxic Small White Mushroom) – Identification Guide',
+  title: 'Lepiota brunneoincarnata: Deadly Dapperling ID',
   description:
-    'Lepiota brunneoincarnata, commonly known as a toxic small white mushroom or deadly dapperling, is a highly poisonous species responsible for severe and sometimes fatal mushroom poisoning',
+    'Lepiota brunneoincarnata (deadly dapperling) is a fatally toxic mushroom with amatoxins. Identify key features, symptoms, dangerous lookalikes, and safety tips.',
   alternates: { canonical: 'https://mushroomidentifiers.com/lepiota-brunneoincarnata' },
   openGraph: {
     title: 'Lepiota brunneoincarnata (Toxic Small White Mushroom) – Identification Guide',
@@ -234,7 +234,7 @@ export default function LepiotaBrunneoincarnataPage() {
                 { title: 'Texture', items: ['Fragile, thin flesh', 'Dry scaly cap surface', '⚠️ Do not taste — deadly toxic'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul className="space-y-1">
                     {items.map(item => (
                       <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -257,7 +257,7 @@ export default function LepiotaBrunneoincarnataPage() {
                 { title: 'Growth Pattern', items: ['Singly or in small scattered groups', 'Saprotrophic (decomposes organic material)'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul>
                     {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                   </ul>
@@ -438,7 +438,7 @@ export default function LepiotaBrunneoincarnataPage() {
             <H2 id="growth-life-cycle">Growth Pattern &amp; Life Cycle</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h3>
                 <ul>
                   <li>Saprotrophic</li>
                   <li>Decomposes organic material</li>
@@ -446,7 +446,7 @@ export default function LepiotaBrunneoincarnataPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h3>
                 <ul>
                   <li>Spores released from mature gills</li>
                   <li>Mycelium grows in soil</li>
@@ -467,7 +467,7 @@ export default function LepiotaBrunneoincarnataPage() {
             <H2 id="ecological-value">Economic &amp; Ecological Value</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h3>
                 <ul>
                   <li>Breaks down organic matter</li>
                   <li>Supports soil ecosystems</li>
@@ -475,7 +475,7 @@ export default function LepiotaBrunneoincarnataPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h3>
                 <ul>
                   <li>No edible or commercial value</li>
                   <li>Important in toxicology and medical research</li>
@@ -492,7 +492,7 @@ export default function LepiotaBrunneoincarnataPage() {
             <H2 id="pros-cons">Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                 <ul className="space-y-2">
                   {['Ecological decomposer in grassland ecosystems', 'Scientific importance in toxicology research', 'Contributes to natural nutrient cycles'].map(p => (
                     <li key={p} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -502,7 +502,7 @@ export default function LepiotaBrunneoincarnataPage() {
                 </ul>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                 <ul className="space-y-2">
                   {['Extremely toxic — can cause fatal liver failure', 'Easily misidentified as harmless species', 'High fatality risk with delayed symptoms'].map(c => (
                     <li key={c} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>

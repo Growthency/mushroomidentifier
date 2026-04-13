@@ -198,9 +198,9 @@ export default function PricingClient() {
                   border: pack.popular ? '2px solid var(--accent)' : '1px solid var(--border)',
                 }}
               >
-                <h3 className="font-playfair text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                <h2 className="font-playfair text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                   {pack.name}
-                </h3>
+                </h2>
                 <div className="mb-6">
                   <span className="font-playfair text-5xl font-bold" style={{ color: 'var(--text-primary)' }}>
                     {pack.price}

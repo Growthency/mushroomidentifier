@@ -11,8 +11,8 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Amanita pantherina (Amanita Lookalike Danger) - Identification Guide',
-  description: 'Amanita pantherina, commonly known as the Panther Cap, is a toxic Amanita species known for its brown cap with white spots and strong potential for misidentification.',
+  title: 'Amanita pantherina: Panther Cap ID Guide',
+  description: 'Amanita pantherina (Panther Cap) is toxic with a brown cap and white spots. Learn identification features, dangers, and how to avoid this deadly look-alike.',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-pantherina' },
   openGraph: {
     type: 'article',
@@ -508,7 +508,7 @@ export default function AmanitaPantherinaPage() {
                 <H2 id="pros-and-cons">Pros and Cons</H2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: '#22c55e10', border: '1px solid #22c55e30' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Scientifically valuable</li>
                       <li>Important for ecological balance</li>
@@ -516,7 +516,7 @@ export default function AmanitaPantherinaPage() {
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: '#ef444410', border: '1px solid #ef444430' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Toxic and dangerous</li>
                       <li>Easily confused with other Amanita species</li>

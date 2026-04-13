@@ -12,12 +12,12 @@ import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
   title: 'Agaricus campestris (Meadow Mushroom) \u2013 Identification Guide',
-  description: 'Agaricus campestris, commonly known as the meadow mushroom or field mushroom, is a widely recognized edible wild mushroom found in grasslands, pastures, and open fields.',
+  description: 'Agaricus campestris (meadow mushroom): edible wild mushroom in grasslands with toxic look-alikes. Identification guide, features, habitat, and safety tips.',
   alternates: { canonical: 'https://mushroomidentifiers.com/agaricus-campestris' },
   openGraph: {
     type: 'article',
     title: 'Agaricus campestris (Meadow Mushroom) \u2013 Identification Guide',
-    description: 'Agaricus campestris, commonly known as the meadow mushroom or field mushroom, is a widely recognized edible wild mushroom found in grasslands, pastures, and open fields.',
+    description: 'Agaricus campestris (meadow mushroom): edible wild mushroom in grasslands with toxic look-alikes. Identification guide, features, habitat, and safety tips.',
     url: 'https://mushroomidentifiers.com/agaricus-campestris',
     images: [{ url: 'https://mushroomidentifiers.com/agaricus-campestris-meadow-mushroom-identification.webp', width: 1200, height: 630 }],
   },
@@ -29,7 +29,7 @@ const schemaData = {
     {
       '@type': 'Article',
       headline: 'Agaricus campestris (Meadow Mushroom) \u2013 Identification, Edibility & Lookalikes',
-      description: 'Agaricus campestris, commonly known as the meadow mushroom or field mushroom, is a widely recognized edible wild mushroom found in grasslands, pastures, and open fields.',
+      description: 'Agaricus campestris (meadow mushroom): edible wild mushroom in grasslands with toxic look-alikes. Identification guide, features, habitat, and safety tips.',
       image: 'https://mushroomidentifiers.com/agaricus-campestris-meadow-mushroom-identification.webp',
       author: { '@type': 'Organization', name: 'Mushroom Identifiers', url: 'https://mushroomidentifiers.com/' },
       publisher: { '@type': 'Organization', name: 'Mushroom Identifiers', url: 'https://mushroomidentifiers.com/', email: 'support@mushroomidentifiers.com' },
@@ -475,7 +475,7 @@ export default function AgaricusCampestrisPage() {
                 <H2 id="pros-and-cons">Pros and Cons</H2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: '#22c55e10', border: '1px solid #22c55e30' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Edible and tasty</li>
                       <li>Widely available</li>
@@ -483,7 +483,7 @@ export default function AgaricusCampestrisPage() {
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: '#ef444410', border: '1px solid #ef444430' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Easily confused with toxic species</li>
                       <li>Requires careful identification</li>

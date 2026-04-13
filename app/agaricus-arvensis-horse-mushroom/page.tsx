@@ -13,12 +13,12 @@ import ViewTracker from '@/components/blog/ViewTracker'
 export const metadata: Metadata = {
   title: 'Horse Mushroom (Agaricus arvensis) - Mushroom Identifier',
   description:
-    'The Horse Mushroom (Agaricus arvensis) is a large, edible field mushroom found in grasslands and pastures. Learn identification tips, look-alikes, and foraging safety.',
+    'Horse Mushroom (Agaricus arvensis): large edible grassland mushroom with toxic look-alikes. Learn identification tips, key features, and foraging safety.',
   alternates: { canonical: 'https://mushroomidentifiers.com/agaricus-arvensis-horse-mushroom' },
   openGraph: {
     type: 'article',
     title: 'Horse Mushroom (Agaricus arvensis) - Mushroom Identifier',
-    description: 'The Horse Mushroom (Agaricus arvensis) is a large, edible field mushroom found in grasslands and pastures. Learn identification tips, look-alikes, and foraging safety.',
+    description: 'Horse Mushroom (Agaricus arvensis): large edible grassland mushroom with toxic look-alikes. Learn identification tips, key features, and foraging safety.',
     url: 'https://mushroomidentifiers.com/agaricus-arvensis-horse-mushroom',
     images: [{ url: 'https://mushroomidentifiers.com/agaricus-arvensis-horse-mushroom.webp', width: 1200, height: 630 }],
   },

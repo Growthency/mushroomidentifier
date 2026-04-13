@@ -11,13 +11,13 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Amanita ocreata (Toxic Amanita Species): Identification Guide',
+  title: 'Amanita ocreata (Western Destroying Angel) ID Guide',
   description:
     'Amanita ocreata, commonly known as the Western Destroying Angel, is a highly toxic Amanita species found in North America.',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-ocreata' },
   openGraph: {
     type: 'article',
-    title: 'Amanita ocreata (Toxic Amanita Species): Identification Guide',
+    title: 'Amanita ocreata (Western Destroying Angel) ID Guide',
     description: 'Amanita ocreata, commonly known as the Western Destroying Angel, is a highly toxic Amanita species found in North America.',
     url: 'https://mushroomidentifiers.com/amanita-ocreata',
     images: [{ url: 'https://mushroomidentifiers.com/amanita-ocreata-western-destroying-angel-identification.webp', width: 1200, height: 630 }],
@@ -378,7 +378,7 @@ export default function AmanitaOcreatePage() {
                     { title: 'Taste',  items: ['⚠️ Never taste — highly toxic', 'Not a reliable identification method'] },
                   ].map(({ title, items }) => (
                     <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                      <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                      <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                       <ul className="space-y-1">
                         {items.map(item => (
                           <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -396,14 +396,14 @@ export default function AmanitaOcreatePage() {
                 <H2 id="growth-pattern"><em>Amanita ocreata</em> Growth Pattern and Seasonality</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                    <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h4>
+                    <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Growth Pattern</h3>
                     <ul style={{ color: 'var(--text-muted)' }}>
                       <li>Typically grows single or scattered</li>
                       <li>Rarely forms dense clusters</li>
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                    <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Seasonality</h4>
+                    <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Seasonality</h3>
                     <ul style={{ color: 'var(--text-muted)' }}>
                       <li>Winter to early spring (key difference from other Amanitas)</li>
                       <li>Often appears after rainfall</li>
@@ -429,7 +429,7 @@ export default function AmanitaOcreatePage() {
                     { title: 'Environment',      items: ['Moist soil after rainfall', 'Shaded environments', 'Well-drained woodland floor'] },
                   ].map(({ title, items }) => (
                     <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                      <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                      <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                       <ul>
                         {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                       </ul>
@@ -591,7 +591,7 @@ export default function AmanitaOcreatePage() {
                 <H2 id="pros-cons">Pros and Cons</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                    <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                    <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                     <ul className="space-y-2">
                       {[
                         'Scientifically valuable for toxicology research',
@@ -605,7 +605,7 @@ export default function AmanitaOcreatePage() {
                     </ul>
                   </div>
                   <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                    <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                    <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                     <ul className="space-y-2">
                       {[
                         'Highly toxic — potentially fatal even in small amounts',

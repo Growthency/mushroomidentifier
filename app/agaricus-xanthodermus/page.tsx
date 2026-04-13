@@ -11,9 +11,9 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Agaricus xanthodermus (Yellow Stainer Mushroom) – Identification Guide',
+  title: 'Agaricus xanthodermus (Yellow Stainer) – ID Guide',
   description:
-    'Agaricus xanthodermus, commonly called the yellow stainer, is a widespread toxic mushroom often mistaken for edible species in the same genus, such as Agaricus bisporus.',
+    'Agaricus xanthodermus (yellow stainer) is toxic and often mistaken for edible mushrooms. Learn the yellow staining reaction, key features, and how to avoid it.',
   alternates: { canonical: 'https://mushroomidentifiers.com/agaricus-xanthodermus' },
   openGraph: {
     title: 'Agaricus xanthodermus (Yellow Stainer Mushroom) – Identification Guide',
@@ -235,7 +235,7 @@ export default function AgaricusXanthodermusPage() {
                 { title: 'Texture', items: ['Firm flesh', 'Slightly fibrous stem', 'Smooth cap surface'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul className="space-y-1">
                     {items.map(item => (
                       <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -285,7 +285,7 @@ export default function AgaricusXanthodermusPage() {
                 { title: 'Growth Pattern', items: ['Singly or in groups', 'Sometimes in fairy rings'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul>
                     {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                   </ul>
@@ -445,14 +445,14 @@ export default function AgaricusXanthodermusPage() {
             <H2 id="growth-life-cycle">Growth Pattern &amp; Life Cycle</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h3>
                 <ul>
                   <li>Saprotrophic (decomposes organic matter)</li>
                   <li>Plays a role in soil nutrient recycling</li>
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h3>
                 <ul>
                   <li>Spore release from mature gills</li>
                   <li>Mycelium growth in soil</li>
@@ -473,7 +473,7 @@ export default function AgaricusXanthodermusPage() {
             <H2 id="ecological-value">Economic &amp; Ecological Value</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h3>
                 <ul>
                   <li>Helps break down organic matter</li>
                   <li>Supports soil ecosystems</li>
@@ -481,7 +481,7 @@ export default function AgaricusXanthodermusPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h3>
                 <ul>
                   <li>No culinary value (toxic)</li>
                   <li>Occasionally studied for fungal biology</li>
@@ -498,7 +498,7 @@ export default function AgaricusXanthodermusPage() {
             <H2 id="pros-cons">Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                 <ul className="space-y-2">
                   {['Easy to identify once learned (staining + smell)', 'Important ecological decomposer', 'Widely studied species in mycology'].map(p => (
                     <li key={p} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -508,7 +508,7 @@ export default function AgaricusXanthodermusPage() {
                 </ul>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                 <ul className="space-y-2">
                   {['Toxic — causes gastrointestinal illness', 'Commonly misidentified as edible Agaricus', 'Grows in areas where people commonly forage'].map(c => (
                     <li key={c} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>

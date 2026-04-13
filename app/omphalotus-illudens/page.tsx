@@ -11,12 +11,12 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: "Omphalotus illudens (Jack-o'-Lantern Mushroom) - Identification Guide",
+  title: "Omphalotus illudens — Jack-o'-Lantern Mushroom Guide",
   description: 'Omphalotus illudens, commonly known as the jack-o\u2019-lantern mushroom, is a bright orange, bioluminescent fungus found mainly in North America.',
   alternates: { canonical: 'https://mushroomidentifiers.com/omphalotus-illudens' },
   openGraph: {
     type: 'article',
-    title: "Omphalotus illudens (Jack-o'-Lantern Mushroom) - Identification Guide",
+    title: "Omphalotus illudens — Jack-o'-Lantern Mushroom Guide",
     description: 'Omphalotus illudens, commonly known as the jack-o\u2019-lantern mushroom, is a bright orange, bioluminescent fungus found mainly in North America.',
     url: 'https://mushroomidentifiers.com/omphalotus-illudens',
     images: [{ url: 'https://mushroomidentifiers.com/omphalotus-illudens-jack-o-lantern-mushroom-identification.webp', width: 1200, height: 630 }],
@@ -443,7 +443,7 @@ export default function OmphalotusIlludensPage() {
                 <H2 id="pros-and-cons">Pros and Cons</H2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: '#22c55e10', border: '1px solid #22c55e30' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Unique bioluminescent properties</li>
                       <li>Important ecological role</li>
@@ -451,7 +451,7 @@ export default function OmphalotusIlludensPage() {
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: '#ef444410', border: '1px solid #ef444430' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Toxic and unsafe to eat</li>
                       <li>Easily confused with edible species</li>

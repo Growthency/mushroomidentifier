@@ -11,9 +11,9 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Chlorophyllum molybdites (Poisonous Lawn Mushroom) – Identification Guide',
+  title: 'Chlorophyllum molybdites: Toxic Lawn Mushroom ID',
   description:
-    'Chlorophyllum molybdites, commonly known as the poisonous lawn mushroom or green-spored parasol, is one of the most frequently ingested toxic mushrooms worldwide.',
+    'Chlorophyllum molybdites is the most common toxic lawn mushroom in North America. Identify it by green spores, fairy ring growth, and white parasol-like cap.',
   alternates: { canonical: 'https://mushroomidentifiers.com/chlorophyllum-molybdites' },
   openGraph: {
     title: 'Chlorophyllum molybdites (Poisonous Lawn Mushroom) – Identification Guide',
@@ -233,7 +233,7 @@ export default function ChlorophyllumMolybditesPage() {
                 { title: 'Texture', items: ['Soft cap flesh', 'Fibrous stem', 'Scaly cap surface'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-3 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul className="space-y-1">
                     {items.map(item => (
                       <li key={item} className="text-sm" style={{ color: 'var(--text-muted)' }}>{item}</li>
@@ -279,7 +279,7 @@ export default function ChlorophyllumMolybditesPage() {
                 { title: 'Growth Pattern', items: ['In groups or fairy rings', 'Scattered across grassy areas'] },
               ].map(({ title, items }) => (
                 <div key={title} className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                  <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h4>
+                  <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>{title}</h3>
                   <ul>
                     {items.map(i => <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>{i}</li>)}
                   </ul>
@@ -436,7 +436,7 @@ export default function ChlorophyllumMolybditesPage() {
             <H2 id="growth-life-cycle">Growth Pattern &amp; Life Cycle</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Role</h3>
                 <ul>
                   <li>Saprotrophic fungus</li>
                   <li>Breaks down organic matter in soil</li>
@@ -444,7 +444,7 @@ export default function ChlorophyllumMolybditesPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Life Cycle</h3>
                 <ul>
                   <li>Spores released into the environment</li>
                   <li>Mycelium develops underground</li>
@@ -465,7 +465,7 @@ export default function ChlorophyllumMolybditesPage() {
             <H2 id="ecological-value">Economic &amp; Ecological Value</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Ecological Importance</h3>
                 <ul>
                   <li>Helps recycle organic nutrients</li>
                   <li>Supports soil health in grasslands</li>
@@ -473,7 +473,7 @@ export default function ChlorophyllumMolybditesPage() {
                 </ul>
               </div>
               <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h4>
+                <h3 className="font-semibold mb-2 text-sm" style={{ color: 'var(--accent)' }}>Economic Value</h3>
                 <ul>
                   <li>No edible value (toxic)</li>
                   <li>Important in toxicology studies</li>
@@ -490,7 +490,7 @@ export default function ChlorophyllumMolybditesPage() {
             <H2 id="pros-cons">Pros and Cons</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-xl" style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#22c55e' }}>Pros</h3>
                 <ul className="space-y-2">
                   {['Easy to study due to abundance', 'Plays a role in ecosystem health', 'Distinctive green spore print aids identification'].map(p => (
                     <li key={p} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -500,7 +500,7 @@ export default function ChlorophyllumMolybditesPage() {
                 </ul>
               </div>
               <div className="p-5 rounded-xl" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <h4 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h4>
+                <h3 className="font-semibold mb-3 text-sm" style={{ color: '#ef4444' }}>Cons</h3>
                 <ul className="space-y-2">
                   {['Highly toxic — causes severe illness', 'Frequently mistaken for edible mushrooms', 'Common in residential areas (higher risk exposure)'].map(c => (
                     <li key={c} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>

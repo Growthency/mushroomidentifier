@@ -13,7 +13,7 @@ import PremiumGate from '@/components/PremiumGate'
 export const metadata: Metadata = {
   title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
   description:
-    'Understanding mushroom anatomy is the foundation of accurate mushroom identification. A mushroom is not the entire organism — it is the visible fruiting body of fungi within the Kingdom Fungi.',
+    'Learn mushroom parts explained — cap, gills, stem, ring, and volva. Master fungal anatomy to safely identify edible and toxic mushroom species in the wild.',
 }
 
 const schemaData = {

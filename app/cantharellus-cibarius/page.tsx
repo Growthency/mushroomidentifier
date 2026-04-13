@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: 'Cantharellus cibarius (Chanterelle) \u2013 Identification Guide',
     description: 'Cantharellus cibarius, commonly known as the chanterelle, is one of the most popular and highly prized wild edible mushrooms in the world.',
     url: 'https://mushroomidentifiers.com/cantharellus-cibarius',
-    images: [{ url: 'https://mushroomidentifiers.com/cantharellus-cibarius-chanterelle-identification.webp', width: 1200, height: 630 }],
+    images: [{ url: 'https://mushroomidentifiers.com/cantharellus-cibarius-chanterelle-identification.webp', width: 1200, height: 630, alt: 'Cantharellus cibarius golden chanterelle mushroom identification guide' }],
   },
 }
 
@@ -480,7 +480,7 @@ export default function CantharellusCibariusPage() {
                 <H2 id="pros-cons">Pros and Cons</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: '#22c55e08', border: '1px solid #22c55e25' }}>
-                    <h4 className="text-sm font-bold mb-3" style={{ color: '#86efac' }}>Pros</h4>
+                    <h3 className="text-sm font-bold mb-3" style={{ color: '#86efac' }}>Pros</h3>
                     <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li className="flex gap-2"><span style={{ color: '#22c55e' }}>&#x2713;</span> Highly edible and flavorful</li>
                       <li className="flex gap-2"><span style={{ color: '#22c55e' }}>&#x2713;</span> Nutritionally beneficial (vitamin D)</li>
@@ -489,7 +489,7 @@ export default function CantharellusCibariusPage() {
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: '#ef444408', border: '1px solid #ef444425' }}>
-                    <h4 className="text-sm font-bold mb-3" style={{ color: '#fca5a5' }}>Cons</h4>
+                    <h3 className="text-sm font-bold mb-3" style={{ color: '#fca5a5' }}>Cons</h3>
                     <ul className="space-y-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li className="flex gap-2"><span style={{ color: '#ef4444' }}>&#x2717;</span> Seasonal availability only</li>
                       <li className="flex gap-2"><span style={{ color: '#ef4444' }}>&#x2717;</span> Can be confused with jack-o&apos;-lantern</li>

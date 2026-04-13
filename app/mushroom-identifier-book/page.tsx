@@ -11,17 +11,17 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Mushroom Identifier Book - Fungi Identification Guidebooks Review',
+  title: 'Mushroom Identifier Book — Best Field Guides Reviewed',
   description:
-    'A mushroom identifier book helps you recognize fungi by combining photos or illustrations with key traits such as cap shape, gills, stem structure, habitat, season, and spore print.',
+    'Find the best mushroom identifier book for your skill level. We review top field guides by cap shape, gills, habitat, and spore print to help you forage safely.',
   alternates: {
     canonical: 'https://mushroomidentifiers.com/mushroom-identifier-book',
   },
   openGraph: {
     type: 'article',
-    title: 'Mushroom Identifier Book - Fungi Identification Guidebooks Review',
+    title: 'Mushroom Identifier Book — Best Field Guides Reviewed',
     description:
-      'A mushroom identifier book helps you recognize fungi by combining photos or illustrations with key traits such as cap shape, gills, stem structure, habitat, season, and spore print.',
+      'Find the best mushroom identifier book for your skill level. We review top field guides by cap shape, gills, habitat, and spore print to help you forage safely.',
     url: 'https://mushroomidentifiers.com/mushroom-identifier-book',
     images: [
       {
@@ -795,7 +795,7 @@ export default function MushroomIdentifierBookPage() {
                   style={{ background: tier.color, border: `1px solid ${tier.borderColor}` }}
                 >
                   <p className="text-lg mb-1">{tier.emoji}</p>
-                  <h4 className="font-playfair font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{tier.level}</h4>
+                  <h3 className="font-playfair font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{tier.level}</h3>
                   <p className="text-xs font-semibold mb-1" style={{ color: tier.accentColor }}>Choose books that are:</p>
                   <ul className="mb-3 space-y-1">
                     {tier.criteria.map((c, i) => <li key={i} className="text-xs" style={{ color: 'var(--text-muted)' }}>• {c}</li>)}
@@ -825,7 +825,7 @@ export default function MushroomIdentifierBookPage() {
             </p>
             <div className="grid sm:grid-cols-2 gap-5 mb-6">
               <div className="rounded-2xl p-5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>🌍 Why Regional Guides Matter</h4>
+                <h3 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>🌍 Why Regional Guides Matter</h3>
                 <ul className="space-y-2">
                   {['Different climates = different fungi', 'Tree species affect mushroom growth', 'Seasonal timing varies by region'].map((item, i) => (
                     <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>• {item}</li>
@@ -833,7 +833,7 @@ export default function MushroomIdentifierBookPage() {
                 </ul>
               </div>
               <div className="rounded-2xl p-5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <h4 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>🌲 Key Habitat Entities</h4>
+                <h3 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>🌲 Key Habitat Entities</h3>
                 <ul className="space-y-2">
                   {['Deciduous forests (oak, birch)', 'Coniferous forests (pine, spruce)', 'Grasslands and meadows', 'Deadwood and forest floor'].map((item, i) => (
                     <li key={i} className="text-sm" style={{ color: 'var(--text-muted)' }}>• {item}</li>
@@ -888,7 +888,7 @@ export default function MushroomIdentifierBookPage() {
               ].map((s) => (
                 <div key={s.season} className="rounded-2xl p-4" style={{ background: s.color, border: `1px solid ${s.borderColor}` }}>
                   <p className="text-2xl mb-2">{s.emoji}</p>
-                  <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--text-primary)' }}>{s.season}</h4>
+                  <h3 className="font-semibold text-sm mb-2" style={{ color: 'var(--text-primary)' }}>{s.season}</h3>
                   <ul className="space-y-1">
                     {s.species.map((sp, i) => <li key={i} className="text-xs" style={{ color: 'var(--text-muted)' }}>• {sp}</li>)}
                   </ul>

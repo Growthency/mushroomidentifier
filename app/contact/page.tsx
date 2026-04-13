@@ -4,7 +4,7 @@ import ContactPageClient from './ContactPageClient'
 
 export const metadata: Metadata = {
   title: 'Contact MushroomIdentifiers – Support & Inquiries',
-  description: 'Contact the MushroomIdentifiers team for support, bug reports, feature requests, or partnership inquiries. We respond within 24 hours. Includes poison emergency contacts.',
+  description: 'Contact MushroomIdentifiers for support, bug reports, or partnerships. We respond within 24 hours. Includes poison emergency contacts and FAQ.',
   openGraph: {
     type: 'website',
     title: 'Contact MushroomIdentifiers – We\'re Here to Help',

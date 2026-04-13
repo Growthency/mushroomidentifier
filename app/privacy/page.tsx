@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | MushroomIdentifiers.com',
-  description: 'Read the MushroomIdentifiers.com Privacy Policy to understand how we collect, use, and protect your personal data in compliance with GDPR and global privacy laws.',
+  description: 'Read the MushroomIdentifiers.com Privacy Policy to learn how we collect, use, and protect your personal data in compliance with GDPR and privacy laws.',
 }
 
 const LAST_UPDATED = 'March 31, 2026'

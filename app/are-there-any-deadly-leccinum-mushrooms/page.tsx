@@ -12,7 +12,7 @@ import ViewTracker from '@/components/blog/ViewTracker'
 export const metadata: Metadata = {
   title: 'Are There Any Deadly Leccinum Mushrooms?',
   description:
-    'There are no confirmed deadly species in the genus Leccinum. However, that does not automatically make them safe. Several Leccinum mushrooms have been linked to gastrointestinal poisoning, especially when undercooked, eaten in large amounts, or misidentified.',
+    'No confirmed deadly Leccinum exist — but several cause serious poisoning. Learn the real risks, toxic look-alikes, and safe foraging tips for this genus.',
 }
 
 const schemaData = {

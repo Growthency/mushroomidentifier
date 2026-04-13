@@ -11,12 +11,12 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Amanita muscaria: (Mushroom with White Spots) - Identification Guide',
+  title: 'Amanita muscaria: Fly Agaric Identification Guide',
   description: 'Amanita muscaria, commonly known as the Fly Agaric, is one of the most recognizable mushrooms in the world due to its bright red cap with white spots.',
   alternates: { canonical: 'https://mushroomidentifiers.com/amanita-muscaria' },
   openGraph: {
     type: 'article',
-    title: 'Amanita muscaria: (Mushroom with White Spots) - Identification Guide',
+    title: 'Amanita muscaria: Fly Agaric Identification Guide',
     description: 'Amanita muscaria, commonly known as the Fly Agaric, is one of the most recognizable mushrooms in the world due to its bright red cap with white spots.',
     url: 'https://mushroomidentifiers.com/amanita-muscaria',
     images: [{ url: 'https://mushroomidentifiers.com/amanita-muscaria-fly-agaric-identification.webp', width: 1200, height: 630 }],
@@ -525,7 +525,7 @@ export default function AmanitaMuscariaPage() {
                 <H2 id="pros-and-cons">Pros and Cons</H2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: '#22c55e10', border: '1px solid #22c55e30' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Easily recognizable</li>
                       <li>Important in research</li>
@@ -533,7 +533,7 @@ export default function AmanitaMuscariaPage() {
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: '#ef444410', border: '1px solid #ef444430' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Toxic</li>
                       <li>Causes hallucinations and illness</li>
