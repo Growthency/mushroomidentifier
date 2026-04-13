@@ -179,7 +179,7 @@ export default function Home() {
 
           {/* HeroH1 renders solid color server-side (LCP-safe), adds shimmer client-side */}
           <HeroH1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-            Mushroom Identifier
+            Mushroom Identifier - Free Mushroom Identification App by Picture
           </HeroH1>
 
           <p
