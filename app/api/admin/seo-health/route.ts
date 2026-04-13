@@ -236,9 +236,13 @@ function checkPage(html: string, url: string): Issue[] {
     add('has-noindex', 'critical', 'Page has noindex directive — it will not appear in search results', 'Remove noindex from robots meta tag if this page should be indexed', 'Technical')
   }
 
-  // 12. HTML size
+  // 12. HTML / Page size
   const sizeKb = Math.round(html.length / 1024)
-  if (sizeKb > 500) {
+  if (sizeKb > 2048) {
+    add('page-too-large', 'critical', `Page size is ${(sizeKb / 1024).toFixed(1)}MB — exceeds 2MB limit. Google may not index this page`, 'Reduce page size below 2MB by removing unused code, lazy-loading content, and optimizing images', 'Performance')
+  } else if (sizeKb > 1500) {
+    add('page-size-warning', 'warning', `Page size is ${(sizeKb / 1024).toFixed(1)}MB — approaching 2MB limit`, 'Consider reducing page size to stay safely under 2MB for Google indexing', 'Performance')
+  } else if (sizeKb > 500) {
     add('large-html', 'info', `HTML is ${sizeKb}KB (recommended < 500KB)`, 'Reduce HTML size by removing unused code or lazy-loading content', 'Performance')
   }
 

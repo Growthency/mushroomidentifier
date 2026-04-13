@@ -647,7 +647,7 @@ export default function SeoHealthPage() {
                 <div
                   className="grid items-center px-5 py-3 text-[11px] font-semibold uppercase tracking-wider"
                   style={{
-                    gridTemplateColumns: '1fr 70px 70px 70px 70px 60px',
+                    gridTemplateColumns: '1fr 70px 70px 70px 70px 70px 60px',
                     color: textMuted,
                     borderBottom: `1px solid ${borderColor}`,
                     background: dark ? 'rgba(255,255,255,0.02)' : '#f8fafc',
@@ -655,6 +655,7 @@ export default function SeoHealthPage() {
                 >
                   <span>Page</span>
                   <span className="text-center">Score</span>
+                  <span className="text-center">Size</span>
                   <span className="text-center">Critical</span>
                   <span className="text-center">Warn</span>
                   <span className="text-center">Info</span>
@@ -673,7 +674,7 @@ export default function SeoHealthPage() {
                         <div
                           className="grid items-center px-5 py-3 cursor-pointer transition-colors hover:opacity-80"
                           style={{
-                            gridTemplateColumns: '1fr 70px 70px 70px 70px 60px',
+                            gridTemplateColumns: '1fr 70px 70px 70px 70px 70px 60px',
                             borderBottom: `1px solid ${borderColor}`,
                             background: expanded ? (dark ? 'rgba(16,185,129,0.03)' : '#f0fdf4') : 'transparent',
                           }}
@@ -692,6 +693,14 @@ export default function SeoHealthPage() {
                               style={{ background: `${scoreColor(page.score)}15`, color: scoreColor(page.score) }}
                             >
                               {page.score}
+                            </span>
+                          </div>
+                          <div className="text-center">
+                            <span
+                              className="text-[11px] font-semibold"
+                              style={{ color: page.htmlSize > 2097152 ? '#ef4444' : page.htmlSize > 1572864 ? '#f59e0b' : textMuted }}
+                            >
+                              {page.htmlSize > 0 ? (page.htmlSize > 1048576 ? `${(page.htmlSize / 1048576).toFixed(1)}MB` : `${Math.round(page.htmlSize / 1024)}KB`) : '—'}
                             </span>
                           </div>
                           <span className="text-center text-xs font-semibold" style={{ color: criticals > 0 ? '#ef4444' : textFaint }}>{criticals}</span>
