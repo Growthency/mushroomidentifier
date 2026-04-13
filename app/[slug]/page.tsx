@@ -312,7 +312,7 @@ export default async function DynamicPostPage({
                   <div className="relative w-full" style={{ maxHeight: '480px' }}>
                     <Image
                       src={post.featured_image}
-                      alt={post.title}
+                      alt={`${post.slug.replace(/^\//,'').replace(/-/g, ' ')} identification guide`}
                       width={800}
                       height={530}
                       sizes="(max-width: 768px) 100vw, 800px"

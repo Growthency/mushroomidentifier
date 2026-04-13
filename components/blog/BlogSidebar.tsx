@@ -359,7 +359,7 @@ export default function BlogSidebar() {
           <div className="relative w-full overflow-hidden" style={{ height: 230 }}>
             <Image
               src="/author-avatar.webp"
-              alt=""
+              alt="Mushroom identification expert and mycologist"
               fill
               className="object-cover"
               style={{ filter: 'blur(16px) brightness(0.4) saturate(1.3)', transform: 'scale(1.2)' }}
