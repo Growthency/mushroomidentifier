@@ -11,13 +11,13 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
 export const metadata: Metadata = {
-  title: 'Galerina marginata (Small Brown Poisonous Mushroom) - Identification Guide',
-  description: 'Galerina marginata, commonly known as the Funeral Bell, is a small brown poisonous mushroom that contains deadly amatoxins, the same toxins found in the Death Cap.',
+  title: 'Galerina marginata: Deadly Funeral Bell ID Guide',
+  description: '⚠️ Galerina marginata looks harmless but kills. Learn to identify this deadly brown mushroom by cap, gills, ring and habitat before your next forage.',
   alternates: { canonical: 'https://mushroomidentifiers.com/galerina-marginata' },
   openGraph: {
     type: 'article',
-    title: 'Galerina marginata (Small Brown Poisonous Mushroom) - Identification Guide',
-    description: 'Galerina marginata, commonly known as the Funeral Bell, is a small brown poisonous mushroom that contains deadly amatoxins, the same toxins found in the Death Cap.',
+    title: 'Galerina marginata: Deadly Funeral Bell ID Guide',
+    description: '⚠️ Galerina marginata looks harmless but kills. Learn to identify this deadly brown mushroom by cap, gills, ring and habitat before your next forage.',
     url: 'https://mushroomidentifiers.com/galerina-marginata',
     images: [{ url: 'https://mushroomidentifiers.com/galerina-marginata-funeral-bell-identification.webp', width: 1200, height: 630 }],
   },
@@ -29,7 +29,7 @@ const schemaData = {
     {
       '@type': 'Article',
       headline: 'Galerina marginata: Identification, Features, Habitat & Safety Guide (Small Brown Poisonous Mushroom)',
-      description: 'Galerina marginata, commonly known as the Funeral Bell, is a small brown poisonous mushroom that contains deadly amatoxins, the same toxins found in the Death Cap.',
+      description: '⚠️ Galerina marginata looks harmless but kills. Learn to identify this deadly brown mushroom by cap, gills, ring and habitat before your next forage.',
       image: 'https://mushroomidentifiers.com/galerina-marginata-funeral-bell-identification.webp',
       author: { '@type': 'Organization', name: 'Mushroom Identifiers', url: 'https://mushroomidentifiers.com/' },
       publisher: { '@type': 'Organization', name: 'Mushroom Identifiers', url: 'https://mushroomidentifiers.com/', email: 'support@mushroomidentifiers.com' },
@@ -491,7 +491,7 @@ export default function GalerinaMarginataPage() {
                 <H2 id="pros-and-cons">Galerina marginata Pros and Cons</H2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl" style={{ background: '#22c55e10', border: '1px solid #22c55e30' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#22c55e' }}>✅ Pros</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Scientifically important</li>
                       <li>Helps study toxic compounds</li>
@@ -499,7 +499,7 @@ export default function GalerinaMarginataPage() {
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl" style={{ background: '#ef444410', border: '1px solid #ef444430' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h4>
+                    <h3 className="text-sm font-bold mb-2" style={{ color: '#ef4444' }}>❌ Cons</h3>
                     <ul className="list-disc pl-5 space-y-1 text-sm" style={{ color: 'var(--text-muted)' }}>
                       <li>Extremely toxic</li>
                       <li>Easily confused with edible mushrooms</li>

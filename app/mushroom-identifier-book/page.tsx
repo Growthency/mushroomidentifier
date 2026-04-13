@@ -124,9 +124,9 @@ const H3 = ({ id, children }: { id?: string; children: React.ReactNode }) => (
   </h3>
 )
 const H4 = ({ children }: { children: React.ReactNode }) => (
-  <h4 className="font-semibold text-base mb-2 mt-4" style={{ color: 'var(--text-primary)' }}>
+  <h3 className="font-semibold text-base mb-2 mt-4" style={{ color: 'var(--text-primary)' }}>
     {children}
-  </h4>
+  </h3>
 )
 const InfoBox = ({ children }: { children: React.ReactNode }) => (
   <div
@@ -158,9 +158,9 @@ const BookCard = ({
     style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
   >
     <div className="p-5 md:p-6">
-      <h4 className="font-playfair text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+      <h3 className="font-playfair text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
         {title}
-      </h4>
+      </h3>
       <div className="flex flex-wrap gap-3 mb-4 text-xs" style={{ color: 'var(--text-faint)' }}>
         {author && <span>Author: <span style={{ color: 'var(--accent)' }}>{author}</span></span>}
         {price && <span>Price: <span style={{ color: 'var(--text-muted)' }}>{price}</span></span>}
