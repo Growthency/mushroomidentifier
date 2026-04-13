@@ -178,8 +178,8 @@ export default async function DynamicPostPage({
         style={{ background: 'var(--bg-primary)' }}
       >
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-10 items-start">
-            <article className="min-w-0 flex-1 max-w-4xl">
+          <div className={`flex gap-10 items-start${post.layout === 'full-page' ? ' justify-center' : ''}`}>
+            <article className={`min-w-0 flex-1 ${post.layout === 'full-page' ? 'max-w-5xl mx-auto' : 'max-w-4xl'}`}>
               {/* Breadcrumb */}
               <nav
                 className="flex items-center gap-2 text-xs mb-8 flex-wrap"
@@ -322,8 +322,8 @@ export default async function DynamicPostPage({
               <BlogComments slug={post.slug} />
             </article>
 
-            {/* Sidebar */}
-            <BlogSidebar />
+            {/* Sidebar — hidden for full-page layout */}
+            {post.layout !== 'full-page' && <BlogSidebar />}
           </div>
         </div>
       </div>
