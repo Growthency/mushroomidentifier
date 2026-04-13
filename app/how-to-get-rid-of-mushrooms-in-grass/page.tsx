@@ -198,7 +198,7 @@ export default function MushroomsInGrassPage() {
             <AuthorBlock updatedAt="Apr 4, 2026" />
             <LiveViewCount slug="/how-to-get-rid-of-mushrooms-in-grass" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              Mushrooms in grass are caused by underground fungal networks called mycelium, which thrive in moist soil rich in organic matter. To get rid of them effectively, you need to remove visible mushrooms, reduce moisture, improve soil drainage, and eliminate decaying material like roots and thatch. Simply removing mushrooms is not enough—long-term control comes from changing the lawn conditions that allow fungi to grow.
+              Mushrooms in grass are caused by underground fungal networks called mycelium, which thrive in moist soil rich in organic matter. If you are wondering <a href="/why-are-mushrooms-growing-in-my-yard" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>why mushrooms are growing in your yard</a>, the answer starts underground. To get rid of them effectively, you need to remove visible mushrooms, reduce moisture, improve soil drainage, and eliminate decaying material like roots and thatch. Simply removing mushrooms is not enough—long-term control comes from changing the lawn conditions that allow fungi to grow.
             </p>
           </div>
 
@@ -220,7 +220,7 @@ export default function MushroomsInGrassPage() {
           <Section>
             <H2 id="why-mushrooms-grow-in-grass">Why Mushrooms Grow in Grass</H2>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
-              Mushrooms are the visible fruiting bodies of fungi, formed when underground mycelium finds ideal conditions such as moisture, shade, and organic nutrients. Common lawn fungi break down dead roots, wood fragments, and organic debris, which is why they often appear after rain or heavy watering.
+              Mushrooms are the visible fruiting bodies of fungi, formed when underground mycelium finds ideal conditions such as moisture, shade, and organic nutrients. Learning to <a href="/mushroom-parts-explained" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>identify mushroom parts</a> can help you determine what species is growing in your lawn. Common lawn fungi break down dead roots, wood fragments, and organic debris, which is why they often appear after rain or heavy watering.
             </p>
 
             <H3 id="excess-moisture-poor-drainage">🌱 Excess Moisture &amp; Poor Drainage</H3>
@@ -506,7 +506,9 @@ export default function MushroomsInGrassPage() {
               <p className="mb-2">Some species growing in lawns may belong to dangerous groups such as:</p>
               <ul className="space-y-1">
                 <li>• <em>Amanita phalloides</em> (Death Cap)</li>
-                <li>• Other toxic fungi with similar appearance to edible species</li>
+                <li>• <a href="/chlorophyllum-molybdites" className="font-semibold underline underline-offset-2" style={{ color: '#ef4444' }}><em>Chlorophyllum molybdites</em></a> — the most common toxic lawn mushroom in North America</li>
+                <li>• <a href="/scleroderma-citrinum" className="font-semibold underline underline-offset-2" style={{ color: '#ef4444' }}><em>Scleroderma citrinum</em></a> (Common Earthball) — a toxic puffball-like species found in gardens</li>
+                <li>• Other toxic fungi with similar appearance to edible species like <a href="/agaricus-campestris" className="font-semibold underline underline-offset-2" style={{ color: '#ef4444' }}><em>Agaricus campestris</em></a> (Field Mushroom)</li>
               </ul>
               <p className="mt-2">Never consume wild mushrooms without proper identification by an expert.</p>
             </WarningBox>

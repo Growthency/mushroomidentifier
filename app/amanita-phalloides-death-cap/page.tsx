@@ -183,8 +183,8 @@ export default function DeathCapPage() {
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita phalloides</em>, commonly known as the Death Cap, is one of the most dangerous toxic
               mushrooms in the world. It is responsible for the majority of fatal mushroom poisonings due to its
-              highly potent toxins. Because it closely resembles edible mushrooms, accurate death cap
-              identification requires careful examination of all mushroom parts.
+              highly potent toxins. Because it closely resembles edible mushrooms such as <a href="/agaricus-campestris" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Agaricus campestris</em> (field mushroom)</a> and <a href="/agaricus-arvensis-horse-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Agaricus arvensis</em> (horse mushroom)</a>, accurate death cap
+              identification requires careful examination of all <a href="/mushroom-parts-explained" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom parts</a>.
             </p>
           </div>
 
@@ -259,7 +259,7 @@ export default function DeathCapPage() {
             </div>
             <p className="mt-4">
               The Death Cap belongs to the Amanitaceae family, which includes several of the most toxic mushroom
-              species. Members of this genus are often identified by the combination of white gills, a ring, and a
+              species such as <a href="/amanita-bisporigera-destroying-angel" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita bisporigera</em> (Destroying Angel)</a> and <a href="/amanita-virosa-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita virosa</em></a>. Members of this genus are often identified by the combination of white gills, a ring, and a
               volva, making them especially important in mycology and mushroom safety.
             </p>
           </Section>
@@ -523,6 +523,7 @@ export default function DeathCapPage() {
             </div>
 
             <H3>Common Confusions</H3>
+            <p className="mb-3">The Death Cap is frequently mistaken for safe species. For a detailed side-by-side guide, see our <a href="/death-cap-vs-destroying-angel" style={{ color: 'var(--accent)' }} className="hover:underline">death cap vs destroying angel comparison</a>.</p>
             <ul>
               <li>Young <em>Agaricus</em> species</li>
               <li>Puffballs (when immature)</li>

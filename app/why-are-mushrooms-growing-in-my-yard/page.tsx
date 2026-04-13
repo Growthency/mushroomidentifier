@@ -203,7 +203,7 @@ export default function WhyMushroomsInYardPage() {
             <AuthorBlock updatedAt="Apr 4, 2026" />
             <LiveViewCount slug="/why-are-mushrooms-growing-in-my-yard" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              Mushrooms grow in your yard because underground fungi (mycelium) are actively breaking down organic matter in moist, shaded soil. When conditions like high moisture, decaying roots, and low sunlight are present, fungi produce visible mushrooms (fruiting bodies). They are not random—they&apos;re a sign your soil ecosystem is active, but sometimes unbalanced.
+              Mushrooms grow in your yard because underground fungi (mycelium) are actively breaking down organic matter in moist, shaded soil. When conditions like high moisture, decaying roots, and low sunlight are present, fungi produce visible mushrooms (fruiting bodies). They are not random—they&apos;re a sign your soil ecosystem is active, but sometimes unbalanced. If you want to take action, see our companion guide on <a href="/how-to-get-rid-of-mushrooms-in-grass" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>how to get rid of mushrooms in grass</a>.
             </p>
           </div>
 
@@ -225,7 +225,7 @@ export default function WhyMushroomsInYardPage() {
           <Section>
             <H2 id="what-mushrooms-in-your-yard-actually-mean">What Mushrooms in Your Yard Actually Mean</H2>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
-              From a research perspective, mushrooms are not the problem—they are the result of fungal activity beneath the surface. The real organism is the mycelium, a network of microscopic threads (hyphae) that live in soil and feed on organic material like dead roots, wood, and compost.
+              From a research perspective, mushrooms are not the problem—they are the result of fungal activity beneath the surface. The real organism is the mycelium, a network of microscopic threads (hyphae) that live in soil and feed on organic material like dead roots, wood, and compost. Understanding <a href="/mushroom-parts-explained" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>mushroom anatomy and parts</a> can help you identify what is growing.
             </p>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
               When environmental conditions align, this mycelium produces mushrooms to release spores, which help fungi reproduce and spread.
@@ -265,7 +265,7 @@ export default function WhyMushroomsInYardPage() {
             <div className="rounded-2xl p-5 mb-5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <H3 id="decaying-organic-matter-fungi-food-source">🌿 Decaying Organic Matter (Fungi Food Source)</H3>
               <p className="mb-3 text-sm" style={{ color: 'var(--text-muted)' }}>
-                Fungi are natural decomposers. They break down organic materials in your yard.
+                Fungi are natural decomposers. They break down organic materials in your yard. Common edible species like <a href="/agaricus-campestris" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}><em>Agaricus campestris</em></a> (Field Mushroom) grow in grassy areas, while wood-decomposing species like <a href="/pleurotus-ostreatus" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}><em>Pleurotus ostreatus</em></a> (Oyster Mushroom) appear near stumps and dead trees.
               </p>
               <p className="text-xs font-semibold mb-2" style={{ color: 'var(--accent)' }}>Typical sources:</p>
               <BulletList items={[
@@ -333,9 +333,10 @@ export default function WhyMushroomsInYardPage() {
               Most lawn mushrooms are harmless, but some can be toxic.
             </p>
             <WarningBox>
-              <p className="font-semibold mb-2">Known dangerous species:</p>
+              <p className="font-semibold mb-2">Known dangerous species found in yards:</p>
               <ul className="space-y-1 mb-3">
                 <li>• <em>Amanita phalloides</em> (Death Cap)</li>
+                <li>• <a href="/chlorophyllum-molybdites" className="font-semibold underline underline-offset-2" style={{ color: '#ef4444' }}><em>Chlorophyllum molybdites</em></a> — the most common cause of lawn mushroom poisoning</li>
                 <li>• Other lookalike toxic fungi</li>
               </ul>
               <p>Never eat mushrooms from your yard unless properly identified.</p>

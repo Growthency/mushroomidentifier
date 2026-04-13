@@ -105,9 +105,8 @@ export default function DestroyingAngelPage() {
             <LiveViewCount slug="/amanita-bisporigera-destroying-angel" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita bisporigera</em>, commonly known as the Destroying Angel, is one of the most dangerous
-              toxic mushrooms in North America. It is responsible for many fatal poisonings due to its potent
-              amatoxins. Because it closely resembles edible white mushrooms, accurate destroying angel
-              identification requires careful examination of all mushroom parts.
+              toxic mushrooms in North America. It contains the same deadly amatoxins found in <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita phalloides</em> (Death Cap)</a> and the European <a href="/amanita-virosa-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita virosa</em></a>. Because it closely resembles edible white mushrooms, accurate destroying angel
+              identification requires careful examination of all <a href="/mushroom-parts-explained" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom parts</a>.
             </p>
           </div>
 
@@ -441,6 +440,7 @@ export default function DestroyingAngelPage() {
             </div>
 
             <H3>Common Confusions</H3>
+            <p className="mb-3">For a detailed comparison with similar deadly species, see our <a href="/death-cap-vs-destroying-angel" style={{ color: 'var(--accent)' }} className="hover:underline">death cap vs destroying angel guide</a>. Beginners may also confuse this species with the <a href="/agaricus-arvensis-horse-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline">horse mushroom (<em>Agaricus arvensis</em>)</a>, which has a similar white appearance.</p>
             <ul>
               <li>Young <em>Agaricus</em> species</li>
               <li>White field mushrooms</li>

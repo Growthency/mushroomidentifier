@@ -46,7 +46,7 @@ export default function MushroomQuizPage() {
               <AuthorBlock updatedAt="Apr 4, 2026" />
               <LiveViewCount slug="/mushroom-identification-quiz" className="mb-2" />
               <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                Test your knowledge of mushroom identification with 50 expert-curated questions covering toxic species, edible mushrooms, look-alike dangers, and fungal anatomy. Each question has a 30-second timer. How well do you know your fungi?
+                Test your knowledge of mushroom identification with 50 expert-curated questions covering toxic species like <a href="/amanita-phalloides-death-cap" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>Amanita phalloides (Death Cap)</a>, edible mushrooms like <a href="/boletus-edulis" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>Boletus edulis</a>, look-alike dangers covered in our <a href="/death-cap-vs-destroying-angel" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>Death Cap vs Destroying Angel</a> guide, and fungal anatomy. Each question has a 30-second timer. We recommend you <a href="/mushroom-parts-explained" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>study mushroom anatomy first</a> and browse a trusted <a href="/mushroom-identifier-book" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}>mushroom identification field guide</a> before attempting this quiz. How well do you know your fungi?
               </p>
             </div>
 

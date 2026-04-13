@@ -315,7 +315,7 @@ export default function MushroomIdentifierBookPage() {
               A mushroom identifier book is a reference designed to help readers identify mushrooms and toadstools by observable features. Unlike a general nature book, it focuses on fungi and the traits that separate one species from another. That usually includes color, cap texture, gill attachment, pores, bruising reaction, smell, habitat, season, and sometimes spore print color. In practical terms, a good mushroom field guide teaches you how to slow down and notice details that matter.
             </p>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
-              That distinction is important because mushroom identification is rarely based on a single feature. A yellow mushroom is not identified just because it is yellow. A chanterelle, for example, is usually separated from lookalikes by its ridges, growth habit, smell, and habitat, not color alone. Likewise, many dangerous species in the genus Amanita can appear simple at first glance, but their ring, volva, and overall structure are critical to a safe identification. This is where a proper mushroom identifier book becomes useful: it trains the reader to look at fungi as a combination of related traits rather than as isolated pictures.
+              That distinction is important because mushroom identification is rarely based on a single feature. A yellow mushroom is not identified just because it is yellow. A <a href="/cantharellus-cibarius" style={{ color: 'var(--accent)' }} className="hover:underline">chanterelle</a>, for example, is usually separated from lookalikes by its ridges, growth habit, smell, and habitat, not color alone. Likewise, many dangerous species in the genus Amanita, such as the <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline">deadly Death Cap (<em>Amanita phalloides</em>)</a>, can appear simple at first glance, but their ring, volva, and overall structure are critical to a safe identification. This is where a proper mushroom identifier book becomes useful: it trains the reader to look at fungi as a combination of related traits rather than as isolated pictures.
             </p>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
               Most mushroom books fall into one of several formats. A field guide is usually designed for outdoor use, with portable size, species entries, photos, and quick identification clues. A more advanced reference book may go deeper into taxonomy, fungal morphology, ecological relationships, and regional variation. Some books are visual-first, which makes them good for beginners, while others rely on terminology and structured identification keys, which appeal more to experienced foragers, naturalists, and amateur mycologists.
@@ -374,7 +374,7 @@ export default function MushroomIdentifierBookPage() {
               Reference books are the core of mushroom identification. These are the books most people mean when they search for a mushroom identifier book, wild mushroom guide, or mushroom field guide PDF. Their main job is to help readers observe, compare, and narrow down species using field marks and habitat clues.
             </p>
             <p className="mb-3" style={{ color: 'var(--text-muted)' }}>
-              A strong reference guide usually covers mushroom morphology in detail. That includes the cap, gills, pores, teeth, stem, ring, volva, flesh texture, bruising changes, smell, and spore print. It may also organize fungi by genus, family, habitat, or visible form. Some are compact enough to carry outdoors, while others are better suited to home study because of their depth and page count.
+              A strong reference guide usually covers mushroom morphology in detail. That includes the <a href="/mushroom-parts-explained" style={{ color: 'var(--accent)' }} className="hover:underline">cap, gills, pores, teeth, stem, ring, and volva</a>, as well as flesh texture, bruising changes, smell, and spore print. It may also organize fungi by genus, family, habitat, or visible form. Some are compact enough to carry outdoors, while others are better suited to home study because of their depth and page count.
             </p>
             <p className="mb-3" style={{ color: 'var(--text-muted)' }}>
               Reference books are especially important for identifying dangerous lookalikes. A novice may confuse a false chanterelle with a true chanterelle or overlook the deadly significance of a volva in an Amanita. Good reference guides reduce that risk by showing related species together and explaining why similar mushrooms are not the same.
@@ -388,7 +388,7 @@ export default function MushroomIdentifierBookPage() {
 
             <H3 id="cooking-books">Cooking Books</H3>
             <p className="mb-3" style={{ color: 'var(--text-muted)' }}>
-              Cooking books focus less on taxonomy and more on edible use. They are for readers who want to know how to clean, prepare, pair, and cook mushrooms. Some center on wild edible fungi such as chanterelles, morels, porcini, and hedgehog mushrooms, while others include cultivated mushrooms like oyster mushrooms, shiitake, chestnut mushrooms, and lion's mane.
+              Cooking books focus less on taxonomy and more on edible use. They are for readers who want to know how to clean, prepare, pair, and cook mushrooms. Some center on wild edible fungi such as chanterelles, morels, <a href="/boletus-edulis" style={{ color: 'var(--accent)' }} className="hover:underline">porcini</a>, and hedgehog mushrooms, while others include cultivated mushrooms like oyster mushrooms, shiitake, chestnut mushrooms, and lion's mane.
             </p>
             <p className="mb-3" style={{ color: 'var(--text-muted)' }}>
               A cooking book can still be useful for identification, but that is not its primary job. Its main value lies in helping readers understand flavor, texture, preservation, and recipe use. For example, a culinary mushroom guide might explain why chanterelles pair well with butter and herbs, or how morels should be cooked thoroughly before eating. It may also cover drying, sautéing, pickling, and stock-making.
@@ -852,7 +852,7 @@ export default function MushroomIdentifierBookPage() {
           <Section>
             <H2 id="seasonal-mushroom-identification">Seasonal Mushroom Identification</H2>
             <p className="mb-6" style={{ color: 'var(--text-muted)' }}>
-              Mushrooms grow based on seasonal conditions like moisture, temperature, and environment. A good mushroom book always includes seasonal data.
+              Mushrooms grow based on seasonal conditions like moisture, temperature, and environment. A good mushroom book always includes seasonal data. To practice recognizing species across different seasons and habitats, try our <a href="/mushroom-identification-quiz" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identification quiz</a>.
             </p>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[

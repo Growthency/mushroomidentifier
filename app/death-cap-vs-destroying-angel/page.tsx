@@ -150,7 +150,7 @@ export default function DeathCapVsDestroyingAngelPage() {
             <AuthorBlock updatedAt="Mar 31, 2026" />
             <LiveViewCount slug="/death-cap-vs-destroying-angel" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              The difference between the <strong style={{ color: 'var(--text-primary)' }}>Death Cap</strong> (<em>Amanita phalloides</em>) and the <strong style={{ color: 'var(--text-primary)' }}>Destroying Angel</strong> (<em>Amanita bisporigera</em>, <em>Amanita virosa</em>) comes down to cap color, shape, and subtle structural features — but both are among the most deadly toxic mushrooms in the world.
+              The difference between the <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline"><strong style={{ color: 'var(--accent)' }}>Death Cap</strong></a> (<em>Amanita phalloides</em>) and the <a href="/amanita-bisporigera-destroying-angel" style={{ color: 'var(--accent)' }} className="hover:underline"><strong style={{ color: 'var(--accent)' }}>Destroying Angel</strong></a> (<em>Amanita bisporigera</em>, <em>Amanita virosa</em>) comes down to cap color, shape, and subtle structural features — but both are among the most deadly toxic mushrooms in the world.
             </p>
           </div>
 
@@ -225,7 +225,7 @@ export default function DeathCapVsDestroyingAngelPage() {
             <p>This makes <em>Amanita</em> species especially risky for beginners.</p>
 
             <H3>Importance of Correct Mushroom Identification</H3>
-            <p>Correct identification depends on combining:</p>
+            <p>Correct identification depends on combining key <a href="/mushroom-parts-explained" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom anatomy features</a>:</p>
             <ul>
               <li>Cap (pileus)</li>
               <li>Gills (lamellae)</li>
@@ -310,7 +310,7 @@ export default function DeathCapVsDestroyingAngelPage() {
             <ul>
               <li><em>Amanita phalloides</em> → Death Cap</li>
               <li><em>Amanita bisporigera</em> → Destroying Angel (North America)</li>
-              <li><em>Amanita virosa</em> → Destroying Angel (Europe)</li>
+              <li><a href="/amanita-virosa-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita virosa</em></a> → Destroying Angel (Europe)</li>
             </ul>
             <p>Although different species, they share similar morphology, same toxic compounds (amatoxins), and comparable ecological roles.</p>
 
@@ -549,7 +549,7 @@ export default function DeathCapVsDestroyingAngelPage() {
 
             <H3>Common Edible Look-Alikes</H3>
             <ul>
-              <li>Agaricus species (field mushrooms)</li>
+              <li><a href="/agaricus-campestris" style={{ color: 'var(--accent)' }} className="hover:underline">Agaricus species (field mushrooms)</a></li>
               <li>Puffballs (when young)</li>
               <li>Some white woodland mushrooms</li>
             </ul>
@@ -762,7 +762,9 @@ export default function DeathCapVsDestroyingAngelPage() {
             <p>
               Learning their differences, habitat, and structure is essential for safe identification. While tools like a{' '}
               <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link>{' '}
-              can help analyze features, they should always be used alongside expert knowledge.
+              can help analyze features, they should always be used alongside expert knowledge. Ready to put your knowledge to the test? Try our{' '}
+              <a href="/mushroom-identification-quiz" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identification quiz</a>{' '}
+              to see how well you can distinguish deadly Amanita species from safe look-alikes.
             </p>
             <WarningBox>
               ⚠️ <strong>Golden Rule:</strong> If you are not 100% sure, never consume a wild mushroom.

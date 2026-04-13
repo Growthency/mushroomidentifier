@@ -80,7 +80,7 @@ export default function HorseMushroomPage() {
             <AuthorBlock updatedAt="Mar 31, 2026" />
             <LiveViewCount slug="/agaricus-arvensis-horse-mushroom" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              The <strong style={{ color: 'var(--text-primary)' }}>Horse Mushroom (<em>Agaricus arvensis</em>)</strong> is a large, edible mushroom commonly found in grasslands and pastures. It is known for its white cap, pink-to-brown gills, strong anise-like smell, and prominent ring on the stem. While it is considered edible and popular among foragers, it closely resembles toxic look-alikes such as <em>Agaricus xanthodermus</em>. Correct identification requires examining cap, gills, stem, smell, habitat, and growth pattern, which tools like a{' '}
+              The <strong style={{ color: 'var(--text-primary)' }}>Horse Mushroom (<em>Agaricus arvensis</em>)</strong> is a large, edible mushroom commonly found in grasslands and pastures. It is known for its white cap, pink-to-brown gills, strong anise-like smell, and prominent ring on the stem. While it is considered edible and popular among foragers, it closely resembles toxic look-alikes such as <a href="/agaricus-xanthodermus" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Agaricus xanthodermus</em> (Yellow Stainer)</a>. Correct identification requires examining cap, <a href="/mushroom-parts-explained" style={{ color: 'var(--accent)' }} className="hover:underline">gills, stem, and other mushroom parts</a>, smell, habitat, and growth pattern, which tools like a{' '}
               <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> can help analyze using AI and image recognition.
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function HorseMushroomPage() {
               />
               <div className="p-5 rounded-xl flex flex-col justify-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                  The Horse Mushroom belongs to the <strong style={{ color: 'var(--text-primary)' }}>Agaricaceae</strong> family, the same broader group that includes many familiar gilled mushrooms. Within the genus <em>Agaricus</em>, species are often identified by their pink-to-brown gills, ring on the stem, and lack of a volva — but can still vary in smell, staining reaction, and habitat.
+                  The Horse Mushroom belongs to the <strong style={{ color: 'var(--text-primary)' }}>Agaricaceae</strong> family, the same broader group that includes many familiar gilled mushrooms such as <a href="/agaricus-campestris" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Agaricus campestris</em> (field mushroom)</a>. Within the genus <em>Agaricus</em>, species are often identified by their pink-to-brown gills, ring on the stem, and lack of a volva — but can still vary in smell, staining reaction, and habitat.
                 </p>
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function HorseMushroomPage() {
             <InfoBox>The cogwheel ring pattern is a highly reliable identification feature unique to <em>Agaricus arvensis</em>.</InfoBox>
 
             <H3>Volva (Basal Cup)</H3>
-            <p><strong>Absent</strong> in Horse Mushroom — no cup or sac at the base. This helps distinguish it from dangerous species like <em>Amanita</em>, which have a volva.</p>
+            <p><strong>Absent</strong> in Horse Mushroom — no cup or sac at the base. This helps distinguish it from dangerous species like <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita phalloides</em> (Death Cap)</a> and <a href="/amanita-virosa-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita virosa</em> (Destroying Angel)</a>, which have a volva.</p>
           </Section>
 
           <Divider />
@@ -480,7 +480,7 @@ export default function HorseMushroomPage() {
               The <strong>Horse Mushroom (<em>Agaricus arvensis</em>)</strong> is a well-known edible species, but it requires careful identification due to similar toxic fungi. Understanding its cap, gills, stem, ring, smell, and habitat is essential for safe recognition.
             </p>
             <p>
-              Using a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> alongside field knowledge can significantly improve accuracy — helping you explore fungi safely while avoiding dangerous mistakes.
+              Using a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> alongside field knowledge and a reliable <a href="/mushroom-identifier-book" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identification field guide</a> can significantly improve accuracy — helping you explore fungi safely while avoiding dangerous mistakes.
             </p>
             <WarningBox>⚠️ <strong>Golden Rule:</strong> If you are not 100% sure of your identification, never consume a wild mushroom.</WarningBox>
           </Section>

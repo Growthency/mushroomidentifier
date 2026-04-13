@@ -119,7 +119,7 @@ export default async function MushroomPartsExplainedPage() {
             <p>This is why modern tools like a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> use AI and computer vision to analyze the full fungal structure rather than relying on a single image or feature.</p>
 
             <H3>Safety and Identification Importance</H3>
-            <p>Some of the most dangerous fungi, including species in the <em>Amanita</em> group, look similar to edible mushrooms. Features like a volva at the base or a ring on the stem can be critical indicators of toxicity. Understanding mushroom anatomy is not just about learning — it is essential for safe identification of wild fungi.</p>
+            <p>Some of the most dangerous fungi, including species in the <em>Amanita</em> group such as the <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline">Death Cap (<em>Amanita phalloides</em>)</a>, look similar to edible mushrooms. Features like a volva at the base or a ring on the stem can be critical indicators of toxicity. Understanding mushroom anatomy is not just about learning — it is essential for safe identification of wild fungi.</p>
           </Section>
 
           <Divider />
@@ -205,7 +205,7 @@ export default async function MushroomPartsExplainedPage() {
               <li><strong>Slimy or sticky</strong> → influenced by moisture</li>
               <li><strong>Dry and fibrous</strong> → typical in certain woodland fungi</li>
             </ul>
-            <p>For example, some <em>Amanita</em> species have warty caps due to remnants of the universal veil.</p>
+            <p>For example, some <em>Amanita</em> species have warty caps due to remnants of the universal veil, while <a href="/morchella-esculenta" style={{ color: 'var(--accent)' }} className="hover:underline">Morchella esculenta (morel)</a> has a distinctive honeycomb-like cap structure unlike any other common species.</p>
 
             <H3>Cap Color and Its Limitations</H3>
             <p>Cap color is useful but unreliable on its own because it changes based on age, moisture, sun exposure, and environmental conditions. This is why a wild mushroom identifier by picture does not rely only on color.</p>
@@ -268,7 +268,7 @@ export default async function MushroomPartsExplainedPage() {
                 ['Polypores', 'Tubes'],
               ]}
             />
-            <p>Recognizing these differences is critical in mushroom classification.</p>
+            <p>Recognizing these differences is critical in mushroom classification. For example, <a href="/boletus-edulis" style={{ color: 'var(--accent)' }} className="hover:underline">Boletus edulis (porcini)</a> has a spongy pore surface rather than gills, which is one of the first features that separates boletes from gilled mushrooms.</p>
 
             <H3>How AI Uses Gill Patterns</H3>
             <p>A <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier app</Link> analyzes gill spacing and pattern, attachment type, color and contrast, and underside structure. These patterns are among the strongest indicators in AI mushroom identification systems.</p>
@@ -527,7 +527,7 @@ export default async function MushroomPartsExplainedPage() {
 
             <H3>Chanterelles vs Look-Alikes</H3>
             <ul>
-              <li><strong>True chanterelles</strong> → ridges (not true gills)</li>
+              <li><strong>True chanterelles</strong> → ridges (not true gills) — see our full guide on <a href="/cantharellus-cibarius" style={{ color: 'var(--accent)' }} className="hover:underline">Cantharellus cibarius (chanterelle) identification</a></li>
               <li><strong>False chanterelles</strong> → true gills</li>
             </ul>
             <p>Understanding these differences improves both manual and AI-based identification.</p>
@@ -605,6 +605,7 @@ export default async function MushroomPartsExplainedPage() {
               <li>Understand fungal ecology</li>
               <li>Explore nature with confidence</li>
             </ul>
+            <p>For further reading on how anatomy knowledge applies in the field, explore our <a href="/mushroom-identifier-book" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier book guide</a> for the best field references. You can also <a href="/mushroom-identification-quiz" style={{ color: 'var(--accent)' }} className="hover:underline">test your knowledge with our mushroom identification quiz</a> to see how well you can recognize key mushroom parts in practice.</p>
             <InfoBox>Always remember: use identification tools as guidance, not final proof, especially when dealing with wild mushrooms.</InfoBox>
           </Section>
 
