@@ -4,9 +4,10 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import {
   ShieldCheck, RefreshCw, AlertTriangle, AlertCircle, Info,
-  CheckCircle2, ChevronDown, ChevronRight, Search, Globe,
+  CheckCircle2, ChevronDown, ChevronRight, ChevronUp, Search, Globe,
   FileText, Share2, Type, Image as ImageIcon, Zap, Code2,
   ArrowUpRight, XCircle, ExternalLink, Twitter, Play, Square, Link2,
+  Download, ArrowUpDown,
 } from 'lucide-react'
 
 /* ─────────────── Types ─────────────── */
@@ -200,6 +201,8 @@ export default function SeoHealthPage() {
   const [expandedPage, setExpandedPage] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [error, setError] = useState('')
+  const [sortField, setSortField] = useState<'score' | 'size' | 'critical' | 'warn' | 'info'>('score')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   // Load saved scan on mount
   useEffect(() => {
@@ -333,12 +336,86 @@ export default function SeoHealthPage() {
   /* ── Computed stats ── */
   const stats = hasResults ? aggregate(allPages, globalChecks) : null
 
-  /* ── Filtered pages ── */
-  const sortedPages = [...allPages].sort((a, b) => a.score - b.score)
+  /* ── Sort handler ── */
+  const handleSort = (field: typeof sortField) => {
+    if (sortField === field) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDir(field === 'score' ? 'asc' : 'desc')
+    }
+  }
+
+  const SortIcon = ({ field }: { field: typeof sortField }) => {
+    if (sortField !== field) return <ArrowUpDown size={10} style={{ opacity: 0.4 }} />
+    return sortDir === 'asc' ? <ChevronUp size={10} /> : <ChevronDown size={10} />
+  }
+
+  /* ── Filtered & sorted pages ── */
+  const sortedPages = [...allPages].sort((a, b) => {
+    let av = 0, bv = 0
+    switch (sortField) {
+      case 'score': av = a.score; bv = b.score; break
+      case 'size': av = a.htmlSize; bv = b.htmlSize; break
+      case 'critical': av = a.issues.filter(i => i.severity === 'critical').length; bv = b.issues.filter(i => i.severity === 'critical').length; break
+      case 'warn': av = a.issues.filter(i => i.severity === 'warning').length; bv = b.issues.filter(i => i.severity === 'warning').length; break
+      case 'info': av = a.issues.filter(i => i.severity === 'info').length; bv = b.issues.filter(i => i.severity === 'info').length; break
+    }
+    return sortDir === 'asc' ? av - bv : bv - av
+  })
   const filteredPages = sortedPages.filter(p =>
     p.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  /* ── Export CSV ── */
+  const exportCSV = () => {
+    const rows: string[][] = []
+    // Header
+    rows.push(['Page', 'URL', 'Score', 'Size (KB)', 'Critical', 'Warnings', 'Info', 'Status', 'Issues'])
+    for (const page of sortedPages) {
+      const criticals = page.issues.filter(i => i.severity === 'critical')
+      const warnings = page.issues.filter(i => i.severity === 'warning')
+      const infos = page.issues.filter(i => i.severity === 'info')
+      const issueDetails = page.issues
+        .sort((a, b) => ({ critical: 0, warning: 1, info: 2 }[a.severity] || 2) - ({ critical: 0, warning: 1, info: 2 }[b.severity] || 2))
+        .map(i => `[${i.severity.toUpperCase()}] ${i.category}: ${i.message} → Fix: ${i.fix}`)
+        .join(' | ')
+      rows.push([
+        page.path || '/',
+        page.url,
+        String(page.score),
+        String(Math.round(page.htmlSize / 1024)),
+        String(criticals.length),
+        String(warnings.length),
+        String(infos.length),
+        String(page.status),
+        issueDetails || 'All checks passed',
+      ])
+    }
+    // Global checks section
+    rows.push([])
+    rows.push(['--- GLOBAL CHECKS ---'])
+    rows.push(['Check', 'Status', 'Severity', 'Message', 'Fix'])
+    for (const gc of globalChecks) {
+      rows.push([
+        gc.check.replace(/-/g, ' '),
+        gc.passed ? 'PASSED' : 'FAILED',
+        gc.severity,
+        gc.message,
+        gc.passed ? '' : gc.fix,
+      ])
+    }
+
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `seo-health-report-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   /* ── Progress percentage ── */
   const progressPct = totalUrls > 0 ? Math.round((scannedCount / totalUrls) * 100) : 0
@@ -359,6 +436,20 @@ export default function SeoHealthPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {hasResults && (
+            <button
+              onClick={exportCSV}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
+              style={{
+                background: dark ? 'rgba(255,255,255,0.06)' : '#f1f5f9',
+                color: textPrimary,
+                border: `1px solid ${borderColor}`,
+              }}
+            >
+              <Download size={16} />
+              Export CSV
+            </button>
+          )}
           {/* Re-scan / first scan */}
           <button
             onClick={runScan}
@@ -645,7 +736,7 @@ export default function SeoHealthPage() {
 
               <div style={card({ overflow: 'hidden' })}>
                 <div
-                  className="grid items-center px-5 py-3 text-[11px] font-semibold uppercase tracking-wider"
+                  className="grid items-center px-5 py-3 text-[11px] font-semibold uppercase tracking-wider select-none"
                   style={{
                     gridTemplateColumns: '1fr 70px 70px 70px 70px 70px 60px',
                     color: textMuted,
@@ -654,11 +745,21 @@ export default function SeoHealthPage() {
                   }}
                 >
                   <span>Page</span>
-                  <span className="text-center">Score</span>
-                  <span className="text-center">Size</span>
-                  <span className="text-center">Critical</span>
-                  <span className="text-center">Warn</span>
-                  <span className="text-center">Info</span>
+                  <span className="text-center flex items-center justify-center gap-1 cursor-pointer hover:opacity-70" onClick={() => handleSort('score')} style={{ color: sortField === 'score' ? textPrimary : textMuted }}>
+                    Score <SortIcon field="score" />
+                  </span>
+                  <span className="text-center flex items-center justify-center gap-1 cursor-pointer hover:opacity-70" onClick={() => handleSort('size')} style={{ color: sortField === 'size' ? textPrimary : textMuted }}>
+                    Size <SortIcon field="size" />
+                  </span>
+                  <span className="text-center flex items-center justify-center gap-1 cursor-pointer hover:opacity-70" onClick={() => handleSort('critical')} style={{ color: sortField === 'critical' ? '#ef4444' : textMuted }}>
+                    Critical <SortIcon field="critical" />
+                  </span>
+                  <span className="text-center flex items-center justify-center gap-1 cursor-pointer hover:opacity-70" onClick={() => handleSort('warn')} style={{ color: sortField === 'warn' ? '#f59e0b' : textMuted }}>
+                    Warn <SortIcon field="warn" />
+                  </span>
+                  <span className="text-center flex items-center justify-center gap-1 cursor-pointer hover:opacity-70" onClick={() => handleSort('info')} style={{ color: sortField === 'info' ? '#3b82f6' : textMuted }}>
+                    Info <SortIcon field="info" />
+                  </span>
                   <span className="text-center">Status</span>
                 </div>
 
