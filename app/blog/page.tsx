@@ -34,7 +34,7 @@ async function getDbPosts() {
 
     const { data: posts, error } = await supabase
       .from('blog_posts')
-      .select('id, title, slug, excerpt, featured_image, category, risk_level, region, is_premium, views, read_time, status, created_at, published_at')
+      .select('id, title, slug, excerpt, content, featured_image, category, risk_level, region, is_premium, views, read_time, status, created_at, published_at')
       .eq('status', 'published')
       .order('published_at', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false })
@@ -44,10 +44,17 @@ async function getDbPosts() {
       return []
     }
 
-    return (posts ?? []).map(p => ({
+    return (posts ?? []).map(p => {
+      // Auto-generate excerpt from content if excerpt is empty
+      let excerpt = p.excerpt || ''
+      if (!excerpt && p.content) {
+        const text = p.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+        excerpt = text.length > 160 ? text.slice(0, 157).replace(/\s+\S*$/, '') + '...' : text
+      }
+      return {
       id: p.id + 1000,
       title: p.title,
-      excerpt: p.excerpt || '',
+      excerpt,
       category: p.category || 'Guide',
       riskLevel: p.risk_level || 'General',
       region: p.region || 'Worldwide',
@@ -59,7 +66,7 @@ async function getDbPosts() {
       image: p.featured_image || '',
       views: p.views || 0,
       is_premium: p.is_premium || false,
-    }))
+    }})
   } catch {
     return []
   }
