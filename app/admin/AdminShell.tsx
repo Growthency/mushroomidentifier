@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, FileText, BarChart3, Trophy, Globe, ShieldCheck,
-  Code, LogOut, ChevronRight, Menu, X, Sun, Moon,
+  Code, ListOrdered, LogOut, ChevronRight, Menu, X, Sun, Moon,
 } from 'lucide-react'
 import { useState } from 'react'
 import { AdminModalProvider } from '@/components/admin/AdminModal'
@@ -17,6 +17,7 @@ const NAV = [
   { href: '/admin/seo-health',      label: 'SEO Health',      icon: ShieldCheck },
   { href: '/admin/indexing-report', label: 'Indexing Report', icon: Globe },
   { href: '/admin/header-scripts',  label: 'Header Scripts',  icon: Code },
+  { href: '/admin/menus',           label: 'Menus',           icon: ListOrdered },
 ]
 
 export default function AdminShell({ children, userEmail }: { children: React.ReactNode; userEmail: string }) {

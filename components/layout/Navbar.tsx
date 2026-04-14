@@ -6,17 +6,19 @@ import { Sun, Moon, Menu, X } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import type { MenuItem } from '@/lib/menus'
 
-const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/#identifier', label: 'Identifiers' },
-  { href: '/blog', label: 'Mushrooms' },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+// Fallback used only if admin-managed menu table is empty / migration not applied yet
+const FALLBACK_NAV_LINKS = [
+  { href: '/', label: 'Home', target: '_self' as const },
+  { href: '/#identifier', label: 'Identifiers', target: '_self' as const },
+  { href: '/blog', label: 'Mushrooms', target: '_self' as const },
+  { href: '/pricing', label: 'Pricing', target: '_self' as const },
+  { href: '/about', label: 'About', target: '_self' as const },
+  { href: '/contact', label: 'Contact', target: '_self' as const },
 ]
 
-export default function Navbar() {
+export default function Navbar({ menuItems }: { menuItems?: MenuItem[] }) {
   const { theme, toggle } = useTheme()
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
@@ -24,6 +26,12 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
   const [credits, setCredits] = useState<number>(0)
   const supabase = createClient()
+
+  // Use admin-managed items when available, else fall back to hardcoded defaults
+  const links =
+    menuItems && menuItems.length > 0
+      ? menuItems.map((m) => ({ href: m.url, label: m.label, target: m.target }))
+      : FALLBACK_NAV_LINKS
 
   const isActive = (href: string) => {
     if (href.includes('#')) return false
@@ -87,12 +95,14 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map(({ href, label }) => {
+            {links.map(({ href, label, target }) => {
               const active = isActive(href)
               return (
                 <Link
-                  key={href}
+                  key={`${href}-${label}`}
                   href={href}
+                  target={target}
+                  rel={target === '_blank' ? 'noopener noreferrer' : undefined}
                   className="relative text-sm px-4 py-2 rounded-full transition-all duration-200 hover:opacity-100"
                   style={{
                     color: active ? 'var(--accent)' : 'var(--text-muted)',
@@ -182,12 +192,14 @@ export default function Navbar() {
           }}
         >
           <div className="flex flex-col gap-1">
-            {NAV_LINKS.map(({ href, label }) => {
+            {links.map(({ href, label, target }) => {
               const active = isActive(href)
               return (
                 <Link
-                  key={href}
+                  key={`${href}-${label}`}
                   href={href}
+                  target={target}
+                  rel={target === '_blank' ? 'noopener noreferrer' : undefined}
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-xl px-4 py-3 rounded-xl transition-all duration-200"
                   style={{

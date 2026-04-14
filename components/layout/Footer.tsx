@@ -1,5 +1,32 @@
 import Link from "next/link";
 import { Shield, Mail } from "lucide-react";
+import type { MenuItem } from "@/lib/menus";
+
+// Fallbacks used only if admin-managed menu table is empty / migration not applied yet
+const FALLBACK_EXPLORE: { href: string; label: string; target: "_self" | "_blank" }[] = [
+  { href: "/#identifier", label: "Mushroom Identifier", target: "_self" },
+  { href: "/mushroom-parts-explained", label: "Mushroom Parts", target: "_self" },
+  { href: "/mushroom-identifier-book", label: "Mushroom Identifier Book", target: "_self" },
+  { href: "/mushroom-identification-quiz", label: "Mushroom identification Quiz", target: "_self" },
+  { href: "/blog", label: "Mushrooms Blog", target: "_self" },
+  { href: "/pricing", label: "Mushroom Identification Price", target: "_self" },
+];
+
+const FALLBACK_COMPANY: { href: string; label: string; target: "_self" | "_blank" }[] = [
+  { href: "/about", label: "About Us", target: "_self" },
+  { href: "/pricing", label: "Pricing", target: "_self" },
+  { href: "/blog", label: "Blog", target: "_self" },
+  { href: "/contact", label: "Contact", target: "_self" },
+  { href: "/privacy", label: "Privacy Policy", target: "_self" },
+  { href: "/terms", label: "Terms of Service", target: "_self" },
+  { href: "/refund", label: "Refund Policy", target: "_self" },
+];
+
+const FALLBACK_BOTTOM: { href: string; label: string; target: "_self" | "_blank" }[] = [
+  { href: "/privacy", label: "Privacy", target: "_self" },
+  { href: "/terms", label: "Terms", target: "_self" },
+  { href: "/refund", label: "Refund Policy", target: "_self" },
+];
 
 const SOCIAL_LINKS = [
   {
@@ -94,7 +121,31 @@ function PaymentBadge({
   );
 }
 
-export default function Footer() {
+export default function Footer({
+  footerExplore,
+  footerCompany,
+  footerBottom,
+}: {
+  footerExplore?: MenuItem[]
+  footerCompany?: MenuItem[]
+  footerBottom?: MenuItem[]
+} = {}) {
+  // Resolve to admin-managed items when available, else use hardcoded fallback
+  const exploreLinks =
+    footerExplore && footerExplore.length > 0
+      ? footerExplore.map((m) => ({ href: m.url, label: m.label, target: m.target }))
+      : FALLBACK_EXPLORE
+
+  const companyLinks =
+    footerCompany && footerCompany.length > 0
+      ? footerCompany.map((m) => ({ href: m.url, label: m.label, target: m.target }))
+      : FALLBACK_COMPANY
+
+  const bottomLinks =
+    footerBottom && footerBottom.length > 0
+      ? footerBottom.map((m) => ({ href: m.url, label: m.label, target: m.target }))
+      : FALLBACK_BOTTOM
+
   return (
     <>
       {/* Sitewide CTA — appears above footer on every page */}
@@ -220,23 +271,12 @@ export default function Footer() {
               Explore
             </div>
             <ul className="space-y-3 mb-6">
-              {[
-                { href: "/#identifier", label: "Mushroom Identifier" },
-                { href: "/mushroom-parts-explained", label: "Mushroom Parts" },
-                {
-                  href: "/mushroom-identifier-book",
-                  label: "Mushroom Identifier Book",
-                },
-                {
-                  href: "/mushroom-identification-quiz",
-                  label: "Mushroom identification Quiz",
-                },
-                { href: "/blog", label: "Mushrooms Blog" },
-                { href: "/pricing", label: "Mushroom Identification Price" },
-              ].map(({ href, label }) => (
-                <li key={href}>
+              {exploreLinks.map(({ href, label, target }) => (
+                <li key={`${href}-${label}`}>
                   <Link
                     href={href}
+                    target={target}
+                    rel={target === "_blank" ? "noopener noreferrer" : undefined}
                     className="text-sm transition-all hover:translate-x-1 inline-block hover:opacity-100"
                     style={{ color: "var(--text-muted)" }}
                   >
@@ -273,18 +313,12 @@ export default function Footer() {
               Company
             </div>
             <ul className="space-y-3 mb-6">
-              {[
-                { href: "/about", label: "About Us" },
-                { href: "/pricing", label: "Pricing" },
-                { href: "/blog", label: "Blog" },
-                { href: "/contact", label: "Contact" },
-                { href: "/privacy", label: "Privacy Policy" },
-                { href: "/terms", label: "Terms of Service" },
-                { href: "/refund", label: "Refund Policy" },
-              ].map(({ href, label }) => (
-                <li key={href}>
+              {companyLinks.map(({ href, label, target }) => (
+                <li key={`${href}-${label}`}>
                   <Link
                     href={href}
+                    target={target}
+                    rel={target === "_blank" ? "noopener noreferrer" : undefined}
                     className="text-sm transition-all hover:translate-x-1 inline-block hover:opacity-100"
                     style={{ color: "var(--text-muted)" }}
                   >
@@ -428,29 +462,22 @@ export default function Footer() {
             purposes only
           </p>
           <div className="flex items-center gap-4">
-            <Link
-              href="/privacy"
-              className="text-xs hover:underline"
-              style={{ color: "var(--text-faint)" }}
-            >
-              Privacy
-            </Link>
-            <span style={{ color: "var(--border-hover)" }}>·</span>
-            <Link
-              href="/terms"
-              className="text-xs hover:underline"
-              style={{ color: "var(--text-faint)" }}
-            >
-              Terms
-            </Link>
-            <span style={{ color: "var(--border-hover)" }}>·</span>
-            <Link
-              href="/refund"
-              className="text-xs hover:underline"
-              style={{ color: "var(--text-faint)" }}
-            >
-              Refund Policy
-            </Link>
+            {bottomLinks.map(({ href, label, target }, idx) => (
+              <span key={`${href}-${label}`} className="flex items-center gap-4">
+                {idx > 0 && (
+                  <span style={{ color: "var(--border-hover)" }}>·</span>
+                )}
+                <Link
+                  href={href}
+                  target={target}
+                  rel={target === "_blank" ? "noopener noreferrer" : undefined}
+                  className="text-xs hover:underline"
+                  style={{ color: "var(--text-faint)" }}
+                >
+                  {label}
+                </Link>
+              </span>
+            ))}
           </div>
         </div>
       </div>
