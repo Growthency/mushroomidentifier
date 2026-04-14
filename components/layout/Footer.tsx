@@ -399,6 +399,9 @@ export default function Footer() {
               <PaymentBadge bg="#0070E0" color="#fff">
                 Paddle
               </PaymentBadge>
+              <PaymentBadge bg="#E2342D" color="#fff">
+                2Checkout
+              </PaymentBadge>
             </div>
 
             <Link
