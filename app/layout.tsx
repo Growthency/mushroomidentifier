@@ -5,6 +5,7 @@ import Script from 'next/script'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import LayoutShell from '@/components/layout/LayoutShell'
 import ScrollToTop from '@/components/ui/ScrollToTop'
+import { getEnabledScripts, groupByPosition } from '@/lib/site-scripts'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -64,11 +65,15 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // Fetch admin-managed scripts (Google Analytics, Search Console, Meta Pixel, etc.)
+  const siteScripts = await getEnabledScripts()
+  const { head: headScripts, bodyStart: bodyStartScripts, bodyEnd: bodyEndScripts } = groupByPosition(siteScripts)
+
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
@@ -117,8 +122,17 @@ export default function RootLayout({
             })
           }}
         />
+        {/* Admin-managed scripts — <head> position (GA, Search Console, Meta Pixel init, etc.) */}
+        {headScripts.map((s) => (
+          <span key={s.id} dangerouslySetInnerHTML={{ __html: s.code }} />
+        ))}
       </head>
       <body suppressHydrationWarning>
+        {/* Admin-managed scripts — body start (GTM noscript, etc.) */}
+        {bodyStartScripts.map((s) => (
+          <span key={s.id} dangerouslySetInnerHTML={{ __html: s.code }} />
+        ))}
+
         <ThemeProvider>
           <LayoutShell>{children}</LayoutShell>
           <ScrollToTop />
@@ -144,6 +158,11 @@ export default function RootLayout({
             gtag('config', 'G-X00VE6WCX6');
           `}
         </Script>
+
+        {/* Admin-managed scripts — body end (chat widgets, deferred analytics, etc.) */}
+        {bodyEndScripts.map((s) => (
+          <span key={s.id} dangerouslySetInnerHTML={{ __html: s.code }} />
+        ))}
       </body>
     </html>
   )
