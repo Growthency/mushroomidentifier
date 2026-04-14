@@ -7,6 +7,7 @@ import LayoutShell from '@/components/layout/LayoutShell'
 import ScrollToTop from '@/components/ui/ScrollToTop'
 import { getEnabledScripts, groupByPosition } from '@/lib/site-scripts'
 import { getMenus } from '@/lib/menus'
+import { getSiteContent } from '@/lib/site-content'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -78,6 +79,9 @@ export default async function RootLayout({
   // Fetch admin-managed header + footer menu items
   const menus = await getMenus()
 
+  // Fetch admin-managed site content (logo, brand, CTA, social icons, payment badges, etc.)
+  const siteContent = await getSiteContent()
+
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
@@ -138,7 +142,7 @@ export default async function RootLayout({
         ))}
 
         <ThemeProvider>
-          <LayoutShell menus={menus}>{children}</LayoutShell>
+          <LayoutShell menus={menus} siteContent={siteContent}>{children}</LayoutShell>
           <ScrollToTop />
         </ThemeProvider>
 
