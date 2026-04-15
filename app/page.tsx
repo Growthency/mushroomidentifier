@@ -443,7 +443,7 @@ export default function Home() {
         </div>
       </section>
 
-      <IdentifyBanner />
+      <div className="px-6"><IdentifyBanner /></div>
 
       <section id="how-it-works" className="py-12 sm:py-16 px-6">
         <div className="max-w-6xl mx-auto">
@@ -650,7 +650,7 @@ export default function Home() {
         </div>
       </section>
 
-      <IdentifyBanner />
+      <div className="px-6"><IdentifyBanner /></div>
 
       <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
@@ -1276,7 +1276,7 @@ export default function Home() {
         </div>
       </section>
 
-      <IdentifyBanner />
+      <div className="px-6"><IdentifyBanner /></div>
 
       <section
         className="py-10 sm:py-14 px-6"
@@ -1627,7 +1627,7 @@ export default function Home() {
         </div>
       </section>
 
-      <IdentifyBanner />
+      <div className="px-6"><IdentifyBanner /></div>
 
       <section className="py-10 sm:py-14 px-6">
         <div className="max-w-4xl mx-auto">
