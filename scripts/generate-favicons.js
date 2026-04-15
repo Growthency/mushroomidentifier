@@ -17,6 +17,9 @@ const TARGETS = [
   { size: 512, out: 'logo-512.png' },
   // Header logo used inline in <Image>
   { size: 128, out: 'logo-header.png' },
+  // PWA / Android Chrome — referenced by site.webmanifest
+  { size: 192, out: 'android-chrome-192x192.png' },
+  { size: 512, out: 'android-chrome-512x512.png' },
 ]
 
 async function main() {
