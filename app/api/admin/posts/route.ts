@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
   const {
     title, slug, excerpt, content, featured_image,
     category, risk_level, region, is_premium, status,
-    author_name, author_role,
+    author_name, author_role, custom_css,
   } = body
 
   if (!title || !slug) {
@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
       author_role: author_role || 'Mycologist · Author · Fungi Expert',
       published_at: status === 'published' ? new Date().toISOString() : null,
       layout: body.layout || 'with-sidebar',
+      custom_css: custom_css || null,
     })
     .select()
     .single()

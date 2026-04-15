@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic'
 import {
   ArrowLeft, Save, Eye, Loader2, Image as ImageIcon,
   Upload, Globe, Lock, Search, AlertCircle, CheckCircle2,
+  Code2,
 } from 'lucide-react'
 import { useModal } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
@@ -58,6 +59,7 @@ export default function NewPageEditor() {
   const [authorRole, setAuthorRole] = useState('Mycologist · Author · Fungi Expert')
   const [metaTitle, setMetaTitle] = useState('')
   const [metaDescription, setMetaDescription] = useState('')
+  const [customCss, setCustomCss] = useState('')
 
   const [autoSlug, setAutoSlug] = useState(true)
 
@@ -123,6 +125,7 @@ export default function NewPageEditor() {
           author_role: authorRole,
           meta_title: metaTitle.trim(),
           meta_description: metaDescription.trim(),
+          custom_css: customCss.trim() || null,
         }),
       })
 
@@ -476,6 +479,31 @@ export default function NewPageEditor() {
                 With Sidebar
               </button>
             </div>
+          </div>
+
+          {/* Custom CSS — WordPress-style per-page overrides */}
+          <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
+            <div className="flex items-center gap-2 mb-2">
+              <Code2 className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-sm font-semibold" style={{ color: textPrimary }}>Custom CSS</h3>
+            </div>
+            <p className="text-[11px] mb-2" style={{ color: textMuted }}>
+              Only loads on this page. Loaded after global CSS so your rules win.
+            </p>
+            <textarea
+              value={customCss}
+              onChange={e => setCustomCss(e.target.value)}
+              placeholder={`/* Example */\n.rich-content h2 {\n  color: #10b981;\n}`}
+              rows={8}
+              spellCheck={false}
+              className="w-full px-3 py-2 rounded-lg text-xs outline-none resize-y font-mono"
+              style={{ ...inputStyle, tabSize: 2 }}
+            />
+            {customCss.trim() && (
+              <p className="text-[10px] mt-1.5 text-emerald-400">
+                {customCss.length} chars — will inject on publish
+              </p>
+            )}
           </div>
 
           {/* Interlink Checker */}

@@ -6,6 +6,7 @@ import {
   AlignLeft, AlignCenter, AlignRight, Quote, Code, Minus,
   Upload, Undo2, Redo2, Type, Pilcrow, Table,
   Trash2, X, GripVertical, Pencil, Unlink, ExternalLink,
+  FileCode2, Eye,
 } from 'lucide-react'
 import { useModal } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
@@ -27,6 +28,10 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   const savedSelectionRef = useRef<Range | null>(null)
   const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set())
 
+  // WordPress-style Visual ⇄ HTML toggle — lets admins paste full custom-page
+  // HTML or tweak the raw markup directly.
+  const [viewMode, setViewMode] = useState<'visual' | 'html'>('visual')
+
   // Image selection state
   const [selectedImg, setSelectedImg] = useState<HTMLImageElement | null>(null)
   const [imgAlt, setImgAlt] = useState('')
@@ -41,16 +46,21 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
   // Keep callback ref fresh without re-renders
   useEffect(() => { onChangeRef.current = onChange }, [onChange])
 
-  // Set initial content only once
+  // Set initial content only once (and re-init when coming back from HTML view
+  // so the edited raw markup gets re-mounted into the contentEditable DOM).
   useEffect(() => {
+    if (viewMode !== 'visual') return
     if (editorRef.current && value && !initializedRef.current) {
       editorRef.current.innerHTML = value
       initializedRef.current = true
     }
-  }, [value])
+  }, [value, viewMode])
 
-  // MutationObserver to catch ALL DOM changes and sync to parent
+  // MutationObserver to catch ALL DOM changes and sync to parent.
+  // Re-hooks whenever we re-enter visual mode (the contentEditable div is
+  // conditionally rendered, so the ref points at a fresh node after a toggle).
   useEffect(() => {
+    if (viewMode !== 'visual') return
     const editor = editorRef.current
     if (!editor) return
 
@@ -66,7 +76,24 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     })
 
     return () => observer.disconnect()
-  }, [])
+  }, [viewMode])
+
+  // Toggle between Visual (contentEditable) and HTML (textarea) modes.
+  // Before leaving Visual mode we flush the live DOM's innerHTML into parent
+  // state so the textarea opens with the latest edits, not a stale snapshot.
+  const toggleViewMode = useCallback(() => {
+    if (viewMode === 'visual') {
+      if (editorRef.current) {
+        onChangeRef.current(editorRef.current.innerHTML)
+      }
+      setViewMode('html')
+    } else {
+      // Going back to Visual: force the next render to re-seed innerHTML from
+      // the (possibly edited) `value` prop.
+      initializedRef.current = false
+      setViewMode('visual')
+    }
+  }, [viewMode])
 
   const syncContent = useCallback(() => {
     if (editorRef.current) {
@@ -517,6 +544,10 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     <div className="rounded-xl border max-h-[75vh] overflow-y-auto relative" style={{ background: containerBg, borderColor: toolbarBorder }}>
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b sticky top-0 z-20" style={{ borderColor: toolbarBorder, background: toolbarBg }}>
+        {/* Formatting buttons dim + become inert in HTML mode — they operate on
+            contentEditable selections, so they're meaningless while editing raw
+            HTML in the textarea. */}
+        <div className={`flex flex-wrap items-center gap-0.5 ${viewMode === 'html' ? 'opacity-40 pointer-events-none' : ''}`}>
         <ToolBtn onClick={() => exec('undo')} title="Undo"><Undo2 className="w-4 h-4" /></ToolBtn>
         <ToolBtn onClick={() => exec('redo')} title="Redo"><Redo2 className="w-4 h-4" /></ToolBtn>
 
@@ -573,9 +604,46 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
           onChange={handleFileUpload}
           className="hidden"
         />
+        </div>{/* ── end of dim-in-HTML-mode wrapper ── */}
+
+        {/* Push the HTML-toggle to the far right of the toolbar */}
+        <div className="flex-1" />
+
+        <button
+          type="button"
+          onMouseDown={e => { e.preventDefault(); toggleViewMode() }}
+          title={viewMode === 'visual' ? 'Switch to HTML view' : 'Switch to Visual view'}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+            viewMode === 'html'
+              ? 'bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30'
+              : `${btnHover} ${btnDefault}`
+          }`}
+        >
+          {viewMode === 'visual'
+            ? <><FileCode2 className="w-3.5 h-3.5" /> HTML</>
+            : <><Eye className="w-3.5 h-3.5" /> Visual</>
+          }
+        </button>
       </div>
 
-      {/* Editor area */}
+      {/* HTML raw view — full-control textarea for pasting complete custom pages */}
+      {viewMode === 'html' && (
+        <textarea
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          spellCheck={false}
+          className="w-full min-h-[500px] px-6 py-5 text-xs leading-relaxed outline-none font-mono resize-y"
+          style={{
+            background: editorBg,
+            color: dark ? '#cbd5e1' : '#0f172a',
+            border: 'none',
+            tabSize: 2,
+          }}
+          placeholder="<!-- Paste or edit raw HTML here. Switch back to Visual to preview. -->"
+        />
+      )}
+
+      {/* Editor area — hidden (not unmounted) in HTML mode so refs stay alive */}
       <div
         ref={editorRef}
         contentEditable
@@ -586,6 +654,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         onMouseUp={handleMouseUp}
         onClick={handleEditorClick}
         suppressContentEditableWarning
+        hidden={viewMode === 'html'}
         className={`min-h-[500px] px-6 py-5 text-sm leading-relaxed outline-none max-w-none
           ${dark ? 'prose prose-invert prose-sm' : 'prose prose-sm'}
           ${dark

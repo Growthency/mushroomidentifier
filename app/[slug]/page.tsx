@@ -205,6 +205,16 @@ export default async function DynamicPostPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
       />
 
+      {/* Per-post custom CSS from the editor's "Custom CSS" sidebar field.
+          Injected inline after global CSS so author rules take precedence —
+          same model as WordPress's Additional CSS. */}
+      {post.custom_css && (
+        <style
+          data-post-custom-css={post.slug}
+          dangerouslySetInnerHTML={{ __html: post.custom_css }}
+        />
+      )}
+
       <div
         className="min-h-screen pt-24 pb-20"
         style={{ background: 'var(--bg-primary)' }}
