@@ -31,8 +31,13 @@ const FALLBACK_BOTTOM: { href: string; label: string; target: "_self" | "_blank"
   { href: "/refund", label: "Refund Policy", target: "_self" },
 ];
 
+// Detects whether a brand-logo value should be rendered as an image (URL / path)
+// or as plain text (emoji / glyph). Admins can paste either into the same field.
+const isImageLogo = (v: string): boolean =>
+  /^(\/|https?:\/\/|data:image\/)/i.test(v) || /\.(png|jpe?g|svg|webp|gif|avif)(\?|$)/i.test(v)
+
 const FALLBACK_SETTINGS: Record<string, string> = {
-  brand_logo_emoji:        "🍄",
+  brand_logo_emoji:        "/logo-header.png",
   brand_name_prefix:       "Mushroom",
   brand_name_suffix:       "Identifiers",
   footer_description_1:    "AI-powered mushroom identification for safe foraging — instant species ID, toxicity warnings, and look-alike alerts.",
@@ -161,8 +166,20 @@ export default function Footer({
 
             {/* ── Brand column ── */}
             <div>
-              <Link href="/" className="flex items-center gap-2 mb-4 w-fit">
-                <span className="text-3xl">{s("brand_logo_emoji")}</span>
+              <Link href="/" className="flex items-center gap-2 mb-4 w-fit" aria-label="Mushroom Identifiers home">
+                {isImageLogo(s("brand_logo_emoji")) ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={s("brand_logo_emoji")}
+                    alt={`${s("brand_name_prefix")}${s("brand_name_suffix")} logo`}
+                    width={40}
+                    height={40}
+                    className="rounded-lg object-contain select-none"
+                    style={{ width: 40, height: 40 }}
+                  />
+                ) : (
+                  <span className="text-3xl select-none">{s("brand_logo_emoji")}</span>
+                )}
                 <span className="font-playfair text-xl font-bold" style={{ color: "var(--text-primary)" }}>
                   {s("brand_name_prefix")}<span style={{ color: "var(--accent)" }}>{s("brand_name_suffix")}</span>
                 </span>
