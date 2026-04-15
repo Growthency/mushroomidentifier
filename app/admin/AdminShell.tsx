@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, FileText, BarChart3, Trophy, Globe, ShieldCheck,
-  Code, ListOrdered, Palette, Paintbrush, LogOut, ChevronRight, Menu, X, Sun, Moon,
+  Code, ListOrdered, Palette, Paintbrush, Droplet, LogOut, ChevronRight, Menu, X, Sun, Moon,
 } from 'lucide-react'
 import { useState } from 'react'
 import { AdminModalProvider } from '@/components/admin/AdminModal'
@@ -19,6 +19,7 @@ const NAV = [
   { href: '/admin/header-scripts',  label: 'Header Scripts',  icon: Code },
   { href: '/admin/menus',           label: 'Menus',           icon: ListOrdered },
   { href: '/admin/footer-settings', label: 'Footer Content',  icon: Palette },
+  { href: '/admin/theme',           label: 'Theme Colors',    icon: Droplet },
   { href: '/admin/custom-css',      label: 'Custom CSS',      icon: Paintbrush },
 ]
 

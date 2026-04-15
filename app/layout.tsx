@@ -8,6 +8,7 @@ import ScrollToTop from '@/components/ui/ScrollToTop'
 import { getEnabledScripts, groupByPosition } from '@/lib/site-scripts'
 import { getMenus } from '@/lib/menus'
 import { getSiteContent } from '@/lib/site-content'
+import { buildThemeCSS } from '@/lib/theme-colors'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -82,6 +83,9 @@ export default async function RootLayout({
   // Fetch admin-managed site content (logo, brand, CTA, social icons, payment badges, etc.)
   const siteContent = await getSiteContent()
 
+  // Build admin-managed theme-color overrides (<style> block that wins over globals.css)
+  const themeCSS = buildThemeCSS(siteContent.settings)
+
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
@@ -134,6 +138,13 @@ export default async function RootLayout({
         {headScripts.map((s) => (
           <span key={s.id} dangerouslySetInnerHTML={{ __html: s.code }} />
         ))}
+        {/* Admin-managed theme colors — overrides CSS variables from globals.css per data-theme */}
+        {themeCSS && (
+          <style
+            data-site-theme-colors=""
+            dangerouslySetInnerHTML={{ __html: themeCSS }}
+          />
+        )}
         {/* Admin-managed global Custom CSS — injected LAST so rules win by source-order specificity (WordPress "Additional CSS" behavior) */}
         {siteContent.settings.global_custom_css && (
           <style

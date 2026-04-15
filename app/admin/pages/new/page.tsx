@@ -278,6 +278,47 @@ export default function NewPageEditor() {
 
         {/* Sidebar settings */}
         <div className="space-y-4">
+          {/* Status info */}
+          <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: textPrimary }}>Status</h3>
+            <p className="text-xs" style={{ color: textLabel }}>
+              Use <strong style={{ color: dark ? '#cbd5e1' : '#334155' }}>Save Draft</strong> to save without publishing, or{' '}
+              <strong className="text-emerald-400">Publish</strong> to make it live immediately.
+            </p>
+          </div>
+
+          {/* Sitewide / Layout */}
+          <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
+            <h3 className="text-sm font-semibold mb-3" style={{ color: textPrimary }}>Sitewide</h3>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setLayout('full-page')}
+                className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{
+                  background: layout === 'full-page' ? 'rgba(59,130,246,0.15)' : (dark ? '#0f172a' : '#f8fafc'),
+                  color: layout === 'full-page' ? '#3b82f6' : textMuted,
+                  border: `1px solid ${layout === 'full-page' ? 'rgba(59,130,246,0.3)' : (dark ? '#1e293b' : '#e2e8f0')}`,
+                }}
+              >
+                Full Page
+              </button>
+              <button
+                onClick={() => setLayout('with-sidebar')}
+                className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{
+                  background: layout === 'with-sidebar' ? 'rgba(16,185,129,0.15)' : (dark ? '#0f172a' : '#f8fafc'),
+                  color: layout === 'with-sidebar' ? '#10b981' : textMuted,
+                  border: `1px solid ${layout === 'with-sidebar' ? 'rgba(16,185,129,0.3)' : (dark ? '#1e293b' : '#e2e8f0')}`,
+                }}
+              >
+                With Sidebar
+              </button>
+            </div>
+          </div>
+
+          {/* Interlink Checker */}
+          <InterlinkChecker content={content} />
+
           {/* SEO / Meta */}
           <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
             <div className="flex items-center gap-2 mb-3">
@@ -443,44 +484,6 @@ export default function NewPageEditor() {
             </select>
           </div>
 
-          {/* Status info */}
-          <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
-            <h3 className="text-sm font-semibold mb-2" style={{ color: textPrimary }}>Status</h3>
-            <p className="text-xs" style={{ color: textLabel }}>
-              Use <strong style={{ color: dark ? '#cbd5e1' : '#334155' }}>Save Draft</strong> to save without publishing, or{' '}
-              <strong className="text-emerald-400">Publish</strong> to make it live immediately.
-            </p>
-          </div>
-
-          {/* Sitewide / Layout */}
-          <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
-            <h3 className="text-sm font-semibold mb-3" style={{ color: textPrimary }}>Sitewide</h3>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setLayout('full-page')}
-                className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors"
-                style={{
-                  background: layout === 'full-page' ? 'rgba(59,130,246,0.15)' : (dark ? '#0f172a' : '#f8fafc'),
-                  color: layout === 'full-page' ? '#3b82f6' : textMuted,
-                  border: `1px solid ${layout === 'full-page' ? 'rgba(59,130,246,0.3)' : (dark ? '#1e293b' : '#e2e8f0')}`,
-                }}
-              >
-                Full Page
-              </button>
-              <button
-                onClick={() => setLayout('with-sidebar')}
-                className="flex-1 py-2 rounded-lg text-sm font-medium transition-colors"
-                style={{
-                  background: layout === 'with-sidebar' ? 'rgba(16,185,129,0.15)' : (dark ? '#0f172a' : '#f8fafc'),
-                  color: layout === 'with-sidebar' ? '#10b981' : textMuted,
-                  border: `1px solid ${layout === 'with-sidebar' ? 'rgba(16,185,129,0.3)' : (dark ? '#1e293b' : '#e2e8f0')}`,
-                }}
-              >
-                With Sidebar
-              </button>
-            </div>
-          </div>
-
           {/* Custom CSS — WordPress-style per-page overrides */}
           <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
             <div className="flex items-center gap-2 mb-2">
@@ -506,8 +509,6 @@ export default function NewPageEditor() {
             )}
           </div>
 
-          {/* Interlink Checker */}
-          <InterlinkChecker content={content} />
         </div>
       </div>
     </div>
