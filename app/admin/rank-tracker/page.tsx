@@ -32,6 +32,20 @@ interface Quota {
   used: number
   limit: number
   remaining: number
+  resetAt?: string
+  planName?: string | null
+}
+
+// Format "Apr 1" from an ISO date (UTC-safe so it matches SerpAPI's reset moment)
+function formatResetDate(iso: string): string {
+  const d = new Date(iso)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+}
+
+// Days remaining until an ISO date (rounded up, never negative)
+function daysUntil(iso: string): number {
+  const diff = new Date(iso).getTime() - Date.now()
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
 // ── Donut Chart Component ──
@@ -370,6 +384,19 @@ export default function RankTrackerPage() {
             {quota.used} / {quota.limit} searches used
           </p>
           <p className="text-[10px] mt-1 opacity-50">This month</p>
+          {quota.resetAt && (
+            <div
+              className="mt-3 px-2.5 py-1 rounded-full flex items-center gap-1.5"
+              style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)' }}
+              title={`Refills on ${new Date(quota.resetAt).toUTCString()}`}
+            >
+              <Clock className="w-3 h-3" style={{ color: '#10b981' }} />
+              <span className="text-[10px] font-semibold" style={{ color: '#10b981' }}>
+                Refills {formatResetDate(quota.resetAt)}
+                <span className="opacity-70"> · in {daysUntil(quota.resetAt)}d</span>
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Keywords Tracked */}

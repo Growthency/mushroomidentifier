@@ -10,6 +10,22 @@ const supabase = createClient(
 const SERPAPI_KEY = process.env.SERPAPI_KEY
 const SITE_DOMAIN = 'mushroomidentifiers.com'
 
+// Compute the next quota-reset moment.
+// SerpAPI plans (free + most paid tiers) reset on the 1st of each calendar month
+// at 00:00 UTC. If SerpAPI ever returns an explicit reset field we honour it,
+// otherwise we fall back to the calendar-month convention.
+function computeResetAt(acc: any): string {
+  // Honour SerpAPI-provided reset fields if present (defensive — field names can vary)
+  const candidates = [acc?.next_billing_at, acc?.reset_at, acc?.plan_next_reset_at]
+  for (const c of candidates) {
+    if (typeof c === 'string' && !isNaN(Date.parse(c))) return new Date(c).toISOString()
+    if (typeof c === 'number' && c > 0) return new Date(c * 1000).toISOString()
+  }
+  // Fallback: first of next month, 00:00 UTC
+  const now = new Date()
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0)).toISOString()
+}
+
 // ── GET: list keywords + account quota ──
 export async function GET() {
   const { data: keywords, error } = await supabase
@@ -20,7 +36,19 @@ export async function GET() {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   // Fetch SerpAPI account info for quota
-  let quota = { used: 0, limit: 250, remaining: 250 }
+  let quota: {
+    used: number
+    limit: number
+    remaining: number
+    resetAt: string
+    planName: string | null
+  } = {
+    used: 0,
+    limit: 250,
+    remaining: 250,
+    resetAt: computeResetAt(null),
+    planName: null,
+  }
   try {
     const res = await fetch(`https://serpapi.com/account.json?api_key=${SERPAPI_KEY}`)
     const acc = await res.json()
@@ -30,6 +58,8 @@ export async function GET() {
         ? acc.searches_per_month - acc.plan_searches_left
         : 250 - acc.total_searches_left
       quota.limit = acc.searches_per_month || 250
+      quota.resetAt = computeResetAt(acc)
+      quota.planName = acc.plan_name || acc.plan_id || null
     }
   } catch {}
 
