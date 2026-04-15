@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Sun, Moon, Menu, X } from 'lucide-react'
@@ -86,8 +87,16 @@ export default function Navbar({ menuItems }: { menuItems?: MenuItem[] }) {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <span className="text-3xl transition-transform duration-300 group-hover:scale-110 select-none">🍄</span>
+          <Link href="/" className="flex items-center gap-2.5 group" aria-label="Mushroom Identifiers home">
+            <Image
+              src="/logo-header.png"
+              alt="Mushroom Identifiers logo"
+              width={40}
+              height={40}
+              priority
+              className="rounded-lg transition-transform duration-300 group-hover:scale-110 select-none"
+              style={{ width: '40px', height: '40px' }}
+            />
             <span className="font-playfair text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
               Mushroom<span style={{ color: 'var(--accent)' }}>Identifiers</span>
             </span>
