@@ -296,7 +296,7 @@ export default function Home() {
           <div className="relative rounded-2xl overflow-hidden mt-8" style={{ border: '1px solid var(--border)' }}>
             <NextImage
               src="/wild-mushrooms-forest-floor.webp"
-              alt="Free mushroom identification app - wild mushrooms growing naturally on forest floor"
+              alt="Mushroom identification app — Amanita muscaria (fly agaric) in natural forest habitat"
               width={1200}
               height={500}
               loading="lazy"
@@ -304,7 +304,7 @@ export default function Home() {
               style={{ display: 'block', maxHeight: '400px', objectFit: 'cover' }}
             />
             <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
-              <p className="text-xs text-white/70 m-0">Photo by Jesse Bauer · Unsplash</p>
+              <p className="text-xs text-white/70 m-0">Photo by Flocci Nivis · Wikimedia Commons · CC BY 4.0</p>
             </div>
           </div>
         </div>
@@ -565,7 +565,7 @@ export default function Home() {
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
               src="/person-foraging-mushroom-nature.webp"
-              alt="Mushroom identification app in action - forager photographing wild mushrooms in autumn forest"
+              alt="Mushroom identification app — forager holding freshly picked Cantharellus cibarius (golden chanterelles)"
               width={1200}
               height={500}
               loading="lazy"
@@ -573,7 +573,7 @@ export default function Home() {
               style={{ display: 'block', maxHeight: '420px', objectFit: 'cover' }}
             />
             <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
-              <p className="text-xs text-white/70 m-0">Photo by drB drB · Pexels</p>
+              <p className="text-xs text-white/70 m-0">Photo by Gunnar Creutz · Wikimedia Commons · CC BY-SA 4.0</p>
             </div>
           </div>
         </div>
@@ -711,7 +711,7 @@ export default function Home() {
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
               src="/mushroom-gills-closeup-macro.webp"
-              alt="Mushroom identification app - close-up macro view of mushroom gill structure for species identification"
+              alt="Mushroom identification app — macro close-up of Cortinarius violaceus gills showing radial lamellae structure"
               width={1200}
               height={500}
               loading="lazy"
@@ -719,7 +719,7 @@ export default function Home() {
               style={{ display: 'block', maxHeight: '380px', objectFit: 'cover' }}
             />
             <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
-              <p className="text-xs text-white/70 m-0">Photo by Oliver Stoer · Unsplash</p>
+              <p className="text-xs text-white/70 m-0">Photo by 00Amanita00 · Wikimedia Commons · CC BY-SA 3.0</p>
             </div>
           </div>
         </div>
@@ -1081,7 +1081,7 @@ export default function Home() {
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
               src="/mushroom-cluster-growing-on-wood.webp"
-              alt="Mushroom identification app - cluster of white mushrooms growing on fallen wood log"
+              alt="Mushroom identification app — Pleurotus ostreatus (oyster mushroom) cluster growing on fallen wood"
               width={1200}
               height={500}
               loading="lazy"
@@ -1089,7 +1089,7 @@ export default function Home() {
               style={{ display: 'block', maxHeight: '400px', objectFit: 'cover' }}
             />
             <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
-              <p className="text-xs text-white/70 m-0">Photo by Tarikul Raana · Pexels</p>
+              <p className="text-xs text-white/70 m-0">Photo by Rosser1954 · Wikimedia Commons · Public Domain</p>
             </div>
           </div>
         </div>
@@ -1536,7 +1536,7 @@ export default function Home() {
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
               src="/colorful-wild-mushrooms-nature.webp"
-              alt="Mushroom identification app - colorful wild mushrooms in natural forest habitat"
+              alt="Mushroom identification app — group of Amanita muscaria (fly agaric) mushrooms in autumn woodland"
               width={1200}
               height={500}
               loading="lazy"
@@ -1544,7 +1544,7 @@ export default function Home() {
               style={{ display: 'block', maxHeight: '420px', objectFit: 'cover' }}
             />
             <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
-              <p className="text-xs text-white/70 m-0">Photo by Greyerbaby · Pixabay</p>
+              <p className="text-xs text-white/70 m-0">Photo by Onderwijsgek · Wikimedia Commons · CC BY-SA 3.0 NL</p>
             </div>
           </div>
         </div>
@@ -1753,7 +1753,7 @@ export default function Home() {
           <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             <NextImage
               src="/wild-mushroom-basket-foraging.webp"
-              alt="Mushroom identification app - freshly foraged wild mushrooms in a rustic basket"
+              alt="Mushroom identification app — basket of freshly foraged Boletus edulis (king boletes / porcini) and related edible species"
               width={1200}
               height={500}
               loading="lazy"
@@ -1761,7 +1761,7 @@ export default function Home() {
               style={{ display: 'block', maxHeight: '400px', objectFit: 'cover' }}
             />
             <div className="absolute bottom-0 left-0 right-0 px-4 py-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
-              <p className="text-xs text-white/70 m-0">Photo by Irina Novikova · Pexels</p>
+              <p className="text-xs text-white/70 m-0">Photo by George Chernilevsky · Wikimedia Commons · Public Domain</p>
             </div>
           </div>
         </div>
