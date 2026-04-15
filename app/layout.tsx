@@ -134,6 +134,13 @@ export default async function RootLayout({
         {headScripts.map((s) => (
           <span key={s.id} dangerouslySetInnerHTML={{ __html: s.code }} />
         ))}
+        {/* Admin-managed global Custom CSS — injected LAST so rules win by source-order specificity (WordPress "Additional CSS" behavior) */}
+        {siteContent.settings.global_custom_css && (
+          <style
+            data-site-custom-css=""
+            dangerouslySetInnerHTML={{ __html: siteContent.settings.global_custom_css }}
+          />
+        )}
       </head>
       <body suppressHydrationWarning>
         {/* Admin-managed scripts — body start (GTM noscript, etc.) */}
