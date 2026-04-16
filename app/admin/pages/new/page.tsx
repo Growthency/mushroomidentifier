@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import {
   ArrowLeft, Save, Eye, Loader2, Image as ImageIcon,
   Upload, Globe, Lock, Search, AlertCircle, CheckCircle2,
-  Code2,
+  Code2, Braces,
 } from 'lucide-react'
 import { useModal } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
@@ -60,6 +60,8 @@ export default function NewPageEditor() {
   const [metaTitle, setMetaTitle] = useState('')
   const [metaDescription, setMetaDescription] = useState('')
   const [customCss, setCustomCss] = useState('')
+  const [customSchema, setCustomSchema] = useState('')
+  const [schemaError, setSchemaError] = useState('')
 
   const [autoSlug, setAutoSlug] = useState(true)
 
@@ -101,6 +103,17 @@ export default function NewPageEditor() {
     if (!title.trim()) { setError('Title is required'); return }
     if (!slug.trim()) { setError('Slug is required'); return }
 
+    // Validate JSON schema syntax before saving so we never persist invalid JSON
+    if (customSchema.trim()) {
+      try { JSON.parse(customSchema) }
+      catch (e: any) {
+        setError(`Custom Schema contains invalid JSON: ${e.message}`)
+        setSchemaError(e.message)
+        return
+      }
+    }
+    setSchemaError('')
+
     setSaving(true)
     setError('')
 
@@ -126,6 +139,7 @@ export default function NewPageEditor() {
           meta_title: metaTitle.trim(),
           meta_description: metaDescription.trim(),
           custom_css: customCss.trim() || null,
+          custom_schema: customSchema.trim() || null,
         }),
       })
 
@@ -507,6 +521,41 @@ export default function NewPageEditor() {
                 {customCss.length} chars — will inject on publish
               </p>
             )}
+          </div>
+
+          {/* Custom JSON-LD Schema — per-page structured data */}
+          <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
+            <div className="flex items-center gap-2 mb-2">
+              <Braces className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-sm font-semibold" style={{ color: textPrimary }}>Custom Schema (JSON-LD)</h3>
+            </div>
+            <p className="text-[11px] mb-2" style={{ color: textMuted }}>
+              Only loads on this page. If set, <strong>replaces</strong> the default Article schema. Use for HowTo, FAQPage, Recipe, Product, etc.
+            </p>
+            <textarea
+              value={customSchema}
+              onChange={e => {
+                setCustomSchema(e.target.value)
+                if (schemaError) setSchemaError('')
+              }}
+              onBlur={() => {
+                if (!customSchema.trim()) { setSchemaError(''); return }
+                try { JSON.parse(customSchema); setSchemaError('') }
+                catch (e: any) { setSchemaError(e.message) }
+              }}
+              placeholder={`{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "Is this mushroom edible?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Yes, when young and firm."\n      }\n    }\n  ]\n}`}
+              rows={10}
+              spellCheck={false}
+              className="w-full px-3 py-2 rounded-lg text-xs outline-none resize-y font-mono"
+              style={{ ...inputStyle, tabSize: 2 }}
+            />
+            {schemaError ? (
+              <p className="text-[10px] mt-1.5 text-red-400">Invalid JSON: {schemaError}</p>
+            ) : customSchema.trim() ? (
+              <p className="text-[10px] mt-1.5 text-emerald-400">
+                {customSchema.length} chars — valid JSON, will replace default schema on publish
+              </p>
+            ) : null}
           </div>
 
         </div>

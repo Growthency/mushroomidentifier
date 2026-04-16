@@ -110,7 +110,7 @@ function aggregate(pages: PageResult[], globalChecks: GlobalCheck[]) {
   const categories: Record<string, { total: number; passed: number }> = {}
   const catChecks: Record<string, number> = {
     'Meta Tags': 6, 'Open Graph': 5, 'Twitter Cards': 4,
-    'Headings': 5, 'Images': 2, 'Structured Data': 2,
+    'Headings': 5, 'Images': 2, 'Structured Data': 4,
     'Technical': 5, 'Performance': 2, 'Internal Links': 1,
   }
   for (const page of pages) {

@@ -198,11 +198,30 @@ export default async function DynamicPostPage({
     ['--tw-prose-pre-code' as string]: 'var(--text-muted)',
   }
 
+  // Per-post custom JSON-LD schema overrides the default Article + BreadcrumbList
+  // schema. Only ONE <script type="application/ld+json"> is ever rendered so we
+  // never accidentally emit duplicates (which Google flags as a structured-data
+  // error). Admins can paste FAQPage, HowTo, Recipe, Product, etc. schema and it
+  // replaces the auto-generated Article schema for this single page.
+  let schemaToRender: string
+  if (post.custom_schema && post.custom_schema.trim()) {
+    try {
+      // Re-stringify so whitespace is normalized and any parse errors are caught
+      // at render-time rather than shipping broken JSON to Google.
+      schemaToRender = JSON.stringify(JSON.parse(post.custom_schema))
+    } catch {
+      // Invalid JSON — fall back to default so the page still gets valid schema.
+      schemaToRender = JSON.stringify(schemaData)
+    }
+  } else {
+    schemaToRender = JSON.stringify(schemaData)
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+        dangerouslySetInnerHTML={{ __html: schemaToRender }}
       />
 
       {/* Per-post custom CSS from the editor's "Custom CSS" sidebar field.

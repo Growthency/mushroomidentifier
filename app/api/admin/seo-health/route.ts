@@ -214,16 +214,58 @@ function checkPage(html: string, url: string): Issue[] {
   if (!hasLang(html)) add('missing-lang', 'warning', 'HTML tag missing lang attribute', 'Add lang="en" to your <html> tag for accessibility', 'Technical')
   if (!hasFavicon(html)) add('missing-favicon', 'warning', 'No favicon link found in HTML', 'Add <link rel="icon" href="/favicon.ico"> in <head>', 'Technical')
 
-  // 9. Structured Data
+  // 9. Structured Data — validate + detect duplicate @types across all scripts
   const jsonLds = extractJsonLd(html)
   if (jsonLds.length === 0) {
-    add('missing-jsonld', 'warning', 'No JSON-LD structured data found', 'Add JSON-LD schema markup for better search engine understanding', 'Structured Data')
+    add('missing-jsonld', 'warning', 'No JSON-LD structured data found on this page', 'Add JSON-LD schema markup (Article, FAQPage, HowTo, etc.) for better search engine understanding', 'Structured Data')
   } else {
-    for (const ld of jsonLds) {
-      try { JSON.parse(ld) } catch {
-        add('invalid-jsonld', 'warning', 'JSON-LD structured data contains invalid JSON', 'Fix the JSON syntax in your structured data script tag', 'Structured Data')
-        break
+    // Collect @type values from all JSON-LD blocks (including nested @graph arrays)
+    const allTypes: string[] = []
+    let hasInvalidJson = false
+
+    const collectTypes = (node: any) => {
+      if (!node || typeof node !== 'object') return
+      if (Array.isArray(node)) { node.forEach(collectTypes); return }
+      if (node['@type']) {
+        const t = node['@type']
+        if (Array.isArray(t)) t.forEach((x) => allTypes.push(String(x)))
+        else allTypes.push(String(t))
       }
+      if (Array.isArray(node['@graph'])) node['@graph'].forEach(collectTypes)
+    }
+
+    for (const ld of jsonLds) {
+      try {
+        const parsed = JSON.parse(ld)
+        collectTypes(parsed)
+      } catch {
+        hasInvalidJson = true
+      }
+    }
+
+    if (hasInvalidJson) {
+      add('invalid-jsonld', 'critical', 'JSON-LD structured data contains invalid JSON', 'Fix the JSON syntax in your structured data script tag — Google will ignore it otherwise', 'Structured Data')
+    }
+
+    // Duplicate @type across scripts → hard error. Ignore Organization/WebSite
+    // being duplicated site-wide (emitted globally in layout) — focus on page-level
+    // types like Article, FAQPage, HowTo, Product, Recipe that should only appear once.
+    const GLOBAL_TYPES = new Set(['Organization', 'WebSite', 'BreadcrumbList'])
+    const typeCounts: Record<string, number> = {}
+    for (const t of allTypes) {
+      if (GLOBAL_TYPES.has(t)) continue
+      typeCounts[t] = (typeCounts[t] || 0) + 1
+    }
+    const dupTypes = Object.entries(typeCounts).filter(([, n]) => n > 1)
+    if (dupTypes.length > 0) {
+      const names = dupTypes.map(([t, n]) => `${t} (×${n})`).join(', ')
+      add('duplicate-schema', 'critical', `Duplicate schema @type on this page: ${names}`, `Remove the extra schema blocks — Google treats duplicate @types as a structured-data error. Use the "Custom Schema" admin field to override the default and emit only one.`, 'Structured Data')
+    }
+
+    // Multiple <script type="application/ld+json"> tags with overlapping page-level
+    // types is also flagged. Allow the normal pattern of 1 global + 1 page-level script.
+    if (jsonLds.length > 3) {
+      add('too-many-jsonld', 'warning', `Page has ${jsonLds.length} JSON-LD script tags (recommended: 1-2)`, 'Consolidate your structured data into a single @graph block to reduce parsing overhead', 'Structured Data')
     }
   }
 
