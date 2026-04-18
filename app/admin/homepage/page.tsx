@@ -7,6 +7,7 @@ import {
   Home, Plus, Save, Trash2, Eye, EyeOff, ArrowUp, ArrowDown,
   Heading1, Type, Image as ImageIcon, Columns, Minus, AlertCircle,
   LayoutGrid, Loader2, X, Pencil, GripVertical, Check, Upload,
+  Download, Sparkles,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { useModal } from '@/components/admin/AdminModal'
@@ -62,6 +63,7 @@ export default function HomepageAdminPage() {
   const [editingBlock, setEditingBlock] = useState<Block | null>(null)
   const [showAdd, setShowAdd] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [importing, setImporting] = useState(false)
 
   useEffect(() => { load() }, [])
 
@@ -133,6 +135,38 @@ export default function HomepageAdminPage() {
     await updateBlock({ ...block, visible: !block.visible })
   }
 
+  /**
+   * Wipe existing blocks and insert the seed set that mirrors the current
+   * hardcoded homepage. Called from the empty state OR via "Reset to default"
+   * when blocks already exist (double-confirm first).
+   */
+  async function importCurrentContent(replace: boolean) {
+    if (replace && blocks.length > 0) {
+      const ok = await showConfirm(
+        'Replace all blocks?',
+        `This will DELETE all ${blocks.length} existing block(s) and replace them with the default homepage content. Cannot be undone.`,
+        'danger'
+      )
+      if (!ok) return
+    }
+    setImporting(true)
+    try {
+      const res = await fetch('/api/admin/homepage-blocks/seed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: replace ? 'replace' : 'append' }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error)
+      await load()
+      showAlert('Imported', `Added ${json.inserted} editable blocks from the default homepage. Edit or rearrange them from here.`, 'success')
+    } catch (e: any) {
+      showAlert('Import failed', e.message, 'warning')
+    } finally {
+      setImporting(false)
+    }
+  }
+
   async function move(index: number, dir: -1 | 1) {
     const newList = [...blocks]
     const target = index + dir
@@ -168,7 +202,19 @@ export default function HomepageAdminPage() {
             Everything between the upload widget and the reviews section. Blocks render in order, top to bottom.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          {blocks.length > 0 && (
+            <button
+              onClick={() => importCurrentContent(true)}
+              disabled={importing}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition disabled:opacity-50"
+              style={{ background: cardBg, borderColor: cardBorder, color: textPrimary }}
+              title="Wipe all blocks and restore the default homepage content"
+            >
+              {importing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              Reset to default
+            </button>
+          )}
           <Link
             href="/"
             target="_blank"
@@ -213,21 +259,71 @@ export default function HomepageAdminPage() {
           <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
         </div>
       ) : blocks.length === 0 ? (
-        <div
-          className="text-center py-16 rounded-2xl border-2 border-dashed"
-          style={{ borderColor: cardBorder, color: textMuted }}
-        >
-          <Home className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <h3 className="text-lg font-semibold mb-2" style={{ color: textPrimary }}>No custom blocks yet</h3>
-          <p className="text-sm max-w-md mx-auto mb-6">
-            Your homepage is showing the default hardcoded content. Click "Add Block" to start customizing.
-          </p>
-          <button
-            onClick={() => setShowAdd(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm"
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Primary recommended action: import current homepage */}
+          <div
+            className="relative p-8 rounded-2xl border-2 overflow-hidden"
+            style={{
+              background: dark
+                ? 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(16,185,129,0.04) 100%)'
+                : 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.02) 100%)',
+              borderColor: 'rgba(16,185,129,0.4)',
+            }}
           >
-            <Plus className="w-4 h-4" /> Add your first block
-          </button>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 rounded-full">
+                Recommended
+              </span>
+            </div>
+            <h3 className="text-xl font-bold mb-2" style={{ color: textPrimary }}>
+              Import current homepage
+            </h3>
+            <p className="text-sm mb-6" style={{ color: textMuted }}>
+              Load the current homepage content as ~35 editable blocks. You'll see every heading, paragraph, image,
+              comparison table, CTA, and FAQ — all editable individually. This is the fastest way to get started.
+            </p>
+            <button
+              onClick={() => importCurrentContent(false)}
+              disabled={importing}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {importing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Importing...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" /> Import current content
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Secondary: start from scratch */}
+          <div
+            className="p-8 rounded-2xl border-2 border-dashed"
+            style={{ borderColor: cardBorder }}
+          >
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: dark ? '#1e293b' : '#f1f5f9', color: textMuted }}>
+              <Plus className="w-5 h-5" />
+            </div>
+            <h3 className="text-xl font-bold mb-2" style={{ color: textPrimary }}>
+              Start from scratch
+            </h3>
+            <p className="text-sm mb-6" style={{ color: textMuted }}>
+              Build your homepage block by block. Good if you want a completely different layout than what's currently live.
+            </p>
+            <button
+              onClick={() => setShowAdd(true)}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border font-semibold text-sm transition hover:border-emerald-400"
+              style={{ background: cardBg, borderColor: cardBorder, color: textPrimary }}
+            >
+              <Plus className="w-4 h-4" /> Add your first block
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-3">
