@@ -65,7 +65,15 @@ export default function HomepageAdminPage() {
   const [saving, setSaving] = useState(false)
   const [importing, setImporting] = useState(false)
 
-  useEffect(() => { load() }, [])
+  // Hero text (title, subtitle, eyebrow) stored as site_settings rows
+  const [heroTitle, setHeroTitle] = useState('')
+  const [heroSubtitle, setHeroSubtitle] = useState('')
+  const [heroEyebrow, setHeroEyebrow] = useState('')
+  const [heroOriginal, setHeroOriginal] = useState({ title: '', subtitle: '', eyebrow: '' })
+  const [heroSaving, setHeroSaving] = useState(false)
+  const [heroSavedAt, setHeroSavedAt] = useState<number | null>(null)
+
+  useEffect(() => { load(); loadHero() }, [])
 
   async function load() {
     setLoading(true)
@@ -77,6 +85,52 @@ export default function HomepageAdminPage() {
       showAlert('Load failed', e.message, 'warning')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function loadHero() {
+    try {
+      const res = await fetch('/api/admin/site-settings')
+      const json = await res.json()
+      const rows = json.settings || []
+      const title = rows.find((s: any) => s.key === 'hero_title')?.value ?? ''
+      const subtitle = rows.find((s: any) => s.key === 'hero_subtitle')?.value ?? ''
+      const eyebrow = rows.find((s: any) => s.key === 'hero_eyebrow')?.value ?? ''
+      setHeroTitle(title); setHeroSubtitle(subtitle); setHeroEyebrow(eyebrow)
+      setHeroOriginal({ title, subtitle, eyebrow })
+    } catch (e: any) {
+      // Fail silently — if site_settings isn't reachable the hero card shows
+      // empty fields; the homepage still works because app/page.tsx falls back
+      // to the original hardcoded strings when the settings are missing.
+      console.error('[admin/homepage] hero load failed:', e)
+    }
+  }
+
+  async function saveHero() {
+    setHeroSaving(true)
+    try {
+      const res = await fetch('/api/admin/site-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          updates: [
+            { key: 'hero_title', value: heroTitle },
+            { key: 'hero_subtitle', value: heroSubtitle },
+            { key: 'hero_eyebrow', value: heroEyebrow },
+          ],
+        }),
+      })
+      if (!res.ok) {
+        const json = await res.json()
+        throw new Error(json.error || json.errors?.[0]?.error || 'Save failed')
+      }
+      setHeroOriginal({ title: heroTitle, subtitle: heroSubtitle, eyebrow: heroEyebrow })
+      setHeroSavedAt(Date.now())
+      setTimeout(() => setHeroSavedAt(null), 3000)
+    } catch (e: any) {
+      showAlert('Hero save failed', e.message, 'warning')
+    } finally {
+      setHeroSaving(false)
     }
   }
 
@@ -252,6 +306,96 @@ export default function HomepageAdminPage() {
           </p>
         </div>
       </div>
+
+      {/* ── Hero text (above the upload widget) ─────────────────────── */}
+      <div
+        className="mb-6 p-5 sm:p-6 rounded-2xl border"
+        style={{ background: cardBg, borderColor: cardBorder }}
+      >
+        <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
+          <div>
+            <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: textPrimary }}>
+              <Sparkles className="w-5 h-5 text-emerald-400" /> Hero Section
+            </h2>
+            <p className="text-xs mt-1" style={{ color: textMuted }}>
+              The big H1 title + paragraph at the very top of the homepage (above the upload widget).
+            </p>
+          </div>
+          <button
+            onClick={saveHero}
+            disabled={
+              heroSaving ||
+              (heroTitle === heroOriginal.title &&
+                heroSubtitle === heroOriginal.subtitle &&
+                heroEyebrow === heroOriginal.eyebrow)
+            }
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {heroSaving ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
+            ) : heroSavedAt ? (
+              <><Check className="w-4 h-4" /> Saved</>
+            ) : (
+              <><Save className="w-4 h-4" /> Save hero text</>
+            )}
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style={{ color: textMuted }}>
+              Eyebrow badge (small pill above H1)
+            </label>
+            <input
+              value={heroEyebrow}
+              onChange={e => setHeroEyebrow(e.target.value)}
+              placeholder="AI-POWERED · 10,000+ SPECIES · 3 FREE SCANS"
+              className="w-full px-3 py-2 rounded-lg text-sm outline-none border"
+              style={{ background: dark ? '#0f172a' : '#f1f5f9', borderColor: dark ? '#1e293b' : '#d1d5db', color: textPrimary }}
+            />
+            <p className="text-[10px] mt-1" style={{ color: textMuted }}>
+              Tip: use · (middle dot) to separate items. Leave empty to hide the badge.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style={{ color: textMuted }}>
+              Title (H1)
+            </label>
+            <textarea
+              value={heroTitle}
+              onChange={e => setHeroTitle(e.target.value)}
+              rows={2}
+              placeholder="Mushroom Identifier - Free Mushroom Identification App by Picture"
+              className="w-full px-3 py-2 rounded-lg text-base font-semibold outline-none border resize-y"
+              style={{ background: dark ? '#0f172a' : '#f1f5f9', borderColor: dark ? '#1e293b' : '#d1d5db', color: textPrimary }}
+            />
+            <p className="text-[10px] mt-1" style={{ color: textMuted }}>
+              {heroTitle.length} chars — ideal: under 80 chars for best SEO + LCP.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold mb-1.5 uppercase tracking-wide" style={{ color: textMuted }}>
+              Subtitle (paragraph under H1)
+            </label>
+            <textarea
+              value={heroSubtitle}
+              onChange={e => setHeroSubtitle(e.target.value)}
+              rows={5}
+              className="w-full px-3 py-2 rounded-lg text-sm outline-none border resize-y leading-relaxed"
+              style={{ background: dark ? '#0f172a' : '#f1f5f9', borderColor: dark ? '#1e293b' : '#d1d5db', color: textPrimary }}
+            />
+            <p className="text-[10px] mt-1" style={{ color: textMuted }}>
+              {heroSubtitle.length} chars — 1-3 sentences is typical.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: textMuted }}>
+        Content blocks (between upload widget and reviews)
+      </h2>
 
       {/* Blocks list */}
       {loading ? (

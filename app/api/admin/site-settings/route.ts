@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdmin } from '@supabase/supabase-js'
 import { isAdminEmail } from '@/lib/admin'
@@ -50,5 +51,12 @@ export async function PUT(request: NextRequest) {
 
   const errors = results.filter((r) => r.error)
   if (errors.length > 0) return NextResponse.json({ errors }, { status: 500 })
+
+  // Site settings feed both the footer (all pages) and page-specific text
+  // like hero_title on /. Revalidate '/' and the shared cache tag so edits
+  // show up within seconds.
+  revalidatePath('/', 'layout')
+  revalidateTag('site-content')
+
   return NextResponse.json({ success: true, count: updates.length })
 }

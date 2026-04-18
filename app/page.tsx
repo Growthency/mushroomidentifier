@@ -19,6 +19,7 @@ import HeroH1 from "./HeroH1";
 import IdentifyBanner from "@/components/blog/IdentifyBanner";
 import HomepageBlocks from "@/components/homepage/HomepageBlocks";
 import { getHomepageBlocks } from "@/lib/homepage-blocks";
+import { getSiteContent } from "@/lib/site-content";
 
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
 const HomeIdentifier = dynamic(() => import("./HomeIdentifier"), {
@@ -151,6 +152,20 @@ export default async function Home() {
   const homepageBlocks = await getHomepageBlocks();
   const useCustomBlocks = homepageBlocks.length > 0;
 
+  // Admin-editable hero text. Blank values fall back to the original hardcoded
+  // strings so the hero never renders empty on a cold DB or mid-edit blip.
+  const { settings: siteSettings } = await getSiteContent();
+  const heroTitle =
+    siteSettings.hero_title?.trim() ||
+    "Mushroom Identifier - Free Mushroom Identification App by Picture";
+  const heroSubtitle =
+    siteSettings.hero_subtitle?.trim() ||
+    "Use our Free mushroom identifier by photo for fast, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identification app.";
+  const heroEyebrow =
+    siteSettings.hero_eyebrow === undefined
+      ? "AI-POWERED · 10,000+ SPECIES · 3 FREE SCANS"
+      : siteSettings.hero_eyebrow.trim();
+
   return (
     <div>
       <script
@@ -170,35 +185,33 @@ export default async function Home() {
         <HeroCanvas />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-xs font-medium tracking-wide"
-            style={{
-              background: "var(--accent-bg)",
-              color: "var(--accent)",
-              border: "1px solid var(--border-hover)",
-            }}
-          >
+          {heroEyebrow && (
             <div
-              className="w-2 h-2 rounded-full pulse-dot"
-              style={{ background: "var(--accent)" }}
-            />
-            AI-POWERED · 10,000+ SPECIES · 3 FREE SCANS
-          </div>
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-xs font-medium tracking-wide"
+              style={{
+                background: "var(--accent-bg)",
+                color: "var(--accent)",
+                border: "1px solid var(--border-hover)",
+              }}
+            >
+              <div
+                className="w-2 h-2 rounded-full pulse-dot"
+                style={{ background: "var(--accent)" }}
+              />
+              {heroEyebrow}
+            </div>
+          )}
 
           {/* HeroH1 renders solid color server-side (LCP-safe), adds shimmer client-side */}
           <HeroH1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-            Mushroom Identifier - Free Mushroom Identification App by Picture
+            {heroTitle}
           </HeroH1>
 
           <p
             className="text-lg sm:text-xl mb-12 max-w-3xl mx-auto leading-relaxed"
             style={{ color: "var(--text-muted)" }}
           >
-            Use our Free mushroom identifier by photo for fast, accurate results
-            with advanced mushroom identifier AI. Upload clear images from
-            multiple angles to instantly identify fungi, detect key features,
-            and receive toxicity warnings plus similar species alerts through
-            our free mushroom identification app.
+            {heroSubtitle}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
