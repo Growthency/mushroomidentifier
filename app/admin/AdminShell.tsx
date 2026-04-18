@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, FileText, BarChart3, Trophy, Globe, ShieldCheck,
   Code, ListOrdered, Palette, Paintbrush, Droplet, LogOut, ChevronRight, Menu, X, Sun, Moon,
+  Home as HomeIcon,
 } from 'lucide-react'
 import { useState } from 'react'
 import { AdminModalProvider } from '@/components/admin/AdminModal'
@@ -12,6 +13,7 @@ import { useTheme } from '@/components/providers/ThemeProvider'
 const NAV = [
   { href: '/admin',           label: 'Dashboard',  icon: LayoutDashboard },
   { href: '/admin/pages',     label: 'Pages',      icon: FileText },
+  { href: '/admin/homepage',  label: 'Homepage',   icon: HomeIcon },
   { href: '/admin/analytics', label: 'Analytics',  icon: BarChart3 },
   { href: '/admin/rank-tracker', label: 'Rank Tracker', icon: Trophy },
   { href: '/admin/seo-health',      label: 'SEO Health',      icon: ShieldCheck },

@@ -17,6 +17,8 @@ import {
 
 import HeroH1 from "./HeroH1";
 import IdentifyBanner from "@/components/blog/IdentifyBanner";
+import HomepageBlocks from "@/components/homepage/HomepageBlocks";
+import { getHomepageBlocks } from "@/lib/homepage-blocks";
 
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
 const HomeIdentifier = dynamic(() => import("./HomeIdentifier"), {
@@ -143,7 +145,12 @@ const homepageSchema = {
   ],
 };
 
-export default function Home() {
+export default async function Home() {
+  // Admin-managed homepage blocks (between upload widget and reviews section).
+  // Empty array → site renders the hardcoded default middle content below.
+  const homepageBlocks = await getHomepageBlocks();
+  const useCustomBlocks = homepageBlocks.length > 0;
+
   return (
     <div>
       <script
@@ -250,6 +257,14 @@ export default function Home() {
 
       <HomeIdentifier />
 
+      {/* === BEGIN admin-editable homepage middle === */}
+      {/* If the admin has published any homepage_blocks, they replace the
+          hardcoded content below. Otherwise the original sections render
+          unchanged (safe rollout). Edit via /admin/homepage. */}
+      {useCustomBlocks ? (
+        <HomepageBlocks blocks={homepageBlocks} />
+      ) : (
+        <>
       <section
         className="py-10 sm:py-14 px-6"
         style={{ background: "var(--bg-secondary)" }}
@@ -3353,6 +3368,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+        </>
+      )}
+      {/* === END admin-editable homepage middle === */}
 
       <HomeReviews />
     </div>
