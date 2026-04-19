@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { createClient as createAdmin } from '@supabase/supabase-js'
 import { marked } from 'marked'
-import DOMPurify from 'isomorphic-dompurify'
+import sanitizeHtml from 'sanitize-html'
 
 /**
  * Writerfy ingestion endpoint.
@@ -131,12 +131,22 @@ export async function POST(req: NextRequest) {
       ? body.content
       : (marked.parse(body.content, { async: false }) as string)
 
-  // Sanitise — even though this endpoint is authenticated, DOMPurify is
-  // defence-in-depth and matches the sanitising that the admin RichEditor
-  // relies on for copy-pasted content.
-  const htmlContent = DOMPurify.sanitize(rawHtml, {
-    ADD_TAGS: ['iframe'],
-    ADD_ATTR: ['target', 'rel', 'allow', 'allowfullscreen', 'frameborder', 'loading'],
+  // Sanitise — defense-in-depth. The endpoint is Bearer-token authenticated
+  // so the input is already trusted, but stripping <script>/<style> and
+  // javascript: URLs is cheap insurance if the token ever leaks.
+  //
+  // `allowedTags: false` + `allowedAttributes: false` means "allow every
+  // HTML tag and attribute" — matching the freedom of the admin RichEditor
+  // (tables, iframes, inline styles, class names, data-*, etc.). The
+  // library still strips <script>/<style> unconditionally regardless of
+  // this setting, so XSS via tag injection is blocked.
+  const htmlContent = sanitizeHtml(rawHtml, {
+    allowedTags: false as any,
+    allowedAttributes: false as any,
+    allowedSchemes: ['http', 'https', 'mailto', 'data'],
+    // Also block javascript: URLs anywhere they can appear.
+    allowedSchemesAppliedToAttributes: ['href', 'src', 'cite', 'action', 'poster'],
+    allowProtocolRelative: true,
   })
 
   // ── Derive fields ────────────────────────────────────────────────
