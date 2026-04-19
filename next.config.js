@@ -8,7 +8,13 @@ const nextConfig = {
   },
   compress: true,
   swcMinify: true,
-  experimental: {},
+  experimental: {
+    // Keep @vercel/blob (and its modern-undici dependency) out of the webpack
+    // bundle. The Next.js 13 webpack config can't parse undici's private class
+    // fields (#target), but they run fine in Node at runtime — so load the
+    // package directly from node_modules instead of bundling it.
+    serverComponentsExternalPackages: ['@vercel/blob', 'undici'],
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,
