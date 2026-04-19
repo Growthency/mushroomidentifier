@@ -14,9 +14,17 @@ import { useTheme } from '@/components/providers/ThemeProvider'
 interface RichEditorProps {
   value: string
   onChange: (html: string) => void
+  /**
+   * When this changes, the contentEditable DOM is re-seeded from `value`
+   * so external updates (e.g. "Approve all" in InterlinkChecker) actually
+   * show up in the editor. Without this, `value` changes are ignored after
+   * the first mount because the MutationObserver syncs DOM → parent only.
+   * Bump this counter whenever you mutate `value` from outside the editor.
+   */
+  resetKey?: number | string
 }
 
-export default function RichEditor({ value, onChange }: RichEditorProps) {
+export default function RichEditor({ value, onChange, resetKey }: RichEditorProps) {
   const { showPrompt, showAlert } = useModal()
   const { theme } = useTheme()
   const dark = theme === 'dark'
@@ -55,6 +63,20 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
       initializedRef.current = true
     }
   }, [value, viewMode])
+
+  // Force re-sync value → live DOM whenever resetKey changes. Used by
+  // external features that mutate content and expect the editor to reflect
+  // it (e.g. Interlink Checker "Approve all"). We temporarily flip
+  // initializedRef off so the init effect above fires again, then flip it
+  // back on once the DOM matches.
+  useEffect(() => {
+    if (resetKey === undefined) return
+    if (viewMode !== 'visual') return
+    if (!editorRef.current) return
+    // Skip the very first render — the init effect already seeded the DOM.
+    if (!initializedRef.current) return
+    editorRef.current.innerHTML = value ?? ''
+  }, [resetKey])
 
   // MutationObserver to catch ALL DOM changes and sync to parent.
   // Re-hooks whenever we re-enter visual mode (the contentEditable div is

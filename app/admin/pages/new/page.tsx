@@ -70,6 +70,17 @@ export default function NewPageEditor() {
     setContent(html)
   }
 
+  // Bumped whenever content is mutated from OUTSIDE the RichEditor (e.g.
+  // Interlink Checker's Approve-all). Tells RichEditor to re-seed its DOM
+  // from `value` so the new markup actually shows in the editor.
+  const [editorResetKey, setEditorResetKey] = useState(0)
+
+  const handleInterlinksApplied = (newHtml: string) => {
+    contentRef.current = newHtml
+    setContent(newHtml)
+    setEditorResetKey(k => k + 1)
+  }
+
   const handleTitleChange = (val: string) => {
     setTitle(val)
     if (autoSlug) setSlug(slugify(val))
@@ -286,7 +297,7 @@ export default function NewPageEditor() {
           {/* Rich Content Editor */}
           <div>
             <label className="block text-xs font-medium mb-2" style={{ color: textLabel }}>Content</label>
-            <RichEditor value={content} onChange={handleContentChange} />
+            <RichEditor value={content} onChange={handleContentChange} resetKey={editorResetKey} />
           </div>
         </div>
 
@@ -331,7 +342,7 @@ export default function NewPageEditor() {
           </div>
 
           {/* Interlink Checker */}
-          <InterlinkChecker content={content} />
+          <InterlinkChecker content={content} onContentChange={handleInterlinksApplied} />
 
           {/* SEO / Meta */}
           <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>

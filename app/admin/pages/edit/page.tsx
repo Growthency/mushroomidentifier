@@ -63,6 +63,17 @@ export default function EditPageEditor() {
     setContent(html)
   }
 
+  // Bumped whenever content is mutated from OUTSIDE the RichEditor (e.g.
+  // Interlink Checker's Approve-all). Tells RichEditor to re-seed its DOM
+  // from `value` so the new markup actually shows in the editor.
+  const [editorResetKey, setEditorResetKey] = useState(0)
+
+  const handleInterlinksApplied = (newHtml: string) => {
+    contentRef.current = newHtml
+    setContent(newHtml)
+    setEditorResetKey(k => k + 1)
+  }
+
   useEffect(() => {
     if (!postId) { router.push('/admin/pages'); return }
 
@@ -346,7 +357,7 @@ export default function EditPageEditor() {
           {/* Rich Content Editor */}
           <div>
             <label className="block text-xs font-medium mb-2" style={{ color: textLabel }}>Content</label>
-            <RichEditor value={content} onChange={handleContentChange} />
+            <RichEditor value={content} onChange={handleContentChange} resetKey={editorResetKey} />
           </div>
         </div>
 
@@ -411,7 +422,7 @@ export default function EditPageEditor() {
           </div>
 
           {/* Interlink Checker */}
-          <InterlinkChecker content={content} currentSlug={slug} />
+          <InterlinkChecker content={content} currentSlug={slug} onContentChange={handleInterlinksApplied} />
 
           {/* SEO / Meta */}
           <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>

@@ -1,11 +1,20 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
-import { Link2, Copy, Check, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
+import { Link2, Copy, Check, ChevronDown, ChevronUp, Loader2, Zap, Plus } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
 interface InterlinkCheckerProps {
   content: string
   currentSlug?: string
+  /**
+   * Called with the new HTML after the admin clicks Approve-all or a single
+   * Apply button. Parent should push this back into its content state AND
+   * bump the RichEditor's resetKey so the live DOM re-syncs.
+   *
+   * If not provided, the component falls back to read-only mode (old
+   * behaviour — Copy-URL button only, no Apply).
+   */
+  onContentChange?: (newHtml: string) => void
 }
 
 interface ArticleEntry {
@@ -77,7 +86,80 @@ interface InterlinkMatch {
   title: string
 }
 
-export default function InterlinkChecker({ content, currentSlug }: InterlinkCheckerProps) {
+// Tags whose text content we do NOT wrap in links — avoids nested anchors,
+// modifying headings, and breaking code blocks or script/style elements.
+const SKIP_TAGS = new Set([
+  'A', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
+  'CODE', 'PRE', 'SCRIPT', 'STYLE',
+])
+
+/**
+ * Wrap the first text-node occurrence of `regex` inside `root` with an
+ * anchor tag pointing at `slug`. Skips tags in SKIP_TAGS. Returns true if
+ * a match was wrapped, false if nothing was found.
+ *
+ * Works by walking text nodes via TreeWalker — safer than regex-on-HTML
+ * because it can't accidentally break up an attribute value or half-split
+ * a tag.
+ */
+function wrapFirstMatch(root: Node, regex: RegExp, slug: string): boolean {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      let el: Element | null = node.parentElement
+      while (el) {
+        if (SKIP_TAGS.has(el.tagName)) return NodeFilter.FILTER_REJECT
+        el = el.parentElement
+      }
+      return NodeFilter.FILTER_ACCEPT
+    },
+  })
+
+  let textNode = walker.nextNode() as Text | null
+  while (textNode) {
+    const text = textNode.nodeValue || ''
+    const m = text.match(regex)
+    if (m && m.index !== undefined) {
+      const before = text.slice(0, m.index)
+      const matched = m[0] // preserves original casing from the content
+      const after = text.slice(m.index + matched.length)
+
+      const frag = document.createDocumentFragment()
+      if (before) frag.appendChild(document.createTextNode(before))
+      const a = document.createElement('a')
+      a.setAttribute('href', slug)
+      a.textContent = matched
+      frag.appendChild(a)
+      if (after) frag.appendChild(document.createTextNode(after))
+
+      textNode.parentNode!.replaceChild(frag, textNode)
+      return true
+    }
+    textNode = walker.nextNode() as Text | null
+  }
+  return false
+}
+
+/**
+ * Applies an array of interlink matches to an HTML string. Each keyword's
+ * first occurrence (outside existing links / headings / code) gets wrapped
+ * in `<a href="slug">keyword</a>`. Returns the updated HTML.
+ */
+function applyInterlinks(html: string, matches: InterlinkMatch[]): string {
+  if (!html || matches.length === 0) return html
+
+  const container = document.createElement('div')
+  container.innerHTML = html
+
+  for (const match of matches) {
+    const escaped = match.keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = new RegExp(`\\b(${escaped})\\b`, 'i')
+    wrapFirstMatch(container, regex, match.slug)
+  }
+
+  return container.innerHTML
+}
+
+export default function InterlinkChecker({ content, currentSlug, onContentChange }: InterlinkCheckerProps) {
   const { theme } = useTheme()
   const dark = theme === 'dark'
 
@@ -85,6 +167,8 @@ export default function InterlinkChecker({ content, currentSlug }: InterlinkChec
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(true)
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null)
+  const [appliedSlug, setAppliedSlug] = useState<string | null>(null)
+  const [applyingAll, setApplyingAll] = useState(false)
 
   // Fetch published articles from API
   useEffect(() => {
@@ -165,6 +249,28 @@ export default function InterlinkChecker({ content, currentSlug }: InterlinkChec
     return found
   }, [content, allArticles])
 
+  const handleApply = (match: InterlinkMatch) => {
+    if (!onContentChange) return
+    const newHtml = applyInterlinks(content, [match])
+    if (newHtml !== content) {
+      onContentChange(newHtml)
+      setAppliedSlug(match.slug)
+      setTimeout(() => setAppliedSlug(null), 2000)
+    }
+  }
+
+  const handleApplyAll = () => {
+    if (!onContentChange || matches.length === 0) return
+    setApplyingAll(true)
+    // Small delay so the UI shows the loader (keeps the transition feel
+    // consistent with how other batch actions behave in the admin).
+    requestAnimationFrame(() => {
+      const newHtml = applyInterlinks(content, matches)
+      onContentChange(newHtml)
+      setApplyingAll(false)
+    })
+  }
+
   const handleCopy = async (slug: string) => {
     const url = `https://mushroomidentifiers.com${slug}`
     try {
@@ -228,9 +334,25 @@ export default function InterlinkChecker({ content, currentSlug }: InterlinkChec
             </p>
           ) : (
             <>
-              <p className="text-xs mb-3" style={{ color: textLabel }}>
-                {matches.length} interlink {matches.length === 1 ? 'opportunity' : 'opportunities'} found
-              </p>
+              <div className="flex items-center justify-between mb-3 gap-2">
+                <p className="text-xs" style={{ color: textLabel }}>
+                  {matches.length} interlink {matches.length === 1 ? 'opportunity' : 'opportunities'} found
+                </p>
+                {onContentChange && (
+                  <button
+                    onClick={handleApplyAll}
+                    disabled={applyingAll}
+                    className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-semibold bg-emerald-500 hover:bg-emerald-600 text-white transition disabled:opacity-50"
+                    title={`Insert all ${matches.length} interlinks into the content`}
+                  >
+                    {applyingAll
+                      ? <Loader2 className="w-3 h-3 animate-spin" />
+                      : <Zap className="w-3 h-3" />
+                    }
+                    Approve all ({matches.length})
+                  </button>
+                )}
+              </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {matches.map((m) => (
                   <div
@@ -248,20 +370,38 @@ export default function InterlinkChecker({ content, currentSlug }: InterlinkChec
                         </p>
                         <p className="text-emerald-500/70 truncate mt-0.5">{m.slug}</p>
                       </div>
-                      <button
-                        onClick={() => handleCopy(m.slug)}
-                        className="shrink-0 p-1.5 rounded-md transition-colors"
-                        style={{
-                          background: copiedSlug === m.slug ? 'rgba(16,185,129,0.15)' : (dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'),
-                          color: copiedSlug === m.slug ? '#10b981' : textLabel,
-                        }}
-                        title="Copy full URL"
-                      >
-                        {copiedSlug === m.slug
-                          ? <Check className="w-3.5 h-3.5" />
-                          : <Copy className="w-3.5 h-3.5" />
-                        }
-                      </button>
+                      <div className="shrink-0 flex items-center gap-1">
+                        {onContentChange && (
+                          <button
+                            onClick={() => handleApply(m)}
+                            className="p-1.5 rounded-md transition-colors"
+                            style={{
+                              background: appliedSlug === m.slug ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.08)',
+                              color: appliedSlug === m.slug ? '#10b981' : '#10b981',
+                            }}
+                            title="Insert this interlink into the content"
+                          >
+                            {appliedSlug === m.slug
+                              ? <Check className="w-3.5 h-3.5" />
+                              : <Plus className="w-3.5 h-3.5" />
+                            }
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleCopy(m.slug)}
+                          className="p-1.5 rounded-md transition-colors"
+                          style={{
+                            background: copiedSlug === m.slug ? 'rgba(16,185,129,0.15)' : (dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'),
+                            color: copiedSlug === m.slug ? '#10b981' : textLabel,
+                          }}
+                          title="Copy full URL"
+                        >
+                          {copiedSlug === m.slug
+                            ? <Check className="w-3.5 h-3.5" />
+                            : <Copy className="w-3.5 h-3.5" />
+                          }
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
