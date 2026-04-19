@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { isAdminEmail } from '@/lib/admin'
 import { createClient as createAdmin } from '@supabase/supabase-js'
+import { resolveFeaturedImage } from '@/lib/content-helpers'
 
 async function getAdmin() {
   const supabase = await createClient()
@@ -75,6 +76,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Title and slug are required' }, { status: 400 })
   }
 
+  // If no featured image explicitly set, auto-pick the first <img> in the
+  // content so blog list cards, OG images, and article headers always have
+  // something to show. Admin can still override later via the edit page.
+  const effectiveFeaturedImage = resolveFeaturedImage(featured_image, content)
+
   const { data, error } = await admin
     .from('blog_posts')
     .insert({
@@ -82,7 +88,7 @@ export async function POST(req: NextRequest) {
       slug: slug.startsWith('/') ? slug : `/${slug}`,
       excerpt: autoExcerpt(content || ''),
       content: content || '',
-      featured_image: featured_image || '',
+      featured_image: effectiveFeaturedImage,
       category: category || 'Species Guide',
       risk_level: risk_level || 'General',
       region: region || 'Worldwide',
@@ -121,6 +127,18 @@ export async function PATCH(req: NextRequest) {
   // Auto-generate excerpt from content
   if (updates.content) {
     updates.excerpt = autoExcerpt(updates.content)
+  }
+
+  // Auto-fill featured_image from the first <img> in content when the admin
+  // left the field empty. Only triggers when featured_image is explicitly
+  // being sent as empty AND content has images — preserves the existing
+  // value if the admin doesn't touch the field at all.
+  if (
+    Object.prototype.hasOwnProperty.call(updates, 'featured_image') &&
+    !(updates.featured_image && String(updates.featured_image).trim()) &&
+    updates.content
+  ) {
+    updates.featured_image = resolveFeaturedImage('', updates.content)
   }
 
   // If publishing for first time, set published_at

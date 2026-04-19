@@ -4,6 +4,7 @@ import { createClient as createAdmin } from '@supabase/supabase-js'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 import { checkWriterfyAuth } from '@/lib/writerfy-auth'
+import { resolveFeaturedImage } from '@/lib/content-helpers'
 
 /**
  * Writerfy ingestion endpoint.
@@ -156,12 +157,17 @@ export async function POST(req: NextRequest) {
   const metaTitle = truncate(body.meta_title?.trim() || body.title, 60)
   const metaDescription = truncate(body.meta_description?.trim() || excerpt, 160)
 
+  // Featured image: if Writerfy explicitly sent one, use it. Otherwise
+  // pick the first <img> from the converted HTML body so blog list cards
+  // and social previews always have an image.
+  const featuredImage = resolveFeaturedImage(body.featured_image, htmlContent)
+
   const row = {
     title: body.title,
     slug,
     excerpt,
     content: htmlContent,
-    featured_image: body.featured_image || '',
+    featured_image: featuredImage,
     category,
     risk_level: riskLevel,
     region,
