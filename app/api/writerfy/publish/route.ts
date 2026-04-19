@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient as createAdmin } from '@supabase/supabase-js'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
+import { checkWriterfyAuth } from '@/lib/writerfy-auth'
 
 /**
  * Writerfy ingestion endpoint.
@@ -78,23 +79,9 @@ function supabase() {
   )
 }
 
-function checkAuth(req: NextRequest): boolean {
-  const token = process.env.WRITERFY_API_TOKEN
-  if (!token) return false
-  const header = req.headers.get('authorization') || ''
-  const supplied = header.replace(/^Bearer\s+/i, '').trim()
-  // Constant-time compare — prevents timing attacks on the token.
-  if (supplied.length !== token.length) return false
-  let mismatch = 0
-  for (let i = 0; i < token.length; i++) {
-    mismatch |= supplied.charCodeAt(i) ^ token.charCodeAt(i)
-  }
-  return mismatch === 0
-}
-
 /* ── GET — health check ───────────────────────────────────────────── */
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) {
+  if (!checkWriterfyAuth(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   return NextResponse.json({
@@ -106,7 +93,7 @@ export async function GET(req: NextRequest) {
 
 /* ── POST — create or update ──────────────────────────────────────── */
 export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) {
+  if (!checkWriterfyAuth(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
 
