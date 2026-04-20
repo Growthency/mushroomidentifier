@@ -65,6 +65,17 @@ export default function HomepageAdminPage() {
   const [saving, setSaving] = useState(false)
   const [importing, setImporting] = useState(false)
 
+  // Currently-focused block. Click anywhere on a row (except buttons) to
+  // select. Controls two things:
+  //   • visual highlight of the "active" block
+  //   • where "Add Block" inserts new blocks (right AFTER selected, not
+  //     at the end)
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null)
+
+  // Drag-and-drop reorder state
+  const [draggedId, setDraggedId] = useState<string | null>(null)
+  const [dragOverId, setDragOverId] = useState<string | null>(null)
+
   // Hero text (title, subtitle, eyebrow) stored as site_settings rows
   const [heroTitle, setHeroTitle] = useState('')
   const [heroSubtitle, setHeroSubtitle] = useState('')
@@ -144,11 +155,93 @@ export default function HomepageAdminPage() {
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error)
+      const newBlock = json.block
+
+      // If a block was selected when the admin clicked Add, place the new
+      // block immediately AFTER the selected one instead of at the bottom.
+      // The POST already appended to the end; we just rebuild the full
+      // order array and bulk-update via PUT.
+      if (selectedBlockId) {
+        const selectedIdx = blocks.findIndex(b => b.id === selectedBlockId)
+        if (selectedIdx !== -1) {
+          const existingIds = blocks.map(b => b.id)
+          const newOrder = [
+            ...existingIds.slice(0, selectedIdx + 1),
+            newBlock.id,
+            ...existingIds.slice(selectedIdx + 1),
+          ]
+          await fetch('/api/admin/homepage-blocks', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order: newOrder }),
+          })
+        }
+      }
+
       await load()
-      setEditingBlock(json.block)
+      setEditingBlock(newBlock)
+      // The newly-created block becomes the selected one so a second Add
+      // click keeps the insertion cursor advancing naturally.
+      setSelectedBlockId(newBlock.id)
     } catch (e: any) {
       showAlert('Add failed', e.message, 'warning')
     }
+  }
+
+  /* ── Drag-and-drop reorder ───────────────────────────────────────── */
+
+  function handleDragStart(e: React.DragEvent, id: string) {
+    setDraggedId(id)
+    e.dataTransfer.effectAllowed = 'move'
+    // Required by some browsers for the drag to actually start
+    try { e.dataTransfer.setData('text/plain', String(id)) } catch {}
+  }
+
+  function handleDragOver(e: React.DragEvent, id: string) {
+    if (!draggedId) return
+    e.preventDefault()
+    if (draggedId !== id && dragOverId !== id) setDragOverId(id)
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  function handleDragLeave() {
+    setDragOverId(null)
+  }
+
+  async function handleDrop(e: React.DragEvent, targetId: string) {
+    e.preventDefault()
+    const source = draggedId
+    setDraggedId(null)
+    setDragOverId(null)
+    if (!source || source === targetId) return
+
+    const sourceIdx = blocks.findIndex(b => b.id === source)
+    const targetIdx = blocks.findIndex(b => b.id === targetId)
+    if (sourceIdx === -1 || targetIdx === -1) return
+
+    // Optimistic local reorder — admin sees instant feedback. If the PUT
+    // fails we re-load from the server to snap back to truth.
+    const reordered = [...blocks]
+    const [moved] = reordered.splice(sourceIdx, 1)
+    reordered.splice(targetIdx, 0, moved)
+    setBlocks(reordered)
+
+    try {
+      const res = await fetch('/api/admin/homepage-blocks', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: reordered.map(b => b.id) }),
+      })
+      if (!res.ok) throw new Error((await res.json()).error || 'reorder failed')
+    } catch (err: any) {
+      showAlert('Reorder failed', err.message, 'warning')
+      await load()
+    }
+  }
+
+  function handleDragEnd() {
+    setDraggedId(null)
+    setDragOverId(null)
   }
 
   async function updateBlock(updated: Block) {
@@ -474,19 +567,60 @@ export default function HomepageAdminPage() {
           {blocks.map((block, i) => {
             const typeInfo = BLOCK_TYPES.find(t => t.type === block.block_type)
             const Icon = typeInfo?.icon || Type
+            const isSelected = selectedBlockId === block.id
+            const isDragging = draggedId === block.id
+            const isDragOver = dragOverId === block.id
             return (
               <div
                 key={block.id}
-                className="rounded-xl border p-4 flex items-center gap-4"
+                draggable
+                onDragStart={(e) => handleDragStart(e, block.id)}
+                onDragOver={(e) => handleDragOver(e, block.id)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, block.id)}
+                onDragEnd={handleDragEnd}
+                onClick={(e) => {
+                  // Ignore clicks that bubble up from the action buttons
+                  // (move / visibility / edit / delete) — only the row body
+                  // itself should toggle selection.
+                  if ((e.target as HTMLElement).closest('button')) return
+                  setSelectedBlockId(block.id)
+                }}
+                className="rounded-xl border p-4 flex items-center gap-4 transition-all cursor-pointer"
                 style={{
-                  background: cardBg,
-                  borderColor: cardBorder,
-                  opacity: block.visible ? 1 : 0.5,
+                  background: isSelected
+                    ? (dark ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.08)')
+                    : cardBg,
+                  borderColor: isSelected
+                    ? '#10b981'
+                    : isDragOver
+                      ? '#10b981'
+                      : cardBorder,
+                  borderWidth: isSelected || isDragOver ? 2 : 1,
+                  borderStyle: isDragOver ? 'dashed' : 'solid',
+                  boxShadow: isSelected
+                    ? '0 0 0 3px rgba(16,185,129,0.15)'
+                    : 'none',
+                  opacity: isDragging ? 0.4 : (block.visible ? 1 : 0.5),
+                  // margin adjust so the thicker selected border doesn't shift
+                  // other rows
+                  marginTop: isSelected || isDragOver ? -1 : 0,
+                  marginBottom: isSelected || isDragOver ? -1 : 0,
                 }}
               >
+                {/* Drag handle — whole row is draggable, this is just the
+                    visual affordance */}
+                <div
+                  className="flex-shrink-0"
+                  style={{ color: isSelected ? '#10b981' : textMuted, cursor: 'grab' }}
+                  title="Drag to reorder"
+                >
+                  <GripVertical className="w-4 h-4" />
+                </div>
+
                 <div className="flex flex-col gap-1">
                   <button
-                    onClick={() => move(i, -1)}
+                    onClick={(e) => { e.stopPropagation(); move(i, -1) }}
                     disabled={i === 0}
                     className="p-1 rounded hover:bg-emerald-500/10 disabled:opacity-30 disabled:cursor-not-allowed"
                     style={{ color: textMuted }}
@@ -495,7 +629,7 @@ export default function HomepageAdminPage() {
                     <ArrowUp className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => move(i, 1)}
+                    onClick={(e) => { e.stopPropagation(); move(i, 1) }}
                     disabled={i === blocks.length - 1}
                     className="p-1 rounded hover:bg-emerald-500/10 disabled:opacity-30 disabled:cursor-not-allowed"
                     style={{ color: textMuted }}
@@ -508,7 +642,9 @@ export default function HomepageAdminPage() {
                 <div
                   className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: 'rgba(16,185,129,0.1)',
+                    background: isSelected
+                      ? 'rgba(16,185,129,0.2)'
+                      : 'rgba(16,185,129,0.1)',
                     color: '#10b981',
                   }}
                 >
@@ -516,9 +652,16 @@ export default function HomepageAdminPage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold" style={{ color: textPrimary }}>
-                    {typeInfo?.label || block.block_type}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold" style={{ color: textPrimary }}>
+                      {typeInfo?.label || block.block_type}
+                    </p>
+                    {isSelected && (
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-500">
+                        SELECTED
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs truncate" style={{ color: textMuted }}>
                     {blockPreview(block)}
                   </p>
