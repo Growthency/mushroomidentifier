@@ -1111,7 +1111,18 @@ function FeatureGridEditor({ data, onChange, dark }: { data: any; onChange: (d: 
               </div>
             </div>
             <input placeholder="Title" value={item.title || ''} onChange={e => updateItem(i, { title: e.target.value })} className={inputCls} style={inputStyle} />
-            <textarea placeholder="Description" value={item.description || ''} onChange={e => updateItem(i, { description: e.target.value })} rows={2} className={inputCls} style={inputStyle} />
+            <div>
+              <label className="block text-[10px] font-semibold mb-1 uppercase tracking-wide" style={{ color: textMuted }}>Description</label>
+              <div className="rounded-lg border overflow-hidden" style={{ borderColor: inputBorder }}>
+                {/* Rich editor so admins can add interlinks, bold, italic,
+                    lists etc inside feature-grid cards. Each card gets its
+                    own editor instance — stable ref per index. */}
+                <RichEditor
+                  value={item.description || ''}
+                  onChange={(html) => updateItem(i, { description: html })}
+                />
+              </div>
+            </div>
             <ImagePicker label="Image (optional)" value={item.image || ''} onChange={v => updateItem(i, { image: v })} dark={dark} />
           </div>
         ))}

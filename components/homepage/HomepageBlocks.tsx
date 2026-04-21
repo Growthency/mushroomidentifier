@@ -58,8 +58,11 @@ function HeadingBlock({ data }: { data: any }) {
       ? 'text-2xl sm:text-3xl'
       : 'text-3xl sm:text-4xl'
 
+  // Tight top padding (heading flows into prev content with breathing room)
+  // + smaller bottom padding (heading should feel connected to whatever
+  // block comes right after, not floating in the middle of whitespace).
   return (
-    <section className="py-8 sm:py-10 px-6">
+    <section className="pt-10 pb-2 sm:pt-14 sm:pb-3 px-6">
       <div className={`max-w-4xl mx-auto ${align}`}>
         {data.eyebrow && (
           <p
@@ -71,14 +74,14 @@ function HeadingBlock({ data }: { data: any }) {
         )}
         {level === 'h2' ? (
           <h2
-            className={`font-playfair ${sizeCls} font-bold`}
+            className={`font-playfair ${sizeCls} font-bold leading-tight`}
             style={{ color: 'var(--text-primary)' }}
           >
             {data.title || ''}
           </h2>
         ) : (
           <h3
-            className={`font-playfair ${sizeCls} font-bold`}
+            className={`font-playfair ${sizeCls} font-bold leading-tight`}
             style={{ color: 'var(--text-primary)' }}
           >
             {data.title || ''}
@@ -101,22 +104,27 @@ function HeadingBlock({ data }: { data: any }) {
 function RichTextBlock({ data }: { data: any }) {
   const html = data.html || ''
   if (!html) return null
+  // Tight padding top/bottom — the [&>*:first-child]:mt-0 / last-child:mb-0
+  // ensures prose's default first/last margins don't stack on top of our
+  // section padding (was a major source of empty whitespace).
   return (
-    <section className="py-10 sm:py-14 px-6">
+    <section className="py-4 sm:py-6 px-6">
       <div className="max-w-4xl mx-auto">
         <div
           className="rich-content prose prose-base sm:prose-lg max-w-none
+            [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
             prose-headings:font-playfair prose-headings:font-bold
-            prose-h2:text-3xl prose-h2:sm:text-4xl prose-h2:mt-0 prose-h2:mb-4
-            prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-            prose-p:leading-relaxed prose-p:mb-4
+            prose-h2:text-2xl prose-h2:sm:text-3xl prose-h2:mt-6 prose-h2:mb-3
+            prose-h3:text-xl prose-h3:mt-5 prose-h3:mb-2
+            prose-p:leading-relaxed prose-p:my-3
+            prose-ul:my-3 prose-ol:my-3 prose-li:my-1
             prose-a:font-medium prose-a:no-underline hover:prose-a:underline
-            prose-img:rounded-xl prose-img:mx-auto prose-img:max-w-full prose-img:h-auto
-            prose-table:text-sm prose-table:w-full prose-table:border-collapse
+            prose-img:rounded-xl prose-img:mx-auto prose-img:max-w-full prose-img:h-auto prose-img:my-4
+            prose-table:text-sm prose-table:w-full prose-table:border-collapse prose-table:my-4
             prose-th:p-3 prose-th:text-left prose-td:p-3
-            prose-blockquote:rounded-xl prose-blockquote:px-5 prose-blockquote:py-3
-            prose-pre:rounded-xl prose-pre:p-4
-            prose-hr:my-8"
+            prose-blockquote:rounded-xl prose-blockquote:px-5 prose-blockquote:py-3 prose-blockquote:my-4
+            prose-pre:rounded-xl prose-pre:p-4 prose-pre:my-4
+            prose-hr:my-6"
           style={{
             color: 'var(--text-muted)',
             ['--tw-prose-headings' as string]: 'var(--text-primary)',
@@ -145,7 +153,7 @@ function ImageBlock({ data }: { data: any }) {
   const rounded = data.rounded !== false
   const maxH = data.maxHeight ? Number(data.maxHeight) : 500
   return (
-    <section className="py-6 sm:py-10 px-6">
+    <section className="py-4 sm:py-6 px-6">
       <div className="max-w-4xl mx-auto">
         <div
           className={`relative overflow-hidden ${rounded ? 'rounded-2xl' : ''}`}
@@ -188,18 +196,21 @@ function TwoColumnBlock({ data }: { data: any }) {
   const hasImage = !!data.imageSrc
   const html = data.html || ''
   return (
-    <section className="py-10 sm:py-14 px-6">
+    <section className="py-6 sm:py-10 px-6">
       <div className="max-w-6xl mx-auto">
         <div
-          className={`grid gap-8 sm:gap-12 items-center ${
+          className={`grid gap-6 sm:gap-10 items-center ${
             hasImage ? 'md:grid-cols-2' : ''
           } ${reverse ? 'md:[&>*:first-child]:order-2' : ''}`}
         >
           <div
             className="rich-content prose prose-base max-w-none
+              [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
               prose-headings:font-playfair prose-headings:font-bold
-              prose-h2:text-2xl prose-h2:sm:text-3xl prose-h2:mt-0
-              prose-p:leading-relaxed
+              prose-h2:text-2xl prose-h2:sm:text-3xl prose-h2:mt-0 prose-h2:mb-3
+              prose-h3:text-lg prose-h3:mt-4 prose-h3:mb-2
+              prose-p:leading-relaxed prose-p:my-2
+              prose-ul:my-2 prose-ol:my-2 prose-li:my-1
               prose-a:no-underline hover:prose-a:underline"
             style={{
               color: 'var(--text-muted)',
@@ -292,7 +303,7 @@ function CtaBoxBlock({ data }: { data: any }) {
   const variant = CTA_VARIANTS[data.variant] || CTA_VARIANTS.info
   const Icon = variant.icon
   return (
-    <section className="py-8 sm:py-10 px-6">
+    <section className="py-6 sm:py-8 px-6">
       <div className="max-w-4xl mx-auto">
         <div
           className="p-6 sm:p-8 rounded-xl"
@@ -344,21 +355,21 @@ function FeatureGridBlock({ data }: { data: any }) {
   if (items.length === 0) return null
 
   return (
-    <section className="py-10 sm:py-14 px-6">
+    <section className="py-6 sm:py-10 px-6">
       <div className="max-w-6xl mx-auto">
         {data.title && (
           <h2
-            className="font-playfair text-2xl sm:text-3xl font-bold mb-8 text-center"
+            className="font-playfair text-2xl sm:text-3xl font-bold mb-6 text-center leading-tight"
             style={{ color: 'var(--text-primary)' }}
           >
             {data.title}
           </h2>
         )}
-        <div className={`grid gap-6 ${gridCls}`}>
+        <div className={`grid gap-5 sm:gap-6 ${gridCls}`}>
           {items.map((item: any, i: number) => (
             <div
               key={i}
-              className="p-6 rounded-2xl transition hover:scale-[1.02]"
+              className="p-5 sm:p-6 rounded-2xl transition hover:scale-[1.02] flex flex-col"
               style={{
                 background: 'var(--bg-secondary)',
                 border: '1px solid var(--border)',
@@ -378,19 +389,34 @@ function FeatureGridBlock({ data }: { data: any }) {
               )}
               {item.title && (
                 <h3
-                  className="font-semibold text-lg mb-2"
+                  className="font-semibold text-lg mb-2 leading-snug"
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {item.title}
                 </h3>
               )}
               {item.description && (
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  {item.description}
-                </p>
+                // HTML rendering — admin can add interlinks, bold, italic,
+                // lists via the RichEditor in the feature-grid card editor.
+                // prose-sm keeps the card compact; first/last margin reset
+                // prevents a blank first line above the first paragraph.
+                <div
+                  className="text-sm leading-relaxed prose prose-sm max-w-none
+                    [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
+                    prose-p:my-2 prose-p:leading-relaxed
+                    prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5
+                    prose-strong:font-semibold
+                    prose-a:font-medium prose-a:no-underline hover:prose-a:underline"
+                  style={{
+                    color: 'var(--text-muted)',
+                    ['--tw-prose-body' as string]: 'var(--text-muted)',
+                    ['--tw-prose-headings' as string]: 'var(--text-primary)',
+                    ['--tw-prose-links' as string]: 'var(--accent)',
+                    ['--tw-prose-bold' as string]: 'var(--text-primary)',
+                    ['--tw-prose-bullets' as string]: 'var(--accent)',
+                  }}
+                  dangerouslySetInnerHTML={{ __html: item.description }}
+                />
               )}
             </div>
           ))}
