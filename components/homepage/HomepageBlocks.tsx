@@ -127,18 +127,26 @@ function RichTextBlock({ data }: { data: any }) {
             prose-hr:my-6"
           style={{
             color: 'var(--text-muted)',
+            // Full prose palette — wire up every slot to our theme vars so
+            // dark mode doesn't fall back to prose's default near-black
+            // body color (which was making paragraphs invisible on a dark
+            // background).
+            ['--tw-prose-body' as string]: 'var(--text-muted)',
             ['--tw-prose-headings' as string]: 'var(--text-primary)',
+            ['--tw-prose-lead' as string]: 'var(--text-muted)',
             ['--tw-prose-links' as string]: 'var(--accent)',
             ['--tw-prose-bold' as string]: 'var(--text-primary)',
             ['--tw-prose-bullets' as string]: 'var(--accent)',
             ['--tw-prose-counters' as string]: 'var(--accent)',
-            ['--tw-prose-th-borders' as string]: 'var(--border)',
-            ['--tw-prose-td-borders' as string]: 'var(--border)',
-            ['--tw-prose-hr' as string]: 'var(--border)',
+            ['--tw-prose-quotes' as string]: 'var(--text-primary)',
             ['--tw-prose-quote-borders' as string]: 'var(--accent)',
+            ['--tw-prose-captions' as string]: 'var(--text-muted)',
             ['--tw-prose-code' as string]: 'var(--accent)',
             ['--tw-prose-pre-bg' as string]: 'var(--bg-secondary)',
             ['--tw-prose-pre-code' as string]: 'var(--text-muted)',
+            ['--tw-prose-th-borders' as string]: 'var(--border)',
+            ['--tw-prose-td-borders' as string]: 'var(--border)',
+            ['--tw-prose-hr' as string]: 'var(--border)',
           }}
           dangerouslySetInnerHTML={{ __html: html }}
         />
@@ -214,10 +222,21 @@ function TwoColumnBlock({ data }: { data: any }) {
               prose-a:no-underline hover:prose-a:underline"
             style={{
               color: 'var(--text-muted)',
+              // Wire full prose palette to theme vars so body text stays
+              // visible in dark mode (prose default is near-black).
+              ['--tw-prose-body' as string]: 'var(--text-muted)',
               ['--tw-prose-headings' as string]: 'var(--text-primary)',
+              ['--tw-prose-lead' as string]: 'var(--text-muted)',
               ['--tw-prose-links' as string]: 'var(--accent)',
               ['--tw-prose-bold' as string]: 'var(--text-primary)',
               ['--tw-prose-bullets' as string]: 'var(--accent)',
+              ['--tw-prose-counters' as string]: 'var(--accent)',
+              ['--tw-prose-quotes' as string]: 'var(--text-primary)',
+              ['--tw-prose-quote-borders' as string]: 'var(--accent)',
+              ['--tw-prose-captions' as string]: 'var(--text-muted)',
+              ['--tw-prose-code' as string]: 'var(--accent)',
+              ['--tw-prose-th-borders' as string]: 'var(--border)',
+              ['--tw-prose-td-borders' as string]: 'var(--border)',
             }}
             dangerouslySetInnerHTML={{ __html: html }}
           />
