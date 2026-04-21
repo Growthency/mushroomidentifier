@@ -23,9 +23,14 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get('paddle-signature') ?? ''
 
   // ── 1. Verify Paddle webhook signature ──
+  // NOTE: unmarshal() returns a Promise in @paddle/paddle-node-sdk v3.
+  // The missing `await` was the reason every transaction silently
+  // failed to credit — `event` was a Promise, `event.eventType` was
+  // undefined, and the handler fell through with {received: true}
+  // without crediting anyone.
   let event: Awaited<ReturnType<typeof paddle.webhooks.unmarshal>>
   try {
-    event = paddle.webhooks.unmarshal(
+    event = await paddle.webhooks.unmarshal(
       rawBody,
       process.env.PADDLE_WEBHOOK_SECRET!,
       signature
