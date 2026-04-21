@@ -212,11 +212,14 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   .rich-content h2 { font-size: 1.875rem !important; }
   .rich-content h3 { font-size: 1.25rem !important; }
 }
-.rich-content p { color: var(--text-muted) !important; line-height: 1.8; }
-.rich-content ul, .rich-content ol { color: var(--text-muted) !important; padding-left: 1.4rem; }
-.rich-content li { color: var(--text-muted) !important; margin-bottom: 0.35rem; }
-.rich-content strong, .rich-content b { color: var(--text-primary) !important; }
-.rich-content em, .rich-content i { color: var(--text-muted) !important; }
+/* Body text uses primary (not muted) for high readability. --text-muted
+   at 68% opacity in dark mode is fine for captions / secondary info but
+   too dim for dense paragraph reading. */
+.rich-content p { color: var(--text-primary) !important; line-height: 1.8; opacity: 0.92; }
+.rich-content ul, .rich-content ol { color: var(--text-primary) !important; padding-left: 1.4rem; opacity: 0.92; }
+.rich-content li { color: var(--text-primary) !important; margin-bottom: 0.35rem; }
+.rich-content strong, .rich-content b { color: var(--text-primary) !important; opacity: 1; }
+.rich-content em, .rich-content i { color: var(--text-primary) !important; opacity: 0.88; }
 .rich-content a { color: var(--accent) !important; text-decoration: none; }
 .rich-content a:hover { text-decoration: underline; }
 .rich-content img {
@@ -231,11 +234,13 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   padding: 0.75rem 1.25rem !important;
   border-radius: 0.75rem;
   background: var(--accent-bg) !important;
-  color: var(--text-muted) !important;
+  color: var(--text-primary) !important;
+  opacity: 0.95;
 }
 .rich-content pre {
   background: var(--bg-secondary) !important;
-  color: var(--text-muted) !important;
+  color: var(--text-primary) !important;
+  opacity: 0.92;
   border-radius: 0.75rem;
   padding: 1rem;
   overflow-x: auto;
@@ -263,7 +268,8 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
 .rich-content td {
   border: 1px solid var(--border) !important;
   padding: 0.75rem !important;
-  color: var(--text-muted) !important;
+  color: var(--text-primary) !important;
+  opacity: 0.92;
 }
 .rich-content hr {
   border: none !important;
