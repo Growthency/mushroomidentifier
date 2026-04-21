@@ -79,11 +79,38 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   )
 
   const credits    = profile?.credits ?? 0
-  const maxCredits = 30
-  const pct        = Math.max(0, Math.min(100, (credits / maxCredits) * 100))
   const plan       = profile?.plan ?? 'free'
+  // Progress-bar max scales with plan so the bar actually reflects monthly
+  // allowance — free=30, starter=120, explorer=550, pro=1200
+  const maxCredits = plan === 'pro' ? 1200 : plan === 'explorer' ? 550 : plan === 'starter' ? 120 : 30
+  const pct        = Math.max(0, Math.min(100, (credits / maxCredits) * 100))
   const planLabel  = plan === 'pro' ? 'Pro' : plan === 'explorer' ? 'Explorer' : plan === 'starter' ? 'Starter' : 'Free'
   const planColor  = plan === 'pro' ? '#f59e0b' : plan === 'explorer' ? '#8b5cf6' : plan === 'starter' ? '#3b82f6' : 'var(--accent)'
+
+  // Subscription state — surface for the "Manage" button + canceled banner
+  const subStatus     = profile?.subscription_status as string | undefined
+  const periodEnd     = profile?.current_period_end as string | undefined
+  const isSubscribed  = !!profile?.subscription_id && subStatus !== 'canceled'
+  const isCanceling   = subStatus === 'canceled' && periodEnd && new Date(periodEnd) > new Date()
+  const formattedPeriodEnd = periodEnd
+    ? new Date(periodEnd).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : null
+
+  // Open the Paddle customer portal for the current user (cancel,
+  // update payment, view invoices). Server generates a single-use URL.
+  async function openSubscriptionPortal() {
+    try {
+      const res = await fetch('/api/subscription/manage')
+      const json = await res.json()
+      if (res.ok && json.url) {
+        window.location.href = json.url
+      } else {
+        alert(json.error || 'Could not open subscription portal. Try again in a moment.')
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not open subscription portal.')
+    }
+  }
   const initials   = (profile?.full_name || user?.email || 'U').slice(0, 2).toUpperCase()
   const firstName  = profile?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'there'
   const avatarUrl  = profile?.avatar_url
@@ -244,12 +271,84 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               {plan === 'pro' ? <Crown className="w-3 h-3" /> : plan === 'explorer' ? <Star className="w-3 h-3" /> : <Zap className="w-3 h-3" />}
               {planLabel} Plan
             </span>
+            {/* Manage subscription (paid plans only) — opens Paddle customer
+                portal where user can cancel, change plan, or update card. */}
+            {(isSubscribed || isCanceling) && (
+              <button
+                onClick={openSubscriptionPortal}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-opacity hover:opacity-80"
+                style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                title="Manage subscription, payment method, and invoices"
+              >
+                Manage
+              </button>
+            )}
+            {plan === 'free' && (
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-opacity hover:opacity-80"
+                style={{ background: 'var(--accent)', color: '#fff' }}
+              >
+                Upgrade
+              </Link>
+            )}
             <button onClick={toggleTheme} className="p-2 rounded-xl hover:opacity-70 transition-opacity"
               style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
               {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
           </div>
         </header>
+
+        {/* Subscription canceled banner — user canceled but still has
+            access until period end. Netflix-style visible reminder so they
+            know the cutoff date. */}
+        {isCanceling && formattedPeriodEnd && (
+          <div
+            className="px-4 md:px-8 py-3 flex items-center justify-between flex-wrap gap-3"
+            style={{
+              background: 'rgba(245,158,11,0.1)',
+              borderBottom: '1px solid rgba(245,158,11,0.3)',
+              color: '#f59e0b',
+            }}
+          >
+            <p className="text-sm">
+              <strong>Subscription canceled.</strong> You have full access
+              until <strong>{formattedPeriodEnd}</strong>, then your plan
+              returns to Free.
+            </p>
+            <Link
+              href="/pricing"
+              className="text-xs font-semibold px-3 py-1.5 rounded-full hover:opacity-80 transition"
+              style={{ background: '#f59e0b', color: '#fff' }}
+            >
+              Resubscribe
+            </Link>
+          </div>
+        )}
+
+        {/* Past-due banner — payment failed, Paddle is retrying */}
+        {subStatus === 'past_due' && (
+          <div
+            className="px-4 md:px-8 py-3 flex items-center justify-between flex-wrap gap-3"
+            style={{
+              background: 'rgba(239,68,68,0.1)',
+              borderBottom: '1px solid rgba(239,68,68,0.3)',
+              color: '#ef4444',
+            }}
+          >
+            <p className="text-sm">
+              <strong>Payment failed.</strong> Update your payment method to
+              keep your subscription active.
+            </p>
+            <button
+              onClick={openSubscriptionPortal}
+              className="text-xs font-semibold px-3 py-1.5 rounded-full hover:opacity-80 transition"
+              style={{ background: '#ef4444', color: '#fff' }}
+            >
+              Update payment
+            </button>
+          </div>
+        )}
 
         {/* Page Body */}
         <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-y-auto">

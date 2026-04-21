@@ -6,36 +6,36 @@ import { Check, Sparkles, Loader2, ShieldCheck, RefreshCcw, Infinity as Infinity
 import { initializePaddle, type Paddle } from '@paddle/paddle-js'
 import { createClient } from '@/lib/supabase/client'
 
-// ── Pack definitions ────────────────────────────────────────────────
+// ── Subscription plan definitions ────────────────────────────────────
 const PACKS = [
   {
     id: 'starter',
-    name: 'Starter Pack',
+    name: 'Starter',
     price: '$4.99',
     priceEnv: 'NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID',
     credits: 120,
     identifications: 12,
     popular: false,
     features: [
-      '120 credits = 12 identifications',
+      '120 credits every month (12 IDs/mo)',
       '20% more than competitors',
       'Full AI species identification',
       'Complete safety warnings',
       'Similar species & lookalike alerts',
       'Emergency contact info',
-      'Credits never expire',
+      'Cancel anytime',
     ],
   },
   {
     id: 'explorer',
-    name: 'Explorer Pack',
+    name: 'Explorer',
     price: '$9.99',
     priceEnv: 'NEXT_PUBLIC_PADDLE_EXPLORER_PRICE_ID',
     credits: 550,
     identifications: 55,
     popular: true,
     features: [
-      '550 credits = 55 identifications',
+      '550 credits every month (55 IDs/mo)',
       '10% more than competitors',
       'Everything in Starter',
       'Download PDF identification reports',
@@ -46,14 +46,14 @@ const PACKS = [
   },
   {
     id: 'pro',
-    name: 'Pro Pack',
+    name: 'Pro',
     price: '$19.99',
     priceEnv: 'NEXT_PUBLIC_PADDLE_PRO_PRICE_ID',
     credits: 1200,
     identifications: 120,
     popular: false,
     features: [
-      '1200 credits = 120 identifications',
+      '1200 credits every month (120 IDs/mo)',
       '50% cheaper per identification vs Starter',
       'Everything in Explorer',
       'Export data as CSV',
@@ -154,15 +154,15 @@ export default function PricingClient() {
         {/* ── Header ── */}
         <div className="text-center mb-16">
           <h1 className="font-playfair text-5xl md:text-6xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            More Identifications. Better Value.
+            Subscribe. Identify. Forage Safely.
           </h1>
           <p className="text-xl mb-6" style={{ color: 'var(--text-muted)' }}>
-            Credit packs that give you 10–20% more than the competition. Pay once, use forever.
+            Monthly plans with fresh credits every month. Cancel anytime.
           </p>
           <div className="inline-block px-6 py-3 rounded-lg" style={{ background: 'var(--accent-bg)', border: '1px solid var(--border)' }}>
             <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
               Most apps give you 10 identifications for $4.99. We give you{' '}
-              <span style={{ color: 'var(--accent)' }}>12</span>. Same price, more value.
+              <span style={{ color: 'var(--accent)' }}>12 every month</span>. Same price, recurring value.
             </p>
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function PricingClient() {
             style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e' }}
           >
             <ShieldCheck className="w-5 h-5 flex-shrink-0" />
-            Payment received! Your credits are being added — refresh your dashboard in a moment.
+            Subscription active! Your credits are being added — refresh your dashboard in a moment.
           </div>
         )}
 
@@ -205,7 +205,7 @@ export default function PricingClient() {
                   <span className="font-playfair text-5xl font-bold" style={{ color: 'var(--text-primary)' }}>
                     {pack.price}
                   </span>
-                  <span className="text-sm ml-2" style={{ color: 'var(--text-muted)' }}>one-time</span>
+                  <span className="text-sm ml-2" style={{ color: 'var(--text-muted)' }}>/month</span>
                 </div>
 
                 <ul className="space-y-3 mb-8 flex-1">
@@ -217,13 +217,13 @@ export default function PricingClient() {
                   ))}
                 </ul>
 
-                {/* ── Buy button ── */}
+                {/* ── Subscribe button ── */}
                 {success === pack.id ? (
                   <div
                     className="w-full px-6 py-3 rounded-lg font-semibold text-center text-sm"
                     style={{ background: 'rgba(34,197,94,0.15)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.3)' }}
                   >
-                    ✓ Payment successful!
+                    ✓ Subscription active!
                   </div>
                 ) : (
                   <button
@@ -243,9 +243,9 @@ export default function PricingClient() {
                     ) : !authReady ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : !userId ? (
-                      'Sign in to Buy'
+                      'Sign in to Subscribe'
                     ) : (
-                      `Buy ${pack.name}`
+                      `Subscribe to ${pack.name}`
                     )}
                   </button>
                 )}
@@ -272,8 +272,8 @@ export default function PricingClient() {
         <div className="flex flex-wrap justify-center gap-6 mb-24">
           {[
             { icon: <ShieldCheck className="w-5 h-5" />, text: '256-bit SSL encryption' },
-            { icon: <RefreshCcw className="w-5 h-5" />, text: '14-day money-back guarantee' },
-            { icon: <InfinityIcon className="w-5 h-5" />, text: 'Credits never expire' },
+            { icon: <RefreshCcw className="w-5 h-5" />, text: 'Cancel anytime, no lock-in' },
+            { icon: <InfinityIcon className="w-5 h-5" />, text: 'Fresh credits every month' },
           ].map((badge, i) => (
             <div key={i} className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
               <span style={{ color: 'var(--accent)' }}>{badge.icon}</span>
@@ -282,16 +282,16 @@ export default function PricingClient() {
           ))}
         </div>
 
-        {/* ── How credits work ── */}
+        {/* ── How the subscription works ── */}
         <div className="mb-24 p-8 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
           <h2 className="font-playfair text-3xl font-bold text-center mb-12" style={{ color: 'var(--text-primary)' }}>
-            How Credits Work
+            How It Works
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { num: '1', title: 'One identification = 10 credits deducted' },
-              { num: '2', title: 'Credits never expire — use them anytime' },
-              { num: '3', title: 'Failed analysis = full credit refund automatically' },
+              { num: '2', title: 'Credits refresh every month on renewal' },
+              { num: '3', title: 'Cancel anytime — access until period end' },
               { num: '4', title: 'Start free: 3 identifications/day, no signup needed' },
             ].map((item) => (
               <div key={item.num} className="text-center">
@@ -322,10 +322,11 @@ export default function PricingClient() {
               </thead>
               <tbody>
                 {[
-                  { label: 'Price',           vals: ['$4.99', '$4.99',  '$9.99',  '$19.99'] },
-                  { label: 'Identifications', vals: ['10',    '12',     '55',     '120']    },
+                  { label: 'Price',           vals: ['$4.99/mo', '$4.99/mo',  '$9.99/mo',  '$19.99/mo'] },
+                  { label: 'IDs per month',   vals: ['10',    '12',     '55',     '120']    },
                   { label: 'Per ID cost',     vals: ['$0.50', '$0.42',  '$0.18',  '$0.17']  },
-                  { label: 'Expiry',          vals: ['12 months', 'Never', 'Never', 'Never']},
+                  { label: 'Billing',         vals: ['Monthly', 'Monthly', 'Monthly', 'Monthly']},
+                  { label: 'Cancel',          vals: ['N/A', 'Anytime', 'Anytime', 'Anytime']},
                 ].map((row, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
                     <td className="p-4 font-semibold" style={{ color: 'var(--text-primary)' }}>{row.label}</td>
@@ -348,12 +349,13 @@ export default function PricingClient() {
           </h2>
           <div className="space-y-6">
             {[
-              { q: 'Do credits expire?',               a: 'Never. Use them whenever you want.' },
-              { q: 'What if the AI fails to identify?', a: 'Full credit refund, automatically.' },
-              { q: 'Can I get a refund?',               a: 'Yes — 14-day money-back guarantee, no questions asked. Contact us or Paddle directly.' },
-              { q: 'Is there a free tier?',             a: 'Yes, 3 free identifications per day per device.' },
-              { q: 'Can I buy multiple packs?',         a: 'Yes, credits stack on your account.' },
-              { q: 'Who processes the payment?',        a: 'Paddle.com acts as our Merchant of Record and handles all payments securely.' },
+              { q: 'How does the monthly subscription work?',  a: 'Pick a plan. You get your credit allowance straight away, and it refreshes automatically every month on your renewal date. Unused credits from the previous month do not carry over — each month starts fresh.' },
+              { q: 'Can I cancel anytime?',                    a: 'Yes. Cancel from your dashboard with one click. You keep full access until the end of your current billing period, then your plan returns to free (3 IDs/day).' },
+              { q: 'What if the AI fails to identify?',        a: 'Full credit refund, automatically. That identification does not count against your monthly quota.' },
+              { q: 'Can I get a refund?',                      a: 'Within 14 days of your first payment, yes — contact us or Paddle directly. After that, cancel anytime to stop future charges.' },
+              { q: 'Is there a free tier?',                    a: 'Yes, 3 free identifications per day per device. No signup required.' },
+              { q: 'Can I change plans?',                      a: 'Yes. From your dashboard you can upgrade or downgrade anytime. Prorated amounts apply on upgrade; downgrade takes effect at your next billing period.' },
+              { q: 'Who processes the payment?',               a: 'Paddle.com acts as our Merchant of Record and handles all payments securely. They handle tax globally and you can manage your subscription directly through them as well.' },
             ].map((faq, i) => (
               <div key={i} className="p-6 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                 <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{faq.q}</h3>
