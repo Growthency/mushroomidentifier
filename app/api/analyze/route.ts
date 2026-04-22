@@ -83,13 +83,22 @@ export async function POST(request: NextRequest) {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("credits, plan")
+      .select("credits, plan, subscription_status, current_period_end")
       .eq("id", userId)
       .maybeSingle();
 
     if (!profile || profile.credits < 10) {
+      // Surface trial vs. paid context so the frontend can show the right
+      // message: trialing users hitting the 30% cap get an "early-upgrade"
+      // CTA, paid users who burned through their monthly quota just see
+      // a standard "out of credits" message.
       return NextResponse.json(
-        { error: "insufficient_credits" },
+        {
+          error: "insufficient_credits",
+          trial: profile?.subscription_status === "trialing",
+          plan: profile?.plan ?? "free",
+          current_period_end: profile?.current_period_end ?? null,
+        },
         { status: 402 },
       );
     }

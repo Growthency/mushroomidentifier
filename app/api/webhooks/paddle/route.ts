@@ -38,6 +38,20 @@ const PLAN_CREDITS: Record<string, number> = {
   pro:      1200,
 }
 
+// Trial abuse prevention — during the 7-day free trial a customer gets
+// only 30% of their plan's monthly allowance to evaluate the service.
+// This stops users from signing up, burning through a full month of
+// identifications for free, then cancelling before the first charge.
+//
+//   Starter  120 × 0.30 = 36  credits (3 IDs)
+//   Explorer 550 × 0.30 = 165 credits (16 IDs)
+//   Pro      1200× 0.30 = 360 credits (36 IDs)
+//
+// On first paid charge (transaction.completed fires after trial ends),
+// credits refresh to the full monthly allowance — user is unblocked
+// automatically the moment they become a paying customer.
+const TRIAL_CREDIT_PERCENT = 0.30
+
 // Reverse map: Paddle price id → internal plan name. Sourced from the same
 // env vars the pricing page uses (NEXT_PUBLIC_*) so there's one source of
 // truth.
@@ -124,8 +138,19 @@ async function handleSubscriptionCreated(sub: any) {
     return
   }
 
-  // Credits refresh will happen in the accompanying transaction.completed
-  // event. Here we just link the subscription to the profile.
+  // Grant credits RIGHT NOW so trial users can actually use the service.
+  // During the 7-day trial: cap at 30% of plan allowance (anti-abuse).
+  // On day 8 when transaction.completed fires, credits refresh to the
+  // full monthly allowance — paying customers get unblocked automatically.
+  //
+  // If the subscription was created WITHOUT a trial (status='active' from
+  // the start), grant the full allowance now. transaction.completed will
+  // arrive moments later and refresh again — idempotent, no harm.
+  const isTrialing = status === 'trialing'
+  const fullAllowance  = PLAN_CREDITS[plan]
+  const trialAllowance = Math.floor(fullAllowance * TRIAL_CREDIT_PERCENT)
+  const creditsToGrant = isTrialing ? trialAllowance : fullAllowance
+
   const { error } = await adminSupabase
     .from('profiles')
     .update({
@@ -134,6 +159,7 @@ async function handleSubscriptionCreated(sub: any) {
       current_period_end:         periodEnd,
       paddle_customer_id:         customerId,
       plan,
+      credits:                    creditsToGrant,
       subscription_canceled_at:   null,   // reset in case this is a re-subscribe
     })
     .eq('id', userId)
@@ -142,7 +168,10 @@ async function handleSubscriptionCreated(sub: any) {
     console.error('[paddle-webhook] subscription.created update failed:', error)
     throw error
   }
-  console.log(`[paddle-webhook] subscription.created → user ${userId} plan=${plan} sub=${subscriptionId}`)
+  console.log(
+    `[paddle-webhook] subscription.created → user ${userId} plan=${plan} ` +
+    `credits=${creditsToGrant} (${isTrialing ? 'TRIAL 30%' : 'full'}) sub=${subscriptionId}`
+  )
 }
 
 /* ── subscription.updated ────────────────────────────────────────── */

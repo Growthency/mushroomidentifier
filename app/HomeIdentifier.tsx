@@ -24,6 +24,9 @@ export default function HomeIdentifier() {
   const [scanStep, setScanStep]           = useState(0)
   const [scanProgress, setScanProgress]   = useState(0)
   const [error, setError]                 = useState<string | null>(null)
+  // Extra context for the "trial limit reached" message so we can show the
+  // user which plan they're on and when the trial converts to paid.
+  const [trialInfo, setTrialInfo]         = useState<{ plan: string; periodEnd: string | null } | null>(null)
 
   const supabase   = createClient()
   const router     = useRouter()
@@ -133,7 +136,18 @@ export default function HomeIdentifier() {
         if (data.error === 'signup_required') {
           setError('signup_required')
         } else if (data.error === 'insufficient_credits') {
-          setError('insufficient_credits')
+          // Trialing users hitting the 30% cap get a distinct message
+          // with an "early upgrade" CTA. Paid users who burned through
+          // their month get the plain "out of credits" variant.
+          if (data.trial) {
+            setError('trial_limit_reached')
+            setTrialInfo({
+              plan: data.plan || 'starter',
+              periodEnd: data.current_period_end || null,
+            })
+          } else {
+            setError('insufficient_credits')
+          }
         } else {
           setError((data.error || 'Analysis failed') + (data.details ? ': ' + data.details : ''))
         }
@@ -263,22 +277,78 @@ export default function HomeIdentifier() {
 
         {/* Error messages */}
         {error && error !== 'signup_required' && (
-          <div className="mb-6 p-4 rounded-lg flex items-start gap-3"
-            style={{ background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)' }}>
-            <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: '#fb923c' }} />
-            <div>
-              <p className="font-medium" style={{ color: '#fb923c' }}>
-                {error === 'insufficient_credits'
-                  ? "You've run out of credits. Please upgrade to continue."
-                  : error}
-              </p>
-              {error === 'insufficient_credits' && (
-                <Link href="/pricing" className="underline text-sm mt-1 inline-block" style={{ color: '#fb923c' }}>
-                  View Pricing →
-                </Link>
-              )}
-            </div>
-          </div>
+          <>
+            {/* Trial 30% cap reached — friendlier, conversion-focused message */}
+            {error === 'trial_limit_reached' ? (
+              <div
+                className="mb-6 p-5 rounded-xl flex items-start gap-3"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.04))',
+                  border: '1px solid rgba(16,185,129,0.35)',
+                }}
+              >
+                <Sparkles className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: '#10b981' }} />
+                <div className="flex-1">
+                  <p className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
+                    🎁 You&apos;ve used your 7-day trial allowance
+                  </p>
+                  <p className="text-sm mb-3" style={{ color: 'var(--text-muted)' }}>
+                    During the free trial you get <strong>30% of your{' '}
+                    {trialInfo?.plan ? trialInfo.plan.charAt(0).toUpperCase() + trialInfo.plan.slice(1) : 'Starter'} plan</strong>{' '}
+                    credits so you can evaluate the AI.
+                    {trialInfo?.periodEnd && (
+                      <>
+                        {' '}Your trial converts to paid on{' '}
+                        <strong>
+                          {new Date(trialInfo.periodEnd).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </strong>
+                        {' '}— full monthly credits unlock automatically then.
+                      </>
+                    )}
+                  </p>
+                  <p className="text-sm mb-3" style={{ color: 'var(--text-muted)' }}>
+                    Love it already? Upgrade now to unlock your full monthly credits immediately, or just wait for the trial to complete.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      href="/dashboard"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                      style={{ background: 'var(--btn-primary)', color: '#fff' }}
+                    >
+                      Upgrade Now → Unlock Full Credits
+                    </Link>
+                    <Link
+                      href="/pricing"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-80"
+                      style={{ border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                    >
+                      Change Plan
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Standard "out of credits" for paid users who burned through the month */
+              <div
+                className="mb-6 p-4 rounded-lg flex items-start gap-3"
+                style={{ background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)' }}
+              >
+                <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: '#fb923c' }} />
+                <div>
+                  <p className="font-medium" style={{ color: '#fb923c' }}>
+                    {error === 'insufficient_credits'
+                      ? "You've run out of credits this month. Upgrade to a bigger plan or wait for your next renewal."
+                      : error}
+                  </p>
+                  {error === 'insufficient_credits' && (
+                    <Link href="/pricing" className="underline text-sm mt-1 inline-block" style={{ color: '#fb923c' }}>
+                      View Pricing →
+                    </Link>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         <div className="grid md:grid-cols-2 gap-8 mb-8">
