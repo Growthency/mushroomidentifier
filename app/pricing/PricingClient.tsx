@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import Link from 'next/link'  // kept for success banner dashboard link
 import { useRouter } from 'next/navigation'
 import {
   Check, Sparkles, Loader2, ShieldCheck, RefreshCcw, Gift,
@@ -490,7 +490,7 @@ export default function PricingClient() {
               },
               {
                 q: 'Can I cancel anytime?',
-                a: 'Yes, 1 click from your dashboard. Cancel during the 7-day trial = pay $0. Cancel after = keep full access until the end of your current billing period, then your plan returns to the free tier (3 IDs/day).',
+                a: 'Yes, 1 click from your dashboard. Cancel during the 7-day trial = pay $0. Cancel after = keep full access until the end of your current billing period, then your plan returns to the free tier (3 free lifetime identifications).',
               },
               {
                 q: 'What\'s the 14-day money-back guarantee?',
@@ -506,7 +506,7 @@ export default function PricingClient() {
               },
               {
                 q: 'Is there a free tier?',
-                a: 'Yes — 3 free identifications per day, no signup, no credit card. Good for occasional foragers. Paid plans give you higher monthly volume + priority AI model + more features.',
+                a: 'Yes — 3 free lifetime identifications, no signup, no credit card. Great for trying us out before you subscribe. Paid plans give you 120–1200 fresh credits every month + priority AI model + more features.',
               },
               {
                 q: 'Can I change plans?',
@@ -535,28 +535,9 @@ export default function PricingClient() {
           </div>
         </div>
 
-        {/* ── Final CTA ── */}
-        <div
-          className="text-center p-8 sm:p-10 rounded-2xl"
-          style={{
-            background: 'linear-gradient(135deg, var(--accent-bg), rgba(16,185,129,0.04))',
-            border: '1px solid var(--border)',
-          }}
-        >
-          <h2 className="font-playfair text-2xl sm:text-3xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
-            Still deciding?
-          </h2>
-          <p className="mb-6 text-sm sm:text-base max-w-xl mx-auto" style={{ color: 'var(--text-muted)' }}>
-            Try 3 free identifications per day with no signup. No credit card. If you love it, come back and start your 7-day paid trial.
-          </p>
-          <Link
-            href="/#identifier"
-            className="inline-block px-8 py-4 rounded-full text-base sm:text-lg font-semibold glow-green hover:opacity-90 transition-opacity"
-            style={{ background: 'var(--btn-primary)', color: '#fff' }}
-          >
-            Start with 3 Free Identifications →
-          </Link>
-        </div>
+        {/* No final CTA here — the site-wide "Start Identifying Safely
+            Today" block (rendered by Footer.tsx on every page) covers it.
+            Having two green CTAs stacked was visually redundant. */}
       </div>
     </div>
   )

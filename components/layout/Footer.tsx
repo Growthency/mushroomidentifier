@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Shield, Mail } from "lucide-react";
+import { Shield, Mail, Gift, Sparkles, Check } from "lucide-react";
 import type { MenuItem } from "@/lib/menus";
 import type { SocialLink, PaymentMethod, FooterBadge } from "@/lib/site-content";
 
@@ -138,24 +138,92 @@ export default function Footer({
   return (
     <>
       {/* ── Sitewide CTA — appears above footer on every page ── */}
-      <section className="py-12 sm:py-16 px-6 relative overflow-hidden" style={{ background: "var(--bg-primary)" }}>
-        <div className="absolute inset-0 flex items-center justify-center opacity-20">
-          <div className="w-96 h-96 rounded-full blur-3xl" style={{ background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)" }} />
+      <section className="py-14 sm:py-20 px-6 relative overflow-hidden" style={{ background: "var(--bg-primary)" }}>
+        {/* Ambient radial glows — two layered orbs for depth */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-25"
+            style={{ background: "radial-gradient(circle, var(--accent) 0%, transparent 65%)" }}
+          />
+          <div
+            className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full blur-3xl opacity-15"
+            style={{ background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)" }}
+          />
         </div>
-        <div className="relative z-10 max-w-3xl mx-auto text-center">
-          <h2 className="font-playfair text-4xl md:text-5xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+
+        <div className="relative z-10 max-w-4xl mx-auto">
+          {/* Launch-offer pill — eye-catching ribbon at the top */}
+          <div className="flex justify-center mb-6">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase"
+              style={{
+                background: "linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.08))",
+                border: "1px solid rgba(16,185,129,0.35)",
+                color: "#10b981",
+              }}
+            >
+              <Gift className="w-4 h-4" />
+              <span>Launch Offer · 7 Days Free · 50% Off First Month</span>
+              <Sparkles className="w-4 h-4" />
+            </div>
+          </div>
+
+          {/* Heading */}
+          <h2
+            className="font-playfair text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-4 leading-tight"
+            style={{ color: "var(--text-primary)" }}
+          >
             {s("cta_heading")}
           </h2>
-          <p className="text-lg mb-8" style={{ color: "var(--text-muted)" }}>
+
+          {/* Subtitle */}
+          <p
+            className="text-base sm:text-lg md:text-xl text-center mb-8 max-w-2xl mx-auto"
+            style={{ color: "var(--text-muted)" }}
+          >
             {s("cta_subtitle")}
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href={s("cta_primary_href")} className="px-8 py-4 rounded-full text-lg font-semibold glow-green hover:opacity-90 transition-opacity" style={{ background: "var(--btn-primary)", color: "#fff" }}>
+
+          {/* Primary + secondary buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8">
+            <Link
+              href={s("cta_primary_href")}
+              className="px-8 py-4 rounded-full text-base sm:text-lg font-semibold glow-green hover:scale-[1.03] transition-all shadow-lg"
+              style={{
+                background: "var(--btn-primary)",
+                color: "#fff",
+                boxShadow: "0 10px 30px -10px rgba(16,185,129,0.6)",
+              }}
+            >
               {s("cta_primary_text")}
             </Link>
-            <Link href={s("cta_secondary_href")} className="px-8 py-4 rounded-full text-lg font-semibold hover:opacity-70 transition-opacity" style={{ border: "1px solid var(--border)", color: "var(--text-primary)" }}>
+            <Link
+              href={s("cta_secondary_href")}
+              className="px-8 py-4 rounded-full text-base sm:text-lg font-semibold hover:border-emerald-400 transition-all"
+              style={{ border: "2px solid var(--border)", color: "var(--text-primary)" }}
+            >
               {s("cta_secondary_text")}
             </Link>
+          </div>
+
+          {/* Trust-signal strip — five green checks in a flexible row */}
+          <div className="flex flex-wrap items-center justify-center gap-x-5 sm:gap-x-6 gap-y-2 text-xs sm:text-sm">
+            {[
+              "7-day free trial",
+              "50% off first month",
+              "14-day refund",
+              "Cancel anytime",
+              "No credit card to try free",
+            ].map((text) => (
+              <span
+                key={text}
+                className="inline-flex items-center gap-1.5 font-medium"
+                style={{ color: "var(--text-primary)" }}
+              >
+                <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#10b981" }} />
+                {text}
+              </span>
+            ))}
           </div>
         </div>
       </section>

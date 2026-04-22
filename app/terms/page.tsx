@@ -63,7 +63,7 @@ export default function TermsOfServicePage() {
 
           <Section title="3. User Accounts">
             <p>
-              You may use limited features without an account (up to 3 free identifications per day per device). To purchase credit packs and access premium features, you must create an account.
+              You may use limited features without an account (up to 3 free lifetime identifications per device). To subscribe to a monthly plan and access premium features, you must create an account.
             </p>
             <p>When creating an account, you agree to:</p>
             <ul className="list-disc pl-5 space-y-1">
