@@ -9,12 +9,18 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'dark',
+  theme: 'light',
   toggle: () => {},
 })
 
+// Public site is light-mode only. The public navbar no longer exposes
+// the toggle. Admin dashboard still calls useTheme() for its own
+// light/dark switching (it has its own toggle inside AdminShell).
+// We still honor a saved localStorage preference on load so admins
+// who previously chose dark mode don't get silently flipped to light
+// when they navigate back to their admin pages.
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
+  const [theme, setTheme] = useState<Theme>('light')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {

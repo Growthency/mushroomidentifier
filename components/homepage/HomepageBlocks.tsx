@@ -245,9 +245,19 @@ function TwoColumnBlock({ data }: { data: any }) {
           />
           {hasImage && (
             <div className="relative">
+              {/* Cap max-height so tall comparison charts (e.g. the 8
+                  "Death Cap vs Paddy Straw" lookalike images) don't
+                  dominate the viewport. object-fit: contain preserves
+                  aspect ratio without cropping — the full chart stays
+                  visible, just scaled down. max-width 520 keeps the
+                  image proportional to the text column. */}
               <div
-                className="relative rounded-2xl overflow-hidden"
-                style={{ border: '1px solid var(--border)' }}
+                className="relative rounded-2xl overflow-hidden mx-auto"
+                style={{
+                  border: '1px solid var(--border)',
+                  maxWidth: '520px',
+                  background: 'var(--bg-secondary)',
+                }}
               >
                 <NextImage
                   src={data.imageSrc}
@@ -256,7 +266,11 @@ function TwoColumnBlock({ data }: { data: any }) {
                   height={600}
                   loading="lazy"
                   className="w-full h-auto"
-                  style={{ display: 'block' }}
+                  style={{
+                    display: 'block',
+                    maxHeight: '420px',
+                    objectFit: 'contain',
+                  }}
                 />
               </div>
               {data.imageCaption && (

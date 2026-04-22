@@ -25,7 +25,7 @@ const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
 const HomeIdentifier = dynamic(() => import("./HomeIdentifier"), {
   ssr: false,
 });
-const HomeReviews = dynamic(() => import("./HomeReviews"), { ssr: false });
+// HomeReviews import removed — component no longer rendered on homepage.
 const ScrollGlow = dynamic(() => import("./ScrollGlow"), { ssr: false });
 
 const homepageSchema = {
@@ -3413,7 +3413,9 @@ export default async function Home() {
       )}
       {/* === END admin-editable homepage middle === */}
 
-      <HomeReviews />
+      {/* HomeReviews removed per product decision — reviews section no
+          longer appears on homepage. Component file kept on disk in case
+          we want to re-introduce it later. */}
     </div>
   );
 }

@@ -98,8 +98,11 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
         {/* Hint browser to give max priority to the critical CSS chunk on the critical path */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Inline theme script — runs synchronously before any paint to prevent flash of wrong theme */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('mi-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();` }} />
+        {/* Inline theme script — defaults to light (public site only has
+            light mode). Still honours a previously-saved dark preference
+            so admins don't get flipped mid-session. Runs synchronously
+            before any paint to prevent flash of wrong theme. */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('mi-theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();` }} />
         {/* Site-wide identity schema — single Organization + WebSite */}
         <script
           type="application/ld+json"

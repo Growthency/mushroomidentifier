@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Sun, Moon, Menu, X } from 'lucide-react'
-import { useTheme } from '@/components/providers/ThemeProvider'
+import { Menu, X } from 'lucide-react'
+// Theme provider no longer used in the public navbar (light-only site).
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import type { MenuItem } from '@/lib/menus'
@@ -20,7 +20,6 @@ const FALLBACK_NAV_LINKS = [
 ]
 
 export default function Navbar({ menuItems }: { menuItems?: MenuItem[] }) {
-  const { theme, toggle } = useTheme()
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -61,7 +60,7 @@ export default function Navbar({ menuItems }: { menuItems?: MenuItem[] }) {
     }
     getUser()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setUser(session?.user || null)
       if (session?.user) {
         supabase
@@ -69,7 +68,7 @@ export default function Navbar({ menuItems }: { menuItems?: MenuItem[] }) {
           .select('credits')
           .eq('id', session.user.id)
           .maybeSingle()
-          .then(({ data }) => { if (data) setCredits(data.credits || 0) })
+          .then(({ data }: any) => { if (data) setCredits(data.credits || 0) })
       } else {
         setCredits(0)
       }
@@ -133,17 +132,9 @@ export default function Navbar({ menuItems }: { menuItems?: MenuItem[] }) {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={toggle}
-              className="p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
-              style={{ background: 'var(--accent-bg)' }}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark'
-                ? <Sun className="w-4 h-4" style={{ color: 'var(--accent)' }} />
-                : <Moon className="w-4 h-4" style={{ color: 'var(--accent)' }} />
-              }
-            </button>
+            {/* Theme toggle removed per product decision — site is
+                light-mode only. useTheme hook still available for admin
+                dashboard which retains light/dark switching. */}
 
             {user ? (
               <div className="hidden md:flex items-center gap-3">
