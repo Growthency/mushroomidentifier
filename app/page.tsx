@@ -75,70 +75,98 @@ const homepageSchema = {
       ],
     },
     {
+      "@type": "HowTo",
+      name: "Mushroom Identification Guide",
+      step: [
+        { "@type": "HowToStep", name: "Observe shape", text: "Check shape and growth pattern." },
+        { "@type": "HowToStep", name: "Check cap", text: "Analyze cap shape, texture, and color." },
+        { "@type": "HowToStep", name: "Inspect underside", text: "Identify gills, pores, or ridges." },
+        { "@type": "HowToStep", name: "Check stem", text: "Look for ring, thickness, and base." },
+        { "@type": "HowToStep", name: "Identify habitat", text: "Note wood, soil, or grass location." },
+        { "@type": "HowToStep", name: "Spore print", text: "Confirm using spore color." },
+      ],
+    },
+    {
       "@type": "FAQPage",
       mainEntity: [
         {
           "@type": "Question",
-          name: "What type of mushroom is this?",
+          name: "How accurate is the mushroom identifier?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Observe cap shape, gills, pores, stem, and habitat. A mushroom identifier uses AI to compare these traits with fungal species.",
+            text: "Uses AI with multi-angle analysis for high accuracy but results should be verified.",
           },
         },
         {
           "@type": "Question",
-          name: "How does a mushroom identifier work?",
+          name: "Can I use it offline?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "It uses AI and computer vision to analyze mushroom images and match cap, gills, pores, and stem with labeled fungal databases.",
+            text: "No, it requires internet connection.",
           },
         },
         {
           "@type": "Question",
-          name: "Is there a free mushroom identifier app?",
+          name: "What if I ate a poisonous mushroom?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, this is a free web-based mushroom identifier that works in your browser without installation.",
+            text: "Seek emergency medical help immediately.",
           },
         },
         {
           "@type": "Question",
-          name: "Can a wild mushroom be identified from a picture?",
+          name: "Can I identify mushrooms from photos?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, AI analyzes cap texture, gill pattern, stem, and habitat, but results should be verified by a mycologist.",
+            text: "Yes, upload clear images for analysis.",
           },
         },
         {
           "@type": "Question",
-          name: "Can a mushroom identifier tell if a mushroom is edible?",
+          name: "Is it free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "No, it suggests species only. Toxic mushrooms like Amanita phalloides can resemble edible ones.",
+            text: "Yes, 30 free credits available.",
           },
         },
         {
           "@type": "Question",
-          name: "Why does habitat matter in mushroom identification?",
+          name: "How many photos are needed?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Fungi grow in specific environments like soil, moss, hardwood, or conifer wood, helping narrow species identification.",
+            text: "At least cap, gills, stem, and base.",
           },
         },
         {
           "@type": "Question",
-          name: "Do I need to create an account?",
+          name: "Does it work worldwide?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "No, the tool works instantly without signup.",
+            text: "Yes, global coverage.",
           },
         },
         {
           "@type": "Question",
-          name: "How does the AI identify mushrooms?",
+          name: "Can beginners use it?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "It uses machine learning on fungal images to analyze cap, gills, stem, and habitat for species matching.",
+            text: "Yes, simple and beginner-friendly.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Do I need an account?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, signup required for credits.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Is there a limit?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "30 free credits, then subscription.",
           },
         },
       ],
