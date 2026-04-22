@@ -82,10 +82,34 @@ export default function PricingClient() {
   useEffect(() => {
     const env = (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT ?? 'sandbox') as 'sandbox' | 'production'
     const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ?? ''
-    if (!token) return
-    initializePaddle({ environment: env, token }).then(p => {
+    if (!token) {
+      console.error('[paddle] NEXT_PUBLIC_PADDLE_CLIENT_TOKEN is missing')
+      return
+    }
+    initializePaddle({
+      environment: env,
+      token,
+      // Surface every Paddle event so checkout failures don't silently die
+      eventCallback: (event) => {
+        if (event.name === 'checkout.error' || event.name === 'checkout.failed') {
+          console.error('[paddle] checkout error:', event)
+          setBuying(null)
+        }
+        if (event.name === 'checkout.completed') {
+          const packId = (event.data as any)?.custom_data?.packId
+          if (packId) handleCheckoutComplete(packId)
+        }
+        if (event.name === 'checkout.closed') {
+          setBuying(null)
+        }
+      },
+    }).then(p => {
       if (p) setPaddle(p)
+      else console.error('[paddle] initializePaddle returned null — token/environment mismatch?')
+    }).catch(err => {
+      console.error('[paddle] initializePaddle threw:', err)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // ── Get current user ────────────────────────────────────────────

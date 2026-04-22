@@ -14,7 +14,9 @@ body.theme-ready {
 }
 
 :root, [data-theme="dark"] {
-  --body-bg: linear-gradient(145deg, #0b1912 0%, #0d1623 43%, #190e28 73%, #0b1912 100%);
+  /* Brand-cohesive deep-forest gradient — matches the green logo throughout
+     instead of drifting through indigo/purple. */
+  --body-bg: linear-gradient(145deg, #061410 0%, #0b1f17 35%, #0e2a1f 65%, #061410 100%);
   --bg-primary: rgba(11, 25, 18, 0.88);
   --bg-secondary: rgba(9, 20, 15, 0.92);
   --bg-card: rgba(14, 28, 18, 0.97);
@@ -38,7 +40,9 @@ body.theme-ready {
 }
 
 [data-theme="light"] {
-  --body-bg: linear-gradient(145deg, #eaf8f2 0%, #e3ecf8 42%, #f2e9f9 73%, #f8f0e5 100%);
+  /* Brand-cohesive soft-mint gradient — single green family instead of
+     mint→lavender→peach pastel which felt washed out / non-branded. */
+  --body-bg: linear-gradient(145deg, #ecfaf1 0%, #d6efde 40%, #c8e8d2 70%, #ecfaf1 100%);
   --bg-primary: rgba(236, 249, 241, 0.82);
   --bg-secondary: rgba(228, 244, 235, 0.87);
   --bg-card: rgba(255, 255, 255, 0.96);
@@ -183,98 +187,230 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
 }
 [data-theme="light"] article strong { color: #0d1f13; }
 
-/* ── Rich editor content (admin-created posts via [slug] route) ── */
+/* ─────────────────────────────────────────────────────────────────────
+   UNIFIED HOMEPAGE TYPOGRAPHY
+   Single source of truth for h2/h3/paragraph sizes used by BOTH the
+   hardcoded raw-code sections in app/page.tsx AND the dynamic admin
+   blocks in components/homepage/HomepageBlocks.tsx. Every section on
+   the homepage will look visually identical regardless of source.
+
+   Standard (matches the original raw-code design):
+     • h2  → Playfair Bold, 1.875rem (mobile) / 2.25rem (desktop)
+     • h3  → Inter Semibold, 1.125rem (mobile) / 1.25rem (desktop)
+     • p   → Inter Regular, 1rem (mobile) / 1.125rem (desktop), leading 1.7
+     • All body text uses --text-primary at full opacity for max contrast
+       in dark mode (was --text-muted = invisible in user's screenshots)
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Apply uniform body-text color + Inter font to EVERY paragraph/list/
+   table cell + nested span on the homepage. !important on font-family
+   is critical — admin-pasted content from Google Docs / Word brings
+   inline `style="font-family: Arial, sans-serif"` which would otherwise
+   win over normal CSS rules. */
+#homepage-root section p,
+#homepage-root section ul,
+#homepage-root section ol,
+#homepage-root section li,
+#homepage-root section td,
+#homepage-root section span,
+#homepage-root section p *,
+#homepage-root section li *,
+#homepage-root section td * {
+  color: var(--text-primary) !important;
+  opacity: 1 !important;
+  font-family: var(--font-inter), 'Inter', system-ui, sans-serif !important;
+}
+
+/* ── Rich editor content (admin homepage blocks + [slug] blog route) ── */
 .rich-content h1,
-.rich-content h2,
-.rich-content h3,
-.rich-content h4 {
+.rich-content h2 {
   color: var(--text-primary) !important;
   font-family: var(--font-playfair), 'Playfair Display', serif;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+/* h3/h4 use Inter Semibold to match the hardcoded FAQ/step style */
+.rich-content h3,
+.rich-content h4 {
+  color: var(--text-primary) !important;
+  font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* h2: 1.875rem mobile, 2.25rem desktop — matches raw-code text-3xl sm:text-4xl */
 .rich-content h2 {
-  font-size: 1.5rem !important;
-  margin-top: 2.5rem;
+  font-size: 1.875rem !important;
+  line-height: 1.2;
+  margin-top: 2rem;
   margin-bottom: 1rem;
 }
+/* h3: 1.125rem mobile, 1.25rem desktop — matches raw-code text-lg sm:text-xl */
 .rich-content h3 {
-  font-size: 1.25rem !important;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+  font-size: 1.125rem !important;
+  line-height: 1.4;
+  margin-top: 1.75rem;
+  margin-bottom: 0.625rem;
 }
 .rich-content h4 {
-  font-size: 1.125rem !important;
+  font-size: 1rem !important;
+  line-height: 1.4;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 }
-@media (min-width: 768px) {
-  .rich-content h2 { font-size: 1.875rem !important; }
+@media (min-width: 640px) {
+  .rich-content h2 { font-size: 2.25rem !important; }
   .rich-content h3 { font-size: 1.25rem !important; }
 }
-/* Body text uses primary (not muted) for high readability. --text-muted
-   at 68% opacity in dark mode is fine for captions / secondary info but
-   too dim for dense paragraph reading. */
-.rich-content p { color: var(--text-primary) !important; line-height: 1.8; opacity: 0.92; }
-.rich-content ul, .rich-content ol { color: var(--text-primary) !important; padding-left: 1.4rem; opacity: 0.92; }
-.rich-content li { color: var(--text-primary) !important; margin-bottom: 0.35rem; }
-.rich-content strong, .rich-content b { color: var(--text-primary) !important; opacity: 1; }
-.rich-content em, .rich-content i { color: var(--text-primary) !important; opacity: 0.88; }
-.rich-content a { color: var(--accent) !important; text-decoration: none; }
-.rich-content a:hover { text-decoration: underline; }
+
+/* Body text — Inter Regular, matches raw-code text-base sm:text-lg.
+   font-family is !important to override admin-pasted Arial spans from
+   Google Docs / Word. */
+.rich-content,
+.rich-content p,
+.rich-content ul,
+.rich-content ol,
+.rich-content li,
+.rich-content td,
+.rich-content span,
+.rich-content p *,
+.rich-content li *,
+.rich-content td * {
+  font-family: var(--font-inter), 'Inter', system-ui, sans-serif !important;
+  font-size: 1rem;
+  color: var(--text-primary) !important;
+  opacity: 1 !important;
+  font-weight: 400;
+}
+.rich-content p { line-height: 1.7; margin: 0.85rem 0; }
+.rich-content ul, .rich-content ol { padding-left: 1.4rem; margin: 0.85rem 0; }
+.rich-content li { margin-bottom: 0.35rem; line-height: 1.7; }
+@media (min-width: 640px) {
+  .rich-content p,
+  .rich-content ul,
+  .rich-content ol,
+  .rich-content li,
+  .rich-content td {
+    font-size: 1.125rem;
+  }
+}
+.rich-content strong, .rich-content b { color: var(--text-primary) !important; font-weight: 700; }
+.rich-content em, .rich-content i { color: var(--text-primary) !important; font-style: italic; }
+.rich-content a { color: var(--accent) !important; text-decoration: none; font-weight: 500; transition: color 0.15s ease; }
+.rich-content a:hover { text-decoration: underline; color: var(--accent-glow) !important; }
+
+/* Lists with accent-colored bullets/numbers for visual rhythm */
+.rich-content ul li::marker { color: var(--accent); font-weight: 700; }
+.rich-content ol li::marker { color: var(--accent); font-weight: 700; }
+
+/* Images inside rich-content — subtle frame + caption-friendly margins */
 .rich-content img {
   max-width: 100% !important;
   height: auto !important;
-  border-radius: 0.75rem;
-  margin: 1.5rem auto;
+  border-radius: 1rem;
+  margin: 1.75rem auto;
   display: block;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
 }
+
+/* Blockquote — pull-quote style with subtle gradient */
 .rich-content blockquote {
   border-left: 4px solid var(--accent) !important;
-  padding: 0.75rem 1.25rem !important;
+  padding: 1rem 1.25rem !important;
   border-radius: 0.75rem;
   background: var(--accent-bg) !important;
   color: var(--text-primary) !important;
-  opacity: 0.95;
+  margin: 1.5rem 0;
+  font-style: italic;
 }
+.rich-content blockquote p { font-style: italic; margin: 0.25rem 0; }
+
 .rich-content pre {
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
-  opacity: 0.92;
   border-radius: 0.75rem;
   padding: 1rem;
   overflow-x: auto;
+  border: 1px solid var(--border);
 }
 .rich-content code {
   color: var(--accent) !important;
-  background: var(--bg-secondary) !important;
+  background: var(--accent-bg) !important;
   padding: 0.15rem 0.4rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
+  font-family: ui-monospace, 'SF Mono', monospace;
 }
+
+/* ── Tables: zebra rows + hover highlight + accent header ── */
 .rich-content table {
   width: 100% !important;
-  border-collapse: collapse !important;
+  border-collapse: separate !important;
+  border-spacing: 0;
   margin: 1.5rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+}
+.rich-content thead {
+  background: linear-gradient(180deg, var(--accent-bg), var(--bg-secondary));
 }
 .rich-content th {
-  background: var(--bg-secondary) !important;
+  background: transparent !important;
   color: var(--text-primary) !important;
-  font-weight: 600;
-  border: 1px solid var(--border) !important;
-  padding: 0.75rem !important;
+  font-weight: 700;
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  border: none !important;
+  border-bottom: 2px solid var(--accent) !important;
+  padding: 0.875rem 1rem !important;
   text-align: left;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
 }
 .rich-content td {
-  border: 1px solid var(--border) !important;
-  padding: 0.75rem !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 0.875rem 1rem !important;
   color: var(--text-primary) !important;
-  opacity: 0.92;
+  opacity: 1;
+  font-weight: 450;
 }
+.rich-content tr:last-child td { border-bottom: none !important; }
+.rich-content tbody tr:nth-child(odd) td { background: rgba(111, 207, 127, 0.025); }
+.rich-content tbody tr:hover td {
+  background: var(--accent-bg);
+  transition: background 0.15s ease;
+}
+.rich-content tbody tr td:first-child {
+  font-weight: 600;
+  color: var(--text-primary) !important;
+}
+
+/* Horizontal rule polish */
 .rich-content hr {
   border: none !important;
   border-top: 1px solid var(--border) !important;
-  margin: 2rem 0;
+  margin: 2.5rem 0;
+  position: relative;
+}
+.rich-content hr::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* Feature-grid card hover (CSS-only — server component compatible) */
+.feature-card:hover {
+  border-color: var(--border-hover) !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.20) !important;
 }
 
 /* ── Identify Banner reset (override rich-content !important rules) ── */

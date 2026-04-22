@@ -167,7 +167,7 @@ export default async function Home() {
       : siteSettings.hero_eyebrow.trim();
 
   return (
-    <div>
+    <div id="homepage-root">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }}
