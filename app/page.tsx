@@ -264,10 +264,10 @@ export default async function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
             {[
-              { label: "10K+ Species", icon: Globe },
-              { label: "95% Accuracy", icon: CheckCircle },
-              { label: "<60s Results", icon: Clock },
-              { label: "3 Free Scans", icon: Shield },
+              { label: "10,000+ Species", icon: Globe },
+              { label: "Quick Results",  icon: Clock },
+              { label: "Toxicity Warnings", icon: AlertTriangle },
+              { label: "3 Free Scans",   icon: Shield },
             ].map((stat, i) => (
               <div key={i} className="flex flex-col items-center gap-2">
                 <stat.icon

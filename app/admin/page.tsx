@@ -4,7 +4,7 @@ import {
   Users, DollarSign, TrendingUp, TrendingDown,
   CreditCard, UserCheck, UserX, Percent,
   ArrowUpRight, ArrowDownRight, Loader2,
-  Calendar, ChevronDown, Globe,
+  Calendar, ChevronDown, Globe, Zap, Check,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
@@ -48,6 +48,37 @@ export default function AdminDashboard() {
   const [period, setPeriod] = useState<Period>('30d')
   const [showPeriod, setShowPeriod] = useState(false)
 
+  // Clear-cache button state — loading while the invalidation fires,
+  // success flash shown for 3s, last-cleared timestamp persisted in
+  // localStorage so admin can see when they last hit it even after
+  // navigating away.
+  const [clearing, setClearing] = useState(false)
+  const [clearedFlash, setClearedFlash] = useState(false)
+  const [lastCleared, setLastCleared] = useState<string | null>(null)
+
+  useEffect(() => {
+    setLastCleared(localStorage.getItem('mi-admin-last-cache-clear'))
+  }, [])
+
+  async function clearCache() {
+    if (clearing) return
+    setClearing(true)
+    try {
+      const res = await fetch('/api/admin/clear-cache', { method: 'POST' })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Clear failed')
+      setClearedFlash(true)
+      const ts = new Date().toISOString()
+      localStorage.setItem('mi-admin-last-cache-clear', ts)
+      setLastCleared(ts)
+      setTimeout(() => setClearedFlash(false), 3000)
+    } catch (err: any) {
+      alert('Clear cache failed: ' + (err?.message || err))
+    } finally {
+      setClearing(false)
+    }
+  }
+
   const loadStats = useCallback((p: Period) => {
     setLoading(true)
     fetch(`/api/admin/stats?period=${p}`)
@@ -80,6 +111,40 @@ export default function AdminDashboard() {
           <h1 className="text-[26px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Dashboard Overview</h1>
           <p className="text-sm mt-1" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Real-time stats for Mushroom Identifiers</p>
         </div>
+
+        <div className="flex items-center gap-2">
+        {/* ── Clear Cache button ─────────────────────────────────────
+            One-click invalidation of every Next.js cache + tag. Mirrors
+            W3 Total Cache's "Empty all caches" in WordPress.
+        */}
+        <div className="relative">
+          <button
+            onClick={clearCache}
+            disabled={clearing}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-medium transition-colors disabled:opacity-60"
+            style={{
+              background: clearedFlash
+                ? (dark ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.08)')
+                : (dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9'),
+              border: `1px solid ${clearedFlash ? 'rgba(16,185,129,0.4)' : cardBorder}`,
+              color: clearedFlash ? '#10b981' : dark ? '#fff' : '#0f172a',
+            }}
+            title={
+              lastCleared
+                ? `Last cleared: ${new Date(lastCleared).toLocaleString()}`
+                : 'Purge all cached pages & data so the site serves fresh content'
+            }
+          >
+            {clearing
+              ? <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+              : clearedFlash
+                ? <Check className="w-3.5 h-3.5 text-emerald-400" />
+                : <Zap className="w-3.5 h-3.5 text-emerald-400" />
+            }
+            {clearing ? 'Clearing…' : clearedFlash ? 'Cache cleared' : 'Clear Cache'}
+          </button>
+        </div>
+
         {/* Period Filter */}
         <div className="relative">
           <button
@@ -109,6 +174,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
+        </div>{/* /flex items-center gap-2 (header right-side cluster) */}
       </div>
 
       {/* ── User Stat cards ── */}

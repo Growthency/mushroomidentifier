@@ -46,7 +46,7 @@ const FALLBACK_SETTINGS: Record<string, string> = {
   contact_email:           "support@mushroomidentifiers.com",
   cta_heading:             "Start Identifying Safely Today",
   cta_subtitle:            "Join thousands of foragers using AI-powered identification",
-  cta_primary_text:        "Try Free — No Signup →",
+  cta_primary_text:        "Try Free — Free Account Required →",
   cta_primary_href:        "/#identifier",
   cta_secondary_text:      "View Pricing",
   cta_secondary_href:      "/pricing",
