@@ -45,8 +45,21 @@ const nextConfig = {
         ],
       },
       {
+        // Frequently-updated routes — listing, feeds, sitemap. Edge cache
+        // for ONE MINUTE max with stale-while-revalidate, so newly
+        // published articles appear within 60s even before Next.js's
+        // revalidatePath() finishes propagating. The previous 1-hour
+        // edge cache here was the reason new posts stayed invisible to
+        // visitors despite the server-side revalidation working.
+        source: '/(blog|sitemap\\.xml|feed\\.xml)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=60, stale-while-revalidate=300' },
+        ],
+      },
+      {
         // Static blog & info pages — cache at CDN edge for 1 hour, stale-while-revalidate 1 day
-        source: '/(about|contact|pricing|blog|mushroom-parts-explained|mushroom-identifier-book|mushroom-identification-quiz|how-to-get-rid-of-mushrooms-in-grass|why-are-mushrooms-growing-in-my-yard|are-there-any-deadly-leccinum-mushrooms|amanita-bisporigera-destroying-angel|amanita-phalloides-death-cap|amanita-virosa-mushroom|agaricus-arvensis-horse-mushroom|death-cap-vs-destroying-angel|amanita-ocreata|amanita-muscaria|amanita-pantherina|galerina-marginata|omphalotus-illudens|agaricus-campestris|boletus-edulis|cantharellus-cibarius|morchella-esculenta|pleurotus-ostreatus|gyromitra-esculenta|agaricus-xanthodermus|chlorophyllum-molybdites|scleroderma-citrinum|hypholoma-fasciculare|cortinarius-rubellus|lepiota-brunneoincarnata)',
+        // (these rarely change, so aggressive caching is safe)
+        source: '/(about|contact|pricing|mushroom-parts-explained|mushroom-identifier-book|mushroom-identification-quiz|how-to-get-rid-of-mushrooms-in-grass|why-are-mushrooms-growing-in-my-yard|are-there-any-deadly-leccinum-mushrooms|amanita-bisporigera-destroying-angel|amanita-phalloides-death-cap|amanita-virosa-mushroom|agaricus-arvensis-horse-mushroom|death-cap-vs-destroying-angel|amanita-ocreata|amanita-muscaria|amanita-pantherina|galerina-marginata|omphalotus-illudens|agaricus-campestris|boletus-edulis|cantharellus-cibarius|morchella-esculenta|pleurotus-ostreatus|gyromitra-esculenta|agaricus-xanthodermus|chlorophyllum-molybdites|scleroderma-citrinum|hypholoma-fasciculare|cortinarius-rubellus|lepiota-brunneoincarnata)',
         headers: [
           { key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' },
         ],

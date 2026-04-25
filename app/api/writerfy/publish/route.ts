@@ -247,10 +247,18 @@ export async function POST(req: NextRequest) {
     saved = data
   }
 
-  // Bust caches so the new/updated post appears on the blog immediately.
+  // Bust ALL listing surfaces so the new/updated post appears immediately
+  // — revalidatePath flushes the Next.js render cache; the new shorter
+  // CDN edge cache (60s s-maxage on /blog + /sitemap.xml + /feed.xml,
+  // see next.config.js) means visitors see fresh content within ~1 min
+  // regardless. The article URL itself is dynamic + always fresh.
   if (saved?.slug) revalidatePath(saved.slug)
   revalidatePath('/blog')
   revalidatePath('/sitemap.xml')
+  revalidatePath('/feed.xml')
+  // Homepage is admin-managed blocks (no auto blog list), but call it
+  // anyway in case a future homepage block surfaces recent posts.
+  revalidatePath('/')
 
   return NextResponse.json({
     id: saved.id,
