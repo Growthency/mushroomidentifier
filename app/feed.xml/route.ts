@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
 const SITE_URL = 'https://mushroomidentifiers.com'
 
@@ -50,8 +51,10 @@ export async function GET() {
 
   const now = new Date().toUTCString()
 
-  // Build RSS items from blog posts — title + link only (no content/excerpt/images)
-  const blogItems = (posts || []).map(post => {
+  // Build RSS items from blog posts — drop policy / meta posts (Safety
+  // Disclaimer, Editorial Policy) so they don't appear in subscribers'
+  // feed readers alongside editorial content. Direct URLs still index.
+  const blogItems = (posts || []).filter(p => !BLOG_HIDDEN_SLUGS.has(p.slug)).map(post => {
     const pubDate = new Date(post.published_at || post.created_at).toUTCString()
     const link = `${SITE_URL}${post.slug.startsWith('/') ? '' : '/blog/'}${post.slug}`
     return `    <item>

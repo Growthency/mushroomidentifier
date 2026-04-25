@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import BlogPageClient from './BlogPageClient'
+import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
 // Always fetch fresh data — never serve a cached/stale article count
 export const dynamic = 'force-dynamic'
@@ -44,7 +45,12 @@ async function getDbPosts() {
       return []
     }
 
-    return (posts ?? []).map(p => {
+    // Drop policy / meta posts (e.g. Safety Disclaimer, Editorial Policy)
+    // from the listing. Their direct URLs still work — they just don't
+    // mix in alongside editorial articles here.
+    return (posts ?? [])
+      .filter(p => !BLOG_HIDDEN_SLUGS.has(p.slug))
+      .map(p => {
       // Auto-generate excerpt from content if excerpt is empty
       let excerpt = p.excerpt || ''
       if (!excerpt && p.content) {

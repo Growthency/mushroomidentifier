@@ -13,6 +13,7 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ArticleContent from '@/components/blog/ArticleContent'
 import PremiumGate from '@/components/PremiumGate'
 import ViewTracker from '@/components/blog/ViewTracker'
+import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
 /* ── Supabase admin client — no-store ensures deleted posts return 404 immediately ── */
 function getSupabase() {
@@ -49,6 +50,12 @@ async function getRelatedPosts(currentSlug: string, category?: string) {
   const supabase = getSupabase()
   const fullSlug = currentSlug.startsWith('/') ? currentSlug : `/${currentSlug}`
 
+  // Helper: drop policy / meta posts so they don't appear as "related"
+  // alongside species + foraging articles. Pull a few extras then filter
+  // so the visible count still hits the cap of 3.
+  const stripHidden = (rows: any[] | null | undefined) =>
+    (rows ?? []).filter((p) => !BLOG_HIDDEN_SLUGS.has(p.slug)).slice(0, 3)
+
   // Try same category first
   if (category) {
     const { data } = await supabase
@@ -58,8 +65,9 @@ async function getRelatedPosts(currentSlug: string, category?: string) {
       .eq('category', category)
       .neq('slug', fullSlug)
       .order('published_at', { ascending: false })
-      .limit(3)
-    if (data && data.length >= 2) return data
+      .limit(6) // pull extra so we still fill 3 after filtering
+    const visible = stripHidden(data)
+    if (visible.length >= 2) return visible
   }
 
   // Fallback: any published posts
@@ -69,8 +77,8 @@ async function getRelatedPosts(currentSlug: string, category?: string) {
     .eq('status', 'published')
     .neq('slug', fullSlug)
     .order('published_at', { ascending: false })
-    .limit(3)
-  return data || []
+    .limit(6)
+  return stripHidden(data)
 }
 
 /* ── Dynamic metadata for SEO ── */

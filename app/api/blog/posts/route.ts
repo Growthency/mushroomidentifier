@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
 // Prevent Next.js from caching this route — always fetch fresh data
 export const dynamic = 'force-dynamic'
@@ -24,8 +25,12 @@ export async function GET() {
     return NextResponse.json({ posts: [] })
   }
 
-  // Map to the Article format expected by the blog client
-  const mapped = (posts ?? []).map(p => ({
+  // Drop policy / meta posts from the listing — direct URLs still work,
+  // they just don't mix in alongside editorial articles.
+  // Then map to the Article format expected by the blog client.
+  const mapped = (posts ?? [])
+    .filter(p => !BLOG_HIDDEN_SLUGS.has(p.slug))
+    .map(p => ({
     id: p.id + 1000, // offset to avoid collision with hardcoded IDs
     title: p.title,
     excerpt: p.excerpt || '',

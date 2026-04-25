@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -26,14 +27,19 @@ export async function GET() {
     .order('published_at', { ascending: false, nullsFirst: false })
     .limit(10)
 
+  // Hide policy / meta posts from both popular + recent rails so they
+  // don't pop up as "blog content" alongside species + foraging articles.
+  const visiblePopular = (popular ?? []).filter(p => !BLOG_HIDDEN_SLUGS.has(p.slug))
+  const visibleRecent  = (recent  ?? []).filter(p => !BLOG_HIDDEN_SLUGS.has(p.slug))
+
   return NextResponse.json({
-    popular: (popular ?? []).map(p => ({
+    popular: visiblePopular.map(p => ({
       title: p.title,
       slug: p.slug,
       image: p.featured_image || '',
       views: p.views || 0,
     })),
-    recent: (recent ?? []).map(p => ({
+    recent: visibleRecent.map(p => ({
       title: p.title,
       slug: p.slug,
       image: p.featured_image || '',
