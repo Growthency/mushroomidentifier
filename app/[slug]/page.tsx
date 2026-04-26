@@ -14,6 +14,7 @@ import ArticleContent from '@/components/blog/ArticleContent'
 import PremiumGate from '@/components/PremiumGate'
 import ViewTracker from '@/components/blog/ViewTracker'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
+import { resolveFeaturedImage } from '@/lib/content-helpers'
 
 /* ── Supabase admin client — no-store ensures deleted posts return 404 immediately ── */
 function getSupabase() {
@@ -51,16 +52,24 @@ async function getRelatedPosts(currentSlug: string, category?: string) {
   const fullSlug = currentSlug.startsWith('/') ? currentSlug : `/${currentSlug}`
 
   // Helper: drop policy / meta posts so they don't appear as "related"
-  // alongside species + foraging articles. Pull a few extras then filter
-  // so the visible count still hits the cap of 3.
+  // alongside species + foraging articles, then resolve featured_image
+  // (with fallback to first inline content image for legacy posts) so
+  // related-posts thumbnails are never broken even when an admin
+  // forgot to set one. Pull extras and filter so we still hit cap of 3.
   const stripHidden = (rows: any[] | null | undefined) =>
-    (rows ?? []).filter((p) => !BLOG_HIDDEN_SLUGS.has(p.slug)).slice(0, 3)
+    (rows ?? [])
+      .filter((p) => !BLOG_HIDDEN_SLUGS.has(p.slug))
+      .slice(0, 3)
+      .map((p) => ({
+        ...p,
+        featured_image: resolveFeaturedImage(p.featured_image, p.content),
+      }))
 
-  // Try same category first
+  // Try same category first. `content` is needed for the image fallback.
   if (category) {
     const { data } = await supabase
       .from('blog_posts')
-      .select('slug, title, excerpt, featured_image, category, risk_level')
+      .select('slug, title, excerpt, featured_image, content, category, risk_level')
       .eq('status', 'published')
       .eq('category', category)
       .neq('slug', fullSlug)
@@ -73,7 +82,7 @@ async function getRelatedPosts(currentSlug: string, category?: string) {
   // Fallback: any published posts
   const { data } = await supabase
     .from('blog_posts')
-    .select('slug, title, excerpt, featured_image, category, risk_level')
+    .select('slug, title, excerpt, featured_image, content, category, risk_level')
     .eq('status', 'published')
     .neq('slug', fullSlug)
     .order('published_at', { ascending: false })

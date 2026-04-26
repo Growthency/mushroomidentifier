@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
+import { resolveFeaturedImage } from '@/lib/content-helpers'
 
 // Prevent Next.js from caching this route — always fetch fresh data
 export const dynamic = 'force-dynamic'
@@ -13,9 +14,12 @@ export async function GET() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
+  // `content` is fetched for the resolveFeaturedImage() fallback below —
+  // legacy posts without an explicit featured_image still get a thumbnail
+  // by extracting the first inline <img> from the article body.
   const { data: posts, error } = await supabase
     .from('blog_posts')
-    .select('id, title, slug, excerpt, featured_image, category, risk_level, region, is_premium, views, read_time, status, created_at, published_at')
+    .select('id, title, slug, excerpt, featured_image, content, category, risk_level, region, is_premium, views, read_time, status, created_at, published_at')
     .eq('status', 'published')
     .order('published_at', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false })
@@ -42,7 +46,7 @@ export async function GET() {
       : 'Draft',
     readTime: p.read_time ? `${p.read_time} min` : '5 min',
     slug: p.slug,
-    image: p.featured_image || '',
+    image: resolveFeaturedImage(p.featured_image, p.content),
     views: p.views || 0,
     is_premium: p.is_premium || false,
   }))
