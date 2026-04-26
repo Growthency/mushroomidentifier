@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
+// next/image no longer needed here — featured-image hero was removed
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { ArrowRight } from 'lucide-react'
@@ -328,42 +328,13 @@ export default async function DynamicPostPage({
 
                 <AuthorBlock updatedAt={publishedDate} />
                 <LiveViewCount slug={post.slug} className="mb-2" />
-
-                {/* Excerpt */}
-                {post.excerpt && (
-                  <p
-                    className="text-base leading-relaxed mt-4"
-                    style={{ color: 'var(--text-muted)' }}
-                  >
-                    {post.excerpt}
-                  </p>
-                )}
+                {/* Excerpt + featured-image hero intentionally removed
+                    from the individual article page — both were
+                    duplicating the article's own opening paragraph and
+                    inline images. The blog listing card still uses
+                    excerpt + featured_image (those are admin-managed and
+                    auto-derived from content where empty). */}
               </div>
-
-              {/* Featured Image */}
-              {post.featured_image && (
-                <figure
-                  className="mb-10 rounded-2xl overflow-hidden"
-                  style={{ border: '1px solid var(--border)' }}
-                >
-                  <div className="relative w-full" style={{ maxHeight: '480px' }}>
-                    <Image
-                      src={post.featured_image}
-                      alt={`${post.slug.replace(/^\//,'').replace(/-/g, ' ')} identification guide`}
-                      width={800}
-                      height={530}
-                      sizes="(max-width: 768px) 100vw, 800px"
-                      className="w-full object-cover"
-                      style={{
-                        maxHeight: '480px',
-                        objectFit: 'cover',
-                        objectPosition: 'center',
-                      }}
-                      priority
-                    />
-                  </div>
-                </figure>
-              )}
 
               {/* ── Main Content (HTML from rich editor) + auto TOC ── */}
               {post.is_premium ? (
