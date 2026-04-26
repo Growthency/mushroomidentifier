@@ -400,7 +400,7 @@ export default function BlogSidebar() {
               Renowned mycologist with over 40 years of experience studying fungi.
               Dedicated to mushroom identification, cultivation, and the role of fungi in ecosystem health.
             </p>
-            <Link href="/about"
+            <Link href="/author/paul-stamets"
               className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:brightness-110"
               style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--accent)' }}>
               More about me
