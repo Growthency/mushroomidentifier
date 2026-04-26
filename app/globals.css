@@ -388,6 +388,26 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   color: var(--text-primary) !important;
 }
 
+/* ── Mobile responsiveness: wide comparison tables (e.g. "Our App vs
+       Traditional Guides vs Other Apps") were overflowing the viewport
+       and getting cropped on phones. Make tables horizontally scrollable
+       on small screens so users can swipe across without breaking
+       desktop layout. ── */
+@media (max-width: 768px) {
+  .rich-content table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Keep each column wide enough to read; cells wrap text inside,
+     columns don't collapse to <40 px. */
+  .rich-content th,
+  .rich-content td {
+    min-width: 140px;
+  }
+}
+
 /* Horizontal rule polish */
 .rich-content hr {
   border: none !important;
