@@ -60,28 +60,26 @@ function renderWithShortcodes(html: string) {
 
 /**
  * Renders rich-editor HTML with:
- * 1. Table of Contents (auto-injected after first paragraph)
+ * 1. Table of Contents (auto-injected immediately BEFORE the first <h2>,
+ *    so the entire intro — however many paragraphs, lists, or images
+ *    it contains — sits above the TOC. The first major section heading
+ *    follows the TOC.)
  * 2. Shortcode expansion ([identify-banner] etc.)
  */
 export default function ArticleContent({ html, className, style }: ArticleContentProps) {
   // ── Step 1: Find TOC insertion point ──
+  // Always split at the first <h2>. If there is no h2, there's nothing to
+  // make a TOC of, so we don't insert one at all.
   let beforeToc = ''
   let afterToc = html
 
-  const firstPEnd = html.indexOf('</p>')
-  if (firstPEnd !== -1) {
-    const splitAt = firstPEnd + '</p>'.length
-    beforeToc = html.slice(0, splitAt)
-    afterToc = html.slice(splitAt)
-  } else {
-    const firstH2 = html.search(/<h2[\s>]/i)
-    if (firstH2 !== -1) {
-      beforeToc = html.slice(0, firstH2)
-      afterToc = html.slice(firstH2)
-    }
+  const firstH2 = html.search(/<h2[\s>]/i)
+  if (firstH2 !== -1) {
+    beforeToc = html.slice(0, firstH2)
+    afterToc = html.slice(firstH2)
   }
 
-  const hasToc = html.search(/<h2[\s>]/i) !== -1
+  const hasToc = firstH2 !== -1
 
   // ── Step 2: Render with shortcode expansion ──
   return (
