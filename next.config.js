@@ -27,6 +27,15 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'tsbxbtajtzfvianasoaw.supabase.co',
       },
+      {
+        // Vercel Blob storage — Writerfy auto-publish uploads images here.
+        // Without this entry Next.js <Image> silently refuses to render
+        // them, which is why sidebar Recent Posts thumbnails appeared
+        // broken even though the same URLs worked on /blog cards (those
+        // use a raw <img>, not next/image).
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
+      },
     ],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
