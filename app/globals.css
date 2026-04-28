@@ -609,31 +609,77 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   color: #fff !important;
 }
 
-/* In-table badge ("Editor's Choice" etc. shown above product image) */
+/* In-table badge ("Editor's Choice" etc. shown above product image).
+   ArticleContent.tsx adds a wf-tb-editors / wf-tb-top / wf-tb-budget
+   modifier class based on the badge text so each variant gets the same
+   color it already uses in the product blocks below the table.
+   Default (no modifier) falls back to the brand green. */
 .rich-content .writerfy-table-badge {
   display: inline-block;
-  padding: 0.18rem 0.55rem;
+  padding: 0.22rem 0.65rem;
   border-radius: 9999px;
-  font-size: 0.6rem;
-  font-weight: 700;
+  font-size: 0.62rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   margin-bottom: 0.4rem;
   color: #fff;
   background: linear-gradient(135deg, var(--accent), var(--accent-glow));
   white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.rich-content .writerfy-table-badge.wf-tb-editors {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+}
+.rich-content .writerfy-table-badge.wf-tb-top {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+}
+.rich-content .writerfy-table-badge.wf-tb-budget {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
 }
 
-/* Mobile: let the table scroll horizontally without exploding the page */
+/* Mobile: keep the table as a *real* table — let cells wrap, just shrink
+   the typography and padding. The previous approach (display:block +
+   overflow-x:auto) forced a horizontal scroll which is exactly what the
+   user wanted to avoid. WordPress does it like this, so do we. */
 @media (max-width: 640px) {
   .rich-content .writerfy-amazon-table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    font-size: 0.78rem;
+    table-layout: auto;
   }
   .rich-content .writerfy-amazon-table th,
   .rich-content .writerfy-amazon-table td {
-    padding: 0.5rem 0.625rem !important;
+    padding: 0.45rem 0.45rem !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .rich-content .writerfy-amazon-table th {
+    font-size: 0.6rem;
+  }
+  .rich-content .writerfy-table-cell-product {
+    width: 64px;
+  }
+  .rich-content .writerfy-table-cell-product img {
+    width: 48px !important;
+  }
+  .rich-content .writerfy-table-cell-name {
+    font-size: 0.78rem;
+    line-height: 1.3;
+  }
+  .rich-content .writerfy-table-cell-rating {
+    font-size: 0.7rem;
+    text-align: center;
+  }
+  .rich-content .writerfy-table-cell-buy {
+    width: auto;
+  }
+  .rich-content .writerfy-table-cell-buy a {
+    padding: 0.4rem 0.55rem;
+    font-size: 0.6rem;
+  }
+  .rich-content .writerfy-table-badge {
+    font-size: 0.55rem;
+    padding: 0.18rem 0.5rem;
   }
 }
 

@@ -93,11 +93,12 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="dipMWRMeOiWrrLH32OCvAQS-wR14IzCVSCLFUt9mH-0" />
-        {/* Bing Webmaster Tools verification used to be hardcoded here as a
-            workaround for the broken admin head-script injection. The injection
-            is now fixed (renderHeadScript parses <meta> tags into native React
-            elements), so the Bing tag added via /admin/header-scripts renders
-            correctly on its own and the duplicate hardcode has been removed. */}
+        {/* Bing Webmaster Tools — hardcoded so the verifier always sees it.
+            Admin can also paste the tag through /admin/header-scripts (the
+            new renderHeadScript handles <meta> properly, so it would also
+            work) but keeping it here means verification stays solid even
+            if the admin entry is removed. */}
+        <meta name="msvalidate.01" content="0C530F1527CEB9BE4C78DF0D4F59A866" />
         {/* RSS Feed for search engine auto-discovery */}
         <link rel="alternate" type="application/rss+xml" title="Mushroom Identifiers RSS Feed" href="/feed.xml" />
         {/* Preconnect to external origins — saves DNS+TCP+TLS time */}

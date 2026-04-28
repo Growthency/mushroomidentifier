@@ -9,6 +9,30 @@ interface ArticleContentProps {
 }
 
 /**
+ * Writerfy emits ALL three comparison-table badges with the same class
+ * `writerfy-table-badge`, only differing in their text content
+ * ("EDITOR'S CHOICE", "TOP PICK", "BEST BUDGET"). CSS can't reliably
+ * match elements based on text, so we inject a modifier class here so
+ * globals.css can color each variant differently — matching the colors
+ * already used by the corresponding award badges in the product blocks
+ * below the table (teal / red / blue).
+ */
+function classifyTableBadges(html: string): string {
+  return html.replace(
+    /<span\s+class="writerfy-table-badge"\s*>([^<]+)<\/span>/gi,
+    (_, text: string) => {
+      const upper = text.trim().toUpperCase()
+      let modifier = ''
+      if (upper.includes('EDITOR'))      modifier = ' wf-tb-editors'
+      else if (upper.includes('TOP'))    modifier = ' wf-tb-top'
+      else if (upper.includes('BUDGET')) modifier = ' wf-tb-budget'
+      else if (upper.includes('BEST'))   modifier = ' wf-tb-budget'
+      return `<span class="writerfy-table-badge${modifier}">${text}</span>`
+    }
+  )
+}
+
+/**
  * Shortcode registry — add new shortcodes here.
  * Each key is the shortcode tag (without brackets).
  * The value is the React component to render.
@@ -67,16 +91,21 @@ function renderWithShortcodes(html: string) {
  * 2. Shortcode expansion ([identify-banner] etc.)
  */
 export default function ArticleContent({ html, className, style }: ArticleContentProps) {
+  // ── Step 0: Pre-process — classify Writerfy comparison-table badges so
+  //           CSS can color each variant (Editor's Choice / Top Pick /
+  //           Best Budget) distinctly. Cheap regex pass over the HTML.
+  const processedHtml = classifyTableBadges(html)
+
   // ── Step 1: Find TOC insertion point ──
   // Always split at the first <h2>. If there is no h2, there's nothing to
   // make a TOC of, so we don't insert one at all.
   let beforeToc = ''
-  let afterToc = html
+  let afterToc = processedHtml
 
-  const firstH2 = html.search(/<h2[\s>]/i)
+  const firstH2 = processedHtml.search(/<h2[\s>]/i)
   if (firstH2 !== -1) {
-    beforeToc = html.slice(0, firstH2)
-    afterToc = html.slice(firstH2)
+    beforeToc = processedHtml.slice(0, firstH2)
+    afterToc = processedHtml.slice(firstH2)
   }
 
   const hasToc = firstH2 !== -1
