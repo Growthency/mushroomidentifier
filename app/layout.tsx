@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import LayoutShell from '@/components/layout/LayoutShell'
 import ScrollToTop from '@/components/ui/ScrollToTop'
 import { getEnabledScripts, groupByPosition } from '@/lib/site-scripts'
+import { renderHeadScript } from '@/lib/render-head-script'
 import { getMenus } from '@/lib/menus'
 import { getSiteContent } from '@/lib/site-content'
 import { buildThemeCSS } from '@/lib/theme-colors'
@@ -92,10 +93,11 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="dipMWRMeOiWrrLH32OCvAQS-wR14IzCVSCLFUt9mH-0" />
-        {/* Bing Webmaster Tools — hardcoded so the verifier sees it before <body>.
-            (Admin Header Scripts wraps in a <span>, which browsers move out of <head>,
-             causing Bing's "tag not found before <body>" error.) */}
-        <meta name="msvalidate.01" content="0C530F1527CEB9BE4C78DF0D4F59A866" />
+        {/* Bing Webmaster Tools verification used to be hardcoded here as a
+            workaround for the broken admin head-script injection. The injection
+            is now fixed (renderHeadScript parses <meta> tags into native React
+            elements), so the Bing tag added via /admin/header-scripts renders
+            correctly on its own and the duplicate hardcode has been removed. */}
         {/* RSS Feed for search engine auto-discovery */}
         <link rel="alternate" type="application/rss+xml" title="Mushroom Identifiers RSS Feed" href="/feed.xml" />
         {/* Preconnect to external origins — saves DNS+TCP+TLS time */}
@@ -149,10 +151,16 @@ export default async function RootLayout({
             })
           }}
         />
-        {/* Admin-managed scripts — <head> position (GA, Search Console, Meta Pixel init, etc.) */}
-        {headScripts.map((s) => (
-          <span key={s.id} dangerouslySetInnerHTML={{ __html: s.code }} />
-        ))}
+        {/* Admin-managed scripts — <head> position (GA, Search Console, Bing,
+            Meta Pixel init, etc.). Each pasted snippet is parsed into the
+            correct native element (<meta>, <link>, <script>, <style>) by
+            renderHeadScript so the document head stays valid HTML. The old
+            implementation wrapped each snippet in a <span>, which the HTML
+            parser treats as flow content — the moment one appeared inside
+            <head>, browsers auto-closed <head> and dragged every following
+            tag into <body>. That broke Bing/Google verification AND was
+            the cause of the long blank-screen pause users were seeing. */}
+        {headScripts.map((s) => renderHeadScript(s.code, s.id))}
         {/* Admin-managed theme colors — overrides CSS variables from globals.css per data-theme */}
         {themeCSS && (
           <style
