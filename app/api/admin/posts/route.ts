@@ -38,23 +38,28 @@ export async function GET(req: NextRequest) {
   const limit = 25
   const offset = (page - 1) * limit
 
+  // Optional status filter — when set, narrows the paginated list to a
+  // single status. Counts always reflect the full DB so the dashboard
+  // pills can still show real totals while the user is filtered down.
+  const status = url.searchParams.get('status') // 'published' | 'draft' | 'scheduled' | null
+
+  // Build the list query. Filter only when an allowed status is passed.
+  let listQuery = admin
+    .from('blog_posts')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1)
+  if (status === 'published' || status === 'draft' || status === 'scheduled') {
+    listQuery = listQuery.eq('status', status)
+  }
+
   // Run paginated list + status counts in parallel — head-only count
-  // queries are cheap (no row data is shipped) and let the admin Pages
-  // dashboard show "X published · Y draft" instead of a single total.
-  const [listRes, publishedRes, draftRes] = await Promise.all([
-    admin
-      .from('blog_posts')
-      .select('*', { count: 'exact' })
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1),
-    admin
-      .from('blog_posts')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'published'),
-    admin
-      .from('blog_posts')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'draft'),
+  // queries ship no row data and stay cheap.
+  const [listRes, publishedRes, draftRes, scheduledRes] = await Promise.all([
+    listQuery,
+    admin.from('blog_posts').select('id', { count: 'exact', head: true }).eq('status', 'published'),
+    admin.from('blog_posts').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
+    admin.from('blog_posts').select('id', { count: 'exact', head: true }).eq('status', 'scheduled'),
   ])
 
   return NextResponse.json({
@@ -62,8 +67,10 @@ export async function GET(req: NextRequest) {
     total: listRes.count ?? 0,
     publishedCount: publishedRes.count ?? 0,
     draftCount: draftRes.count ?? 0,
+    scheduledCount: scheduledRes.count ?? 0,
     page,
     totalPages: Math.ceil((listRes.count ?? 0) / limit),
+    status: status ?? 'all',
   })
 }
 
