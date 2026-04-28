@@ -733,15 +733,27 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   line-height: 1.3 !important;
 }
 
-/* Product image — centered, no white card, dramatic hover zoom.
-   The image is wrapped in a transform-only animation (no padding, no
-   background plate) so users actually feel the zoom-in on hover. */
-.rich-content img.writerify-product-image {
+/* Product image — IMPORTANT: in Writerfy's HTML the
+   `writerify-product-image` class is on the wrapping <a> tag, NOT on the
+   <img> itself. The structure is:
+       <a class="writerify-product-image" href="..."><img></a>
+   That's why earlier rules targeting img.writerify-product-image didn't
+   apply at all and the hover zoom never fired — the selector matched
+   nothing. Now we style the anchor for layout and the descendant <img>
+   for visuals, and trigger the zoom from the anchor's :hover so the
+   animation works whether the user hovers the image or the link area. */
+.rich-content a.writerify-product-image {
   display: block;
-  max-width: 280px !important;
+  max-width: 280px;
+  margin: 1.25rem auto;
+  text-align: center;
+  text-decoration: none !important;
+}
+.rich-content a.writerify-product-image img {
+  display: block;
   width: 100%;
   height: auto !important;
-  margin: 1.25rem auto !important;
+  margin: 0 auto !important;
   border-radius: 12px;
   background: transparent;
   padding: 0;
@@ -751,27 +763,30 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   cursor: zoom-in;
   transform-origin: center center;
 }
-.rich-content img.writerify-product-image:hover {
+.rich-content a.writerify-product-image:hover img,
+.rich-content a.writerify-product-image img:hover {
   transform: scale(1.12);
   box-shadow: 0 22px 48px rgba(20, 107, 40, 0.28);
 }
 
-/* If Writerfy wraps the image in a centering <p>/<div>, make sure the
-   wrapper doesn't clip the zoomed image — overflow:visible is essential
-   for the scale(1.12) hover to actually be visible. */
+/* Make sure no parent clips the zoomed image (scale(1.12) extends past
+   the natural box). */
 .rich-content .writerify-product-block,
-.rich-content p:has(> img.writerify-product-image),
-.rich-content div:has(> img.writerify-product-image) {
+.rich-content p:has(> a.writerify-product-image),
+.rich-content div:has(> a.writerify-product-image) {
   overflow: visible;
 }
 
-/* Stylish "Check on Amazon" CTA — center-aligned, branded orange,
-   with cart icon already inside the link from Writerfy. */
+/* Stylish "Check on Amazon" CTA — center-aligned, branded orange.
+   Writerfy already ships its own SVG cart icon inside the link, so we
+   do NOT add a ::before pseudo-icon — that produced two cart icons
+   side-by-side. The SVG it ships gets the same white "currentColor"
+   stroke automatically because we set color:#fff on the link. */
 .rich-content a.writerify-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   margin: 1.5rem auto 0.5rem;
   padding: 0.875rem 2.25rem;
   background: linear-gradient(135deg, #ff9900 0%, #ff6b00 100%);
@@ -789,10 +804,10 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   box-shadow: 0 8px 24px rgba(255,107,0,0.5);
   color: #fff !important;
 }
-.rich-content a.writerify-cta::before {
-  content: "🛒";
-  font-size: 1rem;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
+.rich-content a.writerify-cta svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 /* Force the CTA wrapper paragraph to center even when Writerfy puts it

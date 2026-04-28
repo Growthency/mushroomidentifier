@@ -397,8 +397,36 @@ export default function Footer({
             </div>
           </div>
 
+          {/* ── Affiliate disclaimer (FTC-required when an Amazon Associates
+              tag is in use anywhere on the site). Sits just above the
+              copyright row so it's visible on every page without making
+              the bottom bar feel cramped. */}
+          <div className="mt-12 pt-6" style={{ borderTop: "1px solid var(--border)" }}>
+            <p className="text-[11px] leading-relaxed text-center max-w-3xl mx-auto" style={{ color: "var(--text-faint)" }}>
+              <strong style={{ color: "var(--text-muted)" }}>Affiliate Disclaimer:</strong>{" "}
+              <a
+                href="https://mushroomidentifiers.com"
+                className="hover:underline"
+                style={{ color: "var(--text-muted)" }}
+              >
+                MushroomIdentifiers.com
+              </a>{" "}
+              is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to{" "}
+              <a
+                href="https://amazon.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Amazon.com
+              </a>
+              .
+            </p>
+          </div>
+
           {/* ── Bottom bar ── */}
-          <div className="mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderTop: "1px solid var(--border)" }}>
+          <div className="mt-6 pt-6 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderTop: "1px solid var(--border)" }}>
             <p className="text-xs" style={{ color: "var(--text-faint)" }}>
               {s("copyright_text")}
             </p>
