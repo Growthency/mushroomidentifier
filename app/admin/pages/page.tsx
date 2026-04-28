@@ -29,6 +29,8 @@ export default function AdminPagesPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [total, setTotal] = useState(0)
+  const [publishedCount, setPublishedCount] = useState(0)
+  const [draftCount, setDraftCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<number | null>(null)
   const [search, setSearch] = useState('')
@@ -41,6 +43,8 @@ export default function AdminPagesPage() {
         setPosts(d.posts)
         setTotalPages(d.totalPages)
         setTotal(d.total)
+        setPublishedCount(d.publishedCount ?? 0)
+        setDraftCount(d.draftCount ?? 0)
         setPage(d.page)
       })
       .finally(() => setLoading(false))
@@ -75,7 +79,25 @@ export default function AdminPagesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-[26px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Pages</h1>
-          <p className="text-sm mt-1" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{total} total articles</p>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <span
+              className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full font-semibold bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20"
+              title="Published articles visible on the public site"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              {publishedCount} published
+            </span>
+            <span
+              className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full font-semibold bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20"
+              title="Drafts not yet visible on the public site"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              {draftCount} draft
+            </span>
+            <span className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>
+              · {total} total
+            </span>
+          </div>
         </div>
         <Link
           href="/admin/pages/new"
