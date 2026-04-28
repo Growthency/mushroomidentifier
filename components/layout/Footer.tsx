@@ -83,12 +83,12 @@ const FALLBACK_PAYMENTS: PaymentMethod[] = [
   { id: "2c", label: "2Checkout", display_html: "2Checkout",                                                bg_color: "#E2342D", text_color: "#ffffff", sort_order: 8, enabled: true },
 ];
 
-const FALLBACK_EXPLORE_BADGES: FooterBadge[] = [
-  { id: "smb", location: "footer_explore", image_url: "https://showmebest.ai/badge/feature-badge-white.webp", link_url: "https://showmebest.ai", alt_text: "Featured on ShowMeBestAI", width: 180, height: 49, sort_order: 1, enabled: true },
-];
-const FALLBACK_COMPANY_BADGES: FooterBadge[] = [
-  { id: "faz", location: "footer_company", image_url: "https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light", link_url: "https://fazier.com/launches/mushroomidentifiers.com", alt_text: "Fazier badge", width: 120, height: null, sort_order: 1, enabled: true },
-];
+// Fallbacks intentionally empty — the ShowMeBest.ai and Fazier badges that
+// used to live here have been removed at the user's request. Admins can still
+// add badges back via /admin/footer-settings; the eBadges/cBadges arrays only
+// fall through to these fallbacks when admin returns nothing.
+const FALLBACK_EXPLORE_BADGES: FooterBadge[] = [];
+const FALLBACK_COMPANY_BADGES: FooterBadge[] = [];
 
 // =============================================================================
 // Footer component
@@ -132,8 +132,22 @@ export default function Footer({
   // Resolve repeatable content
   const socials   = socialLinks && socialLinks.length > 0     ? socialLinks      : FALLBACK_SOCIALS
   const payments  = paymentMethods && paymentMethods.length > 0 ? paymentMethods : FALLBACK_PAYMENTS
-  const eBadges   = exploreBadges && exploreBadges.length > 0 ? exploreBadges    : FALLBACK_EXPLORE_BADGES
-  const cBadges   = companyBadges && companyBadges.length > 0 ? companyBadges    : FALLBACK_COMPANY_BADGES
+
+  // Hard blacklist for legacy badges the admin UI couldn't delete from the
+  // DB cleanly. Filter is applied to BOTH admin-supplied and fallback arrays
+  // so these specific URLs never render again, regardless of DB state.
+  const BADGE_BLACKLIST = ["showmebest.ai", "fazier.com"]
+  const stripBlacklisted = (list: FooterBadge[] | undefined): FooterBadge[] =>
+    (list || []).filter(b =>
+      !BADGE_BLACKLIST.some(d =>
+        (b.image_url || "").includes(d) || (b.link_url || "").includes(d)
+      )
+    )
+
+  const eBadgesRaw = exploreBadges && exploreBadges.length > 0 ? exploreBadges : FALLBACK_EXPLORE_BADGES
+  const cBadgesRaw = companyBadges && companyBadges.length > 0 ? companyBadges : FALLBACK_COMPANY_BADGES
+  const eBadges    = stripBlacklisted(eBadgesRaw)
+  const cBadges    = stripBlacklisted(cBadgesRaw)
 
   return (
     <>

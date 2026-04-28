@@ -90,6 +90,10 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="dipMWRMeOiWrrLH32OCvAQS-wR14IzCVSCLFUt9mH-0" />
+        {/* Bing Webmaster Tools — hardcoded so the verifier sees it before <body>.
+            (Admin Header Scripts wraps in a <span>, which browsers move out of <head>,
+             causing Bing's "tag not found before <body>" error.) */}
+        <meta name="msvalidate.01" content="0C530F1527CEB9BE4C78DF0D4F59A866" />
         {/* RSS Feed for search engine auto-discovery */}
         <link rel="alternate" type="application/rss+xml" title="Mushroom Identifiers RSS Feed" href="/feed.xml" />
         {/* Preconnect to external origins — saves DNS+TCP+TLS time */}
@@ -98,6 +102,12 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://analytics.ahrefs.com" />
         {/* Hint browser to give max priority to the critical CSS chunk on the critical path */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Critical inline CSS — paints body background instantly, before
+            globals.css finishes downloading. Without this, every full-page
+            load (including admin → homepage navigation) flashes a white
+            screen for the few hundred ms it takes the external CSS chunk
+            to land. The colors mirror --body-bg in globals.css. */}
+        <style dangerouslySetInnerHTML={{ __html: `html,body{margin:0;padding:0;background:linear-gradient(145deg,#eaf8f2 0%,#e3ecf8 42%,#f2e9f9 73%,#f8f0e5 100%);color:#0b1912;min-height:100vh}html[data-theme="dark"],html[data-theme="dark"] body{background:linear-gradient(145deg,#0b1912 0%,#0d1623 43%,#190e28 73%,#0b1912 100%);color:#eaf8f2}` }} />
         {/* Inline theme script — defaults to light (public site only has
             light mode). Still honours a previously-saved dark preference
             so admins don't get flipped mid-session. Runs synchronously
