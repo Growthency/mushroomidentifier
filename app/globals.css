@@ -4,44 +4,31 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Prevent theme flash: hide body until ThemeProvider sets the correct theme */
-body:not(.theme-ready) {
-  opacity: 0 !important;
-}
-body.theme-ready {
-  opacity: 1;
-  transition: opacity 0.05s ease;
-}
+/* THE OLD `body:not(.theme-ready) { opacity: 0 !important }` GUARD HAS BEEN
+   REMOVED.
 
-:root, [data-theme="dark"] {
-  /* Brand-cohesive deep-forest gradient — matches the green logo throughout
-     instead of drifting through indigo/purple. */
-  --body-bg: linear-gradient(145deg, #061410 0%, #0b1f17 35%, #0e2a1f 65%, #061410 100%);
-  --bg-primary: rgba(11, 25, 18, 0.88);
-  --bg-secondary: rgba(9, 20, 15, 0.92);
-  --bg-card: rgba(14, 28, 18, 0.97);
-  --bg-card-hover: rgba(20, 38, 22, 0.98);
-  --bg-nav: rgba(10, 22, 15, 0.90);
-  --text-primary: #edf7ef;
-  --text-muted: rgba(237,247,239,0.68);
-  --text-faint: rgba(237,247,239,0.40);
-  --border: rgba(111,207,127,0.10);
-  --border-hover: rgba(111,207,127,0.28);
-  --accent: #6fcf7f;
-  --accent-glow: #a8f5b5;
-  --accent-bg: rgba(111,207,127,0.10);
-  --btn-primary: #237a35;
-  --btn-hover: #6fcf7f;
-  --shadow: rgba(0,0,0,0.55);
-  --hero-ambient: radial-gradient(ellipse 110% 65% at 50% 42%, rgba(40,190,90,0.20) 0%, rgba(110,45,210,0.08) 55%, transparent 75%);
-  --orb-1: rgba(40, 200, 90, 0.14);
-  --orb-2: rgba(115, 45, 225, 0.10);
-  --orb-3: rgba(220, 155, 38, 0.07);
-}
+   That rule was added to prevent a theme-flash when both light and dark
+   mode were toggleable. It worked by hiding the entire <body> until
+   ThemeProvider's useEffect ran in the browser and added a `.theme-ready`
+   class. The cost: every full page load showed a totally blank page (the
+   inline gradient bg was visible, but every piece of content was
+   opacity:0) until React hydrated — typically 3-10 seconds on slower
+   connections. Users perceived this as a broken site.
 
-[data-theme="light"] {
-  /* Brand-cohesive soft-mint gradient — single green family instead of
-     mint→lavender→peach pastel which felt washed out / non-branded. */
+   Since dark mode is now force-disabled site-wide and light is the only
+   theme served, there's nothing to "flash" — so the guard is removed
+   entirely. The page now paints content immediately as soon as the HTML
+   and CSS land, with no JS dependency. The `.theme-ready` class is still
+   added by ThemeProvider — see the `body.theme-ready` rule further down
+   for the post-hydration background/color transition smoothness. */
+
+:root {
+  /* LIGHT MODE is the default and only mode currently served. The previous
+     `:root, [data-theme="dark"]` selector defined DARK as default, which
+     meant text colors briefly rendered white-on-white when the CSS file
+     loaded faster than the inline data-theme attribute setter, producing
+     invisible content for the few hundred ms between paint and JS hydration.
+     Brand-cohesive soft-mint gradient. */
   --body-bg: linear-gradient(145deg, #ecfaf1 0%, #d6efde 40%, #c8e8d2 70%, #ecfaf1 100%);
   --bg-primary: rgba(236, 249, 241, 0.82);
   --bg-secondary: rgba(228, 244, 235, 0.87);
@@ -63,6 +50,57 @@ body.theme-ready {
   --orb-1: rgba(20, 140, 60, 0.07);
   --orb-2: rgba(95, 55, 200, 0.05);
   --orb-3: rgba(200, 128, 30, 0.04);
+}
+
+/* Light is the default; explicit [data-theme="light"] kept as an alias so
+   any element that hard-codes the attribute still works. */
+[data-theme="light"] {
+  --body-bg: linear-gradient(145deg, #ecfaf1 0%, #d6efde 40%, #c8e8d2 70%, #ecfaf1 100%);
+  --bg-primary: rgba(236, 249, 241, 0.82);
+  --bg-secondary: rgba(228, 244, 235, 0.87);
+  --bg-card: rgba(255, 255, 255, 0.96);
+  --bg-card-hover: rgba(245, 251, 247, 0.98);
+  --bg-nav: rgba(236, 249, 241, 0.92);
+  --text-primary: #081a0c;
+  --text-muted: rgba(8,26,12,0.72);
+  --text-faint: rgba(8,26,12,0.46);
+  --border: rgba(20,100,38,0.13);
+  --border-hover: rgba(20,100,38,0.30);
+  --accent: #156b28;
+  --accent-glow: #2a9142;
+  --accent-bg: rgba(20,107,40,0.08);
+  --btn-primary: #156b28;
+  --btn-hover: #1e8f38;
+  --shadow: rgba(8,26,12,0.12);
+  --hero-ambient: radial-gradient(ellipse 110% 65% at 50% 42%, rgba(20,130,60,0.13) 0%, rgba(90,45,170,0.06) 55%, transparent 75%);
+  --orb-1: rgba(20, 140, 60, 0.07);
+  --orb-2: rgba(95, 55, 200, 0.05);
+  --orb-3: rgba(200, 128, 30, 0.04);
+}
+
+/* Dark mode kept for future re-enable. Currently no UI toggles to it. */
+[data-theme="dark"] {
+  --body-bg: linear-gradient(145deg, #061410 0%, #0b1f17 35%, #0e2a1f 65%, #061410 100%);
+  --bg-primary: rgba(11, 25, 18, 0.88);
+  --bg-secondary: rgba(9, 20, 15, 0.92);
+  --bg-card: rgba(14, 28, 18, 0.97);
+  --bg-card-hover: rgba(20, 38, 22, 0.98);
+  --bg-nav: rgba(10, 22, 15, 0.90);
+  --text-primary: #edf7ef;
+  --text-muted: rgba(237,247,239,0.68);
+  --text-faint: rgba(237,247,239,0.40);
+  --border: rgba(111,207,127,0.10);
+  --border-hover: rgba(111,207,127,0.28);
+  --accent: #6fcf7f;
+  --accent-glow: #a8f5b5;
+  --accent-bg: rgba(111,207,127,0.10);
+  --btn-primary: #237a35;
+  --btn-hover: #6fcf7f;
+  --shadow: rgba(0,0,0,0.55);
+  --hero-ambient: radial-gradient(ellipse 110% 65% at 50% 42%, rgba(40,190,90,0.20) 0%, rgba(110,45,210,0.08) 55%, transparent 75%);
+  --orb-1: rgba(40, 200, 90, 0.14);
+  --orb-2: rgba(115, 45, 225, 0.10);
+  --orb-3: rgba(220, 155, 38, 0.07);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
