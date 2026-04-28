@@ -99,6 +99,33 @@ async function getRelatedPosts(currentSlug: string, category?: string) {
 }
 
 /* ── Dynamic metadata for SEO ── */
+
+const SITE_URL = 'https://mushroomidentifiers.com'
+const DEFAULT_OG_IMAGE = `${SITE_URL}/mushroom-fungi-identifier.webp`
+
+/**
+ * Build an absolute image URL safe to put in og:image / twitter:image.
+ *
+ * Three input shapes need to resolve cleanly:
+ *   • absolute URL  ("https://m.media-amazon.com/..."): use as-is.
+ *     The previous code blindly prepended SITE_URL, producing
+ *     "https://mushroomidentifiers.comhttps://m.media-amazon.com/..."
+ *     which is unparseable — that's why Facebook/WhatsApp couldn't
+ *     fetch a thumbnail when sharing Writerfy / Amazon-product posts.
+ *   • protocol-relative ("//cdn.example.com/x.jpg"): prefix with https.
+ *   • root-relative path ("/foo.webp"): prefix with SITE_URL.
+ *   • empty / null: caller falls back to DEFAULT_OG_IMAGE.
+ */
+function toAbsoluteImageUrl(src: string | null | undefined): string | null {
+  const s = (src || '').trim()
+  if (!s) return null
+  if (/^https?:\/\//i.test(s)) return s
+  if (s.startsWith('//')) return `https:${s}`
+  if (s.startsWith('/')) return `${SITE_URL}${s}`
+  // Bare filename — assume relative to site root.
+  return `${SITE_URL}/${s}`
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -109,10 +136,16 @@ export async function generateMetadata({
   if (!post) return { title: 'Not Found' }
   const title = post.meta_title || post.title
   const description = post.meta_description || post.excerpt || ''
-  const url = `https://mushroomidentifiers.com${post.slug}`
-  const image = post.featured_image
-    ? { url: `https://mushroomidentifiers.com${post.featured_image}`, width: 1200, height: 630 }
-    : null
+  const url = `${SITE_URL}${post.slug}`
+
+  // Pick the post's effective image:
+  //   1. explicit featured_image (admin-set OR Writerfy upload)
+  //   2. first <img> embedded in the article body
+  //   3. site-wide default mushroom hero
+  // ...then normalize to a fully-qualified absolute URL.
+  const resolved = resolveFeaturedImage(post.featured_image, post.content)
+  const absolute = toAbsoluteImageUrl(resolved)
+  const ogImageUrl = absolute || DEFAULT_OG_IMAGE
 
   return {
     title,
@@ -125,13 +158,13 @@ export async function generateMetadata({
       type: 'article',
       publishedTime: post.published_at || post.created_at,
       modifiedTime: post.updated_at || post.published_at || post.created_at,
-      images: image ? [image] : [],
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: image ? [image.url] : [],
+      images: [ogImageUrl],
     },
   }
 }
