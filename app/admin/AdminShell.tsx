@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, FileText, BarChart3, Trophy, Globe, ShieldCheck,
   Code, ListOrdered, Palette, Paintbrush, Droplet, LogOut, ChevronRight, Menu, X, Sun, Moon,
-  Home as HomeIcon,
+  Home as HomeIcon, ExternalLink,
 } from 'lucide-react'
 import { useState } from 'react'
 import { AdminModalProvider } from '@/components/admin/AdminModal'
@@ -19,6 +19,7 @@ const NAV = [
   { href: '/admin/seo-health',      label: 'SEO Health',      icon: ShieldCheck },
   { href: '/admin/indexing-report', label: 'Indexing Report', icon: Globe },
   { href: '/admin/header-scripts',  label: 'Header Scripts',  icon: Code },
+  { href: '/admin/external-links',  label: 'External Links',  icon: ExternalLink },
   { href: '/admin/menus',           label: 'Menus',           icon: ListOrdered },
   { href: '/admin/footer-settings', label: 'Footer Content',  icon: Palette },
   { href: '/admin/theme',           label: 'Theme Colors',    icon: Droplet },

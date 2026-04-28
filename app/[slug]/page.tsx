@@ -20,6 +20,7 @@ import PremiumGate from '@/components/PremiumGate'
 import ViewTracker from '@/components/blog/ViewTracker'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 import { resolveFeaturedImage } from '@/lib/content-helpers'
+import { getNofollowRules, applyNofollowRules } from '@/lib/external-links'
 
 /* ── Supabase admin client — uses Next.js fetch cache (60s revalidate) so
    repeat visits within the window are instant. The previous `cache: 'no-store'`
@@ -176,10 +177,24 @@ export default async function DynamicPostPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const post = await getPost(slug)
+  const [post, nofollowRules] = await Promise.all([
+    getPost(slug),
+    // Fetch nofollow rules in parallel — they're tiny (a handful of rows
+    // at most) and the React.cache() wrapper means the article HTML and
+    // related-posts query share the same response within this request.
+    getNofollowRules(),
+  ])
   if (!post) notFound()
 
   const relatedPosts = await getRelatedPosts(slug, post.category)
+
+  // Apply admin-configured nofollow rules to the article HTML BEFORE it
+  // reaches the browser. This way Google et al see the final
+  // rel="nofollow" markup on first crawl, no client-side rewrite needed.
+  const processedContent = applyNofollowRules(
+    stripInlineStyles(post.content || ''),
+    nofollowRules,
+  )
 
   const publishedDate = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-US', {
@@ -386,18 +401,20 @@ export default async function DynamicPostPage({
                     auto-derived from content where empty). */}
               </div>
 
-              {/* ── Main Content (HTML from rich editor) + auto TOC ── */}
+              {/* ── Main Content (HTML from rich editor) + auto TOC ──
+                  processedContent has already been stripped of inline
+                  styles and rewritten by applyNofollowRules() upstream. */}
               {post.is_premium ? (
                 <PremiumGate inline>
                   <ArticleContent
-                    html={stripInlineStyles(post.content || '')}
+                    html={processedContent}
                     className={articleContentClasses}
                     style={articleContentStyles}
                   />
                 </PremiumGate>
               ) : (
                 <ArticleContent
-                  html={stripInlineStyles(post.content || '')}
+                  html={processedContent}
                   className={articleContentClasses}
                   style={articleContentStyles}
                 />
