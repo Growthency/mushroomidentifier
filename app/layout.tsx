@@ -108,11 +108,11 @@ export default async function RootLayout({
             screen for the few hundred ms it takes the external CSS chunk
             to land. The colors mirror --body-bg in globals.css. */}
         <style dangerouslySetInnerHTML={{ __html: `html,body{margin:0;padding:0;background:linear-gradient(145deg,#eaf8f2 0%,#e3ecf8 42%,#f2e9f9 73%,#f8f0e5 100%);color:#0b1912;min-height:100vh}html[data-theme="dark"],html[data-theme="dark"] body{background:linear-gradient(145deg,#0b1912 0%,#0d1623 43%,#190e28 73%,#0b1912 100%);color:#eaf8f2}` }} />
-        {/* Inline theme script — defaults to light (public site only has
-            light mode). Still honours a previously-saved dark preference
-            so admins don't get flipped mid-session. Runs synchronously
-            before any paint to prevent flash of wrong theme. */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('mi-theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();` }} />
+        {/* Inline theme script — site is light-mode only (dark mode UI
+            removed). Force the data-theme attribute to 'light' synchronously
+            before first paint so any leftover localStorage value or stale
+            DOM state can't cause a flash of dark theme. */}
+        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.setAttribute('data-theme','light');` }} />
         {/* Site-wide identity schema — single Organization + WebSite */}
         <script
           type="application/ld+json"

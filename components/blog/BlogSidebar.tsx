@@ -2,6 +2,16 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+// NOTE: Recent + Popular Posts thumbnails intentionally use raw <img>,
+// not next/image. next/image refuses to load any hostname not listed in
+// next.config.js images.remotePatterns and silently renders nothing for
+// the rest, which breaks Writerfy posts whose feature_image lives on
+// Vercel Blob, Amazon CDN (m.media-amazon.com / images-na.ssl-images-amazon.com),
+// affiliate networks, etc. Raw <img> works for every domain so /blog
+// cards render — sidebar now matches that behavior. Local static
+// images (premium hero, author avatar) still use <Image> below since
+// they benefit from next/image's AVIF/WebP optimization and don't hit
+// the remotePatterns wall.
 import {
   Search, TrendingUp, Clock, Eye,
   Crown, Check, ChevronRight, Sparkles,
@@ -432,7 +442,8 @@ export default function BlogSidebar() {
                       className="flex-shrink-0 rounded-lg overflow-hidden"
                       style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
                     >
-                      <Image src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start gap-1.5 mb-1">
@@ -484,7 +495,8 @@ export default function BlogSidebar() {
                       className="flex-shrink-0 rounded-lg overflow-hidden"
                       style={{ width: 52, height: 44, background: 'var(--bg-secondary)' }}
                     >
-                      <Image src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={post.image} alt={post.title} width={52} height={44} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs leading-snug line-clamp-2 mb-1" style={{ color: 'var(--text-primary)' }}>

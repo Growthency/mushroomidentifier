@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, ReactNode } from 'react'
 
 type Theme = 'dark' | 'light'
 
@@ -8,26 +8,34 @@ interface ThemeContextType {
   toggle: () => void
 }
 
+// Dark mode is currently disabled site-wide. The provider is kept (rather
+// than ripping out every `useTheme()` call site) so that consumers continue
+// to compile and just always read 'light'. `toggle()` is a no-op.
+//
+// To re-enable dark mode in the future:
+//   1. Restore the previous useState/localStorage logic here
+//   2. Restore the inline theme script in app/layout.tsx
+//   3. Restore the toggle buttons in AdminShell + DashboardShell
 const ThemeContext = createContext<ThemeContextType>({
   theme: 'light',
   toggle: () => {},
 })
 
-// Public site is light-mode only. The public navbar no longer exposes
-// the toggle. Admin dashboard still calls useTheme() for its own
-// light/dark switching (it has its own toggle inside AdminShell).
-// We still honor a saved localStorage preference on load so admins
-// who previously chose dark mode don't get silently flipped to light
-// when they navigate back to their admin pages.
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light')
-  const [mounted, setMounted] = useState(false)
-
   useEffect(() => {
-    const saved = localStorage.getItem('mi-theme') as Theme | null
-    if (saved) setTheme(saved)
-    setMounted(true)
-    // Double rAF ensures React has flushed the theme state to DOM before revealing
+    // Force light on every mount so any leftover localStorage value
+    // ('mi-theme=dark' from before this change) is wiped, and the DOM
+    // attribute matches.
+    try {
+      localStorage.setItem('mi-theme', 'light')
+    } catch {
+      /* ignore — private mode etc. */
+    }
+    if (document.documentElement.getAttribute('data-theme') !== 'light') {
+      document.documentElement.setAttribute('data-theme', 'light')
+    }
+    // Reveal the page once theme attr is settled (kept from previous
+    // version so any CSS that gates on .theme-ready continues to work).
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         document.body.classList.add('theme-ready')
@@ -35,20 +43,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  useEffect(() => {
-    if (mounted) {
-      // Only write to DOM if value actually changed (inline script may have already set it)
-      if (document.documentElement.getAttribute('data-theme') !== theme) {
-        document.documentElement.setAttribute('data-theme', theme)
-      }
-      localStorage.setItem('mi-theme', theme)
-    }
-  }, [theme, mounted])
-
-  const toggle = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
-
   return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
+    <ThemeContext.Provider value={{ theme: 'light', toggle: () => {} }}>
       {children}
     </ThemeContext.Provider>
   )

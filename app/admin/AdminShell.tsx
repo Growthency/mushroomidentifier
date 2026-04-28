@@ -90,14 +90,7 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
               <p className="text-[10px] font-medium" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Administrator</p>
             </div>
           </div>
-          <button
-            onClick={toggle}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-[12px] transition-colors mb-1"
-            style={{ color: dark ? '#64748b' : '#64748b' }}
-          >
-            {dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-            {dark ? 'Light mode' : 'Dark mode'}
-          </button>
+          {/* Dark/Light toggle removed — site is light-mode only. */}
           <Link
             href="/"
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] transition-colors"
@@ -119,9 +112,7 @@ export default function AdminShell({ children, userEmail }: { children: React.Re
           <span className="text-sm font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>Admin</span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={toggle} className="p-1.5 rounded-lg transition-colors" style={{ color: dark ? '#94a3b8' : '#64748b' }}>
-            {dark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
-          </button>
+          {/* Dark/Light toggle removed — site is light-mode only. */}
           <button onClick={() => setOpen(!open)} className="p-1" style={{ color: dark ? '#94a3b8' : '#64748b' }}>
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>

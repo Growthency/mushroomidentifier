@@ -59,12 +59,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     return () => window.removeEventListener('profile-updated', onProfileUpdated)
   }, [supabase, router])
 
-  const toggleTheme = () => {
-    const next = dark ? 'light' : 'dark'
-    document.documentElement.setAttribute('data-theme', next)
-    localStorage.setItem('mi-theme', next)
-    setDark(!dark)
-  }
+  // Dark mode toggle removed — site is light-mode only. Function kept as a
+  // no-op so any lingering callers don't crash; safe to delete in a follow-up
+  // pass once the toggle UI is fully gone.
+  const toggleTheme = () => {}
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -246,9 +244,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
           <span className="font-playfair font-bold text-base" style={{ color: 'var(--text-primary)' }}>
             🍄 {pageTitle}
           </span>
-          <button onClick={toggleTheme} className="p-2 rounded-xl" style={{ color: 'var(--text-primary)' }}>
-            {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
+          {/* Dark/Light toggle removed — site is light-mode only. Empty
+              span keeps the flex justify-between spacing on the mobile bar. */}
+          <span className="w-9" aria-hidden="true" />
         </header>
 
         {/* Desktop top bar */}
@@ -292,10 +290,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 Upgrade
               </Link>
             )}
-            <button onClick={toggleTheme} className="p-2 rounded-xl hover:opacity-70 transition-opacity"
-              style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
-              {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
+            {/* Dark/Light toggle removed — site is light-mode only. */}
           </div>
         </header>
 
