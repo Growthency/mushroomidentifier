@@ -73,15 +73,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Fetch admin-managed scripts (Google Analytics, Search Console, Meta Pixel, etc.)
-  const siteScripts = await getEnabledScripts()
+  // Fetch admin-managed data in PARALLEL — running these three Supabase
+  // calls sequentially was the dominant contributor to a 3+ second TTFB
+  // and caused the dreaded "blank gradient" pause on every full page load.
+  // Promise.all collapses the wall-clock cost to roughly the slowest of
+  // the three, instead of the sum.
+  const [siteScripts, menus, siteContent] = await Promise.all([
+    getEnabledScripts(),  // Google Analytics, Search Console, Meta Pixel, etc.
+    getMenus(),           // header + footer menu items
+    getSiteContent(),     // logo, brand, CTA, social icons, payment badges, etc.
+  ])
   const { head: headScripts, bodyStart: bodyStartScripts, bodyEnd: bodyEndScripts } = groupByPosition(siteScripts)
-
-  // Fetch admin-managed header + footer menu items
-  const menus = await getMenus()
-
-  // Fetch admin-managed site content (logo, brand, CTA, social icons, payment badges, etc.)
-  const siteContent = await getSiteContent()
 
   // Build admin-managed theme-color overrides (<style> block that wins over globals.css)
   const themeCSS = buildThemeCSS(siteContent.settings)

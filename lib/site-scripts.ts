@@ -7,6 +7,7 @@
  * Cached via Next.js fetch cache (revalidated every 60s).
  */
 
+import { cache } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 export type ScriptPosition = 'head' | 'body_start' | 'body_end'
@@ -20,7 +21,7 @@ export interface SiteScript {
   sort_order: number
 }
 
-export async function getEnabledScripts(): Promise<SiteScript[]> {
+export const getEnabledScripts = cache(async function getEnabledScripts(): Promise<SiteScript[]> {
   try {
     // Use anon client — RLS policy ensures only enabled rows are returned
     const supabase = createClient(
@@ -51,7 +52,7 @@ export async function getEnabledScripts(): Promise<SiteScript[]> {
     console.error('[site-scripts] unexpected error:', err)
     return []
   }
-}
+})
 
 /** Group scripts by position for targeted rendering. */
 export function groupByPosition(scripts: SiteScript[]) {

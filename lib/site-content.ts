@@ -8,6 +8,7 @@
  * Returns empty/default values on error so the site always renders.
  */
 
+import { cache } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 export interface SocialLink {
@@ -73,7 +74,11 @@ function makeClient() {
   )
 }
 
-export async function getSiteContent(): Promise<SiteContent> {
+// Wrap with React's request-scoped cache() so multiple callers within the
+// same render tree (e.g. RootLayout AND the homepage Server Component) only
+// trigger one round-trip to Supabase per request. Without this, the
+// homepage paid the cost of getSiteContent() twice on every cold render.
+export const getSiteContent = cache(async function getSiteContent(): Promise<SiteContent> {
   try {
     const supabase = makeClient()
 
@@ -108,4 +113,4 @@ export async function getSiteContent(): Promise<SiteContent> {
     console.error('[site-content] unexpected error:', err)
     return EMPTY_CONTENT
   }
-}
+})

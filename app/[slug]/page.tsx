@@ -1,4 +1,9 @@
-export const dynamic = 'force-dynamic'
+// Revalidate every 60s. Previously this used `force-dynamic`, which forced
+// every blog post page to re-render on every visit and produced 3+ second
+// TTFBs (the "blank gradient" pause). Editorial content rarely changes, so
+// 60s freshness is plenty — admin updates that need to propagate sooner can
+// call revalidatePath(`/${slug}`) from their save handler.
+export const revalidate = 60
 
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -16,12 +21,15 @@ import ViewTracker from '@/components/blog/ViewTracker'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 import { resolveFeaturedImage } from '@/lib/content-helpers'
 
-/* ── Supabase admin client — no-store ensures deleted posts return 404 immediately ── */
+/* ── Supabase admin client — uses Next.js fetch cache (60s revalidate) so
+   repeat visits within the window are instant. The previous `cache: 'no-store'`
+   guaranteed deleted posts 404'd immediately but at the cost of a fresh DB
+   round-trip on every single request. */
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { global: { fetch: (url: any, init: any) => fetch(url, { ...init, cache: 'no-store' }) } }
+    { global: { fetch: (url: any, init: any) => fetch(url, { ...init, next: { revalidate: 60 } }) } }
   )
 }
 

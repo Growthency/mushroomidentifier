@@ -3,9 +3,13 @@ import { createClient } from '@supabase/supabase-js'
 import BlogPageClient from './BlogPageClient'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
-// Always fetch fresh data — never serve a cached/stale article count
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// Revalidate every 60s. Previously this used `force-dynamic` + `revalidate=0`,
+// which forced the origin to re-render the page on EVERY request and was the
+// dominant contributor to the multi-second TTFB users were seeing as a blank
+// gradient. New posts still surface within 60s thanks to CDN edge cache rules
+// in next.config.js + revalidatePath('/blog') calls from the admin publish
+// API routes.
+export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'Mushroom Blog – ID Guides, Safety & Foraging Tips',

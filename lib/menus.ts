@@ -9,6 +9,7 @@
  *  - footer_bottom   → Privacy / Terms / Refund row at bottom of Footer
  */
 
+import { cache } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 export type MenuLocation = 'header' | 'footer_explore' | 'footer_company' | 'footer_bottom'
@@ -37,7 +38,7 @@ const EMPTY_GROUPS: MenuGroups = {
   footerBottom: [],
 }
 
-export async function getMenus(): Promise<MenuGroups> {
+export const getMenus = cache(async function getMenus(): Promise<MenuGroups> {
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -71,4 +72,4 @@ export async function getMenus(): Promise<MenuGroups> {
     console.error('[menus] unexpected error:', err)
     return EMPTY_GROUPS
   }
-}
+})

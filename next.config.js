@@ -54,6 +54,18 @@ const nextConfig = {
         ],
       },
       {
+        // Homepage — most-visited route, was previously uncached at the
+        // CDN edge. Every full reload paid a ~3s cold-origin TTFB which
+        // caused the "blank gradient" pause users complained about.
+        // Cache for 60s with a generous stale-while-revalidate so admin
+        // edits to hero text, blocks, etc. still appear within a minute,
+        // but repeat visitors get instant edge responses.
+        source: '/',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=60, stale-while-revalidate=300' },
+        ],
+      },
+      {
         // Frequently-updated routes — listing, feeds, sitemap. Edge cache
         // for ONE MINUTE max with stale-while-revalidate, so newly
         // published articles appear within 60s even before Next.js's
