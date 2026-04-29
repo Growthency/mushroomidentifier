@@ -4,7 +4,7 @@ import { createClient as createAdmin } from '@supabase/supabase-js'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 import { checkWriterfyAuth } from '@/lib/writerfy-auth'
-import { resolveFeaturedImage } from '@/lib/content-helpers'
+import { resolveFeaturedImage, dedupeProductHeadings } from '@/lib/content-helpers'
 
 /**
  * Writerfy ingestion endpoint.
@@ -35,6 +35,34 @@ const CATEGORIES = new Set([
 ])
 const RISK_LEVELS = new Set(['General', 'Low Risk', 'High Risk', 'Toxic'])
 const REGIONS = new Set(['Worldwide', 'US North America', 'EU Europe', 'Temperate', 'Others'])
+
+/**
+ * Resolve an enum value sent by Writerfy back to its canonical display
+ * form. Writerfy's UI sends the SLUG (e.g. `safety`, `species-guide`)
+ * because the categories endpoint exposes both `name` and `slug` and the
+ * desktop app uses `slug ?? id` as the option value. We accept the
+ * display name, the slug, or any case-insensitive whitespace-insensitive
+ * variant — anything that doesn't resolve falls back to the caller's
+ * default so the column never gets a bogus string.
+ */
+function resolveEnumValue(input: unknown, allowed: Set<string>): string | undefined {
+  if (typeof input !== 'string') return undefined
+  const raw = input.trim()
+  if (!raw) return undefined
+  if (allowed.has(raw)) return raw
+  const norm = raw
+    .toLowerCase()
+    .replace(/[_\s]+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+  for (const v of Array.from(allowed)) {
+    const slug = v
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+    if (slug === norm) return v
+  }
+  return undefined
+}
 
 /**
  * Layout: spec uses 'full' | 'sidebar' but the DB stores 'full-page' |
@@ -128,7 +156,7 @@ export async function POST(req: NextRequest) {
   // (tables, iframes, inline styles, class names, data-*, etc.). The
   // library still strips <script>/<style> unconditionally regardless of
   // this setting, so XSS via tag injection is blocked.
-  const htmlContent = sanitizeHtml(rawHtml, {
+  const sanitizedHtml = sanitizeHtml(rawHtml, {
     allowedTags: false as any,
     allowedAttributes: false as any,
     allowedSchemes: ['http', 'https', 'mailto', 'data'],
@@ -136,6 +164,12 @@ export async function POST(req: NextRequest) {
     allowedSchemesAppliedToAttributes: ['href', 'src', 'cite', 'action', 'poster'],
     allowProtocolRelative: true,
   })
+
+  // Dedupe Writerfy product-heading duplicates at storage time so the
+  // admin RichEditor, the public article, social previews, and search
+  // indexers all see the same clean HTML. The render-side helper in
+  // app/[slug]/page.tsx is a safety net for posts that already shipped.
+  const htmlContent = dedupeProductHeadings(sanitizedHtml)
 
   // ── Derive fields ────────────────────────────────────────────────
   const rawSlug = (body.slug as string | undefined)?.trim()
@@ -148,9 +182,9 @@ export async function POST(req: NextRequest) {
   const words = text.split(/\s+/).filter(Boolean).length
   const readTime = Math.max(1, Math.round(words / 200)) + ' min read'
 
-  const category = CATEGORIES.has(body.category) ? body.category : 'Guide'
-  const riskLevel = RISK_LEVELS.has(body.risk_level) ? body.risk_level : 'General'
-  const region = REGIONS.has(body.region) ? body.region : 'Worldwide'
+  const category = resolveEnumValue(body.category, CATEGORIES) ?? 'Guide'
+  const riskLevel = resolveEnumValue(body.risk_level, RISK_LEVELS) ?? 'General'
+  const region = resolveEnumValue(body.region, REGIONS) ?? 'Worldwide'
   const status: 'draft' | 'published' =
     body.status === 'published' ? 'published' : 'draft'
 

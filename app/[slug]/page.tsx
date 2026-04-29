@@ -19,7 +19,7 @@ import ArticleContent from '@/components/blog/ArticleContent'
 import PremiumGate from '@/components/PremiumGate'
 import ViewTracker from '@/components/blog/ViewTracker'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
-import { resolveFeaturedImage } from '@/lib/content-helpers'
+import { resolveFeaturedImage, dedupeProductHeadings } from '@/lib/content-helpers'
 import { getNofollowRules, applyNofollowRules } from '@/lib/external-links'
 
 /* ── Supabase admin client — uses Next.js fetch cache (60s revalidate) so
@@ -191,8 +191,11 @@ export default async function DynamicPostPage({
   // Apply admin-configured nofollow rules to the article HTML BEFORE it
   // reaches the browser. This way Google et al see the final
   // rel="nofollow" markup on first crawl, no client-side rewrite needed.
+  // Also dedupe product-heading duplicates emitted by Writerfy's AI flow
+  // (markdown heading + verbatim writerify-product-heading block landing
+  // back-to-back with the same text — fix in lib/content-helpers.ts).
   const processedContent = applyNofollowRules(
-    stripInlineStyles(post.content || ''),
+    dedupeProductHeadings(stripInlineStyles(post.content || '')),
     nofollowRules,
   )
 
