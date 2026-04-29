@@ -316,7 +316,16 @@ export default function EditPageEditor() {
 
           {/* Featured Image */}
           <div className="rounded-xl border p-4" style={{ background: cardBg, borderColor: cardBorder }}>
-            <label className="block text-xs font-medium mb-2" style={{ color: textLabel }}>Featured Image</label>
+            <label className="flex items-baseline justify-between gap-3 mb-2">
+              <span className="text-xs font-medium" style={{ color: textLabel }}>Featured Image</span>
+              {/* Recommended dimension for: blog-listing card thumbnails (h-48
+                  object-cover) AND Open Graph / Twitter / WhatsApp share previews.
+                  1200×630 is the universal social-share standard and crops
+                  cleanly into our card aspect ratio. */}
+              <span className="text-[11px] font-normal" style={{ color: textMuted }}>
+                Recommended: <strong className="font-semibold">1200×630px</strong> (1.91:1) · JPG / PNG / WEBP
+              </span>
+            </label>
             <div className="flex items-center gap-2">
               <ImageIcon className="w-4 h-4 shrink-0" style={{ color: textMuted }} />
               <input

@@ -4,7 +4,7 @@ import {
   Users, DollarSign, TrendingUp, TrendingDown,
   CreditCard, UserCheck, UserX, Percent,
   ArrowUpRight, ArrowDownRight, Loader2,
-  Calendar, ChevronDown, Globe, Zap, Check,
+  Calendar, ChevronDown, Zap, Check,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { useAdminData } from '@/hooks/useAdminData'
@@ -179,11 +179,13 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── User Stat cards ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      {/* Country counter removed — IP→country lookup isn't currently being
+          captured for new signups so the value was always stale/zero. The
+          "Users by Country" panel below was dropped at the same time. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <GlassCard icon={Users} label="Total Users" value={stats.users.total} color="blue" dark={dark} />
         <GlassCard icon={UserCheck} label="Paid Users" value={stats.users.paid} color="emerald" dark={dark} />
         <GlassCard icon={UserX} label="Free Users" value={stats.users.free} color="slate" dark={dark} />
-        <GlassCard icon={Globe} label="Countries" value={stats.users.uniqueCountries} color="purple" dark={dark} />
         <GlassCard icon={Percent} label="Conversion Rate" value={`${stats.users.conversionRate}%`} color="amber" dark={dark} />
       </div>
 
@@ -216,7 +218,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Recent tables ── */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Users (top 25) */}
         <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
           <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${cardBorder}` }}>
@@ -231,9 +233,9 @@ export default function AdminDashboard() {
                 <div className="min-w-0 flex-1 mr-3">
                   <p className="text-[13px] font-medium truncate" style={{ color: dark ? '#fff' : '#0f172a' }}>{u.full_name || u.email}</p>
                   <p className="text-[11px] truncate" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{u.email}</p>
-                  {u.country && (
-                    <p className="text-[10px] mt-0.5" style={{ color: dark ? '#475569' : '#a1a1aa' }}>{u.country}</p>
-                  )}
+                  {/* Country line removed — see comment above the user-stats
+                      grid; geolocation isn't being recorded reliably enough
+                      to surface here. */}
                 </div>
                 <div className="text-right shrink-0">
                   <span className={`text-[11px] px-2 py-0.5 rounded-lg font-semibold ${
@@ -279,44 +281,17 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Users by Country */}
-        <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-          <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${cardBorder}` }}>
-            <h2 className="font-semibold text-[13px] tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Users by Country</h2>
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', color: dark ? '#64748b' : '#94a3b8' }}>
-              {stats.countryUsers.length} {stats.countryUsers.length === 1 ? 'country' : 'countries'}
-            </span>
-          </div>
-          <div className="overflow-y-auto" style={{ maxHeight: '520px' }}>
-            {stats.countryUsers.map((c, i) => (
-              <div key={c.country} className="px-5 py-3 flex items-center justify-between transition-colors" style={{ borderBottom: `1px solid ${dividerColor}` }}>
-                <div className="flex items-center gap-3">
-                  <span className="text-[11px] font-mono w-5 text-right" style={{ color: dark ? '#475569' : '#94a3b8' }}>{i + 1}</span>
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-3.5 h-3.5" style={{ color: i === 0 ? '#10b981' : i < 3 ? '#3b82f6' : dark ? '#475569' : '#94a3b8' }} />
-                    <span className="text-[13px] font-medium" style={{ color: dark ? '#fff' : '#0f172a' }}>{c.country}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[13px] font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>{c.users}</span>
-                  <span className="text-[10px]" style={{ color: dark ? '#475569' : '#94a3b8' }}>
-                    {stats.users.total > 0 ? `${Math.round((c.users / stats.users.total) * 100)}%` : '0%'}
-                  </span>
-                </div>
-              </div>
-            ))}
-            {stats.countryUsers.length === 0 && (
-              <p className="px-5 py-8 text-[13px] text-center" style={{ color: dark ? '#334155' : '#94a3b8' }}>No country data yet</p>
-            )}
-          </div>
-        </div>
+        {/* Users by Country panel removed — the country tracking pipeline
+            wasn't capturing data for new signups so the panel was always
+            empty. Recent Users + Recent Transactions are the two surfaces
+            the dashboard now keeps. */}
       </div>
     </div>
   )
 }
 
 // ── Dashboard skeleton ── shown only on the very first visit (no cache).
-// Mimics the real layout (5 stat cards + 4 revenue cards + 3 recent panels)
+// Mirrors the real layout (4 stat cards + 4 revenue cards + 2 recent panels)
 // so the page chrome doesn't pop. Pure CSS pulse, no spinners.
 function DashboardSkeleton({ dark }: { dark: boolean }) {
   const cardBg = dark ? 'rgba(255,255,255,0.03)' : '#fff'
@@ -340,14 +315,14 @@ function DashboardSkeleton({ dark }: { dark: boolean }) {
           <div className="h-3 w-72 rounded mt-2 animate-pulse" style={{ background: pulse }} />
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        {Array.from({ length: 5 }).map((_, i) => <SkelCard key={i} />)}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {Array.from({ length: 4 }).map((_, i) => <SkelCard key={i} />)}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {Array.from({ length: 4 }).map((_, i) => <SkelCard key={i} tall />)}
       </div>
-      <div className="grid lg:grid-cols-3 gap-6">
-        {Array.from({ length: 3 }).map((_, i) => (
+      <div className="grid lg:grid-cols-2 gap-6">
+        {Array.from({ length: 2 }).map((_, i) => (
           <div key={i} className="rounded-2xl overflow-hidden" style={{ background: cardBg, border: `1px solid ${cardBorder}`, height: 320 }}>
             <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
               <div className="h-4 w-32 rounded animate-pulse" style={{ background: pulse }} />
