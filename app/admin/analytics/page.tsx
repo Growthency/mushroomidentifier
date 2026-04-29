@@ -1,12 +1,13 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useState } from 'react'
 import {
   Users, TrendingUp, Globe, Search, FileText,
-  Loader2, Calendar, BarChart3, Eye, Clock,
+  Calendar, BarChart3, Eye, Clock,
   MousePointerClick, Layers, Activity, CheckCircle2, XCircle,
   ChevronDown,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { useAdminData } from '@/hooks/useAdminData'
 
 interface AnalyticsData {
   users30d: number
@@ -47,37 +48,29 @@ const CHART_LABELS: Record<ChartType, string> = {
 export default function AnalyticsPage() {
   const { theme } = useTheme()
   const dark = theme === 'dark'
-  const [data, setData] = useState<AnalyticsData | null>(null)
-  const [loading, setLoading] = useState(true)
   const [period, setPeriod] = useState<Period>('30d')
   const [chartType, setChartType] = useState<ChartType>('users')
   const [showPeriod, setShowPeriod] = useState(false)
   const [showChart, setShowChart] = useState(false)
 
-  const loadData = useCallback((p: Period) => {
-    setLoading(true)
-    fetch(`/api/admin/analytics?period=${p}`)
-      .then(r => r.json())
-      .then(setData)
-      .catch(() => setData(null))
-      .finally(() => setLoading(false))
-  }, [])
-
-  useEffect(() => { loadData(period) }, [period, loadData])
+  // Cached fetch — flipping between period values that have already been
+  // viewed in this session is instant; first-time periods background-fetch
+  // while a skeleton renders below.
+  const {
+    data,
+    isInitialLoading,
+    error,
+  } = useAdminData<AnalyticsData>(`/api/admin/analytics?period=${period}`)
 
   const cardBg = dark ? '#1e293b' : '#fff'
   const cardBorder = dark ? '#334155' : '#e2e8f0'
   const dividerColor = dark ? '#334155' : '#f1f5f9'
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
-      </div>
-    )
+  if (isInitialLoading) {
+    return <AnalyticsSkeleton dark={dark} />
   }
 
-  if (!data) {
+  if (!data || error) {
     return (
       <div>
         <h1 className="text-2xl font-bold mb-2" style={{ color: dark ? '#fff' : '#0f172a' }}>Analytics</h1>
@@ -472,6 +465,60 @@ function StatCard({ icon: Icon, label, value, color, dark }: {
         </div>
       </div>
       <p className="text-2xl font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>{value.toLocaleString()}</p>
+    </div>
+  )
+}
+
+// ── Analytics first-visit skeleton ──
+function AnalyticsSkeleton({ dark }: { dark: boolean }) {
+  const cardBg = dark ? '#1e293b' : '#fff'
+  const cardBorder = dark ? '#334155' : '#e2e8f0'
+  const pulse = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div className="space-y-2">
+          <div className="h-6 w-40 rounded animate-pulse" style={{ background: pulse }} />
+          <div className="h-3 w-64 rounded animate-pulse" style={{ background: pulse }} />
+        </div>
+        <div className="h-9 w-40 rounded-xl animate-pulse" style={{ background: pulse }} />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="p-5 rounded-xl border" style={{ background: cardBg, borderColor: cardBorder }}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="h-3 w-20 rounded animate-pulse" style={{ background: pulse }} />
+              <div className="w-7 h-7 rounded-lg animate-pulse" style={{ background: pulse }} />
+            </div>
+            <div className="h-7 w-16 rounded animate-pulse" style={{ background: pulse }} />
+          </div>
+        ))}
+      </div>
+      <div className="rounded-xl border mb-6" style={{ background: cardBg, borderColor: cardBorder, height: 280 }}>
+        <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+          <div className="h-4 w-44 rounded animate-pulse" style={{ background: pulse }} />
+        </div>
+        <div className="p-5">
+          <div className="h-48 w-full rounded animate-pulse" style={{ background: pulse }} />
+        </div>
+      </div>
+      <div className="grid lg:grid-cols-2 gap-6">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="rounded-xl border" style={{ background: cardBg, borderColor: cardBorder, height: 360 }}>
+            <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+              <div className="h-4 w-32 rounded animate-pulse" style={{ background: pulse }} />
+            </div>
+            <div className="p-5 space-y-3">
+              {Array.from({ length: 6 }).map((_, j) => (
+                <div key={j} className="flex items-center justify-between">
+                  <div className="h-3 w-2/3 rounded animate-pulse" style={{ background: pulse }} />
+                  <div className="h-3 w-12 rounded animate-pulse" style={{ background: pulse }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

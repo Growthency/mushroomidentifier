@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Users, DollarSign, TrendingUp, TrendingDown,
   CreditCard, UserCheck, UserX, Percent,
@@ -7,6 +7,7 @@ import {
   Calendar, ChevronDown, Globe, Zap, Check,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { useAdminData } from '@/hooks/useAdminData'
 
 type Period = '7d' | '30d' | 'this_month' | 'last_month' | '365d' | 'year_vs_year'
 
@@ -43,8 +44,6 @@ function timeAgo(d: string) {
 export default function AdminDashboard() {
   const { theme } = useTheme()
   const dark = theme === 'dark'
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [loading, setLoading] = useState(true)
   const [period, setPeriod] = useState<Period>('30d')
   const [showPeriod, setShowPeriod] = useState(false)
 
@@ -59,6 +58,15 @@ export default function AdminDashboard() {
   useEffect(() => {
     setLastCleared(localStorage.getItem('mi-admin-last-cache-clear'))
   }, [])
+
+  // Stats fetch goes through the shared admin cache so revisits and
+  // period switches that hit a previously-loaded URL are instant.
+  const {
+    data: stats,
+    isInitialLoading,
+    isRefreshing,
+    error,
+  } = useAdminData<Stats>(`/api/admin/stats?period=${period}`)
 
   async function clearCache() {
     if (clearing) return
@@ -79,28 +87,21 @@ export default function AdminDashboard() {
     }
   }
 
-  const loadStats = useCallback((p: Period) => {
-    setLoading(true)
-    fetch(`/api/admin/stats?period=${p}`)
-      .then(r => r.json())
-      .then(setStats)
-      .finally(() => setLoading(false))
-  }, [])
-
-  useEffect(() => { loadStats(period) }, [period, loadStats])
-
   const cardBg = dark ? 'rgba(255,255,255,0.03)' : '#fff'
   const cardBorder = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
   const dividerColor = dark ? 'rgba(255,255,255,0.04)' : '#f1f5f9'
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
-      </div>
-    )
+  // First-ever visit (no cached data anywhere yet) — show a skeleton
+  // that mimics the real dashboard layout instead of a centered spinner.
+  // This is the *only* loading state the user will see; subsequent
+  // navigations render instantly from cache.
+  if (isInitialLoading) {
+    return <DashboardSkeleton dark={dark} />
   }
-  if (!stats) return <p className="text-red-400">Failed to load stats</p>
+  if (error && !stats) {
+    return <p className="text-red-400">Failed to load stats: {error.message}</p>
+  }
+  if (!stats) return <DashboardSkeleton dark={dark} />
 
   const changeUp = stats.revenue.earningsChangePercent >= 0
 
@@ -309,6 +310,58 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Dashboard skeleton ── shown only on the very first visit (no cache).
+// Mimics the real layout (5 stat cards + 4 revenue cards + 3 recent panels)
+// so the page chrome doesn't pop. Pure CSS pulse, no spinners.
+function DashboardSkeleton({ dark }: { dark: boolean }) {
+  const cardBg = dark ? 'rgba(255,255,255,0.03)' : '#fff'
+  const cardBorder = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
+  const pulse = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
+  const SkelCard = ({ tall = false }: { tall?: boolean }) => (
+    <div className="p-5 rounded-2xl" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="h-3 w-24 rounded animate-pulse" style={{ background: pulse }} />
+        <div className="w-8 h-8 rounded-xl animate-pulse" style={{ background: pulse }} />
+      </div>
+      <div className="h-7 w-16 rounded animate-pulse" style={{ background: pulse }} />
+      {tall && <div className="h-3 w-20 rounded mt-2 animate-pulse" style={{ background: pulse }} />}
+    </div>
+  )
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div>
+          <div className="h-6 w-56 rounded animate-pulse" style={{ background: pulse }} />
+          <div className="h-3 w-72 rounded mt-2 animate-pulse" style={{ background: pulse }} />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        {Array.from({ length: 5 }).map((_, i) => <SkelCard key={i} />)}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {Array.from({ length: 4 }).map((_, i) => <SkelCard key={i} tall />)}
+      </div>
+      <div className="grid lg:grid-cols-3 gap-6">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="rounded-2xl overflow-hidden" style={{ background: cardBg, border: `1px solid ${cardBorder}`, height: 320 }}>
+            <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+              <div className="h-4 w-32 rounded animate-pulse" style={{ background: pulse }} />
+            </div>
+            <div className="p-5 space-y-3">
+              {Array.from({ length: 4 }).map((_, j) => (
+                <div key={j} className="flex items-center justify-between">
+                  <div className="h-3 w-2/3 rounded animate-pulse" style={{ background: pulse }} />
+                  <div className="h-3 w-12 rounded animate-pulse" style={{ background: pulse }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )

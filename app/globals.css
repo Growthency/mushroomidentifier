@@ -548,21 +548,27 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   border-top: 1px solid var(--border);
   transition: background 0.15s ease;
 }
+/* Zebra striping — subtle alternating row tint so each entry is its own
+   visual block without feeling busy. Slight green wash on even rows so
+   it's visible against the white table card without looking loud. */
+.rich-content .writerfy-amazon-table tbody tr:nth-child(even) {
+  background: rgba(20, 130, 60, 0.045);
+}
 .rich-content .writerfy-amazon-table tbody tr:hover {
-  background: var(--bg-secondary);
+  background: rgba(20, 130, 60, 0.085);
 }
 .rich-content .writerfy-amazon-table td {
-  padding: 0.625rem 0.875rem !important;
+  padding: 0.45rem 0.7rem !important;
   vertical-align: middle;
   border: none !important;
   color: var(--text-primary);
 }
 .rich-content .writerfy-table-cell-product {
-  width: 90px;
+  width: 78px;
   text-align: center;
 }
 .rich-content .writerfy-table-cell-product img {
-  width: 64px !important;
+  width: 56px !important;
   height: auto !important;
   max-width: 100% !important;
   margin: 0 auto !important;
@@ -616,17 +622,17 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
    Default (no modifier) falls back to the brand green. */
 .rich-content .writerfy-table-badge {
   display: inline-block;
-  padding: 0.22rem 0.65rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 9999px;
-  font-size: 0.62rem;
+  font-size: 0.55rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 0.4rem;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
   color: #fff;
   background: linear-gradient(135deg, var(--accent), var(--accent-glow));
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 .rich-content .writerfy-table-badge.wf-tb-editors {
   background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
@@ -649,7 +655,7 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   }
   .rich-content .writerfy-amazon-table th,
   .rich-content .writerfy-amazon-table td {
-    padding: 0.45rem 0.45rem !important;
+    padding: 0.35rem 0.4rem !important;
     word-break: break-word;
     overflow-wrap: anywhere;
   }
@@ -657,10 +663,10 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
     font-size: 0.6rem;
   }
   .rich-content .writerfy-table-cell-product {
-    width: 64px;
+    width: 60px;
   }
   .rich-content .writerfy-table-cell-product img {
-    width: 48px !important;
+    width: 44px !important;
   }
   .rich-content .writerfy-table-cell-name {
     font-size: 0.78rem;
@@ -674,12 +680,13 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
     width: auto;
   }
   .rich-content .writerfy-table-cell-buy a {
-    padding: 0.4rem 0.55rem;
-    font-size: 0.6rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.58rem;
   }
   .rich-content .writerfy-table-badge {
-    font-size: 0.55rem;
-    padding: 0.18rem 0.5rem;
+    font-size: 0.48rem;
+    padding: 0.12rem 0.4rem;
+    letter-spacing: 0.04em;
   }
 }
 

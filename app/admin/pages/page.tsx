@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import {
   Plus, Pencil, Trash2, Eye, Loader2, Link2,
@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { useModal } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
+import { useAdminData, invalidateAdminCacheByPrefix } from '@/hooks/useAdminData'
 
 interface Post {
   id: number; title: string; slug: string; status: string;
@@ -24,47 +25,55 @@ function countInternalLinks(html: string): number {
   return matches?.length || 0
 }
 
+interface PostsResponse {
+  posts: Post[]
+  totalPages: number
+  total: number
+  publishedCount?: number
+  draftCount?: number
+  scheduledCount?: number
+  page: number
+}
+
+function buildPostsUrl(p: number, filter: StatusFilter): string {
+  const qs = new URLSearchParams({ page: String(p) })
+  if (filter !== 'all') qs.set('status', filter)
+  return `/api/admin/posts?${qs.toString()}`
+}
+
 export default function AdminPagesPage() {
   const { showConfirm } = useModal()
   const { theme } = useTheme()
   const dark = theme === 'dark'
-  const [posts, setPosts] = useState<Post[]>([])
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [total, setTotal] = useState(0)
-  const [publishedCount, setPublishedCount] = useState(0)
-  const [draftCount, setDraftCount] = useState(0)
-  const [scheduledCount, setScheduledCount] = useState(0)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
-  const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<number | null>(null)
   const [search, setSearch] = useState('')
 
-  const load = (p: number, filter: StatusFilter = statusFilter) => {
-    setLoading(true)
-    const qs = new URLSearchParams({ page: String(p) })
-    if (filter !== 'all') qs.set('status', filter)
-    fetch(`/api/admin/posts?${qs.toString()}`)
-      .then(r => r.json())
-      .then(d => {
-        setPosts(d.posts)
-        setTotalPages(d.totalPages)
-        setTotal(d.total)
-        setPublishedCount(d.publishedCount ?? 0)
-        setDraftCount(d.draftCount ?? 0)
-        setScheduledCount(d.scheduledCount ?? 0)
-        setPage(d.page)
-      })
-      .finally(() => setLoading(false))
-  }
+  // Pull through the shared admin cache. After the first visit, returning
+  // to this page (or switching filters/pages back to one we've seen) is
+  // instant — cached rows render immediately while a background refetch
+  // keeps them fresh.
+  const url = buildPostsUrl(page, statusFilter)
+  const {
+    data: pageData,
+    isInitialLoading,
+    refetch,
+  } = useAdminData<PostsResponse>(url)
 
-  useEffect(() => { load(1) }, [])
+  const posts: Post[] = pageData?.posts ?? []
+  const totalPages = pageData?.totalPages ?? 1
+  const total = pageData?.total ?? 0
+  const publishedCount = pageData?.publishedCount ?? 0
+  const draftCount = pageData?.draftCount ?? 0
+  const scheduledCount = pageData?.scheduledCount ?? 0
 
-  // Switch the dashboard pill filter (all / published / draft / scheduled)
-  // and reload page 1 of the matching subset.
+  // Switch the dashboard pill filter (all / published / draft / scheduled).
+  // Reset to page 1 of the matching subset; the cache hook reacts to the
+  // URL change automatically.
   const applyFilter = (filter: StatusFilter) => {
     setStatusFilter(filter)
-    load(1, filter)
+    setPage(1)
   }
 
   const handleDelete = async (id: number) => {
@@ -76,7 +85,10 @@ export default function AdminPagesPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     })
-    load(page)
+    // Invalidate every cached posts URL so counts/pagination stay honest
+    // — we don't know which pages the deleted post showed up on.
+    invalidateAllPostsCache()
+    refetch()
     setDeleting(null)
   }
 
@@ -183,10 +195,8 @@ export default function AdminPagesPage() {
 
       {/* Table */}
       <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}`, background: dark ? 'rgba(255,255,255,0.02)' : '#fff' }}>
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
-          </div>
+        {isInitialLoading && posts.length === 0 ? (
+          <PostsTableSkeleton dark={dark} />
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-[13px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No articles found</p>
@@ -326,7 +336,7 @@ export default function AdminPagesPage() {
           </p>
           <div className="flex gap-1">
             <button
-              onClick={() => load(page - 1)}
+              onClick={() => setPage(page - 1)}
               disabled={page <= 1}
               className="px-3 py-1.5 rounded-lg text-[13px] transition-colors disabled:opacity-30"
               style={{ border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}`, color: dark ? '#94a3b8' : '#64748b' }}
@@ -338,7 +348,7 @@ export default function AdminPagesPage() {
               return (
                 <button
                   key={p}
-                  onClick={() => load(p)}
+                  onClick={() => setPage(p)}
                   className={`px-3 py-1.5 rounded-lg text-[13px] border transition-colors ${
                     p === page
                       ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/20'
@@ -351,7 +361,7 @@ export default function AdminPagesPage() {
               )
             })}
             <button
-              onClick={() => load(page + 1)}
+              onClick={() => setPage(page + 1)}
               disabled={page >= totalPages}
               className="px-3 py-1.5 rounded-lg text-[13px] transition-colors disabled:opacity-30"
               style={{ border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}`, color: dark ? '#94a3b8' : '#64748b' }}
@@ -361,6 +371,36 @@ export default function AdminPagesPage() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * After a destructive mutation, every page-of-posts URL we've cached is
+ * potentially stale (counts shift, deleted post might have lived on
+ * page 4, etc.). Drop them all so the next visit refetches fresh.
+ */
+function invalidateAllPostsCache() {
+  invalidateAdminCacheByPrefix('/api/admin/posts')
+}
+
+// ── Posts table skeleton (first visit only) ──
+function PostsTableSkeleton({ dark }: { dark: boolean }) {
+  const pulse = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
+  return (
+    <div className="divide-y" style={{ borderColor: dark ? 'rgba(255,255,255,0.04)' : '#f1f5f9' }}>
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4 px-5 py-4" style={{ borderTop: i === 0 ? 'none' : `1px solid ${dark ? 'rgba(255,255,255,0.04)' : '#f1f5f9'}` }}>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="h-3.5 w-2/3 rounded animate-pulse" style={{ background: pulse }} />
+            <div className="h-2.5 w-1/3 rounded animate-pulse" style={{ background: pulse }} />
+          </div>
+          <div className="hidden md:block h-3 w-20 rounded animate-pulse" style={{ background: pulse }} />
+          <div className="hidden lg:block h-3 w-16 rounded animate-pulse" style={{ background: pulse }} />
+          <div className="hidden md:block h-3 w-20 rounded animate-pulse" style={{ background: pulse }} />
+          <div className="h-3 w-12 rounded animate-pulse" style={{ background: pulse }} />
+        </div>
+      ))}
     </div>
   )
 }
