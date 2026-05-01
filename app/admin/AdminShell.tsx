@@ -25,7 +25,7 @@ const NAV = [
   { href: '/admin/rank-tracker',    label: 'Rank Tracker',    icon: Trophy },
   { href: '/admin/seo-health',      label: 'SEO Health',      icon: ShieldCheck },
   { href: '/admin/indexing-report', label: 'Indexing Report', icon: Globe },
-  { href: '/admin/subscription',    label: 'Subscription',    icon: CreditCard },
+  { href: '/admin/subscription',    label: 'Subscriptions',   icon: CreditCard },
   { href: '/admin/header-scripts',  label: 'Header Scripts',  icon: Code },
   { href: '/admin/external-links',  label: 'External Links',  icon: ExternalLink },
   { href: '/admin/menus',           label: 'Menus',           icon: ListOrdered },

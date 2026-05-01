@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { useAdminData } from '@/hooks/useAdminData'
+import ClearCacheButton from '@/components/admin/ClearCacheButton'
 
 interface AnalyticsData {
   users30d: number
@@ -115,6 +116,11 @@ export default function AdminDashboard() {
           <p className="text-sm mt-1" style={{ color: dark ? '#94a3b8' : '#64748b' }}>Real-time data from Google Analytics & Search Console</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
+          {/* Clear Cache button — sits BEFORE the period filter so the
+              "purge cache" affordance is visible from both Dashboard and
+              Subscriptions, not buried behind a click. */}
+          <ClearCacheButton dark={dark} />
+
           {/* Period Filter */}
           <div className="relative">
             <button
