@@ -442,7 +442,7 @@ export default function HomepageAdminPage() {
             <input
               value={heroEyebrow}
               onChange={e => setHeroEyebrow(e.target.value)}
-              placeholder="AI-POWERED · 10,000+ SPECIES · 3 FREE SCANS"
+              placeholder="AI-POWERED · 10,000+ SPECIES · 30 FREE CREDITS"
               className="w-full px-3 py-2 rounded-lg text-sm outline-none border"
               style={{ background: dark ? '#0f172a' : '#f1f5f9', borderColor: dark ? '#1e293b' : '#d1d5db', color: textPrimary }}
             />

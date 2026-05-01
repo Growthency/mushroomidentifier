@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, FileText, BarChart3, Trophy, Globe, ShieldCheck,
+  LayoutDashboard, FileText, Trophy, Globe, ShieldCheck, CreditCard,
   Code, ListOrdered, Palette, Paintbrush, Droplet, LogOut, ChevronRight, Menu, X, Sun, Moon,
   Home as HomeIcon, ExternalLink,
 } from 'lucide-react'
@@ -10,14 +10,22 @@ import { useState } from 'react'
 import { AdminModalProvider } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
+// Sidebar order:
+//   • Dashboard (`/admin`) is now the analytics surface — that's the
+//     first thing the owner wants to see on opening admin.
+//   • Subscription (`/admin/subscription`) is the old Dashboard — revenue,
+//     plans, recent customer activity. Placed mid-list since checking
+//     subscription health is a less-frequent task than content + SEO.
+//   • The old standalone "Analytics" entry was removed; /admin/analytics
+//     now redirects to /admin so older bookmarks keep working.
 const NAV = [
-  { href: '/admin',           label: 'Dashboard',  icon: LayoutDashboard },
-  { href: '/admin/pages',     label: 'Pages',      icon: FileText },
-  { href: '/admin/homepage',  label: 'Homepage',   icon: HomeIcon },
-  { href: '/admin/analytics', label: 'Analytics',  icon: BarChart3 },
-  { href: '/admin/rank-tracker', label: 'Rank Tracker', icon: Trophy },
+  { href: '/admin',                 label: 'Dashboard',       icon: LayoutDashboard },
+  { href: '/admin/pages',           label: 'Pages',           icon: FileText },
+  { href: '/admin/homepage',        label: 'Homepage',        icon: HomeIcon },
+  { href: '/admin/rank-tracker',    label: 'Rank Tracker',    icon: Trophy },
   { href: '/admin/seo-health',      label: 'SEO Health',      icon: ShieldCheck },
   { href: '/admin/indexing-report', label: 'Indexing Report', icon: Globe },
+  { href: '/admin/subscription',    label: 'Subscription',    icon: CreditCard },
   { href: '/admin/header-scripts',  label: 'Header Scripts',  icon: Code },
   { href: '/admin/external-links',  label: 'External Links',  icon: ExternalLink },
   { href: '/admin/menus',           label: 'Menus',           icon: ListOrdered },

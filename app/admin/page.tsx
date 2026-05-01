@@ -1,15 +1,45 @@
 'use client'
-import { useEffect, useState } from 'react'
+/**
+ * /admin — top-level admin Dashboard.
+ *
+ * Shows site-wide analytics (GA4 + Search Console + on-site stats) so the
+ * very first thing the owner sees on opening /admin is "how is the site
+ * doing today?". Subscription health (revenue, plans, recent customers)
+ * lives at /admin/subscription. The data contract
+ * (`/api/admin/analytics`) is unchanged; this page is the same component
+ * that previously rendered at /admin/analytics — moved here verbatim
+ * with the heading copy adjusted so /admin/analytics now redirects.
+ */
+import { useState } from 'react'
 import {
-  Users, DollarSign, TrendingUp, TrendingDown,
-  CreditCard, UserCheck, UserX, Percent,
-  ArrowUpRight, ArrowDownRight, Loader2,
-  Calendar, ChevronDown, Zap, Check,
+  Users, TrendingUp, Globe, Search, FileText,
+  Calendar, BarChart3, Eye, Clock,
+  MousePointerClick, Layers, Activity, CheckCircle2, XCircle,
+  ChevronDown,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { useAdminData } from '@/hooks/useAdminData'
 
-type Period = '7d' | '30d' | 'this_month' | 'last_month' | '365d' | 'year_vs_year'
+interface AnalyticsData {
+  users30d: number
+  users7d: number
+  usersToday: number
+  totalUsers: number
+  sessions30d: number
+  pageViews30d: number
+  newUsers30d: number
+  topPages: { slug: string; title: string; views: number }[]
+  topCountries: { country: string; users: number }[]
+  dailySignups: { date: string; count: number }[]
+  dailyClicks: { date: string; clicks: number; impressions: number }[]
+  topKeywords: { keyword: string; clicks: number; impressions: number; ctr: number; position: number }[]
+  topSearchPages: { page: string; clicks: number; impressions: number; ctr: number; position: number }[]
+  gaConnected: boolean
+  gscConnected: boolean
+}
+
+type Period = '7d' | '30d' | 'this_month' | 'last_month' | '365d' | 'lifetime'
+type ChartType = 'users' | 'clicks' | 'both'
 
 const PERIOD_LABELS: Record<Period, string> = {
   '7d': 'Last 7 Days',
@@ -17,318 +47,480 @@ const PERIOD_LABELS: Record<Period, string> = {
   'this_month': 'This Month',
   'last_month': 'Last Month',
   '365d': 'Last 365 Days',
-  'year_vs_year': 'Last Year vs This Year',
+  'lifetime': 'Lifetime',
 }
 
-interface Stats {
-  users: { total: number; free: number; paid: number; conversionRate: number; uniqueCountries: number }
-  revenue: { lifetime: number; thisMonth: number; period: number; earningsChangePercent: number }
-  recentUsers: { id: string; email: string; full_name: string; plan: string; created_at: string; country: string | null }[]
-  recentTransactions: { id: string; user_id: string; pack_name: string; amount_paid: number; created_at: string }[]
-  countryUsers: { country: string; users: number }[]
-}
-
-function fmt(n: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n)
-}
-
-function timeAgo(d: string) {
-  const diff = Date.now() - new Date(d).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  return `${Math.floor(hrs / 24)}d ago`
+const CHART_LABELS: Record<ChartType, string> = {
+  users: 'Daily Active Users',
+  clicks: 'Daily Active Clicks',
+  both: 'Clicks vs Users',
 }
 
 export default function AdminDashboard() {
   const { theme } = useTheme()
   const dark = theme === 'dark'
   const [period, setPeriod] = useState<Period>('30d')
+  const [chartType, setChartType] = useState<ChartType>('users')
   const [showPeriod, setShowPeriod] = useState(false)
+  const [showChart, setShowChart] = useState(false)
 
-  // Clear-cache button state — loading while the invalidation fires,
-  // success flash shown for 3s, last-cleared timestamp persisted in
-  // localStorage so admin can see when they last hit it even after
-  // navigating away.
-  const [clearing, setClearing] = useState(false)
-  const [clearedFlash, setClearedFlash] = useState(false)
-  const [lastCleared, setLastCleared] = useState<string | null>(null)
-
-  useEffect(() => {
-    setLastCleared(localStorage.getItem('mi-admin-last-cache-clear'))
-  }, [])
-
-  // Stats fetch goes through the shared admin cache so revisits and
-  // period switches that hit a previously-loaded URL are instant.
+  // Cached fetch — flipping between period values that have already been
+  // viewed in this session is instant; first-time periods background-fetch
+  // while a skeleton renders below.
   const {
-    data: stats,
+    data,
     isInitialLoading,
-    isRefreshing,
     error,
-  } = useAdminData<Stats>(`/api/admin/stats?period=${period}`)
+  } = useAdminData<AnalyticsData>(`/api/admin/analytics?period=${period}`)
 
-  async function clearCache() {
-    if (clearing) return
-    setClearing(true)
-    try {
-      const res = await fetch('/api/admin/clear-cache', { method: 'POST' })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'Clear failed')
-      setClearedFlash(true)
-      const ts = new Date().toISOString()
-      localStorage.setItem('mi-admin-last-cache-clear', ts)
-      setLastCleared(ts)
-      setTimeout(() => setClearedFlash(false), 3000)
-    } catch (err: any) {
-      alert('Clear cache failed: ' + (err?.message || err))
-    } finally {
-      setClearing(false)
-    }
-  }
+  const cardBg = dark ? '#1e293b' : '#fff'
+  const cardBorder = dark ? '#334155' : '#e2e8f0'
+  const dividerColor = dark ? '#334155' : '#f1f5f9'
 
-  const cardBg = dark ? 'rgba(255,255,255,0.03)' : '#fff'
-  const cardBorder = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
-  const dividerColor = dark ? 'rgba(255,255,255,0.04)' : '#f1f5f9'
-
-  // First-ever visit (no cached data anywhere yet) — show a skeleton
-  // that mimics the real dashboard layout instead of a centered spinner.
-  // This is the *only* loading state the user will see; subsequent
-  // navigations render instantly from cache.
   if (isInitialLoading) {
     return <DashboardSkeleton dark={dark} />
   }
-  if (error && !stats) {
-    return <p className="text-red-400">Failed to load stats: {error.message}</p>
-  }
-  if (!stats) return <DashboardSkeleton dark={dark} />
 
-  const changeUp = stats.revenue.earningsChangePercent >= 0
+  if (!data || error) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold mb-2" style={{ color: dark ? '#fff' : '#0f172a' }}>Dashboard</h1>
+        <div className="rounded-xl border p-8 text-center" style={{ background: cardBg, borderColor: cardBorder }}>
+          <BarChart3 className="w-12 h-12 mx-auto mb-4" style={{ color: dark ? '#334155' : '#cbd5e1' }} />
+          <h2 className="text-lg font-semibold mb-2" style={{ color: dark ? '#fff' : '#0f172a' }}>Failed to Load Analytics</h2>
+          <p className="text-sm" style={{ color: dark ? '#94a3b8' : '#64748b' }}>Please check your API connections and try again.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const maxBarViews = data.topPages.length > 0 ? data.topPages[0].views : 1
+  const maxBarUsers = data.topCountries.length > 0 ? data.topCountries[0].users : 1
+
+  // Chart data
+  const usersChart = data.dailySignups || []
+  const clicksChart = data.dailyClicks || []
+  const chartMax = chartType === 'users'
+    ? Math.max(...usersChart.map(d => d.count), 1)
+    : chartType === 'clicks'
+      ? Math.max(...clicksChart.map(d => d.clicks), 1)
+      : Math.max(...usersChart.map(d => d.count), ...clicksChart.map(d => d.clicks), 1)
+  const chartData = chartType === 'clicks' ? clicksChart : usersChart
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-[26px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Dashboard Overview</h1>
-          <p className="text-sm mt-1" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Real-time stats for Mushroom Identifiers</p>
+          <h1 className="text-2xl font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>Dashboard</h1>
+          <p className="text-sm mt-1" style={{ color: dark ? '#94a3b8' : '#64748b' }}>Real-time data from Google Analytics & Search Console</p>
         </div>
-
-        <div className="flex items-center gap-2">
-        {/* ── Clear Cache button ─────────────────────────────────────
-            One-click invalidation of every Next.js cache + tag. Mirrors
-            W3 Total Cache's "Empty all caches" in WordPress.
-        */}
-        <div className="relative">
-          <button
-            onClick={clearCache}
-            disabled={clearing}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-medium transition-colors disabled:opacity-60"
-            style={{
-              background: clearedFlash
-                ? (dark ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.08)')
-                : (dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9'),
-              border: `1px solid ${clearedFlash ? 'rgba(16,185,129,0.4)' : cardBorder}`,
-              color: clearedFlash ? '#10b981' : dark ? '#fff' : '#0f172a',
-            }}
-            title={
-              lastCleared
-                ? `Last cleared: ${new Date(lastCleared).toLocaleString()}`
-                : 'Purge all cached pages & data so the site serves fresh content'
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Period Filter */}
+          <div className="relative">
+            <button
+              onClick={() => { setShowPeriod(!showPeriod); setShowChart(false) }}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-medium transition-colors"
+              style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', border: `1px solid ${cardBorder}`, color: dark ? '#fff' : '#0f172a' }}
+            >
+              <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+              {PERIOD_LABELS[period]}
+              <ChevronDown className="w-3.5 h-3.5" style={{ color: dark ? '#64748b' : '#94a3b8' }} />
+            </button>
+            {showPeriod && (
+              <div className="absolute right-0 top-full mt-1 z-50 w-48 rounded-xl overflow-hidden shadow-xl" style={{ background: dark ? '#1e293b' : '#fff', border: `1px solid ${cardBorder}` }}>
+                {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => { setPeriod(p); setShowPeriod(false) }}
+                    className="w-full text-left px-4 py-2.5 text-[13px] transition-colors"
+                    style={{
+                      color: p === period ? '#10b981' : dark ? '#e2e8f0' : '#334155',
+                      background: p === period ? (dark ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.05)') : 'transparent',
+                    }}
+                  >
+                    {PERIOD_LABELS[p]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* Connection status */}
+          <span className="flex items-center gap-1.5 text-xs">
+            {data.gaConnected
+              ? <><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /><span className="text-emerald-400">GA4 Connected</span></>
+              : <><XCircle className="w-3.5 h-3.5 text-red-400" /><span className="text-red-400">GA4 Error</span></>
             }
-          >
-            {clearing
-              ? <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
-              : clearedFlash
-                ? <Check className="w-3.5 h-3.5 text-emerald-400" />
-                : <Zap className="w-3.5 h-3.5 text-emerald-400" />
+          </span>
+          <span className="flex items-center gap-1.5 text-xs">
+            {data.gscConnected
+              ? <><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /><span className="text-emerald-400">Search Console</span></>
+              : <><XCircle className="w-3.5 h-3.5 text-red-400" /><span className="text-red-400">GSC Error</span></>
             }
-            {clearing ? 'Clearing…' : clearedFlash ? 'Cache cleared' : 'Clear Cache'}
-          </button>
+          </span>
         </div>
+      </div>
 
-        {/* Period Filter */}
-        <div className="relative">
-          <button
-            onClick={() => setShowPeriod(!showPeriod)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-medium transition-colors"
-            style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', border: `1px solid ${cardBorder}`, color: dark ? '#fff' : '#0f172a' }}
-          >
-            <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-            {PERIOD_LABELS[period]}
-            <ChevronDown className="w-3.5 h-3.5" style={{ color: dark ? '#64748b' : '#94a3b8' }} />
-          </button>
-          {showPeriod && (
-            <div className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl overflow-hidden shadow-xl" style={{ background: dark ? '#1e293b' : '#fff', border: `1px solid ${dark ? '#334155' : '#e2e8f0'}` }}>
-              {(Object.keys(PERIOD_LABELS) as Period[]).map(p => (
-                <button
-                  key={p}
-                  onClick={() => { setPeriod(p); setShowPeriod(false) }}
-                  className="w-full text-left px-4 py-2.5 text-[13px] transition-colors"
-                  style={{
-                    color: p === period ? '#10b981' : dark ? '#e2e8f0' : '#334155',
-                    background: p === period ? (dark ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.05)') : 'transparent',
-                  }}
-                >
-                  {PERIOD_LABELS[p]}
-                </button>
-              ))}
+      {/* Overview Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <StatCard icon={Users} label="Users (30d)" value={data.users30d} color="blue" dark={dark} />
+        <StatCard icon={Calendar} label="Users (7d)" value={data.users7d} color="emerald" dark={dark} />
+        <StatCard icon={Clock} label="Today" value={data.usersToday} color="purple" dark={dark} />
+        <StatCard icon={TrendingUp} label="New Users (30d)" value={data.newUsers30d} color="amber" dark={dark} />
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <StatCard icon={Activity} label="Sessions (30d)" value={data.sessions30d} color="blue" dark={dark} />
+        <StatCard icon={Eye} label="Page Views (30d)" value={data.pageViews30d} color="emerald" dark={dark} />
+        <StatCard icon={Layers} label="Total Active Users" value={data.totalUsers} color="slate" dark={dark} />
+      </div>
+
+      {/* Daily Chart */}
+      <div className="rounded-xl border p-5 mb-6" style={{ background: cardBg, borderColor: cardBorder }}>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div className="flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-emerald-400" />
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>
+              {CHART_LABELS[chartType]} — {PERIOD_LABELS[period]}
+            </h2>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* Chart Type Toggle */}
+            <div className="relative">
+              <button
+                onClick={() => { setShowChart(!showChart); setShowPeriod(false) }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors"
+                style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', border: `1px solid ${cardBorder}`, color: dark ? '#e2e8f0' : '#334155' }}
+              >
+                {CHART_LABELS[chartType]}
+                <ChevronDown className="w-3 h-3" style={{ color: dark ? '#64748b' : '#94a3b8' }} />
+              </button>
+              {showChart && (
+                <div className="absolute right-0 top-full mt-1 z-50 w-44 rounded-xl overflow-hidden shadow-xl" style={{ background: dark ? '#1e293b' : '#fff', border: `1px solid ${cardBorder}` }}>
+                  {(Object.keys(CHART_LABELS) as ChartType[]).map(ct => (
+                    <button
+                      key={ct}
+                      onClick={() => { setChartType(ct); setShowChart(false) }}
+                      className="w-full text-left px-4 py-2.5 text-[12px] transition-colors"
+                      style={{
+                        color: ct === chartType ? '#10b981' : dark ? '#e2e8f0' : '#334155',
+                        background: ct === chartType ? (dark ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.05)') : 'transparent',
+                      }}
+                    >
+                      {CHART_LABELS[ct]}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+            <span className="text-xs" style={{ color: dark ? '#64748b' : '#94a3b8' }}>
+              {chartType === 'clicks' ? 'from Search Console' : chartType === 'both' ? 'GA4 + GSC' : 'from Google Analytics'}
+            </span>
+          </div>
+        </div>
+
+        {chartType === 'both' ? (
+          /* Combined chart */
+          <div>
+            <div className="flex items-center gap-4 mb-3">
+              <span className="flex items-center gap-1.5 text-[11px]" style={{ color: '#10b981' }}>
+                <span className="w-3 h-1.5 rounded-full" style={{ background: '#10b981' }} /> Users
+              </span>
+              <span className="flex items-center gap-1.5 text-[11px]" style={{ color: '#3b82f6' }}>
+                <span className="w-3 h-1.5 rounded-full" style={{ background: '#3b82f6' }} /> Clicks
+              </span>
+            </div>
+            {usersChart.length > 0 ? (
+              <div className="flex items-end gap-[3px] h-44">
+                {usersChart.map((day, i) => {
+                  const clickDay = clicksChart[i]
+                  const userPct = (day.count / chartMax) * 100
+                  const clickPct = clickDay ? (clickDay.clicks / chartMax) * 100 : 0
+                  const date = new Date(day.date)
+                  const label = `${date.getMonth() + 1}/${date.getDate()}`
+                  return (
+                    <div key={day.date} className="flex-1 group relative flex items-end gap-[1px] justify-center" style={{ height: '100%' }}>
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                        <div className="rounded-lg px-2 py-1 text-xs whitespace-nowrap" style={{ background: dark ? '#0f172a' : '#fff', border: `1px solid ${cardBorder}` }}>
+                          <span style={{ color: '#10b981' }}>{day.count}u</span>
+                          <span className="mx-1" style={{ color: dark ? '#334155' : '#cbd5e1' }}>|</span>
+                          <span style={{ color: '#3b82f6' }}>{clickDay?.clicks ?? 0}c</span>
+                          <span className="ml-1" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{label}</span>
+                        </div>
+                      </div>
+                      <div className="w-1/2 rounded-t" style={{ height: `${Math.max(userPct, 3)}%`, background: 'rgba(16,185,129,0.6)', minHeight: '2px' }} />
+                      <div className="w-1/2 rounded-t" style={{ height: `${Math.max(clickPct, 3)}%`, background: 'rgba(59,130,246,0.6)', minHeight: '2px' }} />
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="h-44 flex items-center justify-center">
+                <p className="text-sm" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No data for this period</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Single chart */
+          chartData.length > 0 ? (
+            <div className="flex items-end gap-[3px] h-44">
+              {chartData.map((day: any) => {
+                const val = chartType === 'clicks' ? day.clicks : day.count
+                const pct = (val / chartMax) * 100
+                const date = new Date(day.date)
+                const label = `${date.getMonth() + 1}/${date.getDate()}`
+                const barColor = chartType === 'clicks' ? 'rgba(59,130,246' : 'rgba(16,185,129'
+                return (
+                  <div key={day.date} className="flex-1 group relative flex flex-col items-center justify-end" style={{ height: '100%' }}>
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                      <div className="rounded-lg px-2 py-1 text-xs whitespace-nowrap" style={{ background: dark ? '#0f172a' : '#fff', border: `1px solid ${cardBorder}` }}>
+                        <span className="font-medium" style={{ color: dark ? '#fff' : '#0f172a' }}>{val}</span>
+                        <span className="ml-1" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{label}</span>
+                      </div>
+                    </div>
+                    <div
+                      className="w-full rounded-t transition-all"
+                      style={{
+                        height: `${Math.max(pct, 3)}%`,
+                        background: val > 0
+                          ? `linear-gradient(to top, ${barColor},0.7), ${barColor},${0.2 + (pct / 100) * 0.6}))`
+                          : dark ? 'rgba(71,85,105,0.3)' : 'rgba(203,213,225,0.4)',
+                        minHeight: '2px',
+                      }}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="h-44 flex items-center justify-center">
+              <p className="text-sm" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No data for this period</p>
+            </div>
+          )
+        )}
+
+        {chartData.length > 0 && (
+          <div className="flex justify-between mt-2">
+            <span className="text-[10px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>
+              {new Date(chartData[0]?.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
+            <span className="text-[10px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>
+              {new Date(chartData[chartData.length - 1]?.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Top Pages + Top Countries */}
+      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+        {/* Top Pages */}
+        <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
+          <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+            <FileText className="w-4 h-4 text-emerald-400" />
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 Pages</h2>
+            <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>by pageviews</span>
+          </div>
+          <div style={{ maxHeight: '480px', overflowY: 'auto' }}>
+            {data.topPages.length > 0 ? data.topPages.map((p, i) => {
+              const pct = (p.views / maxBarViews) * 100
+              return (
+                <div key={p.slug} className="px-5 py-3" style={{ borderBottom: `1px solid ${dividerColor}` }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <span className={`text-xs font-bold w-6 shrink-0 ${i < 3 ? 'text-emerald-400' : ''}`} style={i >= 3 ? { color: dark ? '#64748b' : '#94a3b8' } : undefined}>#{i + 1}</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm truncate" style={{ color: dark ? '#fff' : '#0f172a' }}>{p.title}</p>
+                        <p className="text-xs truncate" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{p.slug}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 ml-3 shrink-0">
+                      <Eye className="w-3.5 h-3.5" style={{ color: dark ? '#64748b' : '#94a3b8' }} />
+                      <span className="text-sm font-semibold text-emerald-400">{p.views.toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <div className="ml-9 h-1 rounded-full overflow-hidden" style={{ background: dark ? 'rgba(71,85,105,0.3)' : '#e2e8f0' }}>
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'linear-gradient(to right, #10b981, #34d399)' }} />
+                  </div>
+                </div>
+              )
+            }) : <p className="px-5 py-8 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No page data</p>}
+          </div>
+        </div>
+
+        {/* Top Countries */}
+        <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
+          <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+            <Globe className="w-4 h-4 text-blue-400" />
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 Countries</h2>
+            <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>by active users</span>
+          </div>
+          <div style={{ maxHeight: '480px', overflowY: 'auto' }}>
+            {data.topCountries.length > 0 ? data.topCountries.map((c, i) => {
+              const pct = (c.users / maxBarUsers) * 100
+              return (
+                <div key={c.country} className="px-5 py-3" style={{ borderBottom: `1px solid ${dividerColor}` }}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-3">
+                      <span className={`text-xs font-bold w-6 ${i < 3 ? 'text-blue-400' : ''}`} style={i >= 3 ? { color: dark ? '#64748b' : '#94a3b8' } : undefined}>#{i + 1}</span>
+                      <span className="text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>{c.country}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-blue-400">{c.users.toLocaleString()}</span>
+                  </div>
+                  <div className="ml-9 h-1.5 rounded-full overflow-hidden" style={{ background: dark ? 'rgba(71,85,105,0.3)' : '#e2e8f0' }}>
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'linear-gradient(to right, #3b82f6, #60a5fa)' }} />
+                  </div>
+                </div>
+              )
+            }) : <p className="px-5 py-8 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No country data</p>}
+          </div>
+        </div>
+      </div>
+
+      {/* Search Console: Keywords + Search Pages */}
+      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+        {/* Top Keywords */}
+        <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
+          <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+            <Search className="w-4 h-4 text-amber-400" />
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 Search Keywords</h2>
+            <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Google Search Console</span>
+          </div>
+          <div style={{ maxHeight: '480px', overflowY: 'auto' }}>
+          {data.topKeywords.length > 0 ? (
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 z-10" style={{ background: cardBg }}>
+                <tr style={{ borderBottom: `1px solid ${cardBorder}` }}>
+                  <th className="text-left px-5 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>#</th>
+                  <th className="text-left px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Keyword</th>
+                  <th className="text-right px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Clicks</th>
+                  <th className="text-right px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Impr.</th>
+                  <th className="text-right px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>CTR</th>
+                  <th className="text-right px-5 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Pos.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.topKeywords.map((kw, i) => (
+                  <tr key={kw.keyword} style={{ borderBottom: `1px solid ${dividerColor}` }}>
+                    <td className="px-5 py-2.5"><span className={`text-xs font-bold ${i < 3 ? 'text-amber-400' : ''}`} style={i >= 3 ? { color: dark ? '#64748b' : '#94a3b8' } : undefined}>#{i + 1}</span></td>
+                    <td className="px-2 py-2.5 text-xs truncate max-w-[180px]" style={{ color: dark ? '#fff' : '#0f172a' }}>{kw.keyword}</td>
+                    <td className="px-2 py-2.5 text-right text-emerald-400 font-semibold text-xs">{kw.clicks.toLocaleString()}</td>
+                    <td className="px-2 py-2.5 text-right text-xs" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{kw.impressions.toLocaleString()}</td>
+                    <td className="px-2 py-2.5 text-right text-blue-400 text-xs">{kw.ctr}%</td>
+                    <td className="px-5 py-2.5 text-right text-xs" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{kw.position}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="px-5 py-8 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No keyword data available</p>
           )}
-        </div>
-        </div>{/* /flex items-center gap-2 (header right-side cluster) */}
-      </div>
-
-      {/* ── User Stat cards ── */}
-      {/* Country counter removed — IP→country lookup isn't currently being
-          captured for new signups so the value was always stale/zero. The
-          "Users by Country" panel below was dropped at the same time. */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <GlassCard icon={Users} label="Total Users" value={stats.users.total} color="blue" dark={dark} />
-        <GlassCard icon={UserCheck} label="Paid Users" value={stats.users.paid} color="emerald" dark={dark} />
-        <GlassCard icon={UserX} label="Free Users" value={stats.users.free} color="slate" dark={dark} />
-        <GlassCard icon={Percent} label="Conversion Rate" value={`${stats.users.conversionRate}%`} color="amber" dark={dark} />
-      </div>
-
-      {/* ── Revenue cards ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <GlassCard icon={DollarSign} label="Lifetime Earnings" value={fmt(stats.revenue.lifetime)} color="emerald" dark={dark} />
-        <GlassCard icon={CreditCard} label="This Month" value={fmt(stats.revenue.thisMonth)} color="blue" dark={dark} />
-        <GlassCard icon={CreditCard} label={PERIOD_LABELS[period]} value={fmt(stats.revenue.period)} color="purple" dark={dark} />
-        <div className="p-5 rounded-2xl backdrop-blur-sm" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: dark ? '#64748b' : '#94a3b8' }}>vs Previous Period</span>
-            <div className={`p-2 rounded-xl ${changeUp ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
-              {changeUp
-                ? <TrendingUp className="w-4 h-4 text-emerald-400" />
-                : <TrendingDown className="w-4 h-4 text-red-400" />
-              }
-            </div>
-          </div>
-          <p className={`text-[28px] font-bold tracking-tight ${changeUp ? 'text-emerald-400' : 'text-red-400'}`}>
-            {changeUp ? '+' : ''}{stats.revenue.earningsChangePercent}%
-          </p>
-          <div className="flex items-center gap-1 mt-1.5">
-            {changeUp
-              ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500/60" />
-              : <ArrowDownRight className="w-3.5 h-3.5 text-red-500/60" />
-            }
-            <span className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>period over period</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Recent tables ── */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Recent Users (top 25) */}
-        <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-          <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${cardBorder}` }}>
-            <h2 className="font-semibold text-[13px] tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Recent Users</h2>
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', color: dark ? '#64748b' : '#94a3b8' }}>
-              Top 25
-            </span>
-          </div>
-          <div className="overflow-y-auto" style={{ maxHeight: '520px' }}>
-            {stats.recentUsers.map(u => (
-              <div key={u.id} className="px-5 py-3.5 flex items-center justify-between transition-colors" style={{ borderBottom: `1px solid ${dividerColor}` }}>
-                <div className="min-w-0 flex-1 mr-3">
-                  <p className="text-[13px] font-medium truncate" style={{ color: dark ? '#fff' : '#0f172a' }}>{u.full_name || u.email}</p>
-                  <p className="text-[11px] truncate" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{u.email}</p>
-                  {/* Country line removed — see comment above the user-stats
-                      grid; geolocation isn't being recorded reliably enough
-                      to surface here. */}
-                </div>
-                <div className="text-right shrink-0">
-                  <span className={`text-[11px] px-2 py-0.5 rounded-lg font-semibold ${
-                    u.plan && u.plan !== 'free'
-                      ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
-                      : dark
-                        ? 'bg-white/[0.04] text-slate-500 ring-1 ring-white/[0.06]'
-                        : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200'
-                  }`}>
-                    {u.plan || 'free'}
-                  </span>
-                  <p className="text-[10px] mt-1" style={{ color: dark ? '#334155' : '#94a3b8' }}>{timeAgo(u.created_at)}</p>
-                </div>
-              </div>
-            ))}
-            {stats.recentUsers.length === 0 && (
-              <p className="px-5 py-8 text-[13px] text-center" style={{ color: dark ? '#334155' : '#94a3b8' }}>No users yet</p>
-            )}
           </div>
         </div>
 
-        {/* Recent Transactions (top 25) */}
-        <div className="rounded-2xl overflow-hidden flex flex-col" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
-          <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: `1px solid ${cardBorder}` }}>
-            <h2 className="font-semibold text-[13px] tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>Recent Transactions</h2>
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: dark ? 'rgba(255,255,255,0.05)' : '#f1f5f9', color: dark ? '#64748b' : '#94a3b8' }}>
-              Top 25
-            </span>
+        {/* Top Search Pages */}
+        <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
+          <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+            <MousePointerClick className="w-4 h-4 text-purple-400" />
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 Search Pages</h2>
+            <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>by clicks</span>
           </div>
-          <div className="overflow-y-auto" style={{ maxHeight: '520px' }}>
-            {stats.recentTransactions.map(tx => (
-              <div key={tx.id} className="px-5 py-3.5 flex items-center justify-between transition-colors" style={{ borderBottom: `1px solid ${dividerColor}` }}>
-                <div>
-                  <p className="text-[13px] font-medium capitalize" style={{ color: dark ? '#fff' : '#0f172a' }}>{tx.pack_name} Pack</p>
-                  <p className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{timeAgo(tx.created_at)}</p>
-                </div>
-                <span className="text-[14px] font-bold text-emerald-400">{fmt(tx.amount_paid)}</span>
-              </div>
-            ))}
-            {stats.recentTransactions.length === 0 && (
-              <p className="px-5 py-8 text-[13px] text-center" style={{ color: dark ? '#334155' : '#94a3b8' }}>No transactions yet</p>
-            )}
+          <div style={{ maxHeight: '480px', overflowY: 'auto' }}>
+          {data.topSearchPages.length > 0 ? (
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 z-10" style={{ background: cardBg }}>
+                <tr style={{ borderBottom: `1px solid ${cardBorder}` }}>
+                  <th className="text-left px-5 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>#</th>
+                  <th className="text-left px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Page</th>
+                  <th className="text-right px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Clicks</th>
+                  <th className="text-right px-2 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Impr.</th>
+                  <th className="text-right px-5 py-2.5 text-[10px] font-medium uppercase" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Pos.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.topSearchPages.map((pg, i) => (
+                  <tr key={pg.page} style={{ borderBottom: `1px solid ${dividerColor}` }}>
+                    <td className="px-5 py-2.5"><span className={`text-xs font-bold ${i < 3 ? 'text-purple-400' : ''}`} style={i >= 3 ? { color: dark ? '#64748b' : '#94a3b8' } : undefined}>#{i + 1}</span></td>
+                    <td className="px-2 py-2.5 text-xs truncate max-w-[200px]" style={{ color: dark ? '#fff' : '#0f172a' }}>{pg.page}</td>
+                    <td className="px-2 py-2.5 text-right text-emerald-400 font-semibold text-xs">{pg.clicks.toLocaleString()}</td>
+                    <td className="px-2 py-2.5 text-right text-xs" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{pg.impressions.toLocaleString()}</td>
+                    <td className="px-5 py-2.5 text-right text-xs" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{pg.position}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="px-5 py-8 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No search page data available</p>
+          )}
           </div>
         </div>
-
-        {/* Users by Country panel removed — the country tracking pipeline
-            wasn't capturing data for new signups so the panel was always
-            empty. Recent Users + Recent Transactions are the two surfaces
-            the dashboard now keeps. */}
       </div>
     </div>
   )
 }
 
-// ── Dashboard skeleton ── shown only on the very first visit (no cache).
-// Mirrors the real layout (4 stat cards + 4 revenue cards + 2 recent panels)
-// so the page chrome doesn't pop. Pure CSS pulse, no spinners.
-function DashboardSkeleton({ dark }: { dark: boolean }) {
-  const cardBg = dark ? 'rgba(255,255,255,0.03)' : '#fff'
-  const cardBorder = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
-  const pulse = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
-  const SkelCard = ({ tall = false }: { tall?: boolean }) => (
-    <div className="p-5 rounded-2xl" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+function StatCard({ icon: Icon, label, value, color, dark }: {
+  icon: any; label: string; value: number; color: string; dark: boolean
+}) {
+  const colorMap: Record<string, string> = {
+    blue: 'bg-blue-500/15 text-blue-400',
+    emerald: 'bg-emerald-500/15 text-emerald-400',
+    purple: 'bg-purple-500/15 text-purple-400',
+    slate: dark ? 'bg-slate-500/15 text-slate-400' : 'bg-slate-100 text-slate-500',
+    amber: 'bg-amber-500/15 text-amber-400',
+  }
+  return (
+    <div className="p-5 rounded-xl border" style={{ background: dark ? '#1e293b' : '#fff', borderColor: dark ? '#334155' : '#e2e8f0' }}>
       <div className="flex items-center justify-between mb-3">
-        <div className="h-3 w-24 rounded animate-pulse" style={{ background: pulse }} />
-        <div className="w-8 h-8 rounded-xl animate-pulse" style={{ background: pulse }} />
+        <span className="text-xs font-medium" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{label}</span>
+        <div className={`p-1.5 rounded-lg ${colorMap[color] ?? colorMap.blue}`}>
+          <Icon className="w-4 h-4" />
+        </div>
       </div>
-      <div className="h-7 w-16 rounded animate-pulse" style={{ background: pulse }} />
-      {tall && <div className="h-3 w-20 rounded mt-2 animate-pulse" style={{ background: pulse }} />}
+      <p className="text-2xl font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>{value.toLocaleString()}</p>
     </div>
   )
+}
+
+// ── Dashboard first-visit skeleton ──
+function DashboardSkeleton({ dark }: { dark: boolean }) {
+  const cardBg = dark ? '#1e293b' : '#fff'
+  const cardBorder = dark ? '#334155' : '#e2e8f0'
+  const pulse = dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
-          <div className="h-6 w-56 rounded animate-pulse" style={{ background: pulse }} />
-          <div className="h-3 w-72 rounded mt-2 animate-pulse" style={{ background: pulse }} />
+        <div className="space-y-2">
+          <div className="h-6 w-40 rounded animate-pulse" style={{ background: pulse }} />
+          <div className="h-3 w-64 rounded animate-pulse" style={{ background: pulse }} />
         </div>
+        <div className="h-9 w-40 rounded-xl animate-pulse" style={{ background: pulse }} />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {Array.from({ length: 4 }).map((_, i) => <SkelCard key={i} />)}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="p-5 rounded-xl border" style={{ background: cardBg, borderColor: cardBorder }}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="h-3 w-20 rounded animate-pulse" style={{ background: pulse }} />
+              <div className="w-7 h-7 rounded-lg animate-pulse" style={{ background: pulse }} />
+            </div>
+            <div className="h-7 w-16 rounded animate-pulse" style={{ background: pulse }} />
+          </div>
+        ))}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {Array.from({ length: 4 }).map((_, i) => <SkelCard key={i} tall />)}
+      <div className="rounded-xl border mb-6" style={{ background: cardBg, borderColor: cardBorder, height: 280 }}>
+        <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+          <div className="h-4 w-44 rounded animate-pulse" style={{ background: pulse }} />
+        </div>
+        <div className="p-5">
+          <div className="h-48 w-full rounded animate-pulse" style={{ background: pulse }} />
+        </div>
       </div>
       <div className="grid lg:grid-cols-2 gap-6">
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="rounded-2xl overflow-hidden" style={{ background: cardBg, border: `1px solid ${cardBorder}`, height: 320 }}>
+          <div key={i} className="rounded-xl border" style={{ background: cardBg, borderColor: cardBorder, height: 360 }}>
             <div className="px-5 py-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
               <div className="h-4 w-32 rounded animate-pulse" style={{ background: pulse }} />
             </div>
             <div className="p-5 space-y-3">
-              {Array.from({ length: 4 }).map((_, j) => (
+              {Array.from({ length: 6 }).map((_, j) => (
                 <div key={j} className="flex items-center justify-between">
                   <div className="h-3 w-2/3 rounded animate-pulse" style={{ background: pulse }} />
                   <div className="h-3 w-12 rounded animate-pulse" style={{ background: pulse }} />
@@ -338,31 +530,6 @@ function DashboardSkeleton({ dark }: { dark: boolean }) {
           </div>
         ))}
       </div>
-    </div>
-  )
-}
-
-// ── Glass Card component ──
-function GlassCard({ icon: Icon, label, value, color, dark }: {
-  icon: any; label: string; value: string | number; color: string; dark: boolean
-}) {
-  const iconBg: Record<string, string> = {
-    blue:    'bg-blue-500/10 text-blue-400',
-    emerald: 'bg-emerald-500/10 text-emerald-400',
-    amber:   'bg-amber-500/10 text-amber-400',
-    purple:  'bg-purple-500/10 text-purple-400',
-    slate:   dark ? 'bg-white/[0.05] text-slate-400' : 'bg-slate-100 text-slate-500',
-    red:     'bg-red-500/10 text-red-400',
-  }
-  return (
-    <div className="p-5 rounded-2xl backdrop-blur-sm" style={{ background: dark ? 'rgba(255,255,255,0.03)' : '#fff', border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}` }}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{label}</span>
-        <div className={`p-2 rounded-xl ${iconBg[color] ?? iconBg.blue}`}>
-          <Icon className="w-4 h-4" />
-        </div>
-      </div>
-      <p className="text-[28px] font-bold tracking-tight" style={{ color: dark ? '#fff' : '#0f172a' }}>{value}</p>
     </div>
   )
 }
