@@ -268,10 +268,13 @@ export default function HomeIdentifier({ introHtml }: HomeIdentifierProps = {}) 
             HTML comes from the FIRST rich-text block in
             /admin/homepage; promoting it here is what fixes the
             "orphaned text block" complaint. Same prose typography as
-            HomepageBlocks for visual consistency. */}
+            HomepageBlocks for visual consistency. Body text is
+            LEFT-aligned (the wrapper is centered via mx-auto) — short
+            multi-paragraph copy reads more naturally left-aligned than
+            centered. */}
         {introHtml && (
           <div
-            className="rich-content prose prose-base sm:prose-lg max-w-3xl mx-auto mb-10 text-center
+            className="rich-content prose prose-base sm:prose-lg max-w-3xl mx-auto mb-10
               [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
               prose-p:leading-relaxed prose-p:my-3
               prose-a:font-medium hover:prose-a:underline"
