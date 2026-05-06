@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     url: PAGE_URL,
     images: [
       {
-        url: 'https://mushroomidentifiers.com/author-nathan-cole.webp',
+        url: 'https://mushroomidentifiers.com/author-avatar.webp',
         width: 1200,
         height: 630,
         alt: 'Nathan Cole — Mycologist, Researcher & Author',
@@ -53,7 +53,7 @@ const personSchema = {
   jobTitle: 'Mycologist, Researcher & Author',
   description:
     "Mycologist, researcher, and author recognized for decades of work in fungal biology, mushroom identification, and environmental advocacy.",
-  image: 'https://mushroomidentifiers.com/author-nathan-cole.webp',
+  image: 'https://mushroomidentifiers.com/author-avatar.webp',
   url: PAGE_URL,
   sameAs: [],
   alumniOf: {
@@ -182,7 +182,7 @@ export default function NathanColePage() {
                   }}
                 >
                   <NextImage
-                    src="/author-nathan-cole.webp"
+                    src="/author-avatar.webp"
                     alt="Nathan Cole — Mycologist, Researcher & Author"
                     width={440}
                     height={440}

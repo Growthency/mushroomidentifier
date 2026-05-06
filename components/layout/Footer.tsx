@@ -166,7 +166,10 @@ export default function Footer({
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto">
-          {/* Launch-offer pill — eye-catching ribbon at the top */}
+          {/* Promo pill — eye-catching ribbon at the top.
+              "Launch Offer" wording removed at site owner's request — we
+              keep the perks (free trial + first-month discount) since
+              they remain the actual deal Paddle is configured for. */}
           <div className="flex justify-center mb-6">
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase"
@@ -177,7 +180,7 @@ export default function Footer({
               }}
             >
               <Gift className="w-4 h-4" />
-              <span>Launch Offer · 7 Days Free · 50% Off First Month</span>
+              <span>7 Days Free · 50% Off First Month</span>
               <Sparkles className="w-4 h-4" />
             </div>
           </div>

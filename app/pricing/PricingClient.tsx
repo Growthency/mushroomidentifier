@@ -190,7 +190,10 @@ export default function PricingClient() {
     <div className="min-h-screen pt-24 pb-16 px-6" style={{ background: 'var(--bg-primary)' }}>
       <div className="max-w-7xl mx-auto">
 
-        {/* ── Launch offer ribbon (prominent, above hero) ───────── */}
+        {/* ── Promo ribbon (prominent, above hero) ──────────────────
+            "LAUNCH OFFER" badge dropped at site owner's request — keep
+            the perks visible on their own with the gift icon as the
+            single visual anchor. */}
         <div
           className="mb-8 rounded-2xl p-4 sm:p-5 text-center"
           style={{
@@ -199,11 +202,9 @@ export default function PricingClient() {
           }}
         >
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm sm:text-base">
-            <span className="inline-flex items-center gap-2 font-bold" style={{ color: '#10b981' }}>
+            <span className="inline-flex items-center" style={{ color: '#10b981' }}>
               <Gift className="w-5 h-5" />
-              LAUNCH OFFER
             </span>
-            <span className="opacity-60" style={{ color: 'var(--text-primary)' }}>·</span>
             <span style={{ color: 'var(--text-primary)' }}>
               <strong>7 days free</strong>
             </span>
@@ -407,7 +408,7 @@ export default function PricingClient() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {[
               { num: '1', title: 'Start your 7-day free trial', sub: 'Full plan access, no charges during trial' },
-              { num: '2', title: '50% off your first paid month', sub: 'Auto-applied at checkout via LAUNCH50 code' },
+              { num: '2', title: '50% off your first paid month', sub: 'Auto-applied at checkout — no code needed' },
               { num: '3', title: 'Credits refresh every month', sub: 'Use-it-or-lose-it, fresh each cycle' },
               { num: '4', title: 'Cancel anytime', sub: '1-click from dashboard, full access until period ends' },
             ].map((item) => (
