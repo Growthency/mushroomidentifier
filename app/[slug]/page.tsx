@@ -34,13 +34,30 @@ function getSupabase() {
   )
 }
 
-/* ── Strip inline styles from rich-editor HTML so Tailwind prose classes apply ── */
-function stripInlineStyles(html: string): string {
-  return html
-    // Remove all style="..." attributes (handles single and double quotes)
-    .replace(/\s*style="[^"]*"/gi, '')
-    .replace(/\s*style='[^']*'/gi, '')
-}
+/* ── Inline-style policy ──
+ * We deliberately do NOT strip `style="…"` from saved post HTML any more.
+ *
+ * The previous helper removed every inline style at render time so the
+ * Tailwind prose classes could "win" the typography. That made sense
+ * back when posts could be pasted from Word/WordPress and arrive with
+ * `font-family: Times New Roman` noise — but the current authoring
+ * surfaces (admin RichEditor + Writerfy) emit INTENTIONAL inline styles
+ * that ARE the design: hero gradient cards, callout boxes, image
+ * sizing, Writerfy product blocks, etc. Stripping them killed the
+ * brown-gradient hero ("Mycology Field Guide / How to Photograph…"
+ * etc.) that the editor previewed correctly but the public article
+ * rendered as plain text — flagged by the site owner.
+ *
+ * Inline styles always out-rank prose classes via CSS specificity,
+ * so designed content overrides defaults exactly where the author
+ * intended, and untouched paragraphs/headings still get prose typography.
+ *
+ * Trust model: post HTML is admin-authored (Writerfy + admin RichEditor
+ * both behind auth). The Writerfy publish endpoint already runs
+ * sanitize-html which strips <script>/<style> tags + javascript: URLs
+ * regardless of `allowedAttributes: false`, so leaving `style="…"`
+ * intact does NOT widen the XSS surface.
+ */
 
 /* ── Fetch one post by slug ── */
 async function getPost(slug: string) {
@@ -195,7 +212,7 @@ export default async function DynamicPostPage({
   // (markdown heading + verbatim writerify-product-heading block landing
   // back-to-back with the same text — fix in lib/content-helpers.ts).
   const processedContent = applyNofollowRules(
-    dedupeProductHeadings(stripInlineStyles(post.content || '')),
+    dedupeProductHeadings(post.content || ''),
     nofollowRules,
   )
 
