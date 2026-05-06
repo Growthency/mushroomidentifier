@@ -21,13 +21,44 @@ import IdentifyBanner from "@/components/blog/IdentifyBanner";
 import HomepageBlocks from "@/components/homepage/HomepageBlocks";
 import { getHomepageBlocks } from "@/lib/homepage-blocks";
 import { getSiteContent } from "@/lib/site-content";
+// HomeIdentifier is the primary action surface on the homepage —
+// directly imported (NOT lazy) so it renders in the initial server HTML
+// and is visible the instant the page paints. The earlier
+// `dynamic({ ssr: false })` disabled server rendering entirely, which
+// left the upload section empty on first paint and made it pop in
+// AFTER hydration — visually felt like a slow page. The component is
+// 'use client', but its top-level render uses no browser APIs so SSR
+// is safe; the file picker / FileReader / localStorage calls all live
+// in event handlers that only run after hydration anyway.
+import HomeIdentifier from "./HomeIdentifier";
 
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
-const HomeIdentifier = dynamic(() => import("./HomeIdentifier"), {
-  ssr: false,
-});
 // HomeReviews import removed — component no longer rendered on homepage.
 const ScrollGlow = dynamic(() => import("./ScrollGlow"), { ssr: false });
+
+/**
+ * Strip `text-align: …` from inline styles on saved rich-text HTML.
+ *
+ * The /admin/homepage rich-text editor's Align Center / Right buttons
+ * use document.execCommand('justify*'), which writes `<p style="text-align:
+ * center">` on every paragraph. That's correct for the floating
+ * HomepageBlocks region, but when we promote the FIRST rich-text block
+ * into the upload section's narrower max-w-3xl container the centered
+ * paragraphs read awkwardly across multiple lines (site owner's
+ * feedback). Stripping just the alignment lets prose typography fall
+ * back to natural left-aligned body copy without removing the rest of
+ * the editor's design (color, weight, etc.).
+ *
+ * Surgical regex — only the `text-align: …` declaration is removed,
+ * everything else inside the same `style="…"` attribute is preserved.
+ * Empty `style=""` shells left behind are also cleaned up.
+ */
+function stripTextAlign(html: string): string {
+  if (!html) return ''
+  return html
+    .replace(/text-align\s*:\s*[^;"']+;?/gi, '')
+    .replace(/\s*style=["']\s*["']/gi, '')
+}
 
 /**
  * Homepage-only structured data graph. Embedded inline at the top of
@@ -217,7 +248,7 @@ export default async function Home() {
     firstRichTextIdx === 0 // must be the FIRST block in admin order
       ? homepageBlocks[0]
       : null
-  const introHtml = (promoteAsIntro?.data?.html as string | undefined) || ''
+  const introHtml = stripTextAlign((promoteAsIntro?.data?.html as string | undefined) || '')
   const restBlocks = promoteAsIntro
     ? homepageBlocks.slice(1)
     : homepageBlocks;
