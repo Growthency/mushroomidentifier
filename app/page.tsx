@@ -29,24 +29,46 @@ const HomeIdentifier = dynamic(() => import("./HomeIdentifier"), {
 // HomeReviews import removed — component no longer rendered on homepage.
 const ScrollGlow = dynamic(() => import("./ScrollGlow"), { ssr: false });
 
+/**
+ * Homepage-only structured data graph. Embedded inline at the top of
+ * `<div id="homepage-root">` via `<script type="application/ld+json">`,
+ * so it ships ONLY on `/` — never on `/about`, `/blog`, or any article
+ * page (each of those has its own page-specific schema).
+ *
+ * The Organization node here intentionally shares an `@id` with the
+ * Organization defined in `app/layout.tsx` so Google merges them into
+ * a single entity; the layout copy carries the richer signals
+ * (email, sameAs, larger logo) and this one re-states the canonical
+ * mark for the homepage's @graph.
+ *
+ * Credit numbers in the FAQ stay aligned with the visible page copy
+ * (50 free credits) — Google flags structured-data ↔ visible-content
+ * mismatches as a spam signal, so a "30" answer here while the page
+ * says "50" would hurt rich-result eligibility.
+ */
 const homepageSchema = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "@id": "https://mushroomidentifiers.com/#organization",
+      name: "Mushroom Identifier",
+      url: "https://mushroomidentifiers.com/",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://mushroomidentifiers.com/_next/image?url=%2Flogo-header.png&w=96&q=75",
+      },
+    },
+    {
       "@type": "WebApplication",
-      "@id": "https://mushroomidentifiers.com/#app",
+      "@id": "https://mushroomidentifiers.com/#identifier",
       name: "Mushroom Identifier",
       url: "https://mushroomidentifiers.com/",
       applicationCategory: "EducationalApplication",
       operatingSystem: "All",
       description:
         "AI mushroom identifier to identify wild mushrooms by picture using computer vision, cap, gills, pores, stem, and habitat analysis.",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.9",
-        ratingCount: "128",
-      },
+      offers: { "@type": "Offer", price: "2.49", priceCurrency: "USD" },
       publisher: { "@id": "https://mushroomidentifiers.com/#organization" },
     },
     {
@@ -89,85 +111,86 @@ const homepageSchema = {
     },
     {
       "@type": "FAQPage",
+      "@id": "https://mushroomidentifiers.com/#faq",
       mainEntity: [
         {
           "@type": "Question",
           name: "How accurate is the mushroom identifier?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Uses AI with multi-angle analysis for high accuracy but results should be verified.",
+            text: "Our mushroom identifier uses advanced AI and mycology principles to deliver highly accurate results when you upload clear, multi-angle photos. It analyzes cap, gills, stem, and base features. However, no tool is 100% final, so always verify important results.",
           },
         },
         {
           "@type": "Question",
-          name: "Can I use it offline?",
+          name: "Can I use the mushroom identifier offline?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "No, it requires internet connection.",
+            text: "No, the mushroom identifier requires an internet connection to process images and access its database.",
           },
         },
         {
           "@type": "Question",
-          name: "What if I ate a poisonous mushroom?",
+          name: "What should I do if I accidentally ate a poisonous mushroom?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Seek emergency medical help immediately.",
+            text: "Seek immediate medical help. Do not wait for symptoms. Early action is critical to prevent serious complications.",
           },
         },
         {
           "@type": "Question",
-          name: "Can I identify mushrooms from photos?",
+          name: "Can I identify a mushroom from a photo?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, upload clear images for analysis.",
+            text: "Yes, upload clear photos including cap, underside, stem, and base for the most accurate identification results.",
           },
         },
         {
           "@type": "Question",
-          name: "Is it free?",
+          name: "Is the mushroom identifier free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, 50 free credits available.",
+            text: "Yes, you get 50 free credits to identify mushrooms at no cost.",
           },
         },
         {
           "@type": "Question",
-          name: "How many photos are needed?",
+          name: "How many photos are needed for accurate identification?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "At least cap, gills, stem, and base.",
+            text: "At least four photos are recommended: cap, underside, stem, and base. Multiple angles improve accuracy.",
           },
         },
         {
           "@type": "Question",
-          name: "Does it work worldwide?",
+          name: "Does the mushroom identifier work worldwide?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, global coverage.",
+            text: "Yes, it supports global mushroom identification across different regions and habitats.",
           },
         },
         {
           "@type": "Question",
-          name: "Can beginners use it?",
+          name: "Can beginners use this mushroom identifier?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, simple and beginner-friendly.",
+            text: "Yes, it is designed to be beginner-friendly while using expert-level identification logic. Always follow safety guidance.",
           },
         },
         {
           "@type": "Question",
-          name: "Do I need an account?",
+          name: "Do I need to create an account?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, signup required for credits.",
+            text: "Yes, signup is required to access the dashboard and use your free credits.",
           },
         },
         {
           "@type": "Question",
-          name: "Is there a limit?",
+          name: "Is there a limit to how many mushrooms I can identify?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "50 free credits, then subscription.",
+            text: "Yes, you can identify up to 50 mushrooms for free. After that, you can upgrade for unlimited use.",
           },
         },
       ],
