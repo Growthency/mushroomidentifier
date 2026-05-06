@@ -204,6 +204,24 @@ export default async function Home() {
   const homepageBlocks = await getHomepageBlocks();
   const useCustomBlocks = homepageBlocks.length > 0;
 
+  // Promote the FIRST rich-text block (if any) into the upload section as
+  // an intro paragraph. The block was looking visually orphaned floating
+  // between the upload widget and the next section heading; rendering it
+  // inside HomeIdentifier's section wrapper makes it read as part of the
+  // upload area instead. The same block is removed from `restBlocks` so
+  // HomepageBlocks below doesn't render it twice. Only the FIRST block is
+  // eligible — and only when it's a rich-text — so admin reordering
+  // determines what becomes the intro without code changes.
+  const firstRichTextIdx = homepageBlocks.findIndex(b => b.block_type === 'rich-text')
+  const promoteAsIntro =
+    firstRichTextIdx === 0 // must be the FIRST block in admin order
+      ? homepageBlocks[0]
+      : null
+  const introHtml = (promoteAsIntro?.data?.html as string | undefined) || ''
+  const restBlocks = promoteAsIntro
+    ? homepageBlocks.slice(1)
+    : homepageBlocks;
+
   // Admin-editable hero text. Blank values fall back to the original hardcoded
   // strings so the hero never renders empty on a cold DB or mid-edit blip.
   const { settings: siteSettings } = await getSiteContent();
@@ -313,10 +331,12 @@ export default async function Home() {
 
       {/* Upload widget sits IMMEDIATELY under the hero — primary action
           surface, must stay above the fold so visitors don't scroll past
-          marketing copy to reach the tool. (An earlier attempt moved
-          this below the admin-managed blocks; that buried the CTA at
-          the bottom of the page and was rolled back.) */}
-      <HomeIdentifier />
+          marketing copy to reach the tool. The FIRST admin-managed
+          rich-text block is promoted into this section as an intro
+          paragraph (see firstRichTextIdx logic above) so it visually
+          belongs to the upload area instead of floating between
+          sections. */}
+      <HomeIdentifier introHtml={introHtml} />
 
       {/* === Admin-managed homepage middle ===
           If custom homepage blocks are published via /admin/homepage,
@@ -331,7 +351,7 @@ export default async function Home() {
         <div id="how-it-works" aria-hidden="true" style={{ scrollMarginTop: 96 }} />
       )}
       {useCustomBlocks ? (
-        <HomepageBlocks blocks={homepageBlocks} />
+        <HomepageBlocks blocks={restBlocks} />
       ) : (
         <>
       <section

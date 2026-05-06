@@ -15,7 +15,19 @@ const SCAN_STEPS = [
   'Generating identification report…',
 ]
 
-export default function HomeIdentifier() {
+interface HomeIdentifierProps {
+  /**
+   * Optional intro HTML rendered INSIDE the upload section, between the
+   * H2 heading and the upload widget cards. Used by the homepage to
+   * promote the first admin-managed rich-text block out of the floating
+   * HomepageBlocks region and into the upload section's visual container,
+   * so it reads as part of the upload section instead of looking
+   * orphaned between two unrelated sections.
+   */
+  introHtml?: string
+}
+
+export default function HomeIdentifier({ introHtml }: HomeIdentifierProps = {}) {
   const [userId, setUserId]               = useState<string | null>(null)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewUrls, setPreviewUrls]     = useState<string[]>([])     // blob URLs for display
@@ -249,6 +261,24 @@ export default function HomeIdentifier() {
         <h2 className="font-playfair text-4xl md:text-5xl font-bold text-center mb-6 gradient-text-animate">
           Upload Photo For Free Mushrooms Identification
         </h2>
+
+        {/* Intro paragraph — rendered INSIDE the upload section so it
+            belongs visually to "Upload Photo For Free Mushrooms
+            Identification" instead of floating between sections. The
+            HTML comes from the FIRST rich-text block in
+            /admin/homepage; promoting it here is what fixes the
+            "orphaned text block" complaint. Same prose typography as
+            HomepageBlocks for visual consistency. */}
+        {introHtml && (
+          <div
+            className="rich-content prose prose-base sm:prose-lg max-w-3xl mx-auto mb-10 text-center
+              [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
+              prose-p:leading-relaxed prose-p:my-3
+              prose-a:font-medium hover:prose-a:underline"
+            style={{ color: 'var(--text-muted)' }}
+            dangerouslySetInnerHTML={{ __html: introHtml }}
+          />
+        )}
 
         {/* Guest signup wall — appears only when an anonymous visitor
             has burned through their 2 free scans (server returns
