@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import HeroH1 from "./HeroH1";
+import SeeHowItWorksButton from "./SeeHowItWorksButton";
 import IdentifyBanner from "@/components/blog/IdentifyBanner";
 import HomepageBlocks from "@/components/homepage/HomepageBlocks";
 import { getHomepageBlocks } from "@/lib/homepage-blocks";
@@ -126,7 +127,7 @@ const homepageSchema = {
           name: "Is it free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, 30 free credits available.",
+            text: "Yes, 50 free credits available.",
           },
         },
         {
@@ -166,7 +167,7 @@ const homepageSchema = {
           name: "Is there a limit?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "30 free credits, then subscription.",
+            text: "50 free credits, then subscription.",
           },
         },
       ],
@@ -191,7 +192,7 @@ export default async function Home() {
     "Use our Free mushroom identifier by photo for fast, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identification app.";
   const heroEyebrow =
     siteSettings.hero_eyebrow === undefined
-      ? "AI-POWERED · 10,000+ SPECIES · 30 FREE CREDITS"
+      ? "AI-POWERED · 10,000+ SPECIES · 50 FREE CREDITS"
       : siteSettings.hero_eyebrow.trim();
 
   return (
@@ -250,16 +251,7 @@ export default async function Home() {
             >
               Identify a Mushroom →
             </a>
-            <a
-              href="#how-it-works"
-              className="px-8 py-4 rounded-full text-lg font-semibold transition-all"
-              style={{
-                border: "1px solid var(--border)",
-                color: "var(--text-primary)",
-              }}
-            >
-              See How It Works
-            </a>
+            <SeeHowItWorksButton />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
@@ -267,7 +259,7 @@ export default async function Home() {
               { label: "10,000+ Species", icon: Globe },
               { label: "Quick Results",  icon: Clock },
               { label: "Toxicity Warnings", icon: AlertTriangle },
-              { label: "30 Free Credits", icon: Shield },
+              { label: "50 Free Credits", icon: Shield },
             ].map((stat, i) => (
               <div key={i} className="flex flex-col items-center gap-2">
                 <stat.icon

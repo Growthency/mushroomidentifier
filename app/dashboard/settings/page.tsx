@@ -261,12 +261,12 @@ export default function SettingsPage() {
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1.5" style={{ color: 'var(--text-faint)' }}>
             <span>Credits remaining</span>
-            <span>{credits}/30</span>
+            <span>{credits}/50</span>
           </div>
           <div className="h-2.5 rounded-full" style={{ background: 'var(--border)' }}>
             <div className="h-full rounded-full transition-all"
               style={{
-                width: `${Math.max(0, Math.min(100, (credits / 30) * 100))}%`,
+                width: `${Math.max(0, Math.min(100, (credits / 50) * 100))}%`,
                 background: credits > 10 ? 'var(--accent)' : credits > 0 ? '#f59e0b' : '#ef4444',
               }} />
           </div>

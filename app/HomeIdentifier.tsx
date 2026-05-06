@@ -258,7 +258,7 @@ export default function HomeIdentifier() {
               Create a Free Account to Start Identifying
             </h3>
             <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>
-              Sign up for free and get <strong style={{ color: 'var(--accent)' }}>30 free credits</strong> — identify 3 mushrooms instantly. No credit card required.
+              Sign up for free and get <strong style={{ color: 'var(--accent)' }}>50 free credits</strong> — identify 5 mushrooms instantly. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/signup"

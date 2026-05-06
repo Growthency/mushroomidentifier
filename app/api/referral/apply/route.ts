@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     await supabase
       .from('profiles')
       .update({
-        credits: (newUser.credits || 30) + 20,
+        credits: (newUser.credits || 50) + 20,
         referred_by: referrer.id,
       })
       .eq('id', newUserId)

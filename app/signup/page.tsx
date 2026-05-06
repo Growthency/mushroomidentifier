@@ -129,8 +129,8 @@ function SignupForm() {
           </h1>
           <p style={{ color: 'var(--text-muted)' }}>
             {refCode
-              ? <span>You were referred! Sign up to get <strong style={{ color: 'var(--accent)' }}>50 credits</strong> (30 + 20 bonus) 🎉</span>
-              : 'Start identifying mushrooms with AI — 30 free credits'}
+              ? <span>You were referred! Sign up to get <strong style={{ color: 'var(--accent)' }}>70 credits</strong> (50 + 20 bonus) 🎉</span>
+              : 'Start identifying mushrooms with AI — 50 free credits'}
           </p>
         </div>
 
