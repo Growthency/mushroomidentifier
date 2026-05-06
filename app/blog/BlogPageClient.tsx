@@ -1049,12 +1049,12 @@ function ArticleCard({ article, isPaid, isLoggedIn, isFavorited, isLoadingFav, o
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/author-avatar.webp"
-              alt="Paul Stamets"
+              alt="Nathan Cole"
               width={22}
               height={22}
               className="rounded-full object-cover flex-shrink-0"
             />
-            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Paul Stamets</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Nathan Cole</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
             <span className="flex items-center gap-1">

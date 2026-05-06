@@ -55,7 +55,7 @@ export default function NewPageEditor() {
   const [isPremium, setIsPremium] = useState(false)
   const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [layout, setLayout] = useState<'with-sidebar' | 'full-page'>('with-sidebar')
-  const [authorName, setAuthorName] = useState('Paul Stamets')
+  const [authorName, setAuthorName] = useState('Nathan Cole')
   const [authorRole, setAuthorRole] = useState('Mycologist · Author · Fungi Expert')
   const [metaTitle, setMetaTitle] = useState('')
   const [metaDescription, setMetaDescription] = useState('')

@@ -42,9 +42,9 @@ const ScrollGlow = dynamic(() => import("./ScrollGlow"), { ssr: false });
  * mark for the homepage's @graph.
  *
  * Credit numbers in the FAQ stay aligned with the visible page copy
- * (50 free credits) — Google flags structured-data ↔ visible-content
- * mismatches as a spam signal, so a "30" answer here while the page
- * says "50" would hurt rich-result eligibility.
+ * (30 free credits) — Google flags structured-data ↔ visible-content
+ * mismatches as a spam signal, so the answer here matches the visible
+ * "30 FREE CREDITS" hero badge.
  */
 const homepageSchema = {
   "@context": "https://schema.org",
@@ -150,7 +150,7 @@ const homepageSchema = {
           name: "Is the mushroom identifier free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, you get 50 free credits to identify mushrooms at no cost.",
+            text: "Yes, you get 30 free credits to identify mushrooms at no cost.",
           },
         },
         {
@@ -190,7 +190,7 @@ const homepageSchema = {
           name: "Is there a limit to how many mushrooms I can identify?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, you can identify up to 50 mushrooms for free. After that, you can upgrade for unlimited use.",
+            text: "Yes, you can identify up to 30 mushrooms for free. After that, you can upgrade for unlimited use.",
           },
         },
       ],
@@ -215,7 +215,7 @@ export default async function Home() {
     "Use our Free mushroom identifier by photo for fast, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identification app.";
   const heroEyebrow =
     siteSettings.hero_eyebrow === undefined
-      ? "AI-POWERED · 10,000+ SPECIES · 50 FREE CREDITS"
+      ? "AI-POWERED · 10,000+ SPECIES · 30 FREE CREDITS"
       : siteSettings.hero_eyebrow.trim();
 
   return (
@@ -282,7 +282,7 @@ export default async function Home() {
               { label: "10,000+ Species", icon: Globe },
               { label: "Quick Results",  icon: Clock },
               { label: "Toxicity Warnings", icon: AlertTriangle },
-              { label: "50 Free Credits", icon: Shield },
+              { label: "30 Free Credits", icon: Shield },
             ].map((stat, i) => (
               <div key={i} className="flex flex-col items-center gap-2">
                 <stat.icon
@@ -317,6 +317,15 @@ export default async function Home() {
       {/* If the admin has published any homepage_blocks, they replace the
           hardcoded content below. Otherwise the original sections render
           unchanged (safe rollout). Edit via /admin/homepage. */}
+      {/* Anchor target for the hero "See How It Works" CTA. The static
+          fallback below already has `id="how-it-works"` on its own
+          <section>; when custom blocks are active that section isn't
+          rendered, so we drop a zero-height anchor right at the top of
+          the custom-blocks region instead. Conditional render avoids
+          duplicate IDs in the DOM. */}
+      {useCustomBlocks && (
+        <div id="how-it-works" aria-hidden="true" style={{ scrollMarginTop: 96 }} />
+      )}
       {useCustomBlocks ? (
         <HomepageBlocks blocks={homepageBlocks} />
       ) : (

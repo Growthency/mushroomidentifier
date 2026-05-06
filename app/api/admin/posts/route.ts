@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
       region: region || 'Worldwide',
       is_premium: is_premium ?? false,
       status: status || 'draft',
-      author_name: author_name || 'Paul Stamets',
+      author_name: author_name || 'Nathan Cole',
       author_role: author_role || 'Mycologist · Author · Fungi Expert',
       published_at: status === 'published' ? new Date().toISOString() : null,
       layout: body.layout || 'with-sidebar',

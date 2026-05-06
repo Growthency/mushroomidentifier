@@ -250,15 +250,19 @@ export default function HomeIdentifier() {
           Upload Photo For Free Mushrooms Identification
         </h2>
 
-        {/* Guest sign-up wall */}
-        {!userId && (
+        {/* Guest signup wall — appears only when an anonymous visitor
+            has burned through their 2 free scans (server returns
+            `signup_required`). Logged-in users obviously never see it.
+            Skipping the persistent always-visible wall lets first-time
+            visitors actually try the tool before being asked to sign up. */}
+        {!userId && error === 'signup_required' && (
           <div className="mb-8 p-6 rounded-2xl text-center" style={{ background: 'var(--bg-card)', border: '2px solid var(--accent)' }}>
             <div className="text-4xl mb-3">🍄</div>
             <h3 className="font-playfair text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-              Create a Free Account to Start Identifying
+              Sign Up to Get More Free Credits
             </h3>
             <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>
-              Sign up for free and get <strong style={{ color: 'var(--accent)' }}>50 free credits</strong> — identify 5 mushrooms instantly. No credit card required.
+              You've used your 2 free guest scans. Sign up to get <strong style={{ color: 'var(--accent)' }}>30 free credits</strong> — identify 3 more mushrooms instantly. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/signup"

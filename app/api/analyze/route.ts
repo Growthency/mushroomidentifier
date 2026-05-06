@@ -77,34 +77,64 @@ export async function POST(request: NextRequest) {
       request.headers.get("x-real-ip") ||
       "unknown";
 
+    // ── Guest (no signup) tier ───────────────────────────────────────
+    // Anonymous visitors get up to GUEST_FREE_SCANS scans per IP before
+    // we require a signup to continue. We count prior anonymous rows in
+    // the `analyses` table for this IP — `user_id IS NULL` flags them
+    // as guest scans. On the cap, return `signup_required` so the
+    // existing client-side handler shows the "Sign up for 30 free
+    // credits" prompt without any new wiring.
+    const GUEST_FREE_SCANS = 2;
+    let isGuest = false;
+    let profile: any = null;
+
     if (!userId) {
-      return NextResponse.json({ error: "signup_required" }, { status: 401 });
+      isGuest = true;
+      const { count: guestUsed } = await supabase
+        .from("analyses")
+        .select("id", { count: "exact", head: true })
+        .is("user_id", null)
+        .eq("ip_address", ip);
+
+      if ((guestUsed ?? 0) >= GUEST_FREE_SCANS) {
+        return NextResponse.json(
+          {
+            error: "signup_required",
+            reason: "guest_limit_reached",
+            guest_scans_used: guestUsed,
+            guest_scans_max: GUEST_FREE_SCANS,
+          },
+          { status: 401 },
+        );
+      }
+    } else {
+      const { data: p } = await supabase
+        .from("profiles")
+        .select("credits, plan, subscription_status, current_period_end")
+        .eq("id", userId)
+        .maybeSingle();
+      profile = p;
+
+      if (!profile || profile.credits < 10) {
+        // Surface trial vs. paid context so the frontend can show the right
+        // message: trialing users hitting the 30% cap get an "early-upgrade"
+        // CTA, paid users who burned through their monthly quota just see
+        // a standard "out of credits" message.
+        return NextResponse.json(
+          {
+            error: "insufficient_credits",
+            trial: profile?.subscription_status === "trialing",
+            plan: profile?.plan ?? "free",
+            current_period_end: profile?.current_period_end ?? null,
+          },
+          { status: 402 },
+        );
+      }
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("credits, plan, subscription_status, current_period_end")
-      .eq("id", userId)
-      .maybeSingle();
-
-    if (!profile || profile.credits < 10) {
-      // Surface trial vs. paid context so the frontend can show the right
-      // message: trialing users hitting the 30% cap get an "early-upgrade"
-      // CTA, paid users who burned through their monthly quota just see
-      // a standard "out of credits" message.
-      return NextResponse.json(
-        {
-          error: "insufficient_credits",
-          trial: profile?.subscription_status === "trialing",
-          plan: profile?.plan ?? "free",
-          current_period_end: profile?.current_period_end ?? null,
-        },
-        { status: 402 },
-      );
-    }
-
-    // Free plan → Haiku (fast & cheap), paid plans → Sonnet (accurate)
-    const isPaid = profile.plan && profile.plan !== "free";
+    // Model selection: guests + free plan → Haiku (fast & cheap), paid
+    // plans → Sonnet (accurate).
+    const isPaid = !!(profile && profile.plan && profile.plan !== "free");
     const model = isPaid ? "claude-sonnet-4-5" : "claude-haiku-4-5-20251001";
 
     // Check cache first
@@ -168,35 +198,40 @@ export async function POST(request: NextRequest) {
       } catch {}
     }
 
-    // Deduct credits
-    const { data: currentProfile } = await supabase
-      .from("profiles")
-      .select("credits, total_identifications")
-      .eq("id", userId)
-      .maybeSingle();
-
-    if (currentProfile) {
-      await supabase
+    // Deduct credits — only for signed-in users. Guest scans are free
+    // (up to GUEST_FREE_SCANS per IP) and never touch the profiles table.
+    if (!isGuest) {
+      const { data: currentProfile } = await supabase
         .from("profiles")
-        .update({
-          credits: currentProfile.credits - 10,
-          total_identifications: currentProfile.total_identifications + 1,
-        })
-        .eq("id", userId);
+        .select("credits, total_identifications")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (currentProfile) {
+        await supabase
+          .from("profiles")
+          .update({
+            credits: currentProfile.credits - 10,
+            total_identifications: currentProfile.total_identifications + 1,
+          })
+          .eq("id", userId);
+      }
     }
 
-    // Save analysis
+    // Save analysis. Guest rows have `user_id = null` and are what the
+    // GUEST_FREE_SCANS counter at the top counts against on the next
+    // anonymous request from this IP.
     await supabase.from("analyses").insert({
-      user_id: userId,
+      user_id: userId || null,
       ip_address: ip,
       image_hash: imageHash,
       result,
-      credits_used: 10,
+      credits_used: isGuest ? 0 : 10,
       image_url: imageUrls[0] || null,
       image_urls: imageUrls.length > 0 ? imageUrls : null,
     });
 
-    return NextResponse.json({ result, cached: false });
+    return NextResponse.json({ result, cached: false, guest: isGuest });
   } catch (error: any) {
     console.error("Analysis error:", error);
     return NextResponse.json(

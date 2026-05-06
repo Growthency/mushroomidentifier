@@ -33,7 +33,7 @@ export default function DashboardPage() {
   }, [supabase])
 
   const credits      = profile?.credits ?? 0
-  const maxCredits   = 50
+  const maxCredits   = 30
   const creditsUsed  = maxCredits - credits
   const pct          = Math.max(0, Math.min(100, (credits / maxCredits) * 100))
   const plan         = profile?.plan ?? 'free'

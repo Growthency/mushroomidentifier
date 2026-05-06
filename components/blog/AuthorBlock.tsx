@@ -13,7 +13,7 @@ export default function AuthorBlock({ updatedAt }: AuthorBlockProps = {}) {
       <div className="flex-shrink-0 rounded-full overflow-hidden" style={{ width: 72, height: 72 }}>
         <Image
           src="/author-avatar.webp"
-          alt="Paul Stamets — Mycologist & Fungi Expert"
+          alt="Nathan Cole — Mycologist & Fungi Expert"
           width={72}
           height={72}
           className="w-full h-full object-cover"
@@ -21,7 +21,7 @@ export default function AuthorBlock({ updatedAt }: AuthorBlockProps = {}) {
       </div>
       <div className="flex-1">
         <p className="font-semibold text-sm leading-tight" style={{ color: 'var(--text-primary)' }}>
-          Paul Stamets
+          Nathan Cole
         </p>
         <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
           Mycologist · Author · Fungi Expert

@@ -79,8 +79,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const credits    = profile?.credits ?? 0
   const plan       = profile?.plan ?? 'free'
   // Progress-bar max scales with plan so the bar actually reflects monthly
-  // allowance — free=50, starter=120, explorer=550, pro=1200
-  const maxCredits = plan === 'pro' ? 1200 : plan === 'explorer' ? 550 : plan === 'starter' ? 120 : 50
+  // allowance — free=30, starter=120, explorer=550, pro=1200
+  const maxCredits = plan === 'pro' ? 1200 : plan === 'explorer' ? 550 : plan === 'starter' ? 120 : 30
   const pct        = Math.max(0, Math.min(100, (credits / maxCredits) * 100))
   const planLabel  = plan === 'pro' ? 'Pro' : plan === 'explorer' ? 'Explorer' : plan === 'starter' ? 'Starter' : 'Free'
   const planColor  = plan === 'pro' ? '#f59e0b' : plan === 'explorer' ? '#8b5cf6' : plan === 'starter' ? '#3b82f6' : 'var(--accent)'

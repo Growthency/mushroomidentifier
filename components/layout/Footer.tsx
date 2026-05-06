@@ -60,7 +60,7 @@ const FALLBACK_SETTINGS: Record<string, string> = {
   footer_explore_heading:  "Explore",
   footer_company_heading:  "Company",
   copyright_text:          "© 2026 MushroomIdentifiers.com · All rights reserved · Educational purposes only",
-  safety_disclaimer:       "⚠️ Never consume any wild mushroom based solely on AI identification. Always consult a professional mycologist.",
+  safety_disclaimer:       "⚠️ Safety Disclaimer: This mushroom identifier tool provides AI-assisted suggestions only and is not a guarantee of accurate identification. Many mushrooms have toxic lookalikes, including deadly species like Amanita phalloides and Galerina marginata.\n\nNever consume a mushroom based solely on this tool. Always confirm identification with a qualified expert or local mycologist.",
 };
 
 const FALLBACK_SOCIALS: SocialLink[] = [
@@ -445,9 +445,13 @@ export default function Footer({
         </div>
 
         {/* ── Safety disclaimer ── */}
+        {/* `whiteSpace: pre-line` honours `\n\n` paragraph breaks coming
+            from the admin-editable string, so the disclaimer can carry
+            its "Never consume… / Always confirm…" second paragraph
+            without splitting it into two database fields. */}
         {s("safety_disclaimer") && (
-          <div className="px-6 py-3.5 text-center" style={{ background: "var(--accent-bg)", borderTop: "1px solid var(--border)" }}>
-            <p className="text-xs font-medium" style={{ color: "var(--text-primary)" }}>
+          <div className="px-6 py-4 text-center" style={{ background: "var(--accent-bg)", borderTop: "1px solid var(--border)" }}>
+            <p className="text-xs font-medium leading-relaxed max-w-4xl mx-auto" style={{ color: "var(--text-primary)", whiteSpace: "pre-line" }}>
               {s("safety_disclaimer")}
             </p>
           </div>

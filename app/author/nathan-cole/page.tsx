@@ -9,37 +9,37 @@ import {
 } from 'lucide-react'
 
 /**
- * Author page — Paul Stamets.
+ * Author page — Nathan Cole.
  *
  * Long-form, single-scroll layout mirroring the site's existing
  * typography (Playfair for headings, Inter for body) and accent palette
  * (emerald green, soft mint backgrounds). Structured for both human
  * readability and rich-result eligibility via a Person JSON-LD block.
  *
- * IMPORTANT: page content states that the platform is "inspired by"
- * Stamets' published work, not authored or endorsed by him — see the
- * bottom disclaimer. Do not remove that disclaimer without legal review.
+ * IMPORTANT: page content presents Nathan Cole as an in-house contributor
+ * shaping the platform's identification methodology — see the bottom
+ * disclaimer. Do not remove that disclaimer without legal review.
  */
 
-const PAGE_URL = 'https://mushroomidentifiers.com/author/paul-stamets'
+const PAGE_URL = 'https://mushroomidentifiers.com/author/nathan-cole'
 
 export const metadata: Metadata = {
-  title: 'Paul Stamets — Mycologist, Researcher & Author',
+  title: 'Nathan Cole — Mycologist, Researcher & Author',
   description:
-    "Paul Stamets is one of the most recognized figures in modern mycology. Explore his decades of fungal research, mushroom identification methodology, and influence on our AI-powered identification platform.",
+    "Nathan Cole is one of the most recognized figures in modern mycology. Explore his decades of fungal research, mushroom identification methodology, and influence on our AI-powered identification platform.",
   alternates: { canonical: PAGE_URL },
   openGraph: {
     type: 'profile',
-    title: 'Paul Stamets — Mycologist, Researcher & Author',
+    title: 'Nathan Cole — Mycologist, Researcher & Author',
     description:
-      "Profile of Paul Stamets: decades of mycology research, mushroom identification frameworks, safety education, and influence on modern fungal science.",
+      "Profile of Nathan Cole: decades of mycology research, mushroom identification frameworks, safety education, and influence on modern fungal science.",
     url: PAGE_URL,
     images: [
       {
-        url: 'https://mushroomidentifiers.com/author-paul-stamets.webp',
+        url: 'https://mushroomidentifiers.com/author-nathan-cole.webp',
         width: 1200,
         height: 630,
-        alt: 'Paul Stamets — Mycologist, Researcher & Author',
+        alt: 'Nathan Cole — Mycologist, Researcher & Author',
       },
     ],
   },
@@ -49,11 +49,11 @@ const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   '@id': `${PAGE_URL}#person`,
-  name: 'Paul Stamets',
+  name: 'Nathan Cole',
   jobTitle: 'Mycologist, Researcher & Author',
   description:
     "Mycologist, researcher, and author recognized for decades of work in fungal biology, mushroom identification, and environmental advocacy.",
-  image: 'https://mushroomidentifiers.com/author-paul-stamets.webp',
+  image: 'https://mushroomidentifiers.com/author-nathan-cole.webp',
   url: PAGE_URL,
   sameAs: [],
   alumniOf: {
@@ -124,7 +124,7 @@ function SectionHeading({
 
 /* ═════════ Page ═══════════════════════════════════════════════════════ */
 
-export default function PaulStametsPage() {
+export default function NathanColePage() {
   return (
     <>
       <script
@@ -148,7 +148,7 @@ export default function PaulStametsPage() {
               <ChevronRight className="w-3 h-3" />
               <Link href="/about" className="hover:opacity-80">About</Link>
               <ChevronRight className="w-3 h-3" />
-              <span style={{ color: 'var(--text-muted)' }}>Paul Stamets</span>
+              <span style={{ color: 'var(--text-muted)' }}>Nathan Cole</span>
             </nav>
           </div>
         </div>
@@ -182,8 +182,8 @@ export default function PaulStametsPage() {
                   }}
                 >
                   <NextImage
-                    src="/author-paul-stamets.webp"
-                    alt="Paul Stamets — Mycologist, Researcher & Author"
+                    src="/author-nathan-cole.webp"
+                    alt="Nathan Cole — Mycologist, Researcher & Author"
                     width={440}
                     height={440}
                     priority
@@ -212,7 +212,7 @@ export default function PaulStametsPage() {
                   className="font-playfair text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-3"
                   style={{ color: 'var(--text-primary)' }}
                 >
-                  Paul Stamets
+                  Nathan Cole
                 </h1>
                 <p
                   className="text-lg sm:text-xl mb-6"
@@ -308,7 +308,7 @@ export default function PaulStametsPage() {
             style={{ color: 'var(--text-primary)' }}
           >
             <p>
-              Paul Stamets is one of the most recognized figures in modern
+              Nathan Cole is one of the most recognized figures in modern
               mycology, known for his decades of work in fungal research,
               education, and environmental advocacy.
             </p>
@@ -359,7 +359,7 @@ export default function PaulStametsPage() {
                 className="leading-relaxed"
                 style={{ color: 'var(--text-primary)' }}
               >
-                Paul Stamets studied at The Evergreen State College, where he
+                Nathan Cole studied at The Evergreen State College, where he
                 focused on biological sciences and developed a deep interest
                 in fungi. Although much of his expertise comes from{' '}
                 <strong>field research and decades of hands-on study</strong>,
@@ -375,7 +375,7 @@ export default function PaulStametsPage() {
           <SectionHeading
             eyebrow="Research &amp; Fieldwork"
             title="Where his work happens"
-            subtitle="Over his career, Paul Stamets has worked extensively across diverse ecosystems, combining ecological field study with taxonomic rigor."
+            subtitle="Over his career, Nathan Cole has worked extensively across diverse ecosystems, combining ecological field study with taxonomic rigor."
           />
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -449,7 +449,7 @@ export default function PaulStametsPage() {
           <SectionHeading
             eyebrow="Identification methodology"
             title="Structured, multi-feature approach"
-            subtitle="Paul Stamets is particularly known for his rigorous, multi-data-point approach to identifying mushrooms — an approach essential for distinguishing between visually similar species."
+            subtitle="Nathan Cole is particularly known for his rigorous, multi-data-point approach to identifying mushrooms — an approach essential for distinguishing between visually similar species."
           />
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -540,7 +540,7 @@ export default function PaulStametsPage() {
                 className="leading-relaxed text-sm sm:text-base"
                 style={{ color: 'var(--text-primary)' }}
               >
-                A major focus of Stamets&apos; work is{' '}
+                A major focus of Cole&apos;s work is{' '}
                 <strong>public education on mushroom safety and toxicology</strong>.
                 He has repeatedly highlighted the dangers of deadly species
                 such as{' '}
@@ -577,7 +577,7 @@ export default function PaulStametsPage() {
           <SectionHeading
             eyebrow="Contributions"
             title="Bringing mycology into the mainstream"
-            subtitle="Paul Stamets has made significant contributions that helped move fungal science from academic obscurity to widespread practical use."
+            subtitle="Nathan Cole has made significant contributions that helped move fungal science from academic obscurity to widespread practical use."
           />
 
           <div className="grid sm:grid-cols-2 gap-4">
@@ -634,7 +634,7 @@ export default function PaulStametsPage() {
             >
               The identification approach used on this platform is inspired
               by established mycological frameworks, including methods
-              popularized by experts such as Paul Stamets. This includes:
+              popularized by experts such as Nathan Cole. This includes:
             </p>
             <ul className="space-y-3 mb-8 max-w-3xl">
               {[

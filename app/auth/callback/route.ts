@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
           id: data.user.id,
           email,
           full_name: fullName,
-          credits: 50,
+          credits: 30,
           plan: 'free',
           total_identifications: 0,
           referral_code: myCode,

@@ -386,7 +386,7 @@ export default function BlogSidebar() {
                 }}>
                 <Image
                   src="/author-avatar.webp"
-                  alt="Paul Stamets — Mushroom Expert"
+                  alt="Nathan Cole — Mushroom Expert"
                   width={200}
                   height={200}
                   className="rounded-full object-cover"
@@ -399,7 +399,7 @@ export default function BlogSidebar() {
           {/* Content */}
           <div className="px-4 pt-3.5 pb-4 text-center" style={{ background: 'var(--bg-card)' }}>
             <h3 className="font-bold text-[15px] mb-0.5" style={{ color: 'var(--text-primary)' }}>
-              Paul Stamets
+              Nathan Cole
             </h3>
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-0.5 rounded-full mb-2.5"
               style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--accent)' }}>
@@ -410,7 +410,7 @@ export default function BlogSidebar() {
               Renowned mycologist with over 40 years of experience studying fungi.
               Dedicated to mushroom identification, cultivation, and the role of fungi in ecosystem health.
             </p>
-            <Link href="/author/paul-stamets"
+            <Link href="/author/nathan-cole"
               className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:brightness-110"
               style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--accent)' }}>
               More about me

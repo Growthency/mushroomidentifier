@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       id:                   userId,
       email:                email,
       full_name:            fullName || '',
-      credits:              50,          // always 50 — never from client
+      credits:              30,          // always 30 — never from client
       plan:                 'free',      // always free — never from client
       total_identifications: 0,
       referral_code:        myCode,
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
         // New user gets +20 bonus credits
         await adminSupabase
           .from('profiles')
-          .update({ credits: 70, referred_by: referrer.id })  // 50 base + 20 bonus
+          .update({ credits: 50, referred_by: referrer.id })  // 30 base + 20 bonus
           .eq('id', userId)
 
         // Referrer gets +20 bonus credits

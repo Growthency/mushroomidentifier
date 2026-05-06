@@ -208,7 +208,7 @@ export async function POST(req: NextRequest) {
     is_premium: !!body.is_premium,
     read_time: readTime,
     status,
-    author_name: body.author_name || 'Paul Stamets',
+    author_name: body.author_name || 'Nathan Cole',
     author_role: body.author_role || 'Mycologist · Author · Fungi Expert',
     meta_title: metaTitle,
     meta_description: metaDescription,
