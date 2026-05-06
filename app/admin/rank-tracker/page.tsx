@@ -34,6 +34,11 @@ interface Quota {
   remaining: number
   resetAt?: string
   planName?: string | null
+  /** How many SerpAPI keys the server actually loaded from env. 1 = only
+   *  primary; 2 = primary + backup. Lets us surface a visible signal so
+   *  the operator knows whether the failover key is wired without
+   *  poking the network tab. */
+  keyCount?: number
 }
 
 // Format "Apr 1" from an ISO date (UTC-safe so it matches SerpAPI's reset moment)
@@ -394,6 +399,31 @@ export default function RankTrackerPage() {
               <span className="text-[10px] font-semibold" style={{ color: '#10b981' }}>
                 Refills {formatResetDate(quota.resetAt)}
                 <span className="opacity-70"> · in {daysUntil(quota.resetAt)}d</span>
+              </span>
+            </div>
+          )}
+          {/* Key-count diagnostic — turns amber if only the primary key is
+              loaded so the operator immediately sees whether the backup
+              key env var (SERPAPI_KEY_BACKUP) is actually live in the
+              current deployment. */}
+          {typeof quota.keyCount === 'number' && (
+            <div
+              className="mt-2 px-2.5 py-1 rounded-full flex items-center gap-1.5"
+              style={{
+                background: quota.keyCount >= 2 ? 'rgba(16,185,129,0.10)' : 'rgba(245,158,11,0.12)',
+                border: `1px solid ${quota.keyCount >= 2 ? 'rgba(16,185,129,0.22)' : 'rgba(245,158,11,0.35)'}`,
+              }}
+              title={
+                quota.keyCount >= 2
+                  ? 'Primary + backup SerpAPI keys are both live. Failover ready.'
+                  : 'Only the primary SerpAPI key is loaded. Add SERPAPI_KEY_BACKUP to env to enable failover (and a 500/30d pooled limit).'
+              }
+            >
+              <span
+                className="text-[10px] font-semibold"
+                style={{ color: quota.keyCount >= 2 ? '#10b981' : '#f59e0b' }}
+              >
+                {quota.keyCount} key{quota.keyCount === 1 ? '' : 's'} loaded
               </span>
             </div>
           )}
