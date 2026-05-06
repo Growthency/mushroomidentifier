@@ -156,7 +156,19 @@ export function useAdminData<T = unknown>(
     setDataState(next)
   }, [url])
 
-  const isInitialLoading = data === null && isRefreshing && !error
+  // First-visit loading state.
+  //
+  // The earlier definition was `data === null && isRefreshing && !error`
+  // — but `isRefreshing` doesn't flip to `true` until the
+  // refetch-on-mount useEffect runs, which is AFTER the very first
+  // render. That meant the first paint had `data=null`, `error=null`,
+  // `isRefreshing=false` ⇒ `isInitialLoading=false`, and consumers
+  // with an `if (!data) return <Failed />` branch (e.g. /admin
+  // Dashboard) flashed their failure UI for one frame before the
+  // skeleton arrived. Drop the `isRefreshing` requirement: if a URL
+  // is set and we have neither data nor error yet, we ARE loading —
+  // the fetch will run on the very next tick.
+  const isInitialLoading = !!url && data === null && !error
 
   return {
     data,
