@@ -311,33 +311,28 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* === Admin-managed intro blocks ===
-          When the owner has published custom homepage blocks via
-          /admin/homepage they render BEFORE the upload widget so any
-          intro copy + the "How Our Mushroom Identifier Works?"
-          infographic set context first, then the user reaches the
-          upload affordance. This is also the position the site owner
-          wants for the descriptive paragraph block ("Upload a clear
-          mushroom photo… distinguish edible mushrooms from dangerous
-          lookalikes like Amanita phalloides and Galerina marginata").
-          Anchor target for the hero "See How It Works" CTA lives here
-          too — the static fallback below has its own
-          `id="how-it-works"` on a real section, so we only emit this
-          zero-height anchor when custom blocks are active to avoid
-          duplicate IDs in the DOM. */}
+      {/* Upload widget sits IMMEDIATELY under the hero — primary action
+          surface, must stay above the fold so visitors don't scroll past
+          marketing copy to reach the tool. (An earlier attempt moved
+          this below the admin-managed blocks; that buried the CTA at
+          the bottom of the page and was rolled back.) */}
+      <HomeIdentifier />
+
+      {/* === Admin-managed homepage middle ===
+          If custom homepage blocks are published via /admin/homepage,
+          they render here — between the upload widget and the footer.
+          Otherwise the original hardcoded marketing sections render in
+          their place. Edit via /admin/homepage. */}
+      {/* Anchor target for the hero "See How It Works" CTA. The static
+          fallback below has its own `id="how-it-works"` on a real
+          <section>, so this zero-height anchor only fires when custom
+          blocks are active — avoids duplicate IDs in the DOM. */}
       {useCustomBlocks && (
         <div id="how-it-works" aria-hidden="true" style={{ scrollMarginTop: 96 }} />
       )}
-      {useCustomBlocks && <HomepageBlocks blocks={homepageBlocks} />}
-
-      <HomeIdentifier />
-
-      {/* === Static fallback content ===
-          Only renders when there are NO custom homepage blocks — keeps
-          the original layout (upload widget → marketing copy → safety
-          notice → How-It-Works → …) intact for sites that haven't been
-          customised, so we don't break the cold-start experience. */}
-      {!useCustomBlocks && (
+      {useCustomBlocks ? (
+        <HomepageBlocks blocks={homepageBlocks} />
+      ) : (
         <>
       <section
         className="py-10 sm:py-14 px-6"
