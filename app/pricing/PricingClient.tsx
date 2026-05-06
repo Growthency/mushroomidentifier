@@ -403,7 +403,7 @@ export default function PricingClient() {
             How It Works
           </h2>
           <p className="text-center text-sm sm:text-base mb-10 max-w-2xl mx-auto" style={{ color: 'var(--text-muted)' }}>
-            Sign up. Try free for 7 days. Get your first paid month half-price. Cancel anytime — Netflix-style.
+            Subscribe to any paid plan — first 7 days are free, no charges. Your first paid month is 50% off, and you can cancel anytime — Netflix-style. Or stick with the free tier and 30 credits.
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {[

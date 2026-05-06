@@ -166,10 +166,12 @@ export default function Footer({
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto">
-          {/* Promo pill — eye-catching ribbon at the top.
-              "Launch Offer" wording removed at site owner's request — we
-              keep the perks (free trial + first-month discount) since
-              they remain the actual deal Paddle is configured for. */}
+          {/* Free-tier pill — eye-catching ribbon at the top.
+              Footer renders on EVERY page including the homepage where
+              most visitors land and never reach the pricing page; surface
+              what they actually get on free signup (30 credits) instead
+              of the paid-plan trial perks. The 7-day trial wording lives
+              on /pricing where it's contextually accurate for Paddle. */}
           <div className="flex justify-center mb-6">
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase"
@@ -180,7 +182,7 @@ export default function Footer({
               }}
             >
               <Gift className="w-4 h-4" />
-              <span>7 Days Free · 50% Off First Month</span>
+              <span>30 Free Credits · No Credit Card Required</span>
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
@@ -223,14 +225,18 @@ export default function Footer({
             </Link>
           </div>
 
-          {/* Trust-signal strip — five green checks in a flexible row */}
+          {/* Trust-signal strip — green checks in a flexible row.
+              Order matters: free-tier signals first because that's what
+              most homepage visitors actually use, then a single
+              paid-plan trial signal so the upgrade path still has a hook
+              without dominating the row (and stays Paddle-compliant —
+              the trial DOES exist for paid plans). */}
           <div className="flex flex-wrap items-center justify-center gap-x-5 sm:gap-x-6 gap-y-2 text-xs sm:text-sm">
             {[
-              "7-day free trial",
-              "50% off first month",
-              "14-day refund",
+              "30 free credits",
+              "No credit card required",
               "Cancel anytime",
-              "No credit card to try free",
+              "Premium plans: 7-day free trial",
             ].map((text) => (
               <span
                 key={text}
