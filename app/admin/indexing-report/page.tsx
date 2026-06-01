@@ -20,6 +20,9 @@ interface CacheRow {
   checked_at: string | null
   index_requested_at: string | null
   indexnow_requested_at: string | null
+  /** Publish date joined in from blog_posts by the API. null for
+   *  hardcoded static pages that aren't DB-backed. */
+  published_at: string | null
 }
 
 const PER_PAGE = 100
@@ -42,6 +45,20 @@ function extractPath(url: string): string {
   } catch {
     return url
   }
+}
+
+// "Published N days ago" — exact whole-day age of a post, shown under the
+// indexing status so the admin can gauge how long a page has existed vs.
+// how long it's been waiting to get indexed. Returns null when there's no
+// publish date (hardcoded static pages) so the caller can skip the line.
+function publishedAgo(iso: string | null): string | null {
+  if (!iso) return null
+  const t = new Date(iso).getTime()
+  if (isNaN(t)) return null
+  const days = Math.floor((Date.now() - t) / 86400000)
+  if (days <= 0) return 'Published today'
+  if (days === 1) return 'Published 1 day ago'
+  return `Published ${days} days ago`
 }
 
 // ── SVG Donut Chart ──────────────────────────────────────────────────────────
@@ -966,6 +983,17 @@ export default function IndexingReportPage() {
                               }}>
                               {(row.coverage_state || 'Unknown').slice(0, 30)}
                             </span>
+                            {/* Exact post age below the status pill — only
+                                for DB-backed pages (null for hardcoded
+                                static pages). Helps the admin see how long
+                                a post has existed vs. how long it's gone
+                                un-indexed. */}
+                            {publishedAgo(row.published_at) && (
+                              <p className="text-[9px] mt-1 flex items-center justify-center gap-1" style={{ color: textSecondary }}>
+                                <Clock className="w-2.5 h-2.5" />
+                                {publishedAgo(row.published_at)}
+                              </p>
+                            )}
                           </td>
                           <td className="px-4 py-2.5 text-right">
                             <div className="flex items-center justify-end gap-1.5">

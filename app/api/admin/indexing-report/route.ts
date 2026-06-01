@@ -44,7 +44,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  const results = cache || []
+  // Enrich each cache row with the post's publish date so the admin UI
+  // can show "Published N days ago" under the indexing status. The
+  // indexing_cache table only tracks crawl/index state — the publish
+  // date lives in blog_posts. We join in memory by matching the cache
+  // URL's pathname against the post slug (slugs are stored with a
+  // leading "/", same as URL.pathname). Hardcoded static pages that
+  // aren't in blog_posts simply get published_at = null and the UI
+  // omits the line for them.
+  const { data: posts } = await admin
+    .from('blog_posts')
+    .select('slug, published_at, created_at')
+
+  const dateBySlug = new Map<string, string>()
+  for (const p of posts || []) {
+    const d = p.published_at || p.created_at
+    if (p.slug && d) dateBySlug.set(p.slug, d)
+  }
+  const pathOf = (url: string): string => {
+    try { return new URL(url).pathname || '/' } catch { return url }
+  }
+
+  const results = (cache || []).map((r: any) => ({
+    ...r,
+    published_at: dateBySlug.get(pathOf(r.url)) || null,
+  }))
   const indexed = results.filter((r: any) => r.status === 'indexed')
   const notIndexed = results.filter((r: any) => r.status !== 'indexed' && r.status !== 'error')
   const errors = results.filter((r: any) => r.status === 'error')
