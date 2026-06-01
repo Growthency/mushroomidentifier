@@ -221,6 +221,8 @@ export default function IndexingReportPage() {
   const [scanError, setScanError] = useState('')
   const [toast, setToast] = useState('')
   const [copied, setCopied] = useState(false)
+  // Which Coverage Breakdown row just flashed "Copied" after a click.
+  const [copiedState, setCopiedState] = useState<string | null>(null)
 
   // New feature states
   const [indexNowLoading, setIndexNowLoading] = useState(false)
@@ -258,6 +260,25 @@ export default function IndexingReportPage() {
     setCopied(true)
     showToast(`${results.filter(r => r.status !== 'indexed').length} URLs copied to clipboard`)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  // ─── Copy every URL with a specific coverage state ──────────────────────────
+  // Powers the clickable Coverage Breakdown rows: one click copies all
+  // URLs in that exact bucket (e.g. all 20 "Excluded by 'noindex' tag"
+  // URLs) so the owner can paste them straight into a research / fix
+  // workflow. `copiedState` tracks which row just flashed "Copied".
+  const copyByCoverageState = async (state: string) => {
+    const urls = results
+      .filter(r => (r.coverage_state || 'Unknown') === state)
+      .map(r => r.url)
+    if (urls.length === 0) {
+      showToast('No URLs in this group')
+      return
+    }
+    await navigator.clipboard.writeText(urls.join('\n'))
+    setCopiedState(state)
+    showToast(`${urls.length} "${state}" URL${urls.length === 1 ? '' : 's'} copied`)
+    setTimeout(() => setCopiedState(s => (s === state ? null : s)), 2000)
   }
 
   // ─── Scan all URLs ─────────────────────────────────────────────────────────
@@ -814,12 +835,28 @@ export default function IndexingReportPage() {
                     {sorted.map(([state, count]) => {
                       const pct = totalUrls > 0 ? (count / totalUrls) * 100 : 0
                       const isGreen = state.toLowerCase().includes('indexed') && !state.toLowerCase().includes('not')
+                      const justCopied = copiedState === state
+                      // Whole row is a click-to-copy button: one click copies
+                      // every URL in this coverage bucket to the clipboard.
                       return (
-                        <div key={state}>
+                        <button
+                          key={state}
+                          onClick={() => copyByCoverageState(state)}
+                          className="w-full text-left group rounded-lg px-2 -mx-2 py-1.5 transition-colors cursor-pointer"
+                          style={{ background: justCopied ? 'rgba(16,185,129,0.08)' : 'transparent' }}
+                          onMouseEnter={e => { if (!justCopied) e.currentTarget.style.background = dark ? 'rgba(255,255,255,0.03)' : '#f8fafc' }}
+                          onMouseLeave={e => { if (!justCopied) e.currentTarget.style.background = 'transparent' }}
+                          title={`Click to copy all ${count} "${state}" URL${count === 1 ? '' : 's'}`}
+                        >
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs truncate max-w-[200px]" style={{ color: textPrimary }}>{state}</span>
-                            <span className="text-xs font-bold" style={{ color: isGreen ? '#10b981' : '#f59e0b' }}>
-                              {count} ({pct.toFixed(0)}%)
+                            <span className="text-xs truncate max-w-[200px] flex items-center gap-1.5" style={{ color: textPrimary }}>
+                              {justCopied
+                                ? <Check className="w-3 h-3 flex-shrink-0" style={{ color: '#10b981' }} />
+                                : <Copy className="w-3 h-3 flex-shrink-0 opacity-0 group-hover:opacity-50 transition-opacity" style={{ color: textSecondary }} />}
+                              {state}
+                            </span>
+                            <span className="text-xs font-bold flex-shrink-0 ml-2" style={{ color: justCopied ? '#10b981' : isGreen ? '#10b981' : '#f59e0b' }}>
+                              {justCopied ? 'Copied!' : `${count} (${pct.toFixed(0)}%)`}
                             </span>
                           </div>
                           <div className="w-full h-1.5 rounded-full" style={{ background: dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0' }}>
@@ -829,9 +866,12 @@ export default function IndexingReportPage() {
                                 background: isGreen ? '#10b981' : state.toLowerCase().includes('error') ? '#ef4444' : '#f59e0b',
                               }} />
                           </div>
-                        </div>
+                        </button>
                       )
                     })}
+                    <p className="text-[10px] pt-1 flex items-center gap-1" style={{ color: textSecondary }}>
+                      <Copy className="w-2.5 h-2.5" /> Click any row to copy its URLs
+                    </p>
                   </div>
                 )
               })()}
