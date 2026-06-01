@@ -99,6 +99,11 @@ export default async function RootLayout({
             work) but keeping it here means verification stays solid even
             if the admin entry is removed. */}
         <meta name="msvalidate.01" content="0C530F1527CEB9BE4C78DF0D4F59A866" />
+        {/* Google AdSense ownership verification — required for AdSense to
+            confirm the publisher controls this domain before serving ads.
+            Hardcoded (not admin-managed) so Google's verifier always sees
+            it on first crawl, even on cold-start sites. */}
+        <meta name="google-adsense-account" content="ca-pub-9887085756488574" />
         {/* RSS Feed for search engine auto-discovery */}
         <link rel="alternate" type="application/rss+xml" title="Mushroom Identifiers RSS Feed" href="/feed.xml" />
         {/* Preconnect to external origins — saves DNS+TCP+TLS time */}
