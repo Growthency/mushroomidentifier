@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { isAdminEmail } from '@/lib/admin'
 import { google } from 'googleapis'
+import sitemap from '@/app/sitemap'
 
 const SITE_URL = 'https://mushroomidentifiers.com'
 const INDEXNOW_KEY = 'a1b2c3d4e5f6g7h8i9j0mushroomid2026'
@@ -44,30 +45,60 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  // Enrich each cache row with the post's publish date so the admin UI
-  // can show "Published N days ago" under the indexing status. The
-  // indexing_cache table only tracks crawl/index state — the publish
-  // date lives in blog_posts. We join in memory by matching the cache
-  // URL's pathname against the post slug (slugs are stored with a
-  // leading "/", same as URL.pathname). Hardcoded static pages that
-  // aren't in blog_posts simply get published_at = null and the UI
-  // omits the line for them.
+  // Enrich each cache row with a publish date so the admin UI can show
+  // "Published N days ago" under the indexing status. The indexing_cache
+  // table only tracks crawl/index state — the date has to come from
+  // elsewhere. We resolve it from TWO sources so EVERY page gets a date
+  // (root cause of the earlier "some show, some don't"):
+  //
+  //   1. blog_posts.published_at — exact publish date for DB-backed
+  //      posts (Writerfy + admin-created articles).
+  //   2. sitemap.ts lastModified — fallback for hardcoded static React
+  //      pages (species guides, /about, /contact, …) that have no
+  //      blog_posts row. The sitemap already carries a per-URL
+  //      lastModified that IS the canonical publish/update date used for
+  //      SEO, so reusing it keeps the dates honest and consistent.
+  //
+  // Pathnames are normalised (trailing slash stripped, except root) on
+  // every side so Google's returned URL, the DB slug, and the sitemap
+  // URL all match regardless of trailing-slash quirks.
+  const normalizePath = (raw: string): string => {
+    let p: string
+    try { p = new URL(raw).pathname || '/' } catch { p = raw || '/' }
+    if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1)
+    return p
+  }
+
+  const dateByPath = new Map<string, string>()
+
+  // Source 1: DB posts (highest priority — real publish date)
   const { data: posts } = await admin
     .from('blog_posts')
     .select('slug, published_at, created_at')
-
-  const dateBySlug = new Map<string, string>()
   for (const p of posts || []) {
     const d = p.published_at || p.created_at
-    if (p.slug && d) dateBySlug.set(p.slug, d)
+    if (p.slug && d) dateByPath.set(normalizePath(p.slug), d)
   }
-  const pathOf = (url: string): string => {
-    try { return new URL(url).pathname || '/' } catch { return url }
+
+  // Source 2: sitemap lastModified (fallback for hardcoded static pages)
+  try {
+    const sm = await sitemap()
+    for (const entry of sm) {
+      const path = normalizePath(entry.url)
+      if (dateByPath.has(path)) continue // DB date wins
+      const lm = (entry as any).lastModified
+      if (!lm) continue
+      const iso = lm instanceof Date ? lm.toISOString() : new Date(lm).toISOString()
+      if (!isNaN(Date.parse(iso))) dateByPath.set(path, iso)
+    }
+  } catch {
+    // Sitemap fetch failing just means hardcoded pages show no date —
+    // DB-backed posts still get theirs from source 1.
   }
 
   const results = (cache || []).map((r: any) => ({
     ...r,
-    published_at: dateBySlug.get(pathOf(r.url)) || null,
+    published_at: dateByPath.get(normalizePath(r.url)) || null,
   }))
   const indexed = results.filter((r: any) => r.status === 'indexed')
   const notIndexed = results.filter((r: any) => r.status !== 'indexed' && r.status !== 'error')

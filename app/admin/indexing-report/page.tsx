@@ -5,7 +5,7 @@ import {
   Globe, CheckCircle2, XCircle, AlertTriangle, Search, RefreshCw,
   Loader2, ChevronLeft, ChevronRight, Send, ExternalLink, Clock,
   FileSearch, ArrowUpRight, Sparkles, Shield, Zap, Radio, Rss,
-  ChevronDown, ChevronUp, Copy, Check,
+  ChevronDown, ChevronUp, Copy, Check, ArrowUpDown,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 
@@ -210,6 +210,13 @@ export default function IndexingReportPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [indexedPage, setIndexedPage] = useState(1)
   const [notIndexedPage, setNotIndexedPage] = useState(1)
+  // Sort the Not-Indexed list by publish age:
+  //   'none'   → default (URL alphabetical, as returned by the API)
+  //   'oldest' → oldest published first (longest un-indexed = top
+  //              priority to fix)
+  //   'newest' → newest published first
+  // Click the Status-column sort icon to cycle none → oldest → newest.
+  const [notIndexedSort, setNotIndexedSort] = useState<'none' | 'oldest' | 'newest'>('none')
   const [lastScan, setLastScan] = useState<string | null>(null)
   const [scanError, setScanError] = useState('')
   const [toast, setToast] = useState('')
@@ -439,11 +446,31 @@ export default function IndexingReportPage() {
       (searchQuery ? extractPath(r.url).toLowerCase().includes(searchQuery.toLowerCase()) : true)),
     [results, searchQuery])
 
+  // Apply publish-age sort. Rows without a publish date always sink to
+  // the bottom (in both directions) so they never crowd out the
+  // meaningful date-sorted entries.
+  const notIndexedSorted = useMemo(() => {
+    if (notIndexedSort === 'none') return notIndexed
+    const withDate = notIndexed.filter(r => r.published_at)
+    const noDate = notIndexed.filter(r => !r.published_at)
+    withDate.sort((a, b) => {
+      const ta = new Date(a.published_at as string).getTime()
+      const tb = new Date(b.published_at as string).getTime()
+      return notIndexedSort === 'oldest' ? ta - tb : tb - ta
+    })
+    return [...withDate, ...noDate]
+  }, [notIndexed, notIndexedSort])
+
+  const cycleNotIndexedSort = useCallback(() => {
+    setNotIndexedSort(s => (s === 'none' ? 'oldest' : s === 'oldest' ? 'newest' : 'none'))
+    setNotIndexedPage(1)
+  }, [])
+
   const indexedTotalPages = Math.ceil(indexed.length / PER_PAGE) || 1
-  const notIndexedTotalPages = Math.ceil(notIndexed.length / PER_PAGE) || 1
+  const notIndexedTotalPages = Math.ceil(notIndexedSorted.length / PER_PAGE) || 1
 
   const indexedSlice = indexed.slice((indexedPage - 1) * PER_PAGE, indexedPage * PER_PAGE)
-  const notIndexedSlice = notIndexed.slice((notIndexedPage - 1) * PER_PAGE, notIndexedPage * PER_PAGE)
+  const notIndexedSlice = notIndexedSorted.slice((notIndexedPage - 1) * PER_PAGE, notIndexedPage * PER_PAGE)
 
   const totalUrls = results.length
   const indexRate = totalUrls > 0 ? Math.round((indexed.length / totalUrls) * 1000) / 10 : 0
@@ -942,7 +969,29 @@ export default function IndexingReportPage() {
                       <tr style={{ borderBottom: `1px solid ${cardBorder}` }}>
                         <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: textSecondary }}>#</th>
                         <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: textSecondary }}>URL</th>
-                        <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-center" style={{ color: textSecondary }}>Status</th>
+                        <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-center" style={{ color: textSecondary }}>
+                          {/* Click to sort by publish age. none → oldest
+                              un-indexed first → newest first → none. */}
+                          <button
+                            onClick={cycleNotIndexedSort}
+                            className="inline-flex items-center gap-1 uppercase tracking-wider transition-all hover:brightness-125"
+                            style={{ color: notIndexedSort === 'none' ? textSecondary : '#ef4444' }}
+                            title={
+                              notIndexedSort === 'none'
+                                ? 'Sort by publish age — click: oldest un-indexed posts first'
+                                : notIndexedSort === 'oldest'
+                                  ? 'Oldest published first (most days un-indexed) — click: newest first'
+                                  : 'Newest published first — click: clear sort'
+                            }
+                          >
+                            Status
+                            {notIndexedSort === 'oldest'
+                              ? <ChevronDown className="w-3 h-3" />
+                              : notIndexedSort === 'newest'
+                                ? <ChevronUp className="w-3 h-3" />
+                                : <ArrowUpDown className="w-3 h-3 opacity-40" />}
+                          </button>
+                        </th>
                         <th className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-right" style={{ color: textSecondary }}>Action</th>
                       </tr>
                     </thead>
