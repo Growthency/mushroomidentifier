@@ -359,7 +359,7 @@ const articles: Article[] = [
     slug: '/mushroom-identification-quiz',
     image: '/mushroom-identification-quiz-various-species.webp',
     views: 1540,
-    is_premium: true,
+    is_premium: false,
   },
   {
     id: 6,
@@ -449,7 +449,7 @@ const articles: Article[] = [
     slug: '/mushroom-parts-explained',
     image: '/parts-of-mushrooms.webp',
     views: 2180,
-    is_premium: true,
+    is_premium: false,
   },
 ]
 

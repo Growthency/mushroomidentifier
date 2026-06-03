@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import IdentifyBanner from '@/components/blog/IdentifyBanner'
-import PremiumGate from '@/components/PremiumGate'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import LiveViewCount from '@/components/blog/LiveViewCount'
@@ -36,9 +35,8 @@ export default function MushroomQuizPage() {
                 <span className="inline-block px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
                   Interactive Quiz
                 </span>
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-bold" style={{ background: '#f59e0b20', color: '#f59e0b' }}>
-                  Premium
-                </span>
+                {/* Free for everyone — premium badge removed so the quiz
+                    reads as open-access (matches the un-gated content below). */}
               </div>
               <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
                 Mushroom Identification Quiz — 50 Expert Questions
@@ -50,10 +48,8 @@ export default function MushroomQuizPage() {
               </p>
             </div>
 
-            {/* Premium-gated quiz content */}
-            <PremiumGate inline>
-              <QuizClient />
-            </PremiumGate>
+            {/* Free quiz content — premium gate removed so everyone can play. */}
+            <QuizClient />
 
           </article>
           <BlogSidebar />

@@ -8,7 +8,6 @@ import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
-import PremiumGate from '@/components/PremiumGate'
 
 export const metadata: Metadata = {
   title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
@@ -97,8 +96,8 @@ export default async function MushroomPartsExplainedPage() {
             </figcaption>
           </figure>
 
-          {/* ── PREMIUM GATE: body content below requires paid plan ── */}
-          <PremiumGate inline>
+          {/* Free for everyone — premium gate removed so the full anatomy
+              guide is open-access. */}
           <>
 
           {/* ── SECTION 1: Introduction ── */}
@@ -612,7 +611,6 @@ export default async function MushroomPartsExplainedPage() {
           <RelatedPosts currentSlug="/mushroom-parts-explained" />
 
           </>
-          </PremiumGate>
 
             </article>
             <BlogSidebar />
