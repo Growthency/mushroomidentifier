@@ -420,8 +420,8 @@ export default function BlogSidebar() {
           </div>
         </div>
 
-        {/* Adify — sidebar ad (desktop only; sidebar is hidden below lg) */}
-        <AdSlot placement="sidebar" spaced={false} className="mb-5" />
+        {/* Adify — sidebar ad #1 (after search + author) */}
+        <AdSlot placement="sidebar" index={0} spaced={false} className="mb-5" />
 
         {/* 3. Popular / Trending Posts */}
         <div
@@ -520,6 +520,9 @@ export default function BlogSidebar() {
             </ul>
           )}
         </div>
+
+        {/* Adify — sidebar ad #2 (below Recent Posts / Popular / banner) */}
+        <AdSlot placement="sidebar" index={1} spaced={false} className="mb-5" />
 
     </aside>
   )

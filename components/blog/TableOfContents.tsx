@@ -24,7 +24,8 @@ interface Props {
 }
 
 export default function TableOfContents({ headings: propHeadings, scope = 'article' }: Props) {
-  const [open, setOpen] = useState(true)
+  // Collapsed by default — readers click the header to expand it.
+  const [open, setOpen] = useState(false)
   const [headings, setHeadings] = useState<Heading[]>(propHeadings ?? [])
 
   useEffect(() => {

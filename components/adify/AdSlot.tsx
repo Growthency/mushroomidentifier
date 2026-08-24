@@ -22,6 +22,12 @@ interface AdSlotProps {
   className?: string
   /** Extra horizontal breathing room around inline slots. Default true. */
   spaced?: boolean
+  /**
+   * When set, render only the Nth enabled unit for this placement (0-based)
+   * instead of all of them. Used to place several sidebar ads at different
+   * positions, each showing a different unit (sorted by sort_order).
+   */
+  index?: number
 }
 
 /** Small, unobtrusive "Advertisement" label — good practice & network-friendly. */
@@ -44,7 +50,7 @@ function AdLabel() {
   )
 }
 
-export default function AdSlot({ placement, className, spaced = true }: AdSlotProps) {
+export default function AdSlot({ placement, className, spaced = true, index }: AdSlotProps) {
   const { getUnits } = useAdify()
 
   // The site navbar is `position: fixed` and transparent until scrolled, so a
@@ -65,7 +71,11 @@ export default function AdSlot({ placement, className, spaced = true }: AdSlotPr
     return () => window.removeEventListener('resize', measure)
   }, [placement])
 
-  const units = getUnits(placement)
+  const allUnits = getUnits(placement)
+  const units =
+    typeof index === 'number'
+      ? (allUnits[index] ? [allUnits[index]] : [])
+      : allUnits
 
   if (placement === 'sticky') {
     return <StickyAdBar />
