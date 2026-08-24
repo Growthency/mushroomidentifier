@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, Fragment } from 'react'
 import TableOfContents from '@/components/blog/TableOfContents'
 import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import AdSlot from '@/components/adify/AdSlot'
@@ -102,29 +102,29 @@ function renderWithShortcodes(html: string) {
   return parts.length > 0 ? <>{parts}</> : <div dangerouslySetInnerHTML={{ __html: html }} />
 }
 
-/** Count top-level closing </p> tags — a good-enough paragraph counter. */
-function countParagraphs(html: string): number {
-  const m = html.match(/<\/p>/gi)
-  return m ? m.length : 0
-}
-
 /**
- * Split HTML right after the Nth closing </p>. Returns [before, after].
- * If there are fewer than N paragraphs, everything goes in `before`.
+ * Split HTML into chunks of `n` paragraphs each (last chunk holds the
+ * remainder). Used to drop an in-content ad after every N paragraphs
+ * throughout the article, not just once. Splits only on top-level </p>
+ * boundaries so no tag or shortcode is ever cut in half.
  */
-function splitAfterParagraph(html: string, n: number): [string, string] {
-  if (n <= 0) return ['', html]
+function splitEveryNParagraphs(html: string, n: number): string[] {
+  if (n <= 0) return [html]
+  const parts: string[] = []
   const re = /<\/p>/gi
   let count = 0
+  let last = 0
   let m: RegExpExecArray | null
   while ((m = re.exec(html)) !== null) {
     count++
-    if (count >= n) {
+    if (count % n === 0) {
       const idx = m.index + m[0].length
-      return [html.slice(0, idx), html.slice(idx)]
+      parts.push(html.slice(last, idx))
+      last = idx
     }
   }
-  return [html, '']
+  if (last < html.length) parts.push(html.slice(last))
+  return parts.length ? parts : [html]
 }
 
 /**
@@ -175,16 +175,18 @@ export default function ArticleContent({ html, className, style }: ArticleConten
     })
   }, [html])
 
-  // ── Step 2: Work out where the in-content ad lands ──
-  // Its paragraph number comes from the ad unit itself (admin-configurable).
-  // We only split the HTML when an in-content ad actually applies to this
-  // device / page type, so articles without one render exactly as before.
+  // ── Step 2: In-content ads — repeat after every N paragraphs ──
+  // The interval comes from the in-content ad unit itself (its
+  // "paragraph_number" = every N paragraphs). We only split the body when an
+  // in-content ad actually applies to this device / page type, so articles
+  // without one render exactly as before. Capped so very long articles don't
+  // turn into an ad wall.
   const { getUnits } = useAdify()
   const inContentUnits = getUnits('in_content')
   const hasInContent = inContentUnits.length > 0
-  const paraN = inContentUnits[0]?.paragraph_number ?? 3
-  const remaining = Math.max(1, paraN - countParagraphs(beforeToc))
-  const [afterA, afterB] = hasInContent ? splitAfterParagraph(afterToc, remaining) : [afterToc, '']
+  const interval = Math.max(2, inContentUnits[0]?.paragraph_number ?? 3)
+  const MAX_IN_CONTENT_ADS = 10
+  const chunks = hasInContent ? splitEveryNParagraphs(afterToc, interval) : [afterToc]
 
   // ── Step 3: Render with shortcode expansion + ad slots ──
   return (
@@ -196,15 +198,14 @@ export default function ArticleContent({ html, className, style }: ArticleConten
           <TableOfContents scope="article" />
         </div>
       )}
-      {hasInContent ? (
-        <>
-          {renderWithShortcodes(afterA)}
-          <div className="not-prose"><AdSlot placement="in_content" /></div>
-          {afterB && renderWithShortcodes(afterB)}
-        </>
-      ) : (
-        renderWithShortcodes(afterToc)
-      )}
+      {chunks.map((chunk, i) => (
+        <Fragment key={i}>
+          {renderWithShortcodes(chunk)}
+          {hasInContent && i < chunks.length - 1 && i < MAX_IN_CONTENT_ADS && (
+            <div className="not-prose"><AdSlot placement="in_content" /></div>
+          )}
+        </Fragment>
+      ))}
       <div className="not-prose"><AdSlot placement="content_bottom" /></div>
     </div>
   )

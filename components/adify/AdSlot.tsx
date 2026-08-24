@@ -46,6 +46,25 @@ function AdLabel() {
 
 export default function AdSlot({ placement, className, spaced = true }: AdSlotProps) {
   const { getUnits } = useAdify()
+
+  // The site navbar is `position: fixed` and transparent until scrolled, so a
+  // header ad placed at the top of the flow would sit UNDER it and hide the
+  // menu links. Measure the navbar height at runtime and reserve that much
+  // space above the header ad so the menu stays fully visible & clickable.
+  // max() means a shorter (scrolled) measurement never lets the ad slide back
+  // under the full-height nav; paddingTop (not margin) avoids margin-collapse.
+  const [navClear, setNavClear] = useState(0)
+  useEffect(() => {
+    if (placement !== 'header') return
+    const measure = () => {
+      const nav = document.querySelector('nav') as HTMLElement | null
+      if (nav) setNavClear((prev) => Math.max(prev, nav.offsetHeight + 16))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [placement])
+
   const units = getUnits(placement)
 
   if (placement === 'sticky') {
@@ -53,6 +72,8 @@ export default function AdSlot({ placement, className, spaced = true }: AdSlotPr
   }
 
   if (units.length === 0) return null
+
+  const isHeader = placement === 'header'
 
   return (
     <div
@@ -62,7 +83,11 @@ export default function AdSlot({ placement, className, spaced = true }: AdSlotPr
         flexDirection: 'column',
         alignItems: 'center',
         gap: 16,
-        margin: spaced ? '24px auto' : '0 auto',
+        paddingTop: isHeader ? navClear : 0,
+        marginTop: isHeader ? 0 : (spaced ? 24 : 0),
+        marginBottom: spaced ? 24 : 0,
+        marginLeft: 'auto',
+        marginRight: 'auto',
         width: '100%',
       }}
     >

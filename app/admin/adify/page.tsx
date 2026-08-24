@@ -245,7 +245,7 @@ export default function AdifyPage() {
                 One click seeds your 5 Adsterra units into the best-performing placements:
                 <span className="block mt-2 space-y-1">
                   <Row t="728×90 Leaderboard" p="Header strip (desktop)" c={textFaint} />
-                  <Row t="300×250 Rectangle" p="In-content, after paragraph 3 (all devices)" c={textFaint} />
+                  <Row t="300×250 Rectangle" p="In-content, every 3 paragraphs (all devices)" c={textFaint} />
                   <Row t="160×300 Half-page" p="Sidebar (desktop)" c={textFaint} />
                   <Row t="468×60 Banner" p="End of article (desktop)" c={textFaint} />
                   <Row t="320×50 Anchor" p="Sticky bottom bar (mobile)" c={textFaint} />
@@ -284,7 +284,7 @@ export default function AdifyPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <h3 className="font-semibold text-base truncate" style={{ color: textPri }}>{a.name}</h3>
-                    <Badge color="#6366f1">{PLACEMENT_LABELS[a.placement]}{a.placement === 'in_content' ? ` · ¶${a.paragraph_number}` : ''}</Badge>
+                    <Badge color="#6366f1">{PLACEMENT_LABELS[a.placement]}{a.placement === 'in_content' ? ` · every ${a.paragraph_number}¶` : ''}</Badge>
                     <Badge color="#0ea5e9">{a.width}×{a.height}</Badge>
                     {a.enabled
                       ? <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-emerald-500/10 text-emerald-500">ACTIVE</span>
@@ -380,11 +380,12 @@ export default function AdifyPage() {
                 <p className="text-xs mt-1.5" style={{ color: textFaint }}>{PLACEMENT_HELP[form.placement]}</p>
               </Field>
 
-              {/* Paragraph number (only for in_content) */}
+              {/* Paragraph interval (only for in_content) */}
               {form.placement === 'in_content' && (
-                <Field label="Insert after paragraph #" mut={textMut}>
-                  <input type="number" min={1} value={form.paragraph_number} onChange={(e) => setForm({ ...form, paragraph_number: parseInt(e.target.value) || 1 })}
+                <Field label="Show an ad every N paragraphs" mut={textMut}>
+                  <input type="number" min={2} value={form.paragraph_number} onChange={(e) => setForm({ ...form, paragraph_number: parseInt(e.target.value) || 2 })}
                     className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-emerald-500/30" style={{ background: inputBg, borderColor: border, color: textPri }} />
+                  <p className="text-xs mt-1.5" style={{ color: textFaint }}>e.g. 3 = an ad repeats after every 3rd paragraph (max 10 per article).</p>
                 </Field>
               )}
 

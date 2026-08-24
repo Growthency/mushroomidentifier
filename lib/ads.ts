@@ -61,7 +61,7 @@ export const PLACEMENT_LABELS: Record<AdPlacement, string> = {
 export const PLACEMENT_HELP: Record<AdPlacement, string> = {
   header:         'Full-width strip directly under the top navigation, on every page.',
   content_top:    'Above the first heading of an article — high-viewability, above the fold.',
-  in_content:     'Inserted between paragraphs inside the article body. Best-performing slot.',
+  in_content:     'Repeats after every N paragraphs through the article body — the best-performing slot.',
   content_bottom: 'At the very end of the article body.',
   sidebar:        'Inside the right rail on article & species pages (desktop).',
   footer:         'Full-width strip directly above the site footer, on every page.',
