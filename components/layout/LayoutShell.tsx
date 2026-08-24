@@ -2,6 +2,8 @@
 import { usePathname } from 'next/navigation'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import AdifyProvider from '@/components/adify/AdifyProvider'
+import AdSlot from '@/components/adify/AdSlot'
 import type { MenuGroups } from '@/lib/menus'
 import type { SiteContent } from '@/lib/site-content'
 
@@ -20,9 +22,13 @@ export default function LayoutShell({
   if (hideShell) return <main>{children}</main>
 
   return (
-    <>
+    <AdifyProvider>
       <Navbar menuItems={menus?.header} />
+      {/* Adify — header strip (below the navbar, above content) */}
+      <AdSlot placement="header" className="px-4" />
       <main>{children}</main>
+      {/* Adify — footer strip (above the site footer) */}
+      <AdSlot placement="footer" className="px-4" />
       <Footer
         footerExplore={menus?.footerExplore}
         footerCompany={menus?.footerCompany}
@@ -33,6 +39,8 @@ export default function LayoutShell({
         exploreBadges={siteContent?.footerBadges.footerExplore}
         companyBadges={siteContent?.footerBadges.footerCompany}
       />
-    </>
+      {/* Adify — sticky bottom anchor (dismissible) */}
+      <AdSlot placement="sticky" />
+    </AdifyProvider>
   )
 }

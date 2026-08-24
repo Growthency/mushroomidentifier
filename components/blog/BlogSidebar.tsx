@@ -17,6 +17,7 @@ import {
   Crown, Check, ChevronRight, Sparkles,
   BookOpen, Zap, ShieldCheck, Star,
 } from 'lucide-react'
+import AdSlot from '@/components/adify/AdSlot'
 // TableOfContents removed from sidebar — now auto-injected inside article content
 
 const TRENDING_POSTS = [
@@ -418,6 +419,9 @@ export default function BlogSidebar() {
             </Link>
           </div>
         </div>
+
+        {/* Adify — sidebar ad (desktop only; sidebar is hidden below lg) */}
+        <AdSlot placement="sidebar" spaced={false} className="mb-5" />
 
         {/* 3. Popular / Trending Posts */}
         <div

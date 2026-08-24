@@ -300,6 +300,50 @@ CREATE POLICY "Auth users can upload avatars" ON storage.objects
   WITH CHECK (bucket_id = 'avatars');
 
 
+-- ── ADIFY: AD UNITS (Adsterra & other ad-network code) ───────
+CREATE TABLE IF NOT EXISTS ad_units (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  code TEXT NOT NULL,
+  width INT NOT NULL DEFAULT 300,
+  height INT NOT NULL DEFAULT 250,
+  placement TEXT NOT NULL DEFAULT 'content_bottom'
+    CHECK (placement IN ('header','content_top','in_content','content_bottom','sidebar','footer','sticky')),
+  paragraph_number INT NOT NULL DEFAULT 3,
+  page_types TEXT[] NOT NULL DEFAULT ARRAY['all'],
+  show_desktop BOOLEAN NOT NULL DEFAULT true,
+  show_mobile  BOOLEAN NOT NULL DEFAULT true,
+  lazy_load BOOLEAN NOT NULL DEFAULT true,
+  enabled BOOLEAN NOT NULL DEFAULT true,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ad_units_enabled   ON ad_units (enabled);
+CREATE INDEX IF NOT EXISTS idx_ad_units_placement ON ad_units (placement);
+
+ALTER TABLE ad_units ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Anyone can read enabled ad units" ON ad_units;
+CREATE POLICY "Anyone can read enabled ad units"
+  ON ad_units FOR SELECT TO anon, authenticated
+  USING (enabled = true);
+
+CREATE OR REPLACE FUNCTION update_ad_units_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_ad_units_updated_at ON ad_units;
+CREATE TRIGGER trg_ad_units_updated_at
+  BEFORE UPDATE ON ad_units
+  FOR EACH ROW EXECUTE FUNCTION update_ad_units_updated_at();
+
+
 -- ============================================================
 -- DONE! All tables, policies, indexes, and storage buckets created.
 -- ============================================================
