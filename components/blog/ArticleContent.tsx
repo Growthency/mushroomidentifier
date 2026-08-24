@@ -176,16 +176,16 @@ export default function ArticleContent({ html, className, style }: ArticleConten
   }, [html])
 
   // ── Step 2: In-content ads — repeat after every N paragraphs ──
-  // The interval comes from the in-content ad unit itself (its
-  // "paragraph_number" = every N paragraphs). We only split the body when an
-  // in-content ad actually applies to this device / page type, so articles
-  // without one render exactly as before. Capped so very long articles don't
-  // turn into an ad wall.
+  // Both knobs come from the in-content ad unit itself (admin-typed):
+  //   paragraph_number — insert an ad after every N paragraphs
+  //   max_ads          — hard cap of in-content ads per article (10/15/20…)
+  // We only split the body when an in-content ad actually applies to this
+  // device / page type, so articles without one render exactly as before.
   const { getUnits } = useAdify()
   const inContentUnits = getUnits('in_content')
   const hasInContent = inContentUnits.length > 0
   const interval = Math.max(2, inContentUnits[0]?.paragraph_number ?? 3)
-  const MAX_IN_CONTENT_ADS = 10
+  const maxAds = Math.max(1, inContentUnits[0]?.max_ads ?? 10)
   const chunks = hasInContent ? splitEveryNParagraphs(afterToc, interval) : [afterToc]
 
   // ── Step 3: Render with shortcode expansion + ad slots ──
@@ -201,7 +201,7 @@ export default function ArticleContent({ html, className, style }: ArticleConten
       {chunks.map((chunk, i) => (
         <Fragment key={i}>
           {renderWithShortcodes(chunk)}
-          {hasInContent && i < chunks.length - 1 && i < MAX_IN_CONTENT_ADS && (
+          {hasInContent && i < chunks.length - 1 && i < maxAds && (
             <div className="not-prose"><AdSlot placement="in_content" /></div>
           )}
         </Fragment>

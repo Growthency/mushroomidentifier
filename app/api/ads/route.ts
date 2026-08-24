@@ -20,14 +20,30 @@ export async function GET() {
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('ad_units')
       .select(
-        'id, name, code, width, height, placement, paragraph_number, page_types, show_desktop, show_mobile, lazy_load, sort_order',
+        'id, name, code, width, height, placement, paragraph_number, max_ads, sticky, page_types, show_desktop, show_mobile, lazy_load, sort_order',
       )
       .eq('enabled', true)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: true })
+
+    // Fallback for a DB where the sticky/max_ads migration hasn't run yet —
+    // retry without the new columns so ads keep serving during the window
+    // between code deploy and SQL run.
+    if (error && /max_ads|sticky/i.test(error.message)) {
+      const legacy = await supabase
+        .from('ad_units')
+        .select(
+          'id, name, code, width, height, placement, paragraph_number, page_types, show_desktop, show_mobile, lazy_load, sort_order',
+        )
+        .eq('enabled', true)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true })
+      data = (legacy.data ?? []).map((a: any) => ({ ...a, max_ads: 10, sticky: false })) as any
+      error = legacy.error
+    }
 
     if (error) {
       // Table may not exist yet (migration not run) — fail soft so the site

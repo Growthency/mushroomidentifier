@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import {
   BadgeDollarSign, Plus, Trash2, Edit3, Check, X, AlertCircle, Loader2,
-  Power, Zap, Eye, EyeOff, Monitor, Smartphone, Sparkles, LayoutTemplate,
+  Power, Zap, Eye, EyeOff, Monitor, Smartphone, Sparkles, LayoutTemplate, Pin,
 } from 'lucide-react'
 import { useTheme } from '@/components/providers/ThemeProvider'
 import AdFrame from '@/components/adify/AdFrame'
@@ -20,6 +20,8 @@ interface AdUnit {
   height: number
   placement: AdPlacement
   paragraph_number: number
+  max_ads: number
+  sticky: boolean
   page_types: AdPageType[]
   show_desktop: boolean
   show_mobile: boolean
@@ -37,6 +39,8 @@ type Form = {
   height: number
   placement: AdPlacement
   paragraph_number: number
+  max_ads: number
+  sticky: boolean
   page_scope: 'all' | 'home' | 'article'
   show_desktop: boolean
   show_mobile: boolean
@@ -48,9 +52,13 @@ type Form = {
 const EMPTY_FORM: Form = {
   name: '', code: '', width: 300, height: 250,
   placement: 'in_content', paragraph_number: 3,
+  max_ads: 10, sticky: true,
   page_scope: 'all', show_desktop: true, show_mobile: true,
   lazy_load: true, enabled: true, sort_order: 0,
 }
+
+/** Placements where the Sticky toggle makes sense (header strip + sidebar). */
+const STICKY_PLACEMENTS: AdPlacement[] = ['header', 'sidebar']
 
 function scopeFromPageTypes(pt: AdPageType[]): 'all' | 'home' | 'article' {
   if (!pt || pt.length === 0 || pt.includes('all')) return 'all'
@@ -102,6 +110,7 @@ export default function AdifyPage() {
     setForm({
       name: a.name, code: a.code, width: a.width, height: a.height,
       placement: a.placement, paragraph_number: a.paragraph_number,
+      max_ads: a.max_ads ?? 10, sticky: a.sticky ?? true,
       page_scope: scopeFromPageTypes(a.page_types),
       show_desktop: a.show_desktop, show_mobile: a.show_mobile,
       lazy_load: a.lazy_load, enabled: a.enabled, sort_order: a.sort_order,
@@ -284,8 +293,11 @@ export default function AdifyPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <h3 className="font-semibold text-base truncate" style={{ color: textPri }}>{a.name}</h3>
-                    <Badge color="#6366f1">{PLACEMENT_LABELS[a.placement]}{a.placement === 'in_content' ? ` · every ${a.paragraph_number}¶` : ''}</Badge>
+                    <Badge color="#6366f1">{PLACEMENT_LABELS[a.placement]}{a.placement === 'in_content' ? ` · every ${a.paragraph_number}¶ · max ${a.max_ads ?? 10}` : ''}</Badge>
                     <Badge color="#0ea5e9">{a.width}×{a.height}</Badge>
+                    {STICKY_PLACEMENTS.includes(a.placement) && (a.sticky ?? true) && (
+                      <Badge color="#f59e0b">STICKY</Badge>
+                    )}
                     {a.enabled
                       ? <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-emerald-500/10 text-emerald-500">ACTIVE</span>
                       : <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold" style={{ background: 'rgba(148,163,184,0.15)', color: textFaint }}>PAUSED</span>}
@@ -380,12 +392,37 @@ export default function AdifyPage() {
                 <p className="text-xs mt-1.5" style={{ color: textFaint }}>{PLACEMENT_HELP[form.placement]}</p>
               </Field>
 
-              {/* Paragraph interval (only for in_content) */}
+              {/* Paragraph interval + per-article cap (only for in_content) */}
               {form.placement === 'in_content' && (
-                <Field label="Show an ad every N paragraphs" mut={textMut}>
-                  <input type="number" min={2} value={form.paragraph_number} onChange={(e) => setForm({ ...form, paragraph_number: parseInt(e.target.value) || 2 })}
-                    className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-emerald-500/30" style={{ background: inputBg, borderColor: border, color: textPri }} />
-                  <p className="text-xs mt-1.5" style={{ color: textFaint }}>e.g. 3 = an ad repeats after every 3rd paragraph (max 10 per article).</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <Field label="Show an ad every N paragraphs" mut={textMut}>
+                    <input type="number" min={2} value={form.paragraph_number} onChange={(e) => setForm({ ...form, paragraph_number: parseInt(e.target.value) || 2 })}
+                      className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-emerald-500/30" style={{ background: inputBg, borderColor: border, color: textPri }} />
+                    <p className="text-xs mt-1.5" style={{ color: textFaint }}>e.g. 3 = an ad after every 3rd paragraph.</p>
+                  </Field>
+                  <Field label="Max ads per article" mut={textMut}>
+                    <input type="number" min={1} max={50} value={form.max_ads} onChange={(e) => setForm({ ...form, max_ads: parseInt(e.target.value) || 1 })}
+                      className="w-full px-4 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-emerald-500/30" style={{ background: inputBg, borderColor: border, color: textPri }} />
+                    <p className="text-xs mt-1.5" style={{ color: textFaint }}>Hard cap per page — e.g. 10, 15 or 20.</p>
+                  </Field>
+                </div>
+              )}
+
+              {/* Sticky toggle (header strip + sidebar) */}
+              {STICKY_PLACEMENTS.includes(form.placement) && (
+                <Field label="Sticky behavior" mut={textMut}>
+                  <Toggle
+                    on={form.sticky}
+                    onClick={() => setForm({ ...form, sticky: !form.sticky })}
+                    icon={<Pin className="w-4 h-4" />}
+                    label={form.sticky ? 'Sticky — follows the scroll' : 'Static — stays in place'}
+                    inputBg={inputBg} border={border} textMut={textMut}
+                  />
+                  <p className="text-xs mt-1.5" style={{ color: textFaint }}>
+                    {form.placement === 'header'
+                      ? 'Sticky: the banner pins below the menu and stays visible while scrolling.'
+                      : 'Sticky: the ad rides down the sidebar as the reader scrolls the article. (Applies to the lower sidebar slot.)'}
+                  </p>
                 </Field>
               )}
 

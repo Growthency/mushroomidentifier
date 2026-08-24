@@ -310,6 +310,8 @@ CREATE TABLE IF NOT EXISTS ad_units (
   placement TEXT NOT NULL DEFAULT 'content_bottom'
     CHECK (placement IN ('header','content_top','in_content','content_bottom','sidebar','footer','sticky')),
   paragraph_number INT NOT NULL DEFAULT 3,
+  max_ads INT NOT NULL DEFAULT 10,
+  sticky BOOLEAN NOT NULL DEFAULT true,
   page_types TEXT[] NOT NULL DEFAULT ARRAY['all'],
   show_desktop BOOLEAN NOT NULL DEFAULT true,
   show_mobile  BOOLEAN NOT NULL DEFAULT true,

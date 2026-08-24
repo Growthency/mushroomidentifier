@@ -25,6 +25,10 @@ export interface AdUnit {
   height: number
   placement: AdPlacement
   paragraph_number: number
+  /** For in_content: maximum number of ads to insert per article. */
+  max_ads: number
+  /** Header/sidebar: pin the ad so it follows the scroll (stays in view). */
+  sticky: boolean
   page_types: AdPageType[]
   show_desktop: boolean
   show_mobile: boolean
@@ -39,8 +43,8 @@ export interface AdUnit {
 export type PublicAdUnit = Pick<
   AdUnit,
   | 'id' | 'name' | 'code' | 'width' | 'height' | 'placement'
-  | 'paragraph_number' | 'page_types' | 'show_desktop' | 'show_mobile'
-  | 'lazy_load' | 'sort_order'
+  | 'paragraph_number' | 'max_ads' | 'sticky' | 'page_types'
+  | 'show_desktop' | 'show_mobile' | 'lazy_load' | 'sort_order'
 >
 
 export const AD_PLACEMENTS: AdPlacement[] = [

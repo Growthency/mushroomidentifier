@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
     height,
     placement,
     paragraph_number: Number.isFinite(body.paragraph_number) ? body.paragraph_number : 3,
+    max_ads: Number.isFinite(body.max_ads) && body.max_ads > 0 ? body.max_ads : 10,
+    sticky: body.sticky !== false,
     page_types: sanitizePageTypes(body.page_types),
     show_desktop: body.show_desktop !== false,
     show_mobile: body.show_mobile !== false,
@@ -72,7 +74,15 @@ export async function POST(request: NextRequest) {
     sort_order: Number.isFinite(body.sort_order) ? body.sort_order : 0,
   }
 
-  const { data, error } = await admin.from('ad_units').insert(row).select().single()
+  let { data, error } = await admin.from('ad_units').insert(row).select().single()
+
+  // DB not migrated yet (sticky/max_ads columns missing) — retry without them
+  // so ad management keeps working during the deploy→SQL window.
+  if (error && /max_ads|sticky/i.test(error.message)) {
+    const { max_ads, sticky, ...legacyRow } = row
+    ;({ data, error } = await admin.from('ad_units').insert(legacyRow).select().single())
+  }
+
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ad: data })
 }

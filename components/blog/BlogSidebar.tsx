@@ -339,7 +339,10 @@ export default function BlogSidebar() {
     : recent
 
   return (
-    <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0">
+    // self-stretch: the aside matches the (much taller) article column, so
+    // the sticky lower ad can ride down the empty rail as the reader
+    // scrolls, stopping automatically at the column's end.
+    <aside className="hidden lg:block w-[272px] xl:w-[292px] flex-shrink-0 self-stretch">
 
         {/* 1. Search */}
         <div className="relative mb-4">
@@ -521,8 +524,9 @@ export default function BlogSidebar() {
           )}
         </div>
 
-        {/* Adify — sidebar ad #2 (below Recent Posts / Popular / banner) */}
-        <AdSlot placement="sidebar" index={1} spaced={false} className="mb-5" />
+        {/* Adify — sidebar ad #2 (below Recent Posts). allowSticky: when the
+            unit's Sticky flag is on it follows the scroll down the rail. */}
+        <AdSlot placement="sidebar" index={1} spaced={false} className="mb-5" allowSticky />
 
     </aside>
   )

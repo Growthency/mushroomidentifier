@@ -42,6 +42,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   if (body.height !== undefined) updates.height = body.height
   if (body.placement !== undefined) updates.placement = body.placement
   if (body.paragraph_number !== undefined) updates.paragraph_number = body.paragraph_number
+  if (body.max_ads !== undefined) updates.max_ads = body.max_ads
+  if (body.sticky !== undefined) updates.sticky = body.sticky
   if (body.page_types !== undefined) updates.page_types = sanitizePageTypes(body.page_types)
   if (body.show_desktop !== undefined) updates.show_desktop = body.show_desktop
   if (body.show_mobile !== undefined) updates.show_mobile = body.show_mobile
@@ -49,12 +51,27 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   if (body.enabled !== undefined) updates.enabled = body.enabled
   if (body.sort_order !== undefined) updates.sort_order = body.sort_order
 
-  const { data, error } = await admin
+  let { data, error } = await admin
     .from('ad_units')
     .update(updates)
     .eq('id', id)
     .select()
     .single()
+
+  // DB not migrated yet (sticky/max_ads columns missing) — retry without them
+  // so editing other fields keeps working during the deploy→SQL window.
+  if (error && /max_ads|sticky/i.test(error.message)) {
+    delete updates.max_ads
+    delete updates.sticky
+    if (Object.keys(updates).length > 0) {
+      ;({ data, error } = await admin
+        .from('ad_units')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single())
+    }
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ad: data })

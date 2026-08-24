@@ -24,8 +24,9 @@ export default function LayoutShell({
   return (
     <AdifyProvider>
       <Navbar menuItems={menus?.header} />
-      {/* Adify — header strip (below the navbar, above content) */}
-      <AdSlot placement="header" className="px-4" />
+      {/* Adify — header strip (below the navbar; follows scroll when the
+          unit's admin-controlled Sticky flag is on) */}
+      <AdSlot placement="header" className="px-4" allowSticky />
       <main>{children}</main>
       {/* Adify — footer strip (above the site footer) */}
       <AdSlot placement="footer" className="px-4" />
