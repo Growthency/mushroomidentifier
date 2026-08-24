@@ -31,6 +31,9 @@ import { getSiteContent } from "@/lib/site-content";
 // is safe; the file picker / FileReader / localStorage calls all live
 // in event handlers that only run after hydration anyway.
 import HomeIdentifier from "./HomeIdentifier";
+// Adify — homepage middle ad slots (the homepage doesn't use ArticleContent,
+// so the in_content placement is dropped in manually between sections).
+import AdSlot from "@/components/adify/AdSlot";
 
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
 // HomeReviews import removed — component no longer rendered on homepage.
@@ -368,6 +371,9 @@ export default async function Home() {
           belongs to the upload area instead of floating between
           sections. */}
       <HomeIdentifier introHtml={introHtml} />
+
+      {/* Adify — homepage middle ad #1 (below the identifier tool) */}
+      <AdSlot placement="in_content" className="px-4" />
 
       {/* === Admin-managed homepage middle ===
           If custom homepage blocks are published via /admin/homepage,
@@ -3491,6 +3497,9 @@ export default async function Home() {
         </>
       )}
       {/* === END admin-editable homepage middle === */}
+
+      {/* Adify — homepage middle ad #2 (end of the middle content) */}
+      <AdSlot placement="in_content" className="px-4" />
 
       {/* HomeReviews removed per product decision — reviews section no
           longer appears on homepage. Component file kept on disk in case

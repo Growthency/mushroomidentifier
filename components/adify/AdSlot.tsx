@@ -11,16 +11,24 @@
  * the bottom of the viewport instead of an inline block.
  *
  * Sticky ads (admin-controlled per unit, `unit.sticky`):
- *   - header  — once the strip would scroll out of view it pins below the
- *               fixed navbar as a floating glass card and follows the scroll.
- *   - sidebar — the slot uses position:sticky and rides down the (stretched)
- *               sidebar column as the reader scrolls the article.
+ *   - header  — the strip is position:sticky: it scrolls with the page until
+ *               it reaches the navbar, then pins just below it.
+ *   - sidebar — position:sticky inside the (stretched) sidebar column; the ad
+ *               rides down the rail as the reader scrolls the article.
  * A slot only honors the unit's sticky flag when the layout passes
  * `allowSticky` — so only the intended positions (header strip, LOWER sidebar
  * slot) ever stick, even though the flag defaults to true in the DB.
+ *
+ * IMPORTANT implementation note: both sticky modes are PURE CSS
+ * (position: sticky). An earlier version pinned the header by swapping the
+ * wrapper to position:fixed and mutating min-heights from a scroll handler —
+ * that fought Chrome's scroll anchoring and could hard-freeze the renderer on
+ * long articles. Never reintroduce scroll-handler layout mutation here;
+ * sticky elements are exempt from scroll anchoring by spec, so this version
+ * stays smooth. overflow-anchor is disabled on the slots as extra safety.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { useAdify } from './AdifyProvider'
 import AdFrame from './AdFrame'
@@ -70,10 +78,10 @@ export default function AdSlot({ placement, className, spaced = true, index, all
 
   // The site navbar is `position: fixed` and transparent until scrolled, so a
   // header ad placed at the top of the flow would sit UNDER it and hide the
-  // menu links. Measure the navbar height at runtime and reserve that much
-  // space above the header ad so the menu stays fully visible & clickable.
-  // max() means a shorter (scrolled) measurement never lets the ad slide back
-  // under the full-height nav; paddingTop (not margin) avoids margin-collapse.
+  // menu links. Measure the navbar's full height once (plus on resize) and
+  // reserve that much space above the header ad so the menu stays fully
+  // visible & clickable. max() keeps the largest seen value so the shrunken
+  // scrolled nav never lets the ad slide back under the full-height nav.
   const [navClear, setNavClear] = useState(0)
   useEffect(() => {
     if (placement !== 'header') return
@@ -96,47 +104,6 @@ export default function AdSlot({ placement, className, spaced = true, index, all
   // admin-controlled flag is on.
   const stickyActive = allowSticky && !!units[0]?.sticky
 
-  // Track the navbar's CURRENT height (it shrinks when the page scrolls) so
-  // pinned ads sit exactly below it. Shared by header-pin and sidebar-sticky.
-  const [navNow, setNavNow] = useState(0)
-  // Header-only: is the strip currently pinned (following the scroll)?
-  const [pinned, setPinned] = useState(false)
-  const outerRef = useRef<HTMLDivElement>(null)
-  const innerRef = useRef<HTMLDivElement>(null)
-  // Reserved height so the page doesn't jump when the header strip detaches
-  // to position:fixed.
-  const [reservedH, setReservedH] = useState(0)
-
-  useEffect(() => {
-    if (!stickyActive) return
-    let raf = 0
-    const update = () => {
-      raf = 0
-      const nav = document.querySelector('nav') as HTMLElement | null
-      const h = nav ? nav.offsetHeight : 0
-      setNavNow((prev) => (Math.abs(prev - h) > 3 ? h : prev))
-      if (placement === 'header' && outerRef.current) {
-        const top = outerRef.current.getBoundingClientRect().top
-        // Pin once the slot's box would slide under the navbar.
-        setPinned(top < h - 8)
-        if (innerRef.current && innerRef.current.offsetHeight > 0) {
-          setReservedH((prev) => Math.max(prev, innerRef.current!.offsetHeight))
-        }
-      }
-    }
-    const onScrollResize = () => {
-      if (!raf) raf = requestAnimationFrame(update)
-    }
-    update()
-    window.addEventListener('scroll', onScrollResize, { passive: true })
-    window.addEventListener('resize', onScrollResize)
-    return () => {
-      if (raf) cancelAnimationFrame(raf)
-      window.removeEventListener('scroll', onScrollResize)
-      window.removeEventListener('resize', onScrollResize)
-    }
-  }, [stickyActive, placement])
-
   if (placement === 'sticky') {
     return <StickyAdBar />
   }
@@ -144,70 +111,76 @@ export default function AdSlot({ placement, className, spaced = true, index, all
   if (units.length === 0) return null
 
   const isHeader = placement === 'header'
-  const headerPinned = isHeader && stickyActive && pinned
 
-  // Sidebar sticky: pure CSS — rides down the stretched sidebar column and
-  // stops at its end automatically (never overlaps the footer).
+  // ── Pure-CSS sticky offsets ──
+  // Scrolled nav is shorter than the full one; ~64px covers it comfortably.
+  const SCROLLED_NAV = 72
+  // Header slot: its box includes navClear of top padding. Sticking the BOX
+  // at top:(SCROLLED_NAV - navClear) places the AD (below the padding) just
+  // under the scrolled navbar. Negative top is valid for position:sticky.
+  const headerSticky = isHeader && stickyActive
   const sidebarSticky = placement === 'sidebar' && stickyActive
 
   return (
     <div
-      ref={outerRef}
       className={className}
       style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 16,
         paddingTop: isHeader ? navClear : 0,
         marginTop: isHeader ? 0 : (spaced ? 24 : 0),
         marginBottom: spaced ? 24 : 0,
         marginLeft: 'auto',
         marginRight: 'auto',
         width: '100%',
-        // Keep the strip's space in the page while its content floats.
-        minHeight: headerPinned && reservedH ? reservedH : undefined,
+        // Sticky elements are exempt from scroll anchoring, but disable it
+        // explicitly so ad-height settling can never tug the scroll position.
+        overflowAnchor: 'none',
+        ...(headerSticky
+          ? { position: 'sticky' as const, top: SCROLLED_NAV - (navClear || 104), zIndex: 40 }
+          : null),
         ...(sidebarSticky
-          ? { position: 'sticky' as const, top: (navNow || 72) + 16, zIndex: 10 }
+          ? { position: 'sticky' as const, top: SCROLLED_NAV + 16, zIndex: 10 }
           : null),
       }}
     >
-      <div
-        ref={innerRef}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 16,
-          width: headerPinned ? 'auto' : '100%',
-          ...(headerPinned
-            ? {
-                position: 'fixed' as const,
-                top: navNow + 6,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 40, // below the navbar (z-50)
-                maxWidth: 'calc(100vw - 16px)',
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                border: '1px solid rgba(15,23,42,0.08)',
-                borderRadius: 14,
-                boxShadow: '0 6px 24px rgba(15,23,42,0.14)',
-                padding: '4px 10px 8px',
-              }
-            : null),
-        }}
-      >
-        {units.map((u) => (
-          <div key={u.id} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <AdLabel />
-            <AdFrame
-              code={u.code}
-              width={u.width}
-              height={u.height}
-              lazy={u.lazy_load}
-              title={u.name}
-            />
-          </div>
-        ))}
-      </div>
+      {units.map((u) => (
+        <div
+          key={u.id}
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            ...(headerSticky
+              ? {
+                  // Soft glass card so the pinned banner stays readable when
+                  // it floats over page content while scrolling.
+                  width: 'fit-content',
+                  maxWidth: '100%',
+                  background: 'rgba(255,255,255,0.88)',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(15,23,42,0.06)',
+                  borderRadius: 14,
+                  boxShadow: '0 4px 18px rgba(15,23,42,0.08)',
+                  padding: '4px 10px 8px',
+                }
+              : null),
+          }}
+        >
+          <AdLabel />
+          <AdFrame
+            code={u.code}
+            width={u.width}
+            height={u.height}
+            lazy={u.lazy_load}
+            title={u.name}
+          />
+        </div>
+      ))}
     </div>
   )
 }
