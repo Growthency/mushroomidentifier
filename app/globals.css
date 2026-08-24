@@ -104,7 +104,14 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; overflow-x: hidden; }
+/* overflow-x: per spec, `hidden` on one axis forces the other axis to `auto`,
+   which silently turns html AND body into scroll containers. A sticky element
+   then computes against BODY's scrollport (which never moves — the viewport
+   does the scrolling) and position:sticky NEVER engages anywhere on the page.
+   `clip` clips exactly like hidden but does NOT create a scroll container, so
+   sticky works. The `hidden` line stays as a fallback for ancient browsers
+   (they ignore the unknown `clip` value; modern ones take the later value). */
+html { scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
 
 /* Offset anchor scroll for fixed navbar */
 h1[id], h2[id], h3[id], h4[id] {
@@ -114,7 +121,8 @@ body {
   background: var(--body-bg);
   color: var(--text-primary);
   font-family: var(--font-inter), 'Inter', sans-serif;
-  overflow-x: hidden;
+  overflow-x: hidden; /* fallback — see html rule above */
+  overflow-x: clip;   /* keeps body from becoming a scroll container (sticky ads) */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
