@@ -9,7 +9,7 @@ import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 // gradient. New posts still surface within 60s thanks to CDN edge cache rules
 // in next.config.js + revalidatePath('/blog') calls from the admin publish
 // API routes.
-export const revalidate = 60
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Mushroom Blog – ID Guides, Safety & Foraging Tips',
@@ -39,7 +39,7 @@ async function getDbPosts() {
 
     const { data: posts, error } = await supabase
       .from('blog_posts')
-      .select('id, title, slug, excerpt, content, featured_image, category, risk_level, region, is_premium, views, read_time, status, created_at, published_at')
+      .select('id, title, slug, excerpt, featured_image, category, risk_level, region, is_premium, views, read_time, status, created_at, published_at')
       .eq('status', 'published')
       .order('published_at', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false })
@@ -55,12 +55,9 @@ async function getDbPosts() {
     return (posts ?? [])
       .filter(p => !BLOG_HIDDEN_SLUGS.has(p.slug))
       .map(p => {
-      // Auto-generate excerpt from content if excerpt is empty
-      let excerpt = p.excerpt || ''
-      if (!excerpt && p.content) {
-        const text = p.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-        excerpt = text.length > 160 ? text.slice(0, 157).replace(/\s+\S*$/, '') + '...' : text
-      }
+      // excerpt is backfilled on every post (no need to pull full `content`
+      // just to derive it — that was a major source of database egress).
+      const excerpt = p.excerpt || ''
       return {
       id: p.id + 1000,
       title: p.title,

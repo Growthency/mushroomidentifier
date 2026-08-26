@@ -3,7 +3,12 @@
 // TTFBs (the "blank gradient" pause). Editorial content rarely changes, so
 // 60s freshness is plenty — admin updates that need to propagate sooner can
 // call revalidatePath(`/${slug}`) from their save handler.
-export const revalidate = 60
+// 10-minute ISR. Article pages are the #1 crawl target for search bots;
+// at 60s each page re-fetched its full HTML `content` from Supabase up to
+// once a minute per URL — across 100+ URLs that was the main egress drain.
+// 600s cuts regeneration ~10x. Admin edits still appear within 10 min, or
+// instantly via the admin "Clear Cache" button (revalidatePath).
+export const revalidate = 600
 
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -88,14 +93,14 @@ async function getRelatedPosts(currentSlug: string, category?: string) {
       .slice(0, 3)
       .map((p) => ({
         ...p,
-        featured_image: resolveFeaturedImage(p.featured_image, p.content),
+        featured_image: p.featured_image || '',
       }))
 
   // Try same category first. `content` is needed for the image fallback.
   if (category) {
     const { data } = await supabase
       .from('blog_posts')
-      .select('slug, title, excerpt, featured_image, content, category, risk_level')
+      .select('slug, title, excerpt, featured_image, category, risk_level')
       .eq('status', 'published')
       .eq('category', category)
       .neq('slug', fullSlug)
@@ -108,7 +113,7 @@ async function getRelatedPosts(currentSlug: string, category?: string) {
   // Fallback: any published posts
   const { data } = await supabase
     .from('blog_posts')
-    .select('slug, title, excerpt, featured_image, content, category, risk_level')
+    .select('slug, title, excerpt, featured_image, category, risk_level')
     .eq('status', 'published')
     .neq('slug', fullSlug)
     .order('published_at', { ascending: false })
