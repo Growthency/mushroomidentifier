@@ -28,6 +28,13 @@ const nextConfig = {
         hostname: 'tsbxbtajtzfvianasoaw.supabase.co',
       },
       {
+        // New Supabase project (migrated 2026-08-26 after the old project hit
+        // its free-tier egress quota). Images uploaded to the new project's
+        // Storage are served from this host.
+        protocol: 'https',
+        hostname: 'dmdxxeplmgnorvylvdaz.supabase.co',
+      },
+      {
         // Vercel Blob storage — Writerfy auto-publish uploads images here.
         // Without this entry Next.js <Image> silently refuses to render
         // them, which is why sidebar Recent Posts thumbnails appeared
