@@ -83,6 +83,47 @@ export default function AdifyPage() {
   const [saving, setSaving] = useState(false)
   const [previewId, setPreviewId] = useState<string | null>(null)
 
+  // Master switch: `masterSaved` is what's live, `masterDraft` is the toggle
+  // position — nothing changes on the site until Save is clicked.
+  const [masterSaved, setMasterSaved] = useState<boolean | null>(null)
+  const [masterDraft, setMasterDraft] = useState(true)
+  const [masterSaving, setMasterSaving] = useState(false)
+  const [masterNotice, setMasterNotice] = useState<string | null>(null)
+
+  async function loadMaster() {
+    try {
+      const res = await fetch('/api/admin/ads/settings')
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to load')
+      setMasterSaved(json.enabled); setMasterDraft(json.enabled)
+    } catch (e: any) {
+      setMasterNotice(`Could not load master switch: ${e.message}`)
+    }
+  }
+
+  async function saveMaster() {
+    setMasterSaving(true); setMasterNotice(null)
+    try {
+      const res = await fetch('/api/admin/ads/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: masterDraft }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to save')
+      setMasterSaved(json.enabled)
+      setMasterNotice(json.enabled
+        ? 'Saved — ads are ON sitewide (live within ~30 seconds).'
+        : 'Saved — ads are OFF. The whole site is ad-free within ~30 seconds.')
+    } catch (e: any) {
+      alert(e.message)
+    } finally {
+      setMasterSaving(false)
+    }
+  }
+
+  useEffect(() => { loadMaster() }, [])
+
   async function load() {
     setLoading(true); setError(null)
     try {
@@ -215,6 +256,57 @@ export default function AdifyPage() {
         >
           <Plus className="w-4 h-4" /> Add Ad Unit
         </button>
+      </div>
+
+      {/* Master switch */}
+      <div
+        className="p-5 rounded-2xl border-2 flex items-center justify-between gap-4 flex-wrap"
+        style={{
+          background: cardBg,
+          borderColor: masterSaved === false ? 'rgba(239,68,68,0.35)' : 'rgba(16,185,129,0.35)',
+        }}
+      >
+        <div className="flex items-center gap-3 min-w-[240px] flex-1">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${masterSaved === false ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-500'}`}>
+            <Power className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-bold text-base" style={{ color: textPri }}>
+              All ads sitewide:{' '}
+              {masterSaved === null
+                ? <span style={{ color: textFaint }}>…</span>
+                : masterSaved
+                  ? <span className="text-emerald-500">ON</span>
+                  : <span className="text-red-500">OFF — site is ad-free</span>}
+            </h3>
+            <p className="text-sm" style={{ color: textMut }}>
+              Master switch for every ad unit below. Turning it off keeps each unit&apos;s own Active/Paused setting, so turning it back on restores them exactly.
+            </p>
+            {masterNotice && <p className="text-sm mt-1 text-emerald-500">{masterNotice}</p>}
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={masterDraft}
+            aria-label="Ads master switch"
+            disabled={masterSaved === null}
+            onClick={() => { setMasterDraft((v) => !v); setMasterNotice(null) }}
+            className={`relative w-14 h-8 rounded-full transition-colors disabled:opacity-50 ${masterDraft ? 'bg-emerald-500' : 'bg-slate-400'}`}
+          >
+            <span className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow transition-transform ${masterDraft ? 'translate-x-6' : ''}`} />
+          </button>
+          <span className="text-sm font-semibold w-8" style={{ color: textPri }}>{masterDraft ? 'On' : 'Off'}</span>
+          <button
+            onClick={saveMaster}
+            disabled={masterSaving || masterSaved === null || masterDraft === masterSaved}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors disabled:opacity-40"
+          >
+            {masterSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            Save
+          </button>
+        </div>
       </div>
 
       {/* How it works */}

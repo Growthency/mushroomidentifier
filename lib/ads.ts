@@ -6,6 +6,12 @@
  * rendered VERBATIM — nothing here rewrites the ad code.
  */
 
+/**
+ * site_settings key for the Adify master switch. Value 'false' = the whole
+ * site is ad-free; anything else (or a missing row) = ads serve normally.
+ */
+export const ADS_MASTER_KEY = 'ads_enabled'
+
 export type AdPlacement =
   | 'header'
   | 'content_top'

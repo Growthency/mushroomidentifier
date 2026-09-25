@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { ADS_MASTER_KEY } from '@/lib/ads'
 
 /**
  * Public endpoint — returns the ENABLED ad units the frontend AdifyProvider
  * needs to render. Ad snippets are public by nature (they end up in the page),
- * so returning `code` here is fine. Only enabled rows are exposed.
+ * so returning `code` here is fine. Only enabled rows are exposed, and none at
+ * all while the Adify master switch (site_settings.ads_enabled) is off.
  *
  * Kept dynamic so admin changes appear on the next page load. The response is
  * tiny (a handful of rows) and cached briefly at the edge.
@@ -19,6 +21,20 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
+
+    // Master switch off → whole site is ad-free. A missing row (or a read
+    // error) counts as ON so ads never silently vanish.
+    const master = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', ADS_MASTER_KEY)
+      .maybeSingle()
+    if (master.data?.value === 'false') {
+      return NextResponse.json(
+        { ads: [] },
+        { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=120' } },
+      )
+    }
 
     let { data, error } = await supabase
       .from('ad_units')

@@ -156,6 +156,7 @@ function SettingsTab({ dark }: { dark: boolean }) {
   // Group by group_name
   const groups: Record<string, SiteSetting[]> = {}
   for (const s of settings) {
+    if (s.group_name === 'ads') continue // Adify master switch — managed on /admin/adify
     if (!groups[s.group_name]) groups[s.group_name] = []
     groups[s.group_name].push(s)
   }
