@@ -24,13 +24,9 @@ const nextConfig = {
         hostname: 'i.pravatar.cc',
       },
       {
-        protocol: 'https',
-        hostname: 'tsbxbtajtzfvianasoaw.supabase.co',
-      },
-      {
-        // New Supabase project (migrated 2026-08-26 after the old project hit
-        // its free-tier egress quota). Images uploaded to the new project's
-        // Storage are served from this host.
+        // Supabase project (migrated 2026-08-26 after the old project hit
+        // its free-tier egress quota; old Storage files copied over
+        // 2026-09-25). All Storage images are served from this host.
         protocol: 'https',
         hostname: 'dmdxxeplmgnorvylvdaz.supabase.co',
       },
