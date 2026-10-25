@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 import { Bookmark, BookOpen, ChevronLeft, ChevronRight, Heart, Trash2 } from 'lucide-react'
 
 interface SavedArticle {

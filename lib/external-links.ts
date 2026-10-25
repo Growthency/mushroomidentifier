@@ -14,7 +14,7 @@
  */
 
 import { cache } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createCachedClient } from '@/lib/db'
 
 export type NofollowMatchType = 'domain' | 'url'
 
@@ -33,16 +33,7 @@ const EMPTY: NofollowRule[] = []
  */
 export const getNofollowRules = cache(async (): Promise<NofollowRule[]> => {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          fetch: (url: any, init: any) =>
-            fetch(url, { ...init, next: { revalidate: 60, tags: ['nofollow-rules'] } }),
-        },
-      },
-    )
+    const supabase = createCachedClient(['nofollow-rules'], 60)
 
     const { data, error } = await supabase
       .from('external_links_nofollow')

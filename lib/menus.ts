@@ -10,7 +10,7 @@
  */
 
 import { cache } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createCachedClient } from '@/lib/db'
 
 export type MenuLocation = 'header' | 'footer_explore' | 'footer_company' | 'footer_bottom'
 
@@ -40,16 +40,7 @@ const EMPTY_GROUPS: MenuGroups = {
 
 export const getMenus = cache(async function getMenus(): Promise<MenuGroups> {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          fetch: (url: any, init: any) =>
-            fetch(url, { ...init, next: { revalidate: 60, tags: ['menus'] } }),
-        },
-      }
-    )
+    const supabase = createCachedClient(['menus'], 60)
 
     const { data, error } = await supabase
       .from('menu_items')

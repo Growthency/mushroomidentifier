@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient as createClient } from '@/lib/db'
+import { getSessionUser } from '@/lib/session'
 
-// Service role — can create buckets & bypass RLS
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-)
+const supabase = createClient()
+const AVATAR_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +15,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing file or userId' }, { status: 400 })
     }
 
+    // Only the signed-in user may change their own avatar.
+    const sessionUser = await getSessionUser()
+    if (!sessionUser || sessionUser.id !== userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!AVATAR_TYPES[file.type]) {
+      return NextResponse.json({ error: 'Please upload a JPG, PNG, WebP or GIF image.' }, { status: 400 })
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Image too large. Maximum 5MB.' }, { status: 400 })
+    }
+
     // Ensure bucket exists (creates if not)
     const { data: buckets } = await supabase.storage.listBuckets()
     const bucketExists = buckets?.some(b => b.name === 'avatars')
@@ -24,7 +34,7 @@ export async function POST(request: NextRequest) {
       await supabase.storage.createBucket('avatars', { public: true })
     }
 
-    const ext      = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+    const ext      = AVATAR_TYPES[file.type]
     const fileName = `${userId}.${ext}`
     const buffer   = Buffer.from(await file.arrayBuffer())
 

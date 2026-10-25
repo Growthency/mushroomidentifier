@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { createClient as createAdmin } from '@supabase/supabase-js'
+import { createAdminClient as createAdmin } from '@/lib/db'
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
 import { checkWriterfyAuth } from '@/lib/writerfy-auth'
@@ -102,10 +102,7 @@ function truncate(s: string, max: number): string {
 }
 
 function supabase() {
-  return createAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  )
+  return createAdmin()
 }
 
 /* ── GET — health check ───────────────────────────────────────────── */

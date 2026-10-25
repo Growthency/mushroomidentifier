@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
-import { createClient as createAdmin } from '@supabase/supabase-js'
+import { createAdminClient as createAdmin } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   // Auth check
@@ -11,10 +11,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const admin = createAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const admin = createAdmin()
 
   const formData = await req.formData()
   const file = formData.get('file') as File | null

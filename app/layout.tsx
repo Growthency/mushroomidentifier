@@ -69,6 +69,11 @@ export const metadata: Metadata = {
   },
 }
 
+// Pages re-read menus / site settings / header scripts from the database at
+// most every 60 s (the Supabase fetch cache used the same window); admin
+// saves refresh them at once through revalidateTag / revalidatePath.
+export const revalidate = 60
+
 export default async function RootLayout({
   children,
 }: {

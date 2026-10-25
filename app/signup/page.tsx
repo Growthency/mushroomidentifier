@@ -2,7 +2,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 import { validateEmailQuality } from '@/lib/email-validation'
 import { COUNTRIES } from '@/lib/countries'
 

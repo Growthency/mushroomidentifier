@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient as createClient } from '@/lib/db'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
 // Cache for 5 minutes (ISR). This used to be force-dynamic + revalidate 0,
@@ -12,10 +12,7 @@ export const revalidate = 300
 
 export async function GET() {
   // Use service role key for reliable server-side reads (bypasses RLS)
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const supabase = createClient()
 
   // Intentionally does NOT select `content`: featured_image + excerpt are
   // backfilled on every post, so the multi-KB article HTML never needs to

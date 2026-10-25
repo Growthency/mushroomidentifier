@@ -148,12 +148,11 @@ export default function PrivacyPolicyPage() {
           <Section title="8. Third-Party Services">
             <p>We use the following third-party services that may process your data:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong style={{ color: 'var(--text-primary)' }}>Supabase</strong> — database, authentication, and storage (supabase.com)</li>
+              <li><strong style={{ color: 'var(--text-primary)' }}>Hetzner</strong> — our own servers in Germany host the website, database, authentication, and file storage (hetzner.com)</li>
               <li><strong style={{ color: 'var(--text-primary)' }}>Anthropic</strong> — AI inference for mushroom identification (anthropic.com)</li>
               <li><strong style={{ color: 'var(--text-primary)' }}>Google AdMob</strong> — advertising in the free app (admob.google.com)</li>
               <li><strong style={{ color: 'var(--text-primary)' }}>Google Play Billing &amp; RevenueCat</strong> — in-app purchases and subscriptions (revenuecat.com)</li>
               <li><strong style={{ color: 'var(--text-primary)' }}>Google Sign-In</strong> — optional authentication (google.com)</li>
-              <li><strong style={{ color: 'var(--text-primary)' }}>Vercel</strong> — website hosting and edge delivery (vercel.com)</li>
             </ul>
             <p>Each of these services has its own privacy policy. We only share the minimum data necessary for these services to function.</p>
           </Section>

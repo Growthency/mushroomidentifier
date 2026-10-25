@@ -4,7 +4,7 @@ import Link from 'next/link'
 import NextImage from 'next/image'
 import { useRouter } from 'next/navigation'
 import { TriangleAlert as AlertTriangle, Camera, Sparkles, Scan } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 
 /* ── Scanning steps shown during analysis ── */
 const SCAN_STEPS = [

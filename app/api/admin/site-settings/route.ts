@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createAdmin } from '@supabase/supabase-js'
+import { createClient } from '@/lib/server-client'
+import { createAdminClient as createAdmin } from '@/lib/db'
 import { isAdminEmail } from '@/lib/admin'
 
-const admin = createAdmin(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+const admin = createAdmin()
 
 async function requireAdmin() {
   const supabase = await createClient()

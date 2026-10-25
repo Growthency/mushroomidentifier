@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient as createClient } from '@/lib/db'
 import { ADS_MASTER_KEY } from '@/lib/ads'
 
 /**
@@ -17,10 +17,7 @@ export const revalidate = 0
 
 export async function GET() {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    )
+    const supabase = createClient()
 
     // Master switch off → whole site is ad-free. A missing row (or a read
     // error) counts as ON so ads never silently vanish.

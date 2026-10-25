@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient as createClient } from '@/lib/db'
 import BlogPageClient from './BlogPageClient'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
@@ -32,10 +32,7 @@ export const metadata: Metadata = {
 // Fetch admin-published posts at request time so the count is correct on first paint
 async function getDbPosts() {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    const supabase = createClient()
 
     const { data: posts, error } = await supabase
       .from('blog_posts')

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
 
 export async function GET(request: NextRequest) {
@@ -12,11 +12,8 @@ export async function GET(request: NextRequest) {
   const period = request.nextUrl.searchParams.get('period') || '30d'
 
   // Use service role for full access
-  const { createClient: createAdmin } = await import('@supabase/supabase-js')
-  const admin = createAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const { createAdminClient: createAdmin } = await import('@/lib/db')
+  const admin = createAdmin()
 
   const now = new Date()
   const { rangeStart, prevStart, prevEnd } = getPeriodRange(period, now)

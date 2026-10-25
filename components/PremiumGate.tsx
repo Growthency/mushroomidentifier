@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/server-client'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { Lock, Crown, Check, ChevronRight, Sparkles } from 'lucide-react'

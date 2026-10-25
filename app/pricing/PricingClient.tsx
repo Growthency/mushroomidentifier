@@ -7,7 +7,7 @@ import {
   Infinity as InfinityIcon, CreditCard, Star, Zap, Flame,
 } from 'lucide-react'
 import { initializePaddle, type Paddle } from '@paddle/paddle-js'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 
 /**
  * Pricing page — "new subscriber" offer structure:

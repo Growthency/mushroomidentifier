@@ -14,7 +14,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 // next/image no longer needed here — featured-image hero was removed
 import Link from 'next/link'
-import { createClient } from '@supabase/supabase-js'
+import { createCachedClient } from '@/lib/db'
 import { ArrowRight } from 'lucide-react'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
@@ -32,11 +32,7 @@ import { getNofollowRules, applyNofollowRules } from '@/lib/external-links'
    guaranteed deleted posts 404'd immediately but at the cost of a fresh DB
    round-trip on every single request. */
 function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { global: { fetch: (url: any, init: any) => fetch(url, { ...init, next: { revalidate: 60 } }) } }
-  )
+  return createCachedClient([], 60)
 }
 
 /* ── Inline-style policy ──

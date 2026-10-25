@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/server-client'
 import { redirect } from 'next/navigation'
 import { isAdminEmail } from '@/lib/admin'
 import AdminShell from './AdminShell'

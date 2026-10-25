@@ -1,0 +1,79 @@
+# Mushroom Identifiers on Coolify: the Next.js app + its own PostgreSQL.
+#
+# Coolify → Project "Mushroom Identifiers" → New Resource → this GitHub repo →
+# Build Pack "Docker Compose". The Paddle defaults below are the public
+# (browser) values the live site already ships. Coolify fills every SERVICE_* variable itself
+# (random passwords), so no secret is created or copied by hand:
+#   SERVICE_PASSWORD_64_BETTERAUTH → session signing secret
+#   SERVICE_PASSWORD_CRON          → scheduled-publish cron secret
+# Copy these from the old Vercel project into Coolify → Environment Variables:
+#   ANTHROPIC_API_KEY, PADDLE_API_KEY, PADDLE_WEBHOOK_SECRET, WRITERFY_API_TOKEN,
+#   GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY, GA4_PROPERTY_ID,
+#   SERPAPI_KEY, SERPAPI_KEY_BACKUP, SERPAPI_ACCOUNT_CREATED_AT(_BACKUP)
+# Set the domain on the "app" service: https://mushroomidentifiers.com,https://www.mushroomidentifiers.com
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_PADDLE_CLIENT_TOKEN: ${NEXT_PUBLIC_PADDLE_CLIENT_TOKEN:-live_0f1c86d872c45316552bf6756d8}
+        NEXT_PUBLIC_PADDLE_ENVIRONMENT: ${NEXT_PUBLIC_PADDLE_ENVIRONMENT:-production}
+        NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID: ${NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID:-pri_01kpr2g1vmwgr4m8qr83fbtms0}
+        NEXT_PUBLIC_PADDLE_PRO_PRICE_ID: ${NEXT_PUBLIC_PADDLE_PRO_PRICE_ID:-pri_01kpr2jarqrcyvfd2wcf8408g2}
+        NEXT_PUBLIC_PADDLE_EXPLORER_PRICE_ID: ${NEXT_PUBLIC_PADDLE_EXPLORER_PRICE_ID:-pri_01kpr2h9qz6neazw4t0h8mt04w}
+        NEXT_PUBLIC_PADDLE_LAUNCH_DISCOUNT_CODE: ${NEXT_PUBLIC_PADDLE_LAUNCH_DISCOUNT_CODE:-LAUNCH50}
+    environment:
+      - SERVICE_FQDN_APP_3000
+      - DATABASE_URL=postgres://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_POSTGRES}@db:5432/${POSTGRES_DB:-mushroom}
+      - NEXT_PUBLIC_SITE_URL=https://mushroomidentifiers.com
+      - BETTER_AUTH_SECRET=${SERVICE_PASSWORD_64_BETTERAUTH}
+      - CRON_SECRET=${SERVICE_PASSWORD_CRON}
+      - UPLOAD_DIR=/app/uploads
+      - IMPORT_TOKEN_SHA256=${IMPORT_TOKEN_SHA256:-d335ebc2d09d67e39b4d84b53e6b4a1e98215a3dd26ccca5d52ed96977293dbf}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - PADDLE_API_KEY=${PADDLE_API_KEY:-}
+      - PADDLE_WEBHOOK_SECRET=${PADDLE_WEBHOOK_SECRET:-}
+      - NEXT_PUBLIC_PADDLE_ENVIRONMENT=${NEXT_PUBLIC_PADDLE_ENVIRONMENT:-production}
+      - NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID=${NEXT_PUBLIC_PADDLE_STARTER_PRICE_ID:-pri_01kpr2g1vmwgr4m8qr83fbtms0}
+      - NEXT_PUBLIC_PADDLE_PRO_PRICE_ID=${NEXT_PUBLIC_PADDLE_PRO_PRICE_ID:-pri_01kpr2jarqrcyvfd2wcf8408g2}
+      - NEXT_PUBLIC_PADDLE_EXPLORER_PRICE_ID=${NEXT_PUBLIC_PADDLE_EXPLORER_PRICE_ID:-pri_01kpr2h9qz6neazw4t0h8mt04w}
+      - WRITERFY_API_TOKEN=${WRITERFY_API_TOKEN:-}
+      - GOOGLE_SERVICE_ACCOUNT_EMAIL=${GOOGLE_SERVICE_ACCOUNT_EMAIL:-}
+      - GOOGLE_PRIVATE_KEY=${GOOGLE_PRIVATE_KEY:-}
+      - GA4_PROPERTY_ID=${GA4_PROPERTY_ID:-}
+      - SERPAPI_KEY=${SERPAPI_KEY:-}
+      - SERPAPI_KEY_BACKUP=${SERPAPI_KEY_BACKUP:-}
+      - SERPAPI_ACCOUNT_CREATED_AT=${SERPAPI_ACCOUNT_CREATED_AT:-}
+      - SERPAPI_ACCOUNT_CREATED_AT_BACKUP=${SERPAPI_ACCOUNT_CREATED_AT_BACKUP:-}
+    volumes:
+      - mushroom-uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health >/dev/null 2>&1 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 60s
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=${SERVICE_USER_POSTGRES}
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRES}
+      - POSTGRES_DB=${POSTGRES_DB:-mushroom}
+    volumes:
+      - mushroom-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  mushroom-uploads:
+  mushroom-db:

@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createAdminClient as createClient } from '@/lib/db'
 import Anthropic from "@anthropic-ai/sdk";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
-  process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder-key",
-);
+const supabase = createClient();
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || "placeholder-key",

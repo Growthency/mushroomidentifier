@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient as createClient } from '@/lib/db'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 
 // Cache 5 min. Was force-dynamic + selected full `content` for 20 posts on
@@ -8,10 +8,7 @@ import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 export const revalidate = 300
 
 export async function GET() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  )
+  const supabase = createClient()
 
   // Popular posts: top 10 by views. No `content` — featured_image is
   // backfilled on every post, so we never pull article HTML for thumbnails.

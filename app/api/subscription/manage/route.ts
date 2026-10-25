@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Paddle } from '@paddle/paddle-node-sdk'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createAdmin } from '@supabase/supabase-js'
+import { createClient } from '@/lib/server-client'
+import { createAdminClient as createAdmin } from '@/lib/db'
 
 /**
  * GET /api/subscription/manage
@@ -23,10 +23,7 @@ export const runtime = 'nodejs'
 
 const paddle = new Paddle(process.env.PADDLE_API_KEY!)
 
-const admin = createAdmin(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
+const admin = createAdmin()
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient()

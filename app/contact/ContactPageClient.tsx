@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Mail, Clock, AlertTriangle, ChevronDown, CheckCircle2, MessageSquare, Bug, Lightbulb, ShieldAlert, ArrowRight, Phone } from 'lucide-react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 
 const SUBJECTS = [
   { value: 'General', label: 'General Question', icon: MessageSquare },

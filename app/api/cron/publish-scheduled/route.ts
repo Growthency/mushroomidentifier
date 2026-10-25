@@ -1,24 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { createClient as createAdmin } from '@supabase/supabase-js'
+import { createAdminClient as createAdmin } from '@/lib/db'
 
 /**
  * GET /api/cron/publish-scheduled
  *
- * Vercel cron job (configured in vercel.json) — runs every 5 minutes and
- * flips any posts whose scheduled_at has arrived from 'scheduled' →
- * 'published'. Idempotent; safe to run at any frequency.
+ * Called every 5 minutes by scripts/cron.mjs (started next to the server in
+ * the Docker container) — flips any posts whose scheduled_at has arrived
+ * from 'scheduled' → 'published'. Idempotent; safe to run at any frequency.
  *
- * Auth:
- *   When the CRON_SECRET env var is set, Vercel automatically sends
- *   `Authorization: Bearer $CRON_SECRET` with each cron invocation. We
- *   verify that header here so a random person can't hit this URL and
- *   prematurely publish scheduled posts.
- *
- *   Vercel's platform also sets a `x-vercel-cron: 1` header which we
- *   accept as a fallback when CRON_SECRET isn't configured, so the
- *   endpoint works out-of-the-box on a fresh deploy. Manually setting
- *   CRON_SECRET is still recommended.
+ * Auth: `Authorization: Bearer $CRON_SECRET` (Coolify generates the
+ * secret), so a random person can't hit this URL.
  */
 
 export const runtime = 'nodejs'
@@ -27,10 +19,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 function supabase() {
-  return createAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  )
+  return createAdmin()
 }
 
 function isAuthorized(req: NextRequest): boolean {
@@ -39,10 +28,6 @@ function isAuthorized(req: NextRequest): boolean {
     const header = req.headers.get('authorization') || ''
     if (header === `Bearer ${secret}`) return true
   }
-  // Fallback: trust Vercel's internal cron trigger header. Vercel only
-  // sets this when it actually invokes the path from a cron schedule —
-  // clients can't forge it through the edge network.
-  if (req.headers.get('x-vercel-cron')) return true
   return false
 }
 

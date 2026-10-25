@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 import {
   Sparkles, History, LogOut, Gem,
   TrendingUp, Crown, Zap, Star, LayoutDashboard,

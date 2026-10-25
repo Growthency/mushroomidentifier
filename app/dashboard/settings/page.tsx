@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 import Link from 'next/link'
 import {
   User, Mail, Lock, Save, Check, Camera,
@@ -87,7 +87,7 @@ export default function SettingsPage() {
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Save failed')
 
-      // Email change still goes through Supabase Auth (not profiles table)
+      // The login email itself can't be changed here (no email verification)
       if (email !== user.email) {
         const { error: emailErr } = await supabase.auth.updateUser({ email })
         if (emailErr) throw emailErr
@@ -113,15 +113,12 @@ export default function SettingsPage() {
     if (newPw !== confirmPw) { setPwError('New passwords do not match'); return }
     setPwSaving(true)
     try {
-      // Re-authenticate with current password first
-      const { error: signInErr } = await supabase.auth.signInWithPassword({
-        email: user.email,
-        password: currentPw,
-      })
-      if (signInErr) throw new Error('Current password is incorrect')
-      // Now update to new password
-      const { error: updateErr } = await supabase.auth.updateUser({ password: newPw })
-      if (updateErr) throw updateErr
+      // Verifies the current password and sets the new one in one request
+      const { error: updateErr } = await supabase.auth.changePassword(currentPw, newPw)
+      if (updateErr) {
+        if ((updateErr as any).status === 400 || (updateErr as any).code === 'INVALID_PASSWORD') throw new Error('Current password is incorrect')
+        throw new Error(updateErr.message)
+      }
       setPwSaved(true)
       setCurrentPw(''); setNewPw(''); setConfirmPw('')
       setTimeout(() => setPwSaved(false), 3000)

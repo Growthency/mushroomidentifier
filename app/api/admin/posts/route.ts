@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
-import { createClient as createAdmin } from '@supabase/supabase-js'
+import { createAdminClient as createAdmin } from '@/lib/db'
 import { resolveFeaturedImage } from '@/lib/content-helpers'
 
 async function getAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || !isAdminEmail(user.email)) return null
-  return createAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  return createAdmin()
 }
 
 // GET — list all posts (admin sees all including drafts)

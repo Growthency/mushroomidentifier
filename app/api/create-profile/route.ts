@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient as createClient } from '@/lib/db'
 import { validateEmailQuality } from '@/lib/email-validation'
 import { getClientIp, resolveCountry } from '@/lib/geo'
+import { getSessionUser } from '@/lib/session'
 
-// Service role — bypasses RLS, only used server-side
-const adminSupabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-)
+// Full database access — server-side only
+const adminSupabase = createClient()
 
 function genCode(uid: string) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -39,11 +37,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: emailCheck.reason }, { status: 400 })
     }
 
-    // Verify the user actually exists in Supabase Auth (prevent fake userId)
-    const { data: authUser, error: authErr } = await adminSupabase.auth.admin.getUserById(userId)
-    if (authErr || !authUser?.user) {
+    // Only the account that was just signed up (its session cookie) may
+    // create its own profile — prevents creating profiles for fake ids.
+    const sessionUser = await getSessionUser()
+    if (!sessionUser || sessionUser.id !== userId) {
       return NextResponse.json({ error: 'Invalid user' }, { status: 401 })
     }
+
+    // Already created (e.g. a retried request) — nothing to do.
+    const { data: existingProfile } = await adminSupabase.from('profiles').select('id').eq('id', userId).maybeSingle()
+    if (existingProfile) return NextResponse.json({ success: true })
 
     // --- IP-based duplicate account check ---
     const clientIp = getClientIp(request)

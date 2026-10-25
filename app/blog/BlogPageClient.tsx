@@ -7,7 +7,7 @@ import {
   ChevronLeft, ChevronRight, Eye, Heart, Lock,
   Crown, Tag, CheckCircle2, Sparkles,
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 
 type RiskLevel    = 'All Levels' | 'Toxic' | 'High Risk' | 'Low Risk' | 'General'
 type Region       = 'All Regions' | 'US North America' | 'EU Europe' | 'Worldwide' | 'Temperate' | 'Others'

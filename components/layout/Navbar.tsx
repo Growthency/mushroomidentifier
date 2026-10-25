@@ -5,8 +5,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 // Theme provider no longer used in the public navbar (light-only site).
-import { createClient } from '@/lib/supabase/client'
-import type { User } from '@supabase/supabase-js'
+import { createClient } from '@/lib/browser-client'
+import type { SessionUser as User } from '@/lib/session'
+
 import type { MenuItem } from '@/lib/menus'
 
 // Fallback used only if admin-managed menu table is empty / migration not applied yet

@@ -8,7 +8,7 @@
  */
 
 import { cache } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createCachedClient } from '@/lib/db'
 
 export type ScriptPosition = 'head' | 'body_start' | 'body_end'
 
@@ -24,16 +24,7 @@ export interface SiteScript {
 export const getEnabledScripts = cache(async function getEnabledScripts(): Promise<SiteScript[]> {
   try {
     // Use anon client — RLS policy ensures only enabled rows are returned
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          fetch: (url: any, init: any) =>
-            fetch(url, { ...init, next: { revalidate: 60, tags: ['site-scripts'] } }),
-        },
-      }
-    )
+    const supabase = createCachedClient(['site-scripts'], 60)
 
     const { data, error } = await supabase
       .from('site_scripts')

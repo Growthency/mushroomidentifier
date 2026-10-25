@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Self-contained server build for the Docker image (Hetzner / Coolify).
+  output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -9,11 +11,9 @@ const nextConfig = {
   compress: true,
   swcMinify: true,
   experimental: {
-    // Keep @vercel/blob (and its modern-undici dependency) out of the webpack
-    // bundle. The Next.js 13 webpack config can't parse undici's private class
-    // fields (#target), but they run fine in Node at runtime — so load the
-    // package directly from node_modules instead of bundling it.
-    serverComponentsExternalPackages: ['@vercel/blob', 'undici'],
+    // Load these from node_modules at runtime instead of bundling them:
+    // pg has optional native bindings, Better Auth / bcryptjs are Node-only.
+    serverComponentsExternalPackages: ['pg', 'better-auth', 'bcryptjs'],
   },
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -24,20 +24,12 @@ const nextConfig = {
         hostname: 'i.pravatar.cc',
       },
       {
-        // Supabase project (migrated 2026-08-26 after the old project hit
-        // its free-tier egress quota; old Storage files copied over
-        // 2026-09-25). All Storage images are served from this host.
+        // Uploaded files (blog images, Writerfy images, avatars) live on our
+        // own server under /uploads/… and are stored with absolute URLs.
+        // Without this entry Next.js <Image> silently refuses to render them.
         protocol: 'https',
-        hostname: 'dmdxxeplmgnorvylvdaz.supabase.co',
-      },
-      {
-        // Vercel Blob storage — Writerfy auto-publish uploads images here.
-        // Without this entry Next.js <Image> silently refuses to render
-        // them, which is why sidebar Recent Posts thumbnails appeared
-        // broken even though the same URLs worked on /blog cards (those
-        // use a raw <img>, not next/image).
-        protocol: 'https',
-        hostname: '**.public.blob.vercel-storage.com',
+        hostname: 'mushroomidentifiers.com',
+        pathname: '/uploads/**',
       },
     ],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

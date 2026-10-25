@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/browser-client'
 import {
   Sparkles, History, Gem, Leaf,
   ShieldAlert, ArrowRight, Crown

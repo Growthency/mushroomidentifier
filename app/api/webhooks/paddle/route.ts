@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Paddle, EventName } from '@paddle/paddle-node-sdk'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient as createClient } from '@/lib/db'
 
 /**
  * Paddle webhook handler — subscription mode.
@@ -24,10 +24,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const paddle = new Paddle(process.env.PADDLE_API_KEY!)
 
-const adminSupabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
+const adminSupabase = createClient()
 
 // Pack allowances — credits granted per month for each plan.
 // Using plan name as key (stored on profiles.plan), not price_id, so

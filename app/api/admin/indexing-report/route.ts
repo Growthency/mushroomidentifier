@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/server-client'
+import { getDb } from '@/lib/db'
 import { isAdminEmail } from '@/lib/admin'
 import { google } from 'googleapis'
-import sitemap from '@/app/sitemap'
+import sitemap from '@/lib/sitemap-entries'
 
 const SITE_URL = 'https://mushroomidentifiers.com'
 const INDEXNOW_KEY = 'a1b2c3d4e5f6g7h8i9j0mushroomid2026'
@@ -25,8 +26,7 @@ async function adminCheck(request: NextRequest) {
 }
 
 function getAdmin() {
-  const { createClient: c } = require('@supabase/supabase-js')
-  return c(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+  return getDb()
 }
 
 // ── GET — return cached results ─────────────────────────────────────────────

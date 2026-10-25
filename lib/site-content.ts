@@ -9,7 +9,7 @@
  */
 
 import { cache } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createCachedClient } from '@/lib/db'
 
 export interface SocialLink {
   id: string
@@ -62,16 +62,7 @@ const EMPTY_CONTENT: SiteContent = {
 }
 
 function makeClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        fetch: (url: any, init: any) =>
-          fetch(url, { ...init, next: { revalidate: 60, tags: ['site-content'] } }),
-      },
-    }
-  )
+  return createCachedClient(['site-content'], 60)
 }
 
 // Wrap with React's request-scoped cache() so multiple callers within the

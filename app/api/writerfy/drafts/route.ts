@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient as createAdmin } from '@supabase/supabase-js'
+import { createAdminClient as createAdmin } from '@/lib/db'
 import { checkWriterfyAuth } from '@/lib/writerfy-auth'
 
 /**
@@ -20,10 +20,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 function supabase() {
-  return createAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  )
+  return createAdmin()
 }
 
 export async function GET(req: NextRequest) {

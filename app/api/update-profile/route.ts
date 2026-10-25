@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient as createServerClient } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient as createServerClient } from '@/lib/db'
+import { createClient } from '@/lib/server-client'
 
 // Service role — used only to write safe fields; NEVER exposes plan/credits changes
-const adminSupabase = createServerClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-)
+const adminSupabase = createServerClient()
 
 // Columns a user is NEVER allowed to change via this route
 const PROTECTED = ['plan', 'credits', 'total_identifications', 'referred_by', 'referral_code', 'id', 'email']

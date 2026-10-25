@@ -5,7 +5,7 @@
  * site never breaks on a DB hiccup.
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { createCachedClient } from '@/lib/db'
 
 export type HomepageBlockType =
   | 'heading'
@@ -27,19 +27,7 @@ export interface HomepageBlock {
 }
 
 function makeClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        // Revalidate frequently so admin edits appear fast on the homepage.
-        // The API route calls revalidatePath('/') on writes for instant refresh;
-        // this 60s TTL is the fallback for any other surface that reads blocks.
-        fetch: (url: any, init: any) =>
-          fetch(url, { ...init, next: { revalidate: 60, tags: ['homepage-blocks'] } }),
-      },
-    }
-  )
+  return createCachedClient(['homepage-blocks'], 60)
 }
 
 export async function getHomepageBlocks(): Promise<HomepageBlock[]> {

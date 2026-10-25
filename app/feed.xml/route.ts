@@ -1,13 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient as createClient } from '@/lib/db'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
+
+// Rebuilt from the database at most every 5 minutes (publish routes also
+// call revalidatePath('/feed.xml')).
+export const revalidate = 300
 
 const SITE_URL = 'https://mushroomidentifiers.com'
 
 export async function GET() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const supabase = createClient()
 
   // Fetch published blog posts
   const { data: posts } = await supabase

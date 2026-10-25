@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
 
 /**
