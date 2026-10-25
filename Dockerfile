@@ -33,7 +33,9 @@ COPY . .
 # pre-rendered here have no menus / settings / header scripts. Drop them: the
 # running server renders each one from the database on its first request and
 # keeps it fresh (revalidate) from then on.
-RUN NODE_OPTIONS=--max-old-space-size=1800 npx next build \
+# next/font downloads Google Fonts during the build; retry if that hiccups.
+RUN export NODE_OPTIONS=--max-old-space-size=1800 \
+ && (npx next build || (sleep 15 && npx next build) || (sleep 45 && npx next build)) \
  && find .next/standalone/.next/server/app -type f \( -name '*.html' -o -name '*.rsc' -o -name '*.meta' -o -name '*.body' \) \
       ! -path '*/_not-found*' -delete
 
