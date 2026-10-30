@@ -1,16 +1,11 @@
 import { google } from 'googleapis'
+import { googleAuth, googleErrorMessage, searchConsoleProperty } from '@/lib/google-auth'
 
 function getAuth() {
-  return new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    },
-    scopes: [
-      'https://www.googleapis.com/auth/analytics.readonly',
-      'https://www.googleapis.com/auth/webmasters.readonly',
-    ],
-  })
+  return googleAuth([
+    'https://www.googleapis.com/auth/analytics.readonly',
+    'https://www.googleapis.com/auth/webmasters.readonly',
+  ])
 }
 
 const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID || '529177700'
@@ -106,8 +101,9 @@ export async function getGA4Report(startDate: string, endDate: string) {
 
     return { overview, topPages, topCountries, dailyUsers }
   } catch (err: any) {
-    console.error('GA4 API error:', err.message)
-    return null
+    const message = googleErrorMessage(err)
+    console.error('GA4 API error:', message)
+    throw new Error(message)
   }
 }
 
@@ -155,9 +151,8 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
   const auth = getAuth()
   const searchConsole = google.searchconsole({ version: 'v1', auth })
 
-  const siteUrl = 'https://mushroomidentifiers.com'
-
   try {
+    const siteUrl = await searchConsoleProperty()
     // Top queries (keywords), top pages, daily clicks
     const [queriesRes, pagesRes, dailyRes] = await Promise.all([
       searchConsole.searchanalytics.query({
@@ -211,12 +206,14 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
       date: row.keys?.[0] || '',
       clicks: row.clicks || 0,
       impressions: row.impressions || 0,
+      position: row.position || 0,
     }))
 
-    return { topKeywords, topSearchPages, dailyClicks }
+    return { topKeywords, topSearchPages, dailyClicks, siteUrl }
   } catch (err: any) {
-    console.error('Search Console API error:', err.message)
-    return null
+    const message = googleErrorMessage(err)
+    console.error('Search Console API error:', message)
+    throw new Error(message)
   }
 }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
 import { getGA4Report, getGA4Users7d, getGA4UsersToday, getSearchConsoleData } from '@/lib/google-analytics'
+import { bingConfigured, bingSiteUrl, getBingData, getBingSiteStatus } from '@/lib/bing-webmaster'
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
@@ -16,15 +17,36 @@ export async function GET(request: NextRequest) {
   const { startDate, days } = getPeriodDates(period)
   const endDate = 'today'
 
+  // Bing tab — fetched on its own so a Bing problem never touches GA / GSC.
+  if (request.nextUrl.searchParams.get('source') === 'bing') {
+    const siteUrl = bingSiteUrl()
+    if (!bingConfigured()) return NextResponse.json({ configured: false, connected: false, siteUrl })
+    const start = getDateString(days)
+    const [dataRes, siteRes] = await Promise.allSettled([getBingData(start, getDateString(0)), getBingSiteStatus()])
+    const site = siteRes.status === 'fulfilled' ? siteRes.value : null
+    if (dataRes.status === 'rejected') {
+      return NextResponse.json({ configured: true, connected: false, siteUrl, site, error: String(dataRes.reason?.message || dataRes.reason).slice(0, 300) })
+    }
+    const { daily, topKeywords, topPages } = dataRes.value
+    const clicks = daily.reduce((n, d) => n + d.clicks, 0)
+    const impressions = daily.reduce((n, d) => n + d.impressions, 0)
+    return NextResponse.json({
+      configured: true, connected: true, siteUrl, site, daily, topKeywords, topPages,
+      totals: { clicks, impressions, ctr: impressions ? Number(((clicks / impressions) * 100).toFixed(1)) : 0 },
+    })
+  }
+
   // Fetch GA4 + Search Console data in parallel
+  let gaError: string | null = null
+  let gscError: string | null = null
   const [ga4Data, ga4Users7d, ga4UsersToday, searchData] = await Promise.all([
-    getGA4Report(startDate, endDate),
+    getGA4Report(startDate, endDate).catch((err) => { gaError = err.message; return null }),
     getGA4Users7d(),
     getGA4UsersToday(),
     getSearchConsoleData(
       getDateString(days),
       getDateString(0)
-    ),
+    ).catch((err) => { gscError = err.message; return null }),
   ])
 
   return NextResponse.json({
@@ -52,6 +74,9 @@ export async function GET(request: NextRequest) {
     // Source flags
     gaConnected: !!ga4Data,
     gscConnected: !!searchData,
+    gaError,
+    gscError,
+    gscProperty: searchData?.siteUrl ?? null,
 
     // Meta
     period,

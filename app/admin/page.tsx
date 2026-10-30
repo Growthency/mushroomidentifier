@@ -2,7 +2,8 @@
 /**
  * /admin — top-level admin Dashboard.
  *
- * Shows site-wide analytics (GA4 + Search Console + on-site stats) so the
+ * Shows site-wide analytics in three tabs (Google Analytics, Search Console,
+ * Bing Webmaster) so the
  * very first thing the owner sees on opening /admin is "how is the site
  * doing today?". Subscription health (revenue, plans, recent customers)
  * lives at /admin/subscription. The data contract
@@ -20,6 +21,7 @@ import {
 import { useTheme } from '@/components/providers/ThemeProvider'
 import { useAdminData } from '@/hooks/useAdminData'
 import ClearCacheButton from '@/components/admin/ClearCacheButton'
+import BingPanel from '@/components/admin/BingPanel'
 
 interface AnalyticsData {
   users30d: number
@@ -32,12 +34,23 @@ interface AnalyticsData {
   topPages: { slug: string; title: string; views: number }[]
   topCountries: { country: string; users: number }[]
   dailySignups: { date: string; count: number }[]
-  dailyClicks: { date: string; clicks: number; impressions: number }[]
+  dailyClicks: { date: string; clicks: number; impressions: number; position?: number }[]
   topKeywords: { keyword: string; clicks: number; impressions: number; ctr: number; position: number }[]
   topSearchPages: { page: string; clicks: number; impressions: number; ctr: number; position: number }[]
   gaConnected: boolean
   gscConnected: boolean
+  gaError?: string | null
+  gscError?: string | null
+  gscProperty?: string | null
 }
+
+type Tab = 'ga' | 'gsc' | 'bing'
+
+const TABS: { value: Tab; label: string; icon: any }[] = [
+  { value: 'ga', label: 'Google Analytics', icon: BarChart3 },
+  { value: 'gsc', label: 'Google Search Console', icon: Search },
+  { value: 'bing', label: 'Bing Webmaster', icon: Globe },
+]
 
 type Period = '7d' | '30d' | 'this_month' | 'last_month' | '365d' | 'lifetime'
 type ChartType = 'users' | 'clicks' | 'both'
@@ -61,7 +74,9 @@ export default function AdminDashboard() {
   const { theme } = useTheme()
   const dark = theme === 'dark'
   const [period, setPeriod] = useState<Period>('30d')
-  const [chartType, setChartType] = useState<ChartType>('users')
+  const [tab, setTab] = useState<Tab>('ga')
+  const [gaChartType, setChartType] = useState<ChartType>('users')
+  const chartType: ChartType = tab === 'gsc' ? 'clicks' : gaChartType
   const [showPeriod, setShowPeriod] = useState(false)
   const [showChart, setShowChart] = useState(false)
 
@@ -108,12 +123,20 @@ export default function AdminDashboard() {
       : Math.max(...usersChart.map(d => d.count), ...clicksChart.map(d => d.clicks), 1)
   const chartData = chartType === 'clicks' ? clicksChart : usersChart
 
+  // Search Console totals for the selected period
+  const gscClicks = clicksChart.reduce((n, d) => n + d.clicks, 0)
+  const gscImpressions = clicksChart.reduce((n, d) => n + d.impressions, 0)
+  const gscCtr = gscImpressions ? Number(((gscClicks / gscImpressions) * 100).toFixed(1)) : 0
+  const gscPosition = gscImpressions
+    ? Number((clicksChart.reduce((n, d) => n + (d.position || 0) * d.impressions, 0) / gscImpressions).toFixed(1))
+    : 0
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>Dashboard</h1>
-          <p className="text-sm mt-1" style={{ color: dark ? '#94a3b8' : '#64748b' }}>Real-time data from Google Analytics & Search Console</p>
+          <p className="text-sm mt-1" style={{ color: dark ? '#94a3b8' : '#64748b' }}>Real-time data from Google Analytics, Search Console & Bing</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           {/* Clear Cache button — sits BEFORE the period filter so the
@@ -166,7 +189,33 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Source tabs */}
+      <div role="tablist" className="inline-flex flex-wrap gap-1 rounded-2xl border p-1 mb-6" style={{ background: cardBg, borderColor: cardBorder }}>
+        {TABS.map(t => {
+          const on = t.value === tab
+          return (
+            <button
+              key={t.value}
+              role="tab"
+              aria-selected={on}
+              onClick={() => setTab(t.value)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-colors"
+              style={{ background: on ? '#10b981' : 'transparent', color: on ? '#fff' : dark ? '#94a3b8' : '#475569' }}
+            >
+              <t.icon className="w-4 h-4" />
+              {t.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {tab === 'ga' && data.gaError && <SourceError title="Google Analytics could not be read" message={data.gaError} dark={dark} />}
+      {tab === 'gsc' && data.gscError && <SourceError title="Search Console could not be read" message={data.gscError} dark={dark} />}
+
+      {tab === 'bing' && <BingPanel period={period} periodLabel={PERIOD_LABELS[period]} dark={dark} />}
+
       {/* Overview Stats */}
+      {tab === 'ga' && <>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard icon={Users} label="Users (30d)" value={data.users30d} color="blue" dark={dark} />
         <StatCard icon={Calendar} label="Users (7d)" value={data.users7d} color="emerald" dark={dark} />
@@ -179,9 +228,19 @@ export default function AdminDashboard() {
         <StatCard icon={Eye} label="Page Views (30d)" value={data.pageViews30d} color="emerald" dark={dark} />
         <StatCard icon={Layers} label="Total Active Users" value={data.totalUsers} color="slate" dark={dark} />
       </div>
+      </>}
+
+      {tab === 'gsc' && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <StatCard icon={MousePointerClick} label="Clicks" value={gscClicks} color="blue" dark={dark} />
+          <StatCard icon={Eye} label="Impressions" value={gscImpressions} color="emerald" dark={dark} />
+          <StatCard icon={Activity} label="CTR %" value={gscCtr} color="purple" dark={dark} />
+          <StatCard icon={TrendingUp} label="Avg. position" value={gscPosition} color="amber" dark={dark} />
+        </div>
+      )}
 
       {/* Daily Chart */}
-      <div className="rounded-xl border p-5 mb-6" style={{ background: cardBg, borderColor: cardBorder }}>
+      {tab !== 'bing' && <div className="rounded-xl border p-5 mb-6" style={{ background: cardBg, borderColor: cardBorder }}>
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-emerald-400" />
@@ -191,7 +250,7 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-2">
             {/* Chart Type Toggle */}
-            <div className="relative">
+            {tab === 'ga' && <div className="relative">
               <button
                 onClick={() => { setShowChart(!showChart); setShowPeriod(false) }}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors"
@@ -217,7 +276,7 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               )}
-            </div>
+            </div>}
             <span className="text-xs" style={{ color: dark ? '#64748b' : '#94a3b8' }}>
               {chartType === 'clicks' ? 'from Search Console' : chartType === 'both' ? 'GA4 + GSC' : 'from Google Analytics'}
             </span>
@@ -314,10 +373,10 @@ export default function AdminDashboard() {
             </span>
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Top Pages + Top Countries */}
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+      {tab === 'ga' && <div className="grid lg:grid-cols-2 gap-6 mb-6">
         {/* Top Pages */}
         <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
@@ -379,10 +438,10 @@ export default function AdminDashboard() {
             }) : <p className="px-5 py-8 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No country data</p>}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Search Console: Keywords + Search Pages */}
-      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+      {tab === 'gsc' && <div className="grid lg:grid-cols-2 gap-6 mb-6">
         {/* Top Keywords */}
         <div className="rounded-xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
@@ -458,7 +517,16 @@ export default function AdminDashboard() {
           )}
           </div>
         </div>
-      </div>
+      </div>}
+    </div>
+  )
+}
+
+function SourceError({ title, message, dark }: { title: string; message: string; dark: boolean }) {
+  return (
+    <div className="rounded-xl border p-4 mb-6 text-sm" style={{ background: dark ? 'rgba(239,68,68,0.1)' : '#fef2f2', borderColor: dark ? 'rgba(239,68,68,0.3)' : '#fecaca', color: dark ? '#fca5a5' : '#b91c1c' }}>
+      <p className="font-semibold mb-1">{title}</p>
+      <p className="break-words">{message}</p>
     </div>
   )
 }

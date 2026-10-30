@@ -3,19 +3,15 @@ import { createClient } from '@/lib/server-client'
 import { getDb } from '@/lib/db'
 import { isAdminEmail } from '@/lib/admin'
 import { google } from 'googleapis'
+import { googleAuth, googleErrorMessage, searchConsoleProperty } from '@/lib/google-auth'
+import { bingConfigured, submitBingSitemap } from '@/lib/bing-webmaster'
 import sitemap from '@/lib/sitemap-entries'
 
 const SITE_URL = 'https://mushroomidentifiers.com'
 const INDEXNOW_KEY = 'a1b2c3d4e5f6g7h8i9j0mushroomid2026'
 
 function getAuth(scopes: string[]) {
-  return new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    },
-    scopes,
-  })
+  return googleAuth(scopes)
 }
 
 async function adminCheck(request: NextRequest) {
@@ -162,13 +158,20 @@ export async function POST(request: NextRequest) {
     const auth = getAuth(['https://www.googleapis.com/auth/webmasters'])
     const sc = google.searchconsole({ version: 'v1', auth })
     const results: any[] = []
+    let property: string
+    try {
+      property = await searchConsoleProperty()
+    } catch (err: any) {
+      // Credentials / access problem: say so once, and keep the last scan.
+      return NextResponse.json({ error: googleErrorMessage(err) }, { status: 502 })
+    }
 
     for (const url of batch) {
       try {
         const inspection = await sc.urlInspection.index.inspect({
           requestBody: {
             inspectionUrl: url,
-            siteUrl: `${SITE_URL}/`,
+            siteUrl: property,
           },
         })
 
@@ -196,7 +199,7 @@ export async function POST(request: NextRequest) {
         const record = {
           url,
           status: 'error',
-          coverage_state: err.message?.slice(0, 200) || 'API Error',
+          coverage_state: googleErrorMessage(err).slice(0, 200) || 'API Error',
           checked_at: new Date().toISOString(),
         }
         await admin.from('indexing_cache').upsert(record, { onConflict: 'url' })
@@ -234,7 +237,7 @@ export async function POST(request: NextRequest) {
     } catch (err: any) {
       return NextResponse.json({
         error: 'Indexing request failed',
-        details: err.message,
+        details: googleErrorMessage(err),
         hint: 'Ensure service account has Indexing API access and is owner in Search Console.',
       }, { status: 500 })
     }
@@ -333,12 +336,12 @@ export async function POST(request: NextRequest) {
       const auth = getAuth(['https://www.googleapis.com/auth/webmasters'])
       const sc = google.searchconsole({ version: 'v1', auth })
       await (sc as any).sitemaps.submit({
-        siteUrl: `${SITE_URL}/`,
+        siteUrl: await searchConsoleProperty(),
         feedpath: `${SITE_URL}/sitemap.xml`,
       })
       results.push({ engine: 'Google Search Console', ok: true, detail: 'Sitemap submitted' })
     } catch (err: any) {
-      results.push({ engine: 'Google Search Console', ok: false, detail: err.message?.slice(0, 100) || 'Failed' })
+      results.push({ engine: 'Google Search Console', ok: false, detail: googleErrorMessage(err).slice(0, 160) })
     }
 
     // Bing: Submit via IndexNow (Bing deprecated ping endpoint)
@@ -357,6 +360,16 @@ export async function POST(request: NextRequest) {
       results.push({ engine: 'Bing (IndexNow)', ok: res.ok || res.status === 202, detail: `Status ${res.status}` })
     } catch {
       results.push({ engine: 'Bing (IndexNow)', ok: false, detail: 'Request failed' })
+    }
+
+    // Bing Webmaster Tools: register the sitemap itself when an API key is set.
+    if (bingConfigured()) {
+      try {
+        await submitBingSitemap(`${SITE_URL}/sitemap.xml`)
+        results.push({ engine: 'Bing Webmaster Tools', ok: true, detail: 'Sitemap submitted' })
+      } catch (err: any) {
+        results.push({ engine: 'Bing Webmaster Tools', ok: false, detail: String(err?.message || err).slice(0, 160) })
+      }
     }
 
     return NextResponse.json({
