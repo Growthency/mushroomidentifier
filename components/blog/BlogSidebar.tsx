@@ -18,6 +18,7 @@ import {
   BookOpen, Zap, ShieldCheck, Star,
 } from 'lucide-react'
 import AdSlot from '@/components/adify/AdSlot'
+import EzoicSlot from '@/components/adify/EzoicSlot'
 // TableOfContents removed from sidebar — now auto-injected inside article content
 
 const TRENDING_POSTS = [
@@ -425,6 +426,7 @@ export default function BlogSidebar() {
 
         {/* Adify — sidebar ad #1 (after search + author) */}
         <AdSlot placement="sidebar" index={0} spaced={false} className="mb-5" />
+        <EzoicSlot />
 
         {/* 3. Popular / Trending Posts */}
         <div
@@ -527,6 +529,7 @@ export default function BlogSidebar() {
         {/* Adify — sidebar ad #2 (below Recent Posts). allowSticky: when the
             unit's Sticky flag is on it follows the scroll down the rail. */}
         <AdSlot placement="sidebar" index={1} spaced={false} className="mb-5" allowSticky />
+        <EzoicSlot />
 
     </aside>
   )

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Read the Mushroom Identifier Privacy Policy to learn how our website and mobile app collect, use, and protect your personal data in compliance with GDPR, Google Play, and privacy laws.',
 }
 
-const LAST_UPDATED = 'July 30, 2026'
+const LAST_UPDATED = 'October 30, 2026'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -110,6 +110,7 @@ export default function PrivacyPolicyPage() {
               <li>Keep you signed in to your account (authentication session cookies)</li>
               <li>Remember your theme preference (dark/light mode)</li>
               <li>Track anonymous usage analytics to improve the service</li>
+              <li>Show and measure advertising through Ezoic and its partners, subject to your consent choices (see Section 6)</li>
             </ul>
             <p>
               You can disable cookies in your browser settings, though disabling authentication cookies will prevent you from staying logged in. The mobile app does not use browser cookies; it stores your session and preferences locally on your device.
@@ -118,14 +119,18 @@ export default function PrivacyPolicyPage() {
 
           <Section title="5. Data Storage and Security">
             <p>
-              Your account data, scan history, and community content are stored in Supabase, a secure cloud database and storage platform with industry-standard encryption at rest and in transit (TLS 1.2+). In-app purchases and subscriptions are handled by Google Play Billing and RevenueCat; we do not store raw payment card data on our servers.
+              Your account data, scan history, and community content are stored on our own Hetzner servers in Germany, with encrypted connections (TLS 1.2+). In-app purchases and subscriptions are handled by Google Play Billing and RevenueCat; we do not store raw payment card data on our servers.
             </p>
             <p>
               We implement access controls, encrypted connections, and regular security reviews. However, no internet service can guarantee absolute security. If you suspect unauthorised access to your account, please contact us immediately at <a href="mailto:support@mushroomidentifiers.com" className="hover:underline" style={{ color: 'var(--accent)' }}>support@mushroomidentifiers.com</a>.
             </p>
           </Section>
 
-          <Section title="6. Advertising (Mobile App)">
+          <Section title="6. Advertising">
+            <p>
+              The website displays advertisements through <strong style={{ color: 'var(--text-primary)' }}>Ezoic</strong> and its advertising partners. They may use cookies and similar technologies to serve, personalise and measure ads. Where the law requires it, a consent notice lets you accept or refuse these technologies, and you can change your browser&apos;s cookie settings at any time. See{' '}
+              <a href="https://www.ezoic.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>Ezoic&apos;s Privacy Policy</a>.
+            </p>
             <p>
               The free version of our mobile app may display advertisements through <strong style={{ color: 'var(--text-primary)' }}>Google AdMob</strong>. To serve and measure ads, AdMob may access your device&apos;s Advertising ID and limited technical information, in accordance with{' '}
               <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>Google&apos;s Privacy Policy</a>.
@@ -133,7 +138,6 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li>You can reset or limit your Advertising ID at any time in your device settings (Settings → Google → Ads).</li>
               <li>Purchasing a subscription or credit pack removes ads and stops ad-related data collection in the app.</li>
-              <li>We do not show ads on the website, and we do not use advertising cookies there.</li>
             </ul>
           </Section>
 
@@ -150,6 +154,7 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong style={{ color: 'var(--text-primary)' }}>Hetzner</strong> — our own servers in Germany host the website, database, authentication, and file storage (hetzner.com)</li>
               <li><strong style={{ color: 'var(--text-primary)' }}>Anthropic</strong> — AI inference for mushroom identification (anthropic.com)</li>
+              <li><strong style={{ color: 'var(--text-primary)' }}>Ezoic</strong> — advertising on the website (ezoic.com)</li>
               <li><strong style={{ color: 'var(--text-primary)' }}>Google AdMob</strong> — advertising in the free app (admob.google.com)</li>
               <li><strong style={{ color: 'var(--text-primary)' }}>Google Play Billing &amp; RevenueCat</strong> — in-app purchases and subscriptions (revenuecat.com)</li>
               <li><strong style={{ color: 'var(--text-primary)' }}>Google Sign-In</strong> — optional authentication (google.com)</li>

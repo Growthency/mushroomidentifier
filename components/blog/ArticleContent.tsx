@@ -3,6 +3,7 @@ import { useEffect, useRef, Fragment } from 'react'
 import TableOfContents from '@/components/blog/TableOfContents'
 import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import AdSlot from '@/components/adify/AdSlot'
+import EzoicSlot from '@/components/adify/EzoicSlot'
 import { useAdify } from '@/components/adify/AdifyProvider'
 
 interface ArticleContentProps {
@@ -179,14 +180,14 @@ export default function ArticleContent({ html, className, style }: ArticleConten
   // Both knobs come from the in-content ad unit itself (admin-typed):
   //   paragraph_number — insert an ad after every N paragraphs
   //   max_ads          — hard cap of in-content ads per article (10/15/20…)
-  // We only split the body when an in-content ad actually applies to this
-  // device / page type, so articles without one render exactly as before.
+  // Ezoic spots use the same gaps (every third one, four at most), so the body
+  // is split even when no Adify in-content unit applies.
   const { getUnits } = useAdify()
   const inContentUnits = getUnits('in_content')
   const hasInContent = inContentUnits.length > 0
   const interval = Math.max(2, inContentUnits[0]?.paragraph_number ?? 3)
   const maxAds = Math.max(1, inContentUnits[0]?.max_ads ?? 10)
-  const chunks = hasInContent ? splitEveryNParagraphs(afterToc, interval) : [afterToc]
+  const chunks = splitEveryNParagraphs(afterToc, interval)
 
   // ── Step 3: Render with shortcode expansion + ad slots ──
   return (
@@ -204,9 +205,11 @@ export default function ArticleContent({ html, className, style }: ArticleConten
           {hasInContent && i < chunks.length - 1 && i < maxAds && (
             <div className="not-prose"><AdSlot placement="in_content" /></div>
           )}
+          {i < chunks.length - 1 && i % 3 === 2 && i < 12 && <EzoicSlot />}
         </Fragment>
       ))}
       <div className="not-prose"><AdSlot placement="content_bottom" /></div>
+      <EzoicSlot />
     </div>
   )
 }

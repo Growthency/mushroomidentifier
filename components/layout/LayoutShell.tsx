@@ -4,6 +4,7 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import AdifyProvider from '@/components/adify/AdifyProvider'
 import AdSlot from '@/components/adify/AdSlot'
+import EzoicRouteHandler from '@/components/adify/EzoicRouteHandler'
 import type { MenuGroups } from '@/lib/menus'
 import type { SiteContent } from '@/lib/site-content'
 
@@ -23,6 +24,7 @@ export default function LayoutShell({
 
   return (
     <AdifyProvider>
+      <EzoicRouteHandler />
       <Navbar menuItems={menus?.header} />
       {/* Adify — header strip (below the navbar; follows scroll when the
           unit's admin-controlled Sticky flag is on) */}

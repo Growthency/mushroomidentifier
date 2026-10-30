@@ -34,6 +34,7 @@ import HomeIdentifier from "./HomeIdentifier";
 // Adify — homepage middle ad slots (the homepage doesn't use ArticleContent,
 // so the in_content placement is dropped in manually between sections).
 import AdSlot from "@/components/adify/AdSlot";
+import EzoicSlot from "@/components/adify/EzoicSlot";
 
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
 // HomeReviews import removed — component no longer rendered on homepage.
@@ -374,6 +375,7 @@ export default async function Home() {
 
       {/* Adify — homepage middle ad #1 (below the identifier tool) */}
       <AdSlot placement="in_content" className="px-4" />
+      <EzoicSlot />
 
       {/* === Admin-managed homepage middle ===
           If custom homepage blocks are published via /admin/homepage,
@@ -3500,6 +3502,7 @@ export default async function Home() {
 
       {/* Adify — homepage middle ad #2 (end of the middle content) */}
       <AdSlot placement="in_content" className="px-4" />
+      <EzoicSlot />
 
       {/* HomeReviews removed per product decision — reviews section no
           longer appears on homepage. Component file kept on disk in case

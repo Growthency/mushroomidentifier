@@ -71,9 +71,9 @@ export const metadata: Metadata = {
 
 // Pages re-read menus / site settings / header scripts from the database at
 // most every 60 s (the Supabase fetch cache used the same window); admin
-// saves refresh them at once through revalidateTag / revalidatePath.
-export const revalidate = 60
-
+// saves refresh them at once through revalidateTag / revalidatePath.
+export const revalidate = 60
+
 export default async function RootLayout({
   children,
 }: {
@@ -97,6 +97,13 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
+        {/* Ezoic — privacy (consent) scripts must stay first, then the ad
+            scripts. Plain tags at the very top of <head>, as Ezoic requires. */}
+        <script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js" />
+        <script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js" />
+        <script async src="https://www.ezojs.com/ezoic/sa.min.js" />
+        <script dangerouslySetInnerHTML={{ __html: `window.ezstandalone=window.ezstandalone||{};ezstandalone.cmd=ezstandalone.cmd||[];` }} />
+        <script async src="https://ezoicanalytics.com/analytics.js" />
         <meta name="google-site-verification" content="dipMWRMeOiWrrLH32OCvAQS-wR14IzCVSCLFUt9mH-0" />
         {/* Bing Webmaster Tools — hardcoded so the verifier always sees it.
             Admin can also paste the tag through /admin/header-scripts (the
