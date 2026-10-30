@@ -44,6 +44,13 @@ const nextConfig = {
         destination: 'https://mushroomidentifiers.com/:path*',
         permanent: true,
       },
+      {
+        // Ezoic only accepts a direct redirect to its Ads.txt Manager. Our
+        // AdSense line lives there too (Ezoic → Ads.txt Setup → Edit Entries).
+        source: '/ads.txt',
+        destination: 'https://srv.adstxtmanager.com/19390/mushroomidentifiers.com',
+        statusCode: 301,
+      },
     ]
   },
   async headers() {
