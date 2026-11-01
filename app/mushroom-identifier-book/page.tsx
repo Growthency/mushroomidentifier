@@ -9,6 +9,7 @@ import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
+import AffiliateBox from '@/components/blog/AffiliateBox'
 
 export const metadata: Metadata = {
   title: 'Mushroom Identifier Book — Best Field Guides Reviewed',
@@ -469,6 +470,7 @@ export default function MushroomIdentifierBookPage() {
 
             <H3 id="beginner-friendly-field-guides">Beginner-Friendly Field Guides</H3>
 
+            <AffiliateBox context="books-us" placement="static-books" />
             <BookCard
               title="An Initial Guide to the Identification of Mushrooms and Toadstools"
               author="Not specified"

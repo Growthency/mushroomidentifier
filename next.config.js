@@ -55,8 +55,6 @@ const nextConfig = {
       { source: '/amanita-phalloides-death-cap', destination: '/death-cap-mushroom-identification', statusCode: 301 },
       { source: '/pleurotus-ostreatus', destination: '/oyster-mushroom-identification-guide', statusCode: 301 },
       { source: '/mushroom-identifiers/pleurotus-ostreatus', destination: '/oyster-mushroom-identification-guide', statusCode: 301 },
-      { source: '/turkey-tail-mushroom-identification', destination: '/trametes-versicolor-turkey-tail', statusCode: 301 },
-      { source: '/tree-mushroom-identification', destination: '/tree-mushroom-identification-chart', statusCode: 301 },
       { source: '/best-mushrooms-books', destination: '/mushroom-identifier-book', statusCode: 301 },
       { source: '/author/nathan-cole', destination: '/editorial-policy', statusCode: 301 },
     ]

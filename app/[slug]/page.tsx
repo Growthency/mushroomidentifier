@@ -26,6 +26,7 @@ import ViewTracker from '@/components/blog/ViewTracker'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 import { resolveFeaturedImage, dedupeProductHeadings } from '@/lib/content-helpers'
 import { getNofollowRules, applyNofollowRules } from '@/lib/external-links'
+import { affiliateContextFor, injectAffiliateBoxes } from '@/lib/affiliate'
 
 /* ── Supabase admin client — uses Next.js fetch cache (60s revalidate) so
    repeat visits within the window are instant. The previous `cache: 'no-store'`
@@ -216,6 +217,8 @@ export default async function DynamicPostPage({
     dedupeProductHeadings(post.content || ''),
     nofollowRules,
   )
+  // Amazon Associates boxes, placed after the second section (lib/affiliate.ts).
+  const articleHtml = injectAffiliateBoxes(processedContent, affiliateContextFor(post.slug, post.category))
 
   const publishedDate = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-US', {
@@ -426,14 +429,14 @@ export default async function DynamicPostPage({
               {post.is_premium ? (
                 <PremiumGate inline>
                   <ArticleContent
-                    html={processedContent}
+                    html={articleHtml}
                     className={articleContentClasses}
                     style={articleContentStyles}
                   />
                 </PremiumGate>
               ) : (
                 <ArticleContent
-                  html={processedContent}
+                  html={articleHtml}
                   className={articleContentClasses}
                   style={articleContentStyles}
                 />

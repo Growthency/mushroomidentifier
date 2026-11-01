@@ -8,6 +8,7 @@ import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
+import AffiliateBox from '@/components/blog/AffiliateBox'
 
 export const metadata: Metadata = {
   title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
@@ -479,6 +480,7 @@ export default async function MushroomPartsExplainedPage() {
 
           <Divider />
 
+              <div className="not-prose"><AffiliateBox context="edible" placement="static" /></div>
               <div className="not-prose"><IdentifyBanner /></div>
 
 

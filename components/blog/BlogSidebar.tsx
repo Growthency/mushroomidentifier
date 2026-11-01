@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import AdSlot from '@/components/adify/AdSlot'
 import EzoicSlot from '@/components/adify/EzoicSlot'
+import { AffiliateKit } from '@/components/blog/AffiliateBox'
 // TableOfContents removed from sidebar — now auto-injected inside article content
 
 const TRENDING_POSTS = [
@@ -392,6 +393,8 @@ export default function BlogSidebar() {
             </Link>
           </div>
         </div>
+
+        <AffiliateKit />
 
         {/* Adify — sidebar ad #1 (after search + author) */}
         <AdSlot placement="sidebar" index={0} spaced={false} className="mb-5" />

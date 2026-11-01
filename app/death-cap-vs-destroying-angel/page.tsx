@@ -10,6 +10,7 @@ import BlogSidebar from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
+import AffiliateBox from '@/components/blog/AffiliateBox'
 
 export const metadata: Metadata = {
   title: 'Death Cap vs Destroying Angel: ID Guide',
@@ -618,6 +619,7 @@ export default function DeathCapVsDestroyingAngelPage() {
 
           <Divider />
 
+              <div className="not-prose"><AffiliateBox context="safety" placement="static" /></div>
               <div className="not-prose"><IdentifyBanner /></div>
 
 
