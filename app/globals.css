@@ -895,3 +895,19 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   .mi-aff li.mi-aff-item { grid-template-columns: auto minmax(0, 1fr); }
   .mi-aff a.mi-aff-btn { grid-column: 1 / -1; width: 100%; }
 }
+
+/* .rich-content sets link and list text colors with !important, so the cards must answer in kind. */
+.rich-content .mi-aff a.mi-aff-btn,
+.rich-content .mi-aff a.mi-aff-btn:hover,
+.rich-content .mi-aff a.mi-aff-btn:focus,
+.rich-content .mi-aff a.mi-aff-btn:visited { color: #fff !important; background: var(--accent) !important; text-decoration: none !important; font-weight: 700 !important; }
+.rich-content .mi-aff a.mi-aff-btn:hover { filter: brightness(0.88); }
+.rich-content .mi-aff a.mi-aff-thumb:hover { text-decoration: none !important; }
+.rich-content .mi-aff a.mi-aff-thumb img { margin: 0 !important; border: 0 !important; box-shadow: none !important; }
+.rich-content .mi-aff .mi-aff-eyebrow { color: var(--accent) !important; font-size: 11px !important; font-weight: 700 !important; }
+.rich-content .mi-aff .mi-aff-title { color: var(--text-primary) !important; font-size: 17px !important; font-weight: 700 !important; }
+.rich-content .mi-aff .mi-aff-text strong { color: var(--text-primary) !important; font-size: 15px !important; font-weight: 700 !important; }
+.rich-content .mi-aff .mi-aff-by { color: var(--text-faint) !important; font-size: 12px !important; }
+.rich-content .mi-aff .mi-aff-note { color: var(--text-muted) !important; font-size: 13px !important; line-height: 1.45 !important; }
+.rich-content .mi-aff .mi-aff-foot { color: var(--text-faint) !important; font-size: 11.5px !important; line-height: 1.5 !important; margin-bottom: 0 !important; }
+.rich-content .mi-aff .mi-aff-foot a { color: var(--accent) !important; }
