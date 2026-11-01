@@ -30,7 +30,7 @@ const ALL_ARTICLES = [
     riskColor: '#7ec88a',
   },
   {
-    slug: '/amanita-phalloides-death-cap',
+    slug: '/death-cap-mushroom-identification',
     title: 'Amanita phalloides (Death Cap): Identification, Features, Habitat & Safety Guide',
     excerpt: 'Learn death cap identification by cap color, white gills, ring, volva, and habitat. One of the world\'s most dangerous toxic mushrooms.',
     image: '/amanita-phalloides-death-cap-identification.webp',

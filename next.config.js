@@ -51,6 +51,14 @@ const nextConfig = {
         destination: 'https://srv.adstxtmanager.com/19390/mushroomidentifiers.com',
         statusCode: 301,
       },
+      // Merged duplicate guides and removed pages (2026-11-01)
+      { source: '/amanita-phalloides-death-cap', destination: '/death-cap-mushroom-identification', statusCode: 301 },
+      { source: '/pleurotus-ostreatus', destination: '/oyster-mushroom-identification-guide', statusCode: 301 },
+      { source: '/mushroom-identifiers/pleurotus-ostreatus', destination: '/oyster-mushroom-identification-guide', statusCode: 301 },
+      { source: '/turkey-tail-mushroom-identification', destination: '/trametes-versicolor-turkey-tail', statusCode: 301 },
+      { source: '/tree-mushroom-identification', destination: '/tree-mushroom-identification-chart', statusCode: 301 },
+      { source: '/best-mushrooms-books', destination: '/mushroom-identifier-book', statusCode: 301 },
+      { source: '/author/nathan-cole', destination: '/editorial-policy', statusCode: 301 },
     ]
   },
   async headers() {
@@ -93,7 +101,7 @@ const nextConfig = {
       {
         // Static blog & info pages — cache at CDN edge for 1 hour, stale-while-revalidate 1 day
         // (these rarely change, so aggressive caching is safe)
-        source: '/(about|contact|pricing|mushroom-parts-explained|mushroom-identifier-book|mushroom-identification-quiz|how-to-get-rid-of-mushrooms-in-grass|why-are-mushrooms-growing-in-my-yard|are-there-any-deadly-leccinum-mushrooms|amanita-bisporigera-destroying-angel|amanita-phalloides-death-cap|amanita-virosa-mushroom|agaricus-arvensis-horse-mushroom|death-cap-vs-destroying-angel|amanita-ocreata|amanita-muscaria|amanita-pantherina|galerina-marginata|omphalotus-illudens|agaricus-campestris|morchella-esculenta|pleurotus-ostreatus|agaricus-xanthodermus|chlorophyllum-molybdites|scleroderma-citrinum|cortinarius-rubellus|lepiota-brunneoincarnata)',
+        source: '/(about|contact|pricing|mushroom-parts-explained|mushroom-identifier-book|mushroom-identification-quiz|how-to-get-rid-of-mushrooms-in-grass|why-are-mushrooms-growing-in-my-yard|are-there-any-deadly-leccinum-mushrooms|amanita-bisporigera-destroying-angel|amanita-virosa-mushroom|agaricus-arvensis-horse-mushroom|death-cap-vs-destroying-angel|amanita-ocreata|amanita-muscaria|amanita-pantherina|galerina-marginata|omphalotus-illudens|agaricus-campestris|morchella-esculenta|agaricus-xanthodermus|chlorophyllum-molybdites|scleroderma-citrinum|cortinarius-rubellus|lepiota-brunneoincarnata)',
         headers: [
           { key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' },
         ],

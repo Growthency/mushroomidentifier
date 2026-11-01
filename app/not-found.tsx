@@ -116,7 +116,7 @@ export default function NotFound() {
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {[
-                    { title: 'Death Cap Identification Guide', href: '/amanita-phalloides-death-cap' },
+                    { title: 'Death Cap Identification Guide', href: '/death-cap-mushroom-identification' },
                     { title: 'Mushroom Parts Explained', href: '/mushroom-parts-explained' },
                     { title: 'Death Cap vs Destroying Angel', href: '/death-cap-vs-destroying-angel' },
                     { title: 'Mushroom Identification Quiz', href: '/mushroom-identification-quiz' },

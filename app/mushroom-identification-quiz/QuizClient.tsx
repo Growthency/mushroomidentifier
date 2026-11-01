@@ -254,7 +254,7 @@ export default function QuizClient() {
       </h2>
       <div className="space-y-4 text-base leading-relaxed mb-8" style={{ color: 'var(--text-muted)' }}>
         <p>
-          Start by reviewing our guides on <Link href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }}>Amanita phalloides</Link>,{' '}
+          Start by reviewing our guides on <Link href="/death-cap-mushroom-identification" style={{ color: 'var(--accent)' }}>Amanita phalloides</Link>,{' '}
           <Link href="/amanita-bisporigera-destroying-angel" style={{ color: 'var(--accent)' }}>Amanita bisporigera</Link>, and{' '}
           <Link href="/mushroom-parts-explained" style={{ color: 'var(--accent)' }}>mushroom anatomy</Link> before attempting
           the quiz. Understanding the difference between a volva and an annulus, or why gills that stay white are a danger

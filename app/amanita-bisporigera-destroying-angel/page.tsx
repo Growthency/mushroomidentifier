@@ -105,7 +105,7 @@ export default function DestroyingAngelPage() {
             <LiveViewCount slug="/amanita-bisporigera-destroying-angel" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita bisporigera</em>, commonly known as the Destroying Angel, is one of the most dangerous
-              toxic mushrooms in North America. It contains the same deadly amatoxins found in <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita phalloides</em> (Death Cap)</a> and the European <a href="/amanita-virosa-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita virosa</em></a>. Because it closely resembles edible white mushrooms, accurate destroying angel
+              toxic mushrooms in North America. It contains the same deadly amatoxins found in <a href="/death-cap-mushroom-identification" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita phalloides</em> (Death Cap)</a> and the European <a href="/amanita-virosa-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita virosa</em></a>. Because it closely resembles edible white mushrooms, accurate destroying angel
               identification requires careful examination of all <a href="/mushroom-parts-explained" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom parts</a>.
             </p>
           </div>

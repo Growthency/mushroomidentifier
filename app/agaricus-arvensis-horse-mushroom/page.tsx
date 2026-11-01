@@ -219,7 +219,7 @@ export default function HorseMushroomPage() {
             <InfoBox>The cogwheel ring pattern is a highly reliable identification feature unique to <em>Agaricus arvensis</em>.</InfoBox>
 
             <H3>Volva (Basal Cup)</H3>
-            <p><strong>Absent</strong> in Horse Mushroom — no cup or sac at the base. This helps distinguish it from dangerous species like <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita phalloides</em> (Death Cap)</a> and <a href="/amanita-virosa-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita virosa</em> (Destroying Angel)</a>, which have a volva.</p>
+            <p><strong>Absent</strong> in Horse Mushroom — no cup or sac at the base. This helps distinguish it from dangerous species like <a href="/death-cap-mushroom-identification" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita phalloides</em> (Death Cap)</a> and <a href="/amanita-virosa-mushroom" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita virosa</em> (Destroying Angel)</a>, which have a volva.</p>
           </Section>
 
           <Divider />

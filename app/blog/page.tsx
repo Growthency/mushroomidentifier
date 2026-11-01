@@ -13,19 +13,19 @@ export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Mushroom Blog – ID Guides, Safety & Foraging Tips',
-  description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
+  description: 'Field guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge.',
   alternates: { canonical: 'https://mushroomidentifiers.com/blog' },
   openGraph: {
     type: 'website',
     title: 'Mushroom Blog – ID Guides, Safety & Foraging Tips',
-    description: 'Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge from our mycology experts.',
+    description: 'Field guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge.',
     url: 'https://mushroomidentifiers.com/blog',
     images: [{ url: 'https://mushroomidentifiers.com/mushroom-fungi-identifier.webp', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Mushroom Identification Blog – Guides & Safety Tips',
-    description: 'Expert guides, safety tips, regional foraging insights from mycology experts.',
+    description: 'Field guides, safety tips and regional foraging insights.',
   },
 }
 

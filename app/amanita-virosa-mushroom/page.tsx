@@ -106,7 +106,7 @@ export default function AmanitaVirosaPage() {
             <LiveViewCount slug="/amanita-virosa-mushroom" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               <em>Amanita virosa</em>, commonly known as the European Destroying Angel, is one of the most
-              dangerous toxic mushrooms in Europe. It shares the same deadly amatoxins found in <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita phalloides</em> (Death Cap)</a> and the North American <a href="/amanita-bisporigera-destroying-angel" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita bisporigera</em> (Destroying Angel)</a>. Because it closely resembles edible white mushrooms,
+              dangerous toxic mushrooms in Europe. It shares the same deadly amatoxins found in <a href="/death-cap-mushroom-identification" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita phalloides</em> (Death Cap)</a> and the North American <a href="/amanita-bisporigera-destroying-angel" style={{ color: 'var(--accent)' }} className="hover:underline"><em>Amanita bisporigera</em> (Destroying Angel)</a>. Because it closely resembles edible white mushrooms,
               accurate <em>Amanita virosa</em> identification requires careful examination of all <a href="/mushroom-parts-explained" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom parts</a>{' '}
               or assistance from a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">poisonous mushroom identification tool</Link>.
             </p>

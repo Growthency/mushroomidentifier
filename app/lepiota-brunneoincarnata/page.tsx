@@ -612,7 +612,7 @@ export default function LepiotaBrunneoincarnataPage() {
               </p>
               <p className="mt-3">
                 Learn more about other deadly species like{' '}
-                <Link href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline">
+                <Link href="/death-cap-mushroom-identification" style={{ color: 'var(--accent)' }} className="hover:underline">
                   Amanita phalloides (Death Cap)
                 </Link>{' '}
                 and{' '}

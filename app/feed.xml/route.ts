@@ -20,7 +20,6 @@ export async function GET() {
 
   // Static mushroom species pages
   const speciesPages = [
-    { title: 'Death Cap (Amanita phalloides) — Identification Guide', slug: '/amanita-phalloides-death-cap', category: 'Species Guide' },
     { title: 'Destroying Angel (Amanita bisporigera) — Identification Guide', slug: '/amanita-bisporigera-destroying-angel', category: 'Species Guide' },
     { title: 'Fly Agaric (Amanita muscaria) — Identification Guide', slug: '/amanita-muscaria', category: 'Species Guide' },
     { title: 'Panther Cap (Amanita pantherina) — Identification Guide', slug: '/amanita-pantherina', category: 'Species Guide' },
@@ -29,7 +28,6 @@ export async function GET() {
     { title: 'Jack O\'Lantern Mushroom (Omphalotus illudens) — Identification Guide', slug: '/omphalotus-illudens', category: 'Species Guide' },
     { title: 'Field Mushroom (Agaricus campestris) — Identification Guide', slug: '/agaricus-campestris', category: 'Species Guide' },
     { title: 'Morel (Morchella esculenta) — Identification Guide', slug: '/morchella-esculenta', category: 'Species Guide' },
-    { title: 'Oyster Mushroom (Pleurotus ostreatus) — Identification Guide', slug: '/pleurotus-ostreatus', category: 'Species Guide' },
     { title: 'Yellow Stainer (Agaricus xanthodermus) — Identification Guide', slug: '/agaricus-xanthodermus', category: 'Species Guide' },
     { title: 'Green-spored Parasol (Chlorophyllum molybdites) — Identification Guide', slug: '/chlorophyllum-molybdites', category: 'Species Guide' },
     { title: 'Common Earthball (Scleroderma citrinum) — Identification Guide', slug: '/scleroderma-citrinum', category: 'Species Guide' },

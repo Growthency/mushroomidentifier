@@ -423,7 +423,7 @@ export default function MorchellaEsculentaPage() {
                   </table>
                 </div>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                  The most common dangerous lookalike is <em>Gyromitra esculenta</em>, which has a wrinkled, brain-like cap and is not fully hollow inside. For more on identifying dangerous species, see our <Link href="/amanita-phalloides-death-cap" className="font-medium hover:underline" style={{ color: 'var(--accent)' }}>death cap identification guide</Link>.
+                  The most common dangerous lookalike is <em>Gyromitra esculenta</em>, which has a wrinkled, brain-like cap and is not fully hollow inside. For more on identifying dangerous species, see our <Link href="/death-cap-mushroom-identification" className="font-medium hover:underline" style={{ color: 'var(--accent)' }}>death cap identification guide</Link>.
                 </p>
               </Section>
 

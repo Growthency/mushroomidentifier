@@ -145,7 +145,7 @@ function InlinePaywallUI({ reason }: { reason: 'login' | 'upgrade' }) {
               <ul className="text-left space-y-2 mb-5">
                 {[
                   'All premium deep-dive species guides',
-                  'Expert safety warnings & lookalike alerts',
+                  'Safety warnings & lookalike alerts',
                   'PDF reports + field journal',
                   'Priority AI identification',
                 ].map((b) => (

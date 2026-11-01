@@ -410,7 +410,7 @@ export default async function DynamicPostPage({
                   {post.title}
                 </h1>
 
-                <AuthorBlock updatedAt={publishedDate} />
+                <AuthorBlock updatedAt={publishedDate} name={post.author_name || undefined} role={post.author_role || undefined} />
                 <LiveViewCount slug={post.slug} className="mb-2" />
                 {/* Excerpt + featured-image hero intentionally removed
                     from the individual article page — both were

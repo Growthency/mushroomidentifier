@@ -211,7 +211,7 @@ const homepageSchema = {
           name: "Can beginners use this mushroom identifier?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, it is designed to be beginner-friendly while using expert-level identification logic. Always follow safety guidance.",
+            text: "Yes, it is designed to be beginner-friendly while using detailed identification logic. Always follow safety guidance.",
           },
         },
         {
@@ -476,7 +476,7 @@ export default async function Home() {
                   learning and research aid, not as a final identification
                   authority. Some poisonous mushrooms closely resemble edible
                   ones. For example,{" "}
-                  <Link href="/amanita-phalloides-death-cap" style={{ color: "var(--accent)" }} className="hover:underline"><strong>Amanita phalloides (death cap)</strong></Link> — one of the
+                  <Link href="/death-cap-mushroom-identification" style={{ color: "var(--accent)" }} className="hover:underline"><strong>Amanita phalloides (death cap)</strong></Link> — one of the
                   most toxic mushrooms in the world — can look similar to edible
                   species when young.
                 </p>
@@ -894,7 +894,7 @@ export default async function Home() {
               }}
             >
               <h3 className="font-semibold mb-2 text-red-500">
-                <Link href="/amanita-phalloides-death-cap" className="hover:underline">Amanita phalloides (death cap)</Link>
+                <Link href="/death-cap-mushroom-identification" className="hover:underline">Amanita phalloides (death cap)</Link>
               </h3>
               <p className="text-sm" style={{ color: "var(--text-primary)" }}>
                 Responsible for many fatal mushroom poisonings worldwide
@@ -1357,7 +1357,7 @@ export default async function Home() {
               debris, and the mushroom identifier can often recognize these
               species when clear images are provided. Wood-growing species like{" "}
               <Link href="/hypholoma-fasciculare" style={{ color: "var(--accent)" }} className="hover:underline">Hypholoma fasciculare (sulfur tuft)</Link> form dense clusters on stumps, while{" "}
-              <Link href="/pleurotus-ostreatus" style={{ color: "var(--accent)" }} className="hover:underline">oyster mushrooms</Link> colonize hardwood logs.
+              <Link href="/oyster-mushroom-identification-guide" style={{ color: "var(--accent)" }} className="hover:underline">oyster mushrooms</Link> colonize hardwood logs.
             </p>
             <p>
               However, the AI needs to see how the mushroom attaches to the
@@ -2615,7 +2615,7 @@ export default async function Home() {
                 className="text-sm mb-4"
                 style={{ color: "var(--text-muted)" }}
               >
-                (<Link href="/pleurotus-ostreatus" style={{ color: "var(--accent)" }} className="hover:underline">Pleurotus ostreatus</Link> vs Pleurocybella porrigens)
+                (<Link href="/oyster-mushroom-identification-guide" style={{ color: "var(--accent)" }} className="hover:underline">Pleurotus ostreatus</Link> vs Pleurocybella porrigens)
               </p>
               <p
                 className="text-base leading-relaxed mb-6"

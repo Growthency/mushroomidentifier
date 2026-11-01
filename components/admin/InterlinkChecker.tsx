@@ -25,8 +25,6 @@ interface ArticleEntry {
 
 // Hardcoded static pages with keywords
 const STATIC_ARTICLES: ArticleEntry[] = [
-  { slug: '/boletus-edulis', title: 'Boletus Edulis (Porcini)', keywords: ['boletus edulis', 'porcini', 'king bolete', 'penny bun'] },
-  { slug: '/amanita-phalloides-death-cap', title: 'Amanita Phalloides (Death Cap)', keywords: ['amanita phalloides', 'death cap'] },
   { slug: '/amanita-muscaria', title: 'Amanita Muscaria (Fly Agaric)', keywords: ['amanita muscaria', 'fly agaric'] },
   { slug: '/amanita-bisporigera-destroying-angel', title: 'Amanita Bisporigera (Destroying Angel)', keywords: ['amanita bisporigera', 'destroying angel'] },
   { slug: '/amanita-virosa-mushroom', title: 'Amanita Virosa', keywords: ['amanita virosa', 'european destroying angel'] },
@@ -36,16 +34,12 @@ const STATIC_ARTICLES: ArticleEntry[] = [
   { slug: '/cortinarius-rubellus', title: 'Cortinarius Rubellus (Deadly Webcap)', keywords: ['cortinarius rubellus', 'deadly webcap'] },
   { slug: '/omphalotus-illudens', title: 'Omphalotus Illudens (Jack-O-Lantern)', keywords: ['omphalotus illudens', 'jack-o-lantern', 'jack o lantern'] },
   { slug: '/chlorophyllum-molybdites', title: 'Chlorophyllum Molybdites', keywords: ['chlorophyllum molybdites', 'green-spored parasol', 'green spored parasol'] },
-  { slug: '/gyromitra-esculenta', title: 'Gyromitra Esculenta (False Morel)', keywords: ['gyromitra esculenta', 'false morel'] },
-  { slug: '/hypholoma-fasciculare', title: 'Hypholoma Fasciculare (Sulphur Tuft)', keywords: ['hypholoma fasciculare', 'sulphur tuft', 'sulfur tuft'] },
   { slug: '/lepiota-brunneoincarnata', title: 'Lepiota Brunneoincarnata (Deadly Dapperling)', keywords: ['lepiota brunneoincarnata', 'deadly dapperling'] },
   { slug: '/scleroderma-citrinum', title: 'Scleroderma Citrinum (Common Earthball)', keywords: ['scleroderma citrinum', 'common earthball', 'earthball'] },
   { slug: '/agaricus-xanthodermus', title: 'Agaricus Xanthodermus (Yellow Stainer)', keywords: ['agaricus xanthodermus', 'yellow stainer', 'yellow-staining mushroom'] },
   { slug: '/agaricus-arvensis-horse-mushroom', title: 'Agaricus Arvensis (Horse Mushroom)', keywords: ['agaricus arvensis', 'horse mushroom'] },
   { slug: '/agaricus-campestris', title: 'Agaricus Campestris (Field Mushroom)', keywords: ['agaricus campestris', 'field mushroom'] },
-  { slug: '/cantharellus-cibarius', title: 'Cantharellus Cibarius (Chanterelle)', keywords: ['cantharellus cibarius', 'chanterelle', 'golden chanterelle'] },
   { slug: '/morchella-esculenta', title: 'Morchella Esculenta (Morel)', keywords: ['morchella esculenta', 'morel', 'true morel'] },
-  { slug: '/pleurotus-ostreatus', title: 'Pleurotus Ostreatus (Oyster Mushroom)', keywords: ['pleurotus ostreatus', 'oyster mushroom'] },
   { slug: '/mushroom-parts-explained', title: 'Mushroom Parts Explained', keywords: ['mushroom parts', 'mushroom anatomy', 'parts of a mushroom'] },
   { slug: '/mushroom-identifier-book', title: 'Mushroom Identifier Book', keywords: ['mushroom identifier book', 'mushroom field guide', 'identification book'] },
   { slug: '/how-to-get-rid-of-mushrooms-in-grass', title: 'How to Get Rid of Mushrooms in Grass', keywords: ['get rid of mushrooms', 'mushrooms in grass', 'remove mushrooms lawn'] },

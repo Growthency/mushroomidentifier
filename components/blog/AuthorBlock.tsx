@@ -1,10 +1,17 @@
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface AuthorBlockProps {
   updatedAt?: string
+  name?: string
+  role?: string
 }
 
-export default function AuthorBlock({ updatedAt }: AuthorBlockProps = {}) {
+export default function AuthorBlock({
+  updatedAt,
+  name = 'Mushroom Identifiers Editorial Team',
+  role = 'Editorial Team',
+}: AuthorBlockProps = {}) {
   return (
     <div
       className="flex items-center gap-3 my-6 px-4 py-3 rounded-xl"
@@ -12,19 +19,19 @@ export default function AuthorBlock({ updatedAt }: AuthorBlockProps = {}) {
     >
       <div className="flex-shrink-0 rounded-full overflow-hidden" style={{ width: 72, height: 72 }}>
         <Image
-          src="/author-avatar.webp"
-          alt="Nathan Cole — Mycologist & Fungi Expert"
+          src="/logo-512.png"
+          alt="Mushroom Identifiers"
           width={72}
           height={72}
           className="w-full h-full object-cover"
         />
       </div>
       <div className="flex-1">
-        <p className="font-semibold text-sm leading-tight" style={{ color: 'var(--text-primary)' }}>
-          Nathan Cole
-        </p>
+        <Link href="/editorial-policy" className="font-semibold text-sm leading-tight hover:underline" style={{ color: 'var(--text-primary)' }}>
+          {name}
+        </Link>
         <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-          Mycologist · Author · Fungi Expert
+          {role}
         </p>
       </div>
       {updatedAt && (

@@ -317,7 +317,7 @@ export default function OmphalotusIlludensPage() {
                 </ul>
                 <InfoBox>
                   <p className="text-sm">While rarely fatal, it can cause severe distress and dehydration. Unlike{' '}
-                    <Link href="/amanita-phalloides-death-cap" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
+                    <Link href="/death-cap-mushroom-identification" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
                       Death Cap (Amanita phalloides)
                     </Link>{' '}
                     which contains amatoxins, the toxins in jack-o&apos;-lantern mushroom are less lethal but still dangerous.

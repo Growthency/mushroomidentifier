@@ -188,7 +188,7 @@ export default function GalerinaMarginataPage() {
                 </div>
                 <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--text-muted)' }}>
                   Unlike Amanita species, this mushroom belongs to a different family but shares the same deadly toxin group (amatoxins), making it equally dangerous. For more on deadly Amanita toxins, see our guide on{' '}
-                  <Link href="/amanita-phalloides-death-cap" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
+                  <Link href="/death-cap-mushroom-identification" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
                     Amanita phalloides (Death Cap)
                   </Link>.
                 </p>

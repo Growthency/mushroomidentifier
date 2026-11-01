@@ -187,7 +187,7 @@ export const HOMEPAGE_SEED_BLOCKS: SeedBlock[] = [
     data: {
       html: `<p>Identifying mushrooms is complex because many species share similar visual traits. Some of the most dangerous fungi — including members of the Amanita genus — resemble edible mushrooms commonly collected by beginners.</p>
 <ul>
-<li><strong><a href="/amanita-phalloides-death-cap">Amanita phalloides (death cap)</a></strong> — responsible for many fatal mushroom poisonings worldwide</li>
+<li><strong><a href="/death-cap-mushroom-identification">Amanita phalloides (death cap)</a></strong> — responsible for many fatal mushroom poisonings worldwide</li>
 <li><strong>Amanita bisporigera (destroying angel)</strong> — visually similar to edible button mushrooms when young</li>
 </ul>
 <p>Other highly dangerous species include <a href="/amanita-virosa-mushroom">Amanita virosa (destroying angel)</a>, <a href="/amanita-ocreata">Amanita ocreata (western destroying angel)</a>, <a href="/cortinarius-rubellus">Cortinarius rubellus (deadly webcap)</a>, <a href="/galerina-marginata">Galerina marginata (funeral bell)</a>, and <a href="/lepiota-brunneoincarnata">Lepiota brunneoincarnata (deadly dapperling)</a>. Toxic mushrooms in the Amanita genus, such as <a href="/amanita-muscaria">Amanita muscaria (fly agaric)</a> and <a href="/amanita-pantherina">Amanita pantherina (panther cap)</a>, can also cause severe poisoning.</p>
@@ -322,7 +322,7 @@ export const HOMEPAGE_SEED_BLOCKS: SeedBlock[] = [
   {
     block_type: 'rich-text',
     data: {
-      html: `<p>Yes. Many distinctive fungi grow on logs, tree trunks, and woody debris, and the mushroom identifier can often recognize these species when clear images are provided. Wood-growing species like <a href="/hypholoma-fasciculare">Hypholoma fasciculare (sulfur tuft)</a> form dense clusters on stumps, while <a href="/pleurotus-ostreatus">oyster mushrooms</a> colonize hardwood logs.</p>
+      html: `<p>Yes. Many distinctive fungi grow on logs, tree trunks, and woody debris, and the mushroom identifier can often recognize these species when clear images are provided. Wood-growing species like <a href="/hypholoma-fasciculare">Hypholoma fasciculare (sulfur tuft)</a> form dense clusters on stumps, while <a href="/oyster-mushroom-identification-guide">oyster mushrooms</a> colonize hardwood logs.</p>
 <p>However, the AI needs to see how the mushroom attaches to the wood.</p>
 <h3>Helpful photo details include:</h3>
 <ul>
@@ -563,7 +563,7 @@ export const HOMEPAGE_SEED_BLOCKS: SeedBlock[] = [
       imageAlt: 'Oyster Mushroom vs Angel Wings comparison',
       reverse: true,
       html: `<h3>4. Oyster Mushroom vs Angel Wings</h3>
-<p><em>(<a href="/pleurotus-ostreatus">Pleurotus ostreatus</a> vs Pleurocybella porrigens)</em></p>
+<p><em>(<a href="/oyster-mushroom-identification-guide">Pleurotus ostreatus</a> vs Pleurocybella porrigens)</em></p>
 <p>Both species grow in clusters on wood, making them visually similar. However, oyster mushrooms are edible, while angel wings can be toxic in some conditions. The main differences include thickness and substrate type.</p>
 <p><strong>Our AI</strong> compares growth on hardwood vs conifer, gill attachment, and body thickness to separate these species.</p>`,
     },

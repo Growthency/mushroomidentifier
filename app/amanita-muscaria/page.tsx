@@ -232,7 +232,7 @@ export default function AmanitaMuscariaPage() {
                 </div>
                 <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--text-muted)' }}>
                   This species belongs to the Amanitaceae family, which includes both deadly toxic and psychoactive fungi. Unlike species such as{' '}
-                  <Link href="/amanita-phalloides-death-cap" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
+                  <Link href="/death-cap-mushroom-identification" className="hover:underline font-medium" style={{ color: 'var(--accent)' }}>
                     Amanita phalloides
                   </Link>, this mushroom is not usually fatal but still poses health risks.
                 </p>

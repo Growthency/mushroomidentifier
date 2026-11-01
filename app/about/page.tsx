@@ -102,8 +102,8 @@ const TECH = [
   },
   {
     icon: Database,
-    title: 'Expert-Verified Database',
-    desc: 'Our species database is built from peer-reviewed mycological literature, herbarium records, and field-verified data from professional mycologists and scientific institutions.',
+    title: 'Sourced Reference Data',
+    desc: 'Our species information draws on published mycological literature and public reference guides, and each guide links the sources it uses.',
   },
   {
     icon: Microscope,
@@ -215,6 +215,21 @@ export default function AboutPage() {
                 We envision AI and human expertise working together to protect and educate the global foraging community.
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* ── Who runs this site ─────────────────────────── */}
+        <section className="max-w-4xl mx-auto px-5 md:px-6 mb-24" aria-labelledby="team-heading">
+          <div className="p-8 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <h2 id="team-heading" className="font-playfair text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Who Runs This Site</h2>
+            <p className="leading-relaxed mb-4" style={{ color: 'var(--text-muted)' }}>
+              MushroomIdentifiers was founded by Mushahid Hussain and Mustakeem, two technology enthusiasts who wanted to make mushroom identification free, simple and educational. Our guides are published under the MushroomIdentifiers Editorial Team byline. They are written with AI assistance and checked against the sources linked in each guide.
+            </p>
+            <p className="leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+              No one on the team is a professional mycologist, so nothing on this site replaces confirmation from a qualified local expert. Our{' '}
+              <Link href="/editorial-policy" className="underline" style={{ color: 'var(--accent)' }}>editorial policy</Link>
+              {' '}explains how we research and correct our content.
+            </p>
           </div>
         </section>
 

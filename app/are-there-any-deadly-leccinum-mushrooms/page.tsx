@@ -225,7 +225,7 @@ export default function LeccinumPage() {
                 <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
                   There are no scientifically verified fatal poisonings directly caused by <em>Leccinum</em> species.
                   This separates them clearly from highly toxic genera like{' '}
-                  <Link href="/amanita-phalloides-death-cap" className="underline font-medium" style={{ color: 'var(--accent)' }}>
+                  <Link href="/death-cap-mushroom-identification" className="underline font-medium" style={{ color: 'var(--accent)' }}>
                     Amanita phalloides
                   </Link>
                   , which contains some of the most dangerous mushrooms in the world. From a research and mycology

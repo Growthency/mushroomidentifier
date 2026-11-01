@@ -118,7 +118,7 @@ export default async function MushroomPartsExplainedPage() {
             <p>This is why modern tools like a <Link href="/" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier</Link> use AI and computer vision to analyze the full fungal structure rather than relying on a single image or feature.</p>
 
             <H3>Safety and Identification Importance</H3>
-            <p>Some of the most dangerous fungi, including species in the <em>Amanita</em> group such as the <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline">Death Cap (<em>Amanita phalloides</em>)</a>, look similar to edible mushrooms. Features like a volva at the base or a ring on the stem can be critical indicators of toxicity. Understanding mushroom anatomy is not just about learning — it is essential for safe identification of wild fungi.</p>
+            <p>Some of the most dangerous fungi, including species in the <em>Amanita</em> group such as the <a href="/death-cap-mushroom-identification" style={{ color: 'var(--accent)' }} className="hover:underline">Death Cap (<em>Amanita phalloides</em>)</a>, look similar to edible mushrooms. Features like a volva at the base or a ring on the stem can be critical indicators of toxicity. Understanding mushroom anatomy is not just about learning — it is essential for safe identification of wild fungi.</p>
           </Section>
 
           <Divider />

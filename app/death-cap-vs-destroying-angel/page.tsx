@@ -150,7 +150,7 @@ export default function DeathCapVsDestroyingAngelPage() {
             <AuthorBlock updatedAt="Mar 31, 2026" />
             <LiveViewCount slug="/death-cap-vs-destroying-angel" className="mb-2" />
             <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              The difference between the <a href="/amanita-phalloides-death-cap" style={{ color: 'var(--accent)' }} className="hover:underline"><strong style={{ color: 'var(--accent)' }}>Death Cap</strong></a> (<em>Amanita phalloides</em>) and the <a href="/amanita-bisporigera-destroying-angel" style={{ color: 'var(--accent)' }} className="hover:underline"><strong style={{ color: 'var(--accent)' }}>Destroying Angel</strong></a> (<em>Amanita bisporigera</em>, <em>Amanita virosa</em>) comes down to cap color, shape, and subtle structural features — but both are among the most deadly toxic mushrooms in the world.
+              The difference between the <a href="/death-cap-mushroom-identification" style={{ color: 'var(--accent)' }} className="hover:underline"><strong style={{ color: 'var(--accent)' }}>Death Cap</strong></a> (<em>Amanita phalloides</em>) and the <a href="/amanita-bisporigera-destroying-angel" style={{ color: 'var(--accent)' }} className="hover:underline"><strong style={{ color: 'var(--accent)' }}>Destroying Angel</strong></a> (<em>Amanita bisporigera</em>, <em>Amanita virosa</em>) comes down to cap color, shape, and subtle structural features — but both are among the most deadly toxic mushrooms in the world.
             </p>
           </div>
 

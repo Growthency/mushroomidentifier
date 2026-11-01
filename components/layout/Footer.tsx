@@ -41,7 +41,7 @@ const FALLBACK_SETTINGS: Record<string, string> = {
   brand_name_prefix:       "Mushroom",
   brand_name_suffix:       "Identifiers",
   footer_description_1:    "AI-powered mushroom identification for safe foraging — instant species ID, toxicity warnings, and look-alike alerts.",
-  footer_description_2:    "Trusted by foragers, hikers, and mycology enthusiasts worldwide. Upload a photo and get expert-level analysis in seconds.",
+  footer_description_2:    "Trusted by foragers, hikers, and mycology enthusiasts worldwide. Upload a photo and get an AI analysis in seconds.",
   footer_highlight:        "Free to start — no signup required.",
   contact_email:           "support@mushroomidentifiers.com",
   cta_heading:             "Start Identifying Safely Today",

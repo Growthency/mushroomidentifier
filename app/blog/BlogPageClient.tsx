@@ -60,22 +60,7 @@ const articles: Article[] = [
     image: '/cortinarius-rubellus-deadly-webcap-identification.webp',
     views: 6240,
     is_premium: false,
-  },
-  {
-    id: 26,
-    title: 'Hypholoma fasciculare (Sulfur Tuft) – Identification, Toxicity & Lookalikes',
-    excerpt:
-      'Hypholoma fasciculare, commonly known as the sulfur tuft, is a toxic woodland mushroom that grows in dense clusters on decaying wood. Learn identification features, greenish gills, toxicity, habitat, and how to distinguish it from edible wood mushrooms.',
-    category: 'Edibility Guide',
-    riskLevel: 'Toxic',
-    region: 'Worldwide',
-    date: 'Apr 11, 2026',
-    readTime: '11 min',
-    slug: '/hypholoma-fasciculare',
-    image: '/hypholoma-fasciculare-sulfur-tuft-identification.webp',
-    views: 4580,
-    is_premium: false,
-  },
+  },
   {
     id: 25,
     title: 'Scleroderma citrinum (Earthball Mushroom) – Identification, Toxicity & Lookalikes',
@@ -120,37 +105,7 @@ const articles: Article[] = [
     image: '/agaricus-xanthodermus-yellow-stainer-identification.webp',
     views: 4260,
     is_premium: false,
-  },
-  {
-    id: 22,
-    title: 'Gyromitra esculenta (False Morel): Identification, Toxicity & Safety Guide',
-    excerpt:
-      'Gyromitra esculenta, commonly known as the false morel, is a highly controversial wild mushroom that resembles edible morels but contains dangerous toxins. Learn identification features, toxicity, habitat, and how to distinguish it from true morels.',
-    category: 'Edibility Guide',
-    riskLevel: 'Toxic',
-    region: 'Worldwide',
-    date: 'Apr 11, 2026',
-    readTime: '13 min',
-    slug: '/gyromitra-esculenta',
-    image: '/gyromitra-esculenta-false-morel-identification.webp',
-    views: 3840,
-    is_premium: false,
-  },
-  {
-    id: 21,
-    title: 'Pleurotus ostreatus (Oyster Mushroom): Identification, Edibility & Lookalikes',
-    excerpt:
-      'Pleurotus ostreatus, commonly known as oyster mushrooms, are one of the most popular and easy-to-identify edible wild mushrooms. Learn identification features, habitat, culinary uses, and how to distinguish from toxic lookalikes.',
-    category: 'Edibility Guide',
-    riskLevel: 'Low Risk',
-    region: 'Worldwide',
-    date: 'Apr 11, 2026',
-    readTime: '11 min',
-    slug: '/pleurotus-ostreatus',
-    image: '/pleurotus-ostreatus-oyster-mushroom-identification.webp',
-    views: 6180,
-    is_premium: false,
-  },
+  },
   {
     id: 20,
     title: 'Morchella esculenta (True Morel): Identification, Edibility & Lookalikes',
@@ -165,37 +120,7 @@ const articles: Article[] = [
     image: '/morchella-esculenta-true-morel-identification.webp',
     views: 5230,
     is_premium: false,
-  },
-  {
-    id: 19,
-    title: 'Cantharellus cibarius (Chanterelle): Identification, Edibility & Lookalikes',
-    excerpt:
-      'Cantharellus cibarius, commonly known as the chanterelle, is one of the most popular and highly prized wild edible mushrooms in the world. Learn identification features, habitat, culinary uses, and how to distinguish it from toxic jack-o\u2019-lantern lookalikes.',
-    category: 'Edibility Guide',
-    riskLevel: 'Low Risk',
-    region: 'Worldwide',
-    date: 'Apr 11, 2026',
-    readTime: '11 min',
-    slug: '/cantharellus-cibarius',
-    image: '/cantharellus-cibarius-chanterelle-identification.webp',
-    views: 4120,
-    is_premium: false,
-  },
-  {
-    id: 18,
-    title: 'Boletus edulis (Porcini Mushroom): Identification, Edibility & Lookalikes',
-    excerpt:
-      'Boletus edulis, commonly known as porcini, cep, or king bolete, is one of the most prized edible mushrooms in the world. Learn identification features, habitat, culinary uses, and how to avoid bitter bolete lookalikes.',
-    category: 'Edibility Guide',
-    riskLevel: 'Low Risk',
-    region: 'Worldwide',
-    date: 'Apr 11, 2026',
-    readTime: '12 min',
-    slug: '/boletus-edulis',
-    image: '/boletus-edulis-porcini-mushroom-identification.webp',
-    views: 3450,
-    is_premium: false,
-  },
+  },
   {
     id: 17,
     title: 'Agaricus campestris (Meadow Mushroom): Identification, Edibility & Lookalikes',
@@ -390,22 +315,7 @@ const articles: Article[] = [
     image: '/amanita-bisporigera-destroying-angel-identification.webp',
     views: 3450,
     is_premium: false,
-  },
-  {
-    id: 4,
-    title: 'Amanita phalloides (Death Cap): Identification, Features, Habitat & Safety Guide',
-    excerpt:
-      'Amanita phalloides, the Death Cap, is one of the most dangerous mushrooms in the world. Learn death cap identification by cap, gills, ring, volva, habitat, and toxic risk to stay safe.',
-    category: 'Safety',
-    riskLevel: 'Toxic',
-    region: 'Worldwide',
-    date: 'Mar 31, 2026',
-    readTime: '13 min',
-    slug: '/amanita-phalloides-death-cap',
-    image: '/amanita-phalloides-death-cap-identification.webp',
-    views: 4821,
-    is_premium: false,
-  },
+  },
   {
     id: 1,
     title: 'Death Cap vs Destroying Angel: Key Differences, Identification & Safety Guide',
@@ -644,7 +554,7 @@ export default function BlogPageClient({ dbPosts = [] }: { dbPosts?: Article[] }
             Mushroom Forager's Blog
           </h1>
           <p className="text-xl max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-            Expert guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge — crafted to help you forage smarter and safer.
+            Field guides, safety tips, regional foraging insights, and AI-powered mushroom identification knowledge, written to help you forage smarter and safer.
           </p>
         </div>
 
@@ -1048,13 +958,13 @@ function ArticleCard({ article, isPaid, isLoggedIn, isFavorited, isLoadingFav, o
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/author-avatar.webp"
-              alt="Nathan Cole"
+              src="/logo-512.png"
+              alt="Mushroom Identifiers"
               width={22}
               height={22}
               className="rounded-full object-cover flex-shrink-0"
             />
-            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Nathan Cole</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Editorial Team</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
             <span className="flex items-center gap-1">
@@ -1100,7 +1010,7 @@ function EmptyState({ hasFilters }: { hasFilters: boolean }) {
       <p className="text-base max-w-lg leading-relaxed" style={{ color: 'var(--text-muted)' }}>
         {hasFilters
           ? 'No articles match your current filters. Try adjusting your search terms, risk level, or region.'
-          : 'Our mycology experts are crafting in-depth guides and foraging insights. Check back soon for expert articles on mushroom identification, safety, and regional foraging tips.'}
+          : 'New guides are on the way. Check back soon for articles on mushroom identification, safety, and regional foraging tips.'}
       </p>
     </div>
   )

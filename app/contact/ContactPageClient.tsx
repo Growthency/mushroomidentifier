@@ -173,7 +173,7 @@ export default function ContactPageClient() {
               What Can We Help With?
             </h2>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              Use the form to reach us about anything related to the platform. Our team includes mycology experts and AI engineers who can address both scientific and technical questions.
+              Use the form to reach us about anything related to the platform.
             </p>
           </div>
 

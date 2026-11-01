@@ -265,7 +265,7 @@ export default function WhyMushroomsInYardPage() {
             <div className="rounded-2xl p-5 mb-5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <H3 id="decaying-organic-matter-fungi-food-source">🌿 Decaying Organic Matter (Fungi Food Source)</H3>
               <p className="mb-3 text-sm" style={{ color: 'var(--text-muted)' }}>
-                Fungi are natural decomposers. They break down organic materials in your yard. Common edible species like <a href="/agaricus-campestris" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}><em>Agaricus campestris</em></a> (Field Mushroom) grow in grassy areas, while wood-decomposing species like <a href="/pleurotus-ostreatus" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}><em>Pleurotus ostreatus</em></a> (Oyster Mushroom) appear near stumps and dead trees.
+                Fungi are natural decomposers. They break down organic materials in your yard. Common edible species like <a href="/agaricus-campestris" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}><em>Agaricus campestris</em></a> (Field Mushroom) grow in grassy areas, while wood-decomposing species like <a href="/oyster-mushroom-identification-guide" className="font-semibold underline underline-offset-2" style={{ color: 'var(--accent)' }}><em>Pleurotus ostreatus</em></a> (Oyster Mushroom) appear near stumps and dead trees.
               </p>
               <p className="text-xs font-semibold mb-2" style={{ color: 'var(--accent)' }}>Typical sources:</p>
               <BulletList items={[

@@ -159,7 +159,7 @@ function SearchResultsContent() {
                 <p className="text-xs sm:text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
                   This analysis used our <span style={{ color: 'rgba(255,255,255,0.85)' }}>standard AI model</span>.
                   Upgrade to unlock our <span style={{ color: '#34d399', fontWeight: 600 }}>advanced identification engine</span> for
-                  higher accuracy, detailed toxicity reports, and expert-level lookalike comparisons.
+                  higher accuracy, detailed toxicity reports, and detailed lookalike comparisons.
                 </p>
               </div>
             </div>

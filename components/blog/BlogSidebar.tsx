@@ -22,7 +22,7 @@ import EzoicSlot from '@/components/adify/EzoicSlot'
 // TableOfContents removed from sidebar — now auto-injected inside article content
 
 const TRENDING_POSTS = [
-  { title: 'Amanita phalloides (Death Cap): Identification Guide', slug: '/amanita-phalloides-death-cap', image: '/amanita-phalloides-death-cap-identification.webp', views: 0 },
+  { title: 'Amanita phalloides (Death Cap): Identification Guide', slug: '/death-cap-mushroom-identification', image: '/amanita-phalloides-death-cap-identification.webp', views: 0 },
   { title: 'Death Cap vs Destroying Angel: Key Differences', slug: '/death-cap-vs-destroying-angel', image: '/death-cap-vs-destroying-angel-comparison.webp', views: 0 },
   { title: 'Amanita bisporigera (Destroying Angel) Guide', slug: '/amanita-bisporigera-destroying-angel', image: '/amanita-bisporigera-destroying-angel-identification.webp', views: 0 },
   { title: 'Amanita virosa Mushroom: Identification & Safety', slug: '/amanita-virosa-mushroom', image: '/amanita-virosa-mushroom-destroying-angel.webp', views: 0 },
@@ -91,7 +91,7 @@ const RECENT_POSTS = [
   },
   {
     title: 'Amanita phalloides (Death Cap): Identification Guide',
-    slug: '/amanita-phalloides-death-cap',
+    slug: '/death-cap-mushroom-identification',
     image: '/amanita-phalloides-death-cap-identification.webp',
     date: 'Mar 15, 2026',
   },
@@ -100,7 +100,7 @@ const RECENT_POSTS = [
 const PREMIUM_BENEFITS = [
   { icon: BookOpen,    text: 'All premium deep-dive articles' },
   { icon: Zap,         text: 'Priority AI — faster identifications' },
-  { icon: ShieldCheck, text: 'Expert safety warnings & lookalike alerts' },
+  { icon: ShieldCheck, text: 'Safety warnings & lookalike alerts' },
   { icon: Star,        text: 'PDF reports + full field journal access' },
 ]
 
@@ -166,7 +166,7 @@ function PremiumBanner() {
 
         {/* Sub-text */}
         <p className="text-xs mb-3 leading-relaxed" style={{ color: 'rgba(240,253,244,0.65)' }}>
-          Join thousands of foragers who identify mushrooms safely with expert-level content.
+          Join thousands of foragers who identify mushrooms safely with detailed content.
         </p>
 
         {/* Benefits */}
@@ -367,58 +367,27 @@ export default function BlogSidebar() {
           />
         </div>
 
-        {/* 2. About the Author */}
-        <div className="rounded-xl overflow-hidden mb-5 relative"
+        {/* 2. About the editorial team */}
+        <div className="rounded-xl overflow-hidden mb-5"
           style={{ border: '1px solid var(--border)' }}>
-          {/* Cover — author avatar as blurred background */}
-          <div className="relative w-full overflow-hidden" style={{ height: 230 }}>
+          <div className="px-4 pt-5 pb-4 text-center" style={{ background: 'var(--bg-card)' }}>
             <Image
-              src="/author-avatar.webp"
-              alt="Mushroom identification expert and mycologist"
-              fill
-              className="object-cover"
-              style={{ filter: 'blur(16px) brightness(0.4) saturate(1.3)', transform: 'scale(1.2)' }}
+              src="/logo-512.png"
+              alt="Mushroom Identifiers"
+              width={72}
+              height={72}
+              className="rounded-full object-cover mx-auto mb-3"
             />
-            <div className="absolute inset-0"
-              style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.35) 100%)' }} />
-
-            {/* Avatar centered on cover */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="rounded-full p-[3px]"
-                style={{
-                  background: 'linear-gradient(135deg, #34d399, #10b981, #059669)',
-                  boxShadow: '0 8px 28px rgba(0,0,0,0.45)',
-                }}>
-                <Image
-                  src="/author-avatar.webp"
-                  alt="Nathan Cole — Mushroom Expert"
-                  width={200}
-                  height={200}
-                  className="rounded-full object-cover"
-                  style={{ width: 200, height: 200, border: '4px solid rgba(255,255,255,0.9)' }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="px-4 pt-3.5 pb-4 text-center" style={{ background: 'var(--bg-card)' }}>
-            <h3 className="font-bold text-[15px] mb-0.5" style={{ color: 'var(--text-primary)' }}>
-              Nathan Cole
+            <h3 className="font-bold text-[15px] mb-2" style={{ color: 'var(--text-primary)' }}>
+              Mushroom Identifiers Editorial Team
             </h3>
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-0.5 rounded-full mb-2.5"
-              style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--accent)' }}>
-              <Sparkles className="w-2.5 h-2.5" />
-              Mycologist &amp; Author
-            </span>
             <p className="text-xs leading-relaxed mb-3.5" style={{ color: 'var(--text-muted)' }}>
-              Renowned mycologist with over 40 years of experience studying fungi.
-              Dedicated to mushroom identification, cultivation, and the role of fungi in ecosystem health.
+              We write these guides with AI assistance and check claims against the sources linked in each guide.
             </p>
-            <Link href="/author/nathan-cole"
+            <Link href="/editorial-policy"
               className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:brightness-110"
               style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--accent)' }}>
-              More about me
+              How we write our guides
               <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
