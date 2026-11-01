@@ -98,7 +98,7 @@ export default function IdentifyBanner() {
         {/* Trust badge */}
         <div className="flex items-center gap-1.5 text-[11px]" style={{ color: 'rgba(167, 243, 208, 0.7)' }}>
           <ShieldCheck className="w-3.5 h-3.5" />
-          Trusted by 50,000+ foragers worldwide
+          Free to start. No signup required.
         </div>
 
         {/* CTA button */}

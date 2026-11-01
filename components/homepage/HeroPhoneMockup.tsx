@@ -35,7 +35,7 @@ export default function HeroPhoneMockup() {
     <div className="relative w-[270px] sm:w-[300px] mx-auto" aria-hidden="true">
       <div className="absolute -inset-10 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(15,174,140,0.3), transparent 68%)' }} />
 
-      <FloatingCard icon={Globe} title="10,000+ species" text="AI identification" className="-left-40 top-10" />
+      <FloatingCard icon={Globe} title="Edible &amp; toxic species" text="AI identification" className="-left-40 top-10" />
       <FloatingCard icon={TriangleAlert} title="Toxicity warnings" text="On every result" className="-right-28 bottom-10" />
 
       <div

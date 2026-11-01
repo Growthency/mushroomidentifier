@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'About MushroomIdentifiers – AI Mushroom ID',
-  description: 'Learn about MushroomIdentifiers — AI-powered mushroom identification with 95% accuracy, 10,000+ species, free for foragers worldwide.',
+  description: 'Learn about MushroomIdentifiers — the free AI-powered mushroom identification platform, our mission and our commitment to foraging safety.',
   openGraph: {
     type: 'website',
     title: 'About MushroomIdentifiers – AI-Powered Fungi Identification',
@@ -62,9 +62,9 @@ const schemaData = {
 }
 
 const STATS = [
-  { value: '10,000+', label: 'Fungal Species', desc: 'Comprehensive species database covering edible, toxic, and medicinal fungi worldwide', icon: Database },
-  { value: '95%', label: 'ID Accuracy', desc: 'Verified against expert mycologist classifications across 50,000+ test identifications', icon: CheckCircle2 },
-  { value: '50K+', label: 'Identifications', desc: 'Mushroom IDs completed by foragers, students, and researchers globally', icon: Search },
+  { value: 'Free', label: 'To Start', desc: 'Upload photos and get an AI suggestion without creating an account', icon: Database },
+  { value: '4', label: 'Photo Angles', desc: 'Cap, underside, stem and base give the model the features that separate look-alikes', icon: CheckCircle2 },
+  { value: '24/7', label: 'Poison Help', desc: 'If anyone may have eaten a poisonous mushroom, call 1-800-222-1222 in the US', icon: Search },
   { value: '120+', label: 'Countries', desc: 'Serving the global foraging community across six continents', icon: Globe },
 ]
 

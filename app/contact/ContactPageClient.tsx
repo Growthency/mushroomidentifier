@@ -14,7 +14,7 @@ const SUBJECTS = [
 const FAQ_ITEMS = [
   {
     q: 'How accurate is the mushroom identifier?',
-    a: 'Our AI achieves approximately 95% accuracy across 10,000+ species in controlled tests. Accuracy depends on photo quality and angle coverage — uploading 3–4 clear angles (cap top, gills, stem, base) significantly improves results. Always verify with a professional mycologist before consuming any wild mushroom.',
+    a: 'AI results can be wrong. Accuracy depends on photo quality and angle coverage — uploading 3–4 clear angles (cap top, gills, stem, base) significantly improves results. Always verify with a professional mycologist before consuming any wild mushroom.',
   },
   {
     q: 'Is the mushroom identifier free to use?',

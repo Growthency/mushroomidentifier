@@ -868,3 +868,30 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
 .mi-aff-kit .mi-aff-note { font-size: 12px; }
 .mi-aff-kit a.mi-aff-btn { padding: 7px 11px; font-size: 12px; }
 @media (max-width: 520px) { .mi-aff li.mi-aff-item { flex-direction: column; align-items: stretch; } .mi-aff a.mi-aff-btn { width: 100%; } }
+
+.mi-pick { padding: 16px; margin: 0; }
+.mi-pick-tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--accent); border-radius: 999px; padding: 4px 10px; margin-bottom: 10px; }
+.mi-pick-img { display: block; border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+.mi-pick-img img { width: 100%; height: auto; display: block; }
+.mi-pick-eyebrow { margin: 0 0 2px; font-size: 12px; color: var(--text-faint); }
+.mi-pick-title { display: block; font-size: 16px; font-weight: 700; color: var(--text-primary); line-height: 1.3; margin-bottom: 2px; }
+.mi-pick .mi-aff-by { display: block; margin-bottom: 4px; }
+.mi-pick .mi-aff-note { display: block; }
+.mi-aff a.mi-pick-btn { display: flex; width: 100%; margin-top: 12px; padding: 11px 14px; font-size: 14px; }
+
+/* ── Affiliate cards v2: thumbnails, grid layout, button states ── */
+.mi-aff li.mi-aff-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
+.mi-aff a.mi-aff-thumb { display: flex; align-items: center; justify-content: center; width: 72px; height: 96px; padding: 4px; border-radius: 8px; background: #fff; border: 1px solid var(--border); overflow: hidden; }
+.mi-aff a.mi-aff-thumb img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; margin: 0; border-radius: 4px; }
+.mi-aff-kit a.mi-aff-thumb { width: 56px; height: 72px; }
+.mi-aff-text strong { font-size: 15px; font-weight: 600; }
+.mi-aff a.mi-aff-btn, .rich-content .mi-aff a.mi-aff-btn, .prose .mi-aff a.mi-aff-btn { color: #fff; background: var(--accent); border: 0; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); text-decoration: none; font-weight: 600; transition: filter 0.15s ease, transform 0.15s ease; }
+.mi-aff a.mi-aff-btn:hover, .rich-content .mi-aff a.mi-aff-btn:hover, .prose .mi-aff a.mi-aff-btn:hover { color: #fff; background: var(--accent); filter: brightness(0.88); text-decoration: none; }
+.mi-aff a.mi-aff-btn:active { transform: translateY(1px); }
+.mi-aff a.mi-aff-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mi-pick-img { display: flex; align-items: center; justify-content: center; height: 220px; padding: 14px; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
+.mi-pick-img img { width: auto; height: 100%; max-width: 100%; object-fit: contain; }
+@media (max-width: 520px) {
+  .mi-aff li.mi-aff-item { grid-template-columns: auto minmax(0, 1fr); }
+  .mi-aff a.mi-aff-btn { grid-column: 1 / -1; width: 100%; }
+}

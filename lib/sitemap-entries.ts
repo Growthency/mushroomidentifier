@@ -33,7 +33,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/amanita-bisporigera-destroying-angel`,         lastModified: lastMod,                    changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/amanita-virosa-mushroom`,                      lastModified: lastMod,                    changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/mushroom-identification-quiz`,                 lastModified: lastMod,                    changeFrequency: 'monthly', priority: 0.8  },
-    { url: `${BASE_URL}/mushroom-identifier-book`,                     lastModified: new Date('2026-04-04'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/how-to-get-rid-of-mushrooms-in-grass`,         lastModified: new Date('2026-04-04'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/why-are-mushrooms-growing-in-my-yard`,         lastModified: new Date('2026-04-04'),     changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/are-there-any-deadly-leccinum-mushrooms`,      lastModified: new Date('2026-04-05'),     changeFrequency: 'monthly', priority: 0.85 },

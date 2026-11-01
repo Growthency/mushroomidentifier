@@ -1,4 +1,4 @@
-import { affiliateBoxHtml, affiliateKitHtml, type AffiliateContext } from '@/lib/affiliate'
+import { affiliateBoxHtml, affiliateKitHtml, affiliatePickHtml, type AffiliateContext } from '@/lib/affiliate'
 
 /**
  * Amazon Associates product box. The markup is shared with the CMS article
@@ -19,4 +19,9 @@ export default function AffiliateBox({
 /** Compact "forager's kit" card for the blog sidebar, with the Prime bounty line. */
 export function AffiliateKit() {
   return <div dangerouslySetInnerHTML={{ __html: affiliateKitHtml() }} />
+}
+
+/** Sticky "Editor's pick" card for the sidebar: one product chosen by page context. */
+export function AffiliatePick({ context = 'default' }: { context?: AffiliateContext }) {
+  return <div dangerouslySetInnerHTML={{ __html: affiliatePickHtml(context) }} />
 }

@@ -270,7 +270,7 @@ export default async function Home() {
     "Use our Free mushroom identifier by photo for fast, accurate results with advanced mushroom identifier AI. Upload clear images from multiple angles to instantly identify fungi, detect key features, and receive toxicity warnings plus similar species alerts through our free mushroom identification app.";
   const heroEyebrow =
     siteSettings.hero_eyebrow === undefined
-      ? "AI-POWERED · 10,000+ SPECIES · 30 FREE CREDITS"
+      ? "AI-POWERED · PHOTO ID · 30 FREE CREDITS"
       : siteSettings.hero_eyebrow.trim();
 
   return (
@@ -336,7 +336,7 @@ export default async function Home() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 max-w-xl mx-auto lg:mx-0">
               {[
-                { label: "10,000+ Species", icon: Globe },
+                { label: "Edible & Toxic Species", icon: Globe },
                 { label: "Quick Results",  icon: Clock },
                 { label: "Toxicity Warnings", icon: AlertTriangle },
                 { label: "30 Free Credits", icon: Shield },

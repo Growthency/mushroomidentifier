@@ -11,7 +11,7 @@
 
 export const AMAZON_TAG = 'mushroomidentifiers-20'
 
-export type Product = { title: string; by: string; note: string; dp?: string; search?: string }
+export type Product = { title: string; by: string; note: string; dp?: string; search?: string; image?: string }
 
 export type AffiliateContext =
   | 'psychedelic'
@@ -27,26 +27,26 @@ export type AffiliateContext =
   | 'default'
 
 const BOOKS = {
-  stamets: { title: 'Psilocybin Mushrooms of the World', by: 'Paul Stamets', note: 'The standard identification key for this group, with the spore print and bruising checks this guide describes.', dp: '0898158397' },
-  demystified: { title: 'Mushrooms Demystified', by: 'David Arora', note: 'The big reference key for North America. Heavy, but it settles arguments the pocket guides cannot.', dp: '0898151694' },
-  rain: { title: 'All That the Rain Promises and More', by: 'David Arora', note: 'The pocket guide for western mushrooms, small enough to carry.', dp: '0898153883' },
-  audubon: { title: 'National Audubon Society Field Guide to North American Mushrooms', by: 'Gary Lincoff', note: 'Photo guide covering the whole continent. The best first book for a beginner.', dp: '0394519922' },
-  upperMidwest: { title: 'Mushrooms of the Upper Midwest', by: 'Teresa Marrone and Kathy Yerich', note: 'Simple photo guide to the common species of Minnesota, Wisconsin, Michigan and Iowa.', dp: '1591934176' },
-  midwest: { title: 'Mushrooms of the Midwest', by: 'Michael Kuo and Andrew Methven', note: 'Deeper regional guide from the author of MushroomExpert.com.', dp: '0252079760' },
-  northeast: { title: 'Mushrooms of the Northeast', by: 'Teresa Marrone and Walt Sturgeon', note: 'Simple photo guide to the common species from Pennsylvania to Maine.', dp: '1591935911' },
-  baroni: { title: 'Mushrooms of the Northeastern United States and Eastern Canada', by: 'Timothy Baroni', note: 'Timber Press field guide with full descriptions and look-alikes.', dp: '1604696346' },
-  pnw: { title: 'Mushrooms of the Pacific Northwest, Revised Edition', by: 'Steve Trudell', note: 'Timber Press field guide for Washington, Oregon, Idaho and British Columbia.', dp: '1643260863' },
-  rockies: { title: 'Mushrooms of the Rocky Mountain Region', by: 'Vera Stucky Evenson', note: 'Timber Press field guide for Colorado, Utah, New Mexico and the mountain West.', dp: '1604695765' },
-  southeast: { title: 'Mushrooms of the Southeast', by: 'Todd Elliott and Steven Stephenson', note: 'Timber Press field guide for Georgia, the Carolinas and the Gulf states.', dp: '160469730X' },
+  stamets: { title: 'Psilocybin Mushrooms of the World', by: 'Paul Stamets', note: 'The standard identification key for this group, with the spore print and bruising checks this guide describes.', dp: '0898158397', image: '/affiliate/stamets.webp' },
+  demystified: { title: 'Mushrooms Demystified', by: 'David Arora', note: 'The big reference key for North America. Heavy, but it settles arguments the pocket guides cannot.', dp: '0898151694', image: '/affiliate/demystified.webp' },
+  rain: { title: 'All That the Rain Promises and More', by: 'David Arora', note: 'The pocket guide for western mushrooms, small enough to carry.', dp: '0898153883', image: '/affiliate/rain.webp' },
+  audubon: { title: 'National Audubon Society Field Guide to North American Mushrooms', by: 'Gary Lincoff', note: 'Photo guide covering the whole continent. The best first book for a beginner.', dp: '0394519922', image: '/affiliate/audubon.webp' },
+  upperMidwest: { title: 'Mushrooms of the Upper Midwest', by: 'Teresa Marrone and Kathy Yerich', note: 'Simple photo guide to the common species of Minnesota, Wisconsin, Michigan and Iowa.', dp: '1591934176', image: '/affiliate/upperMidwest.webp' },
+  midwest: { title: 'Mushrooms of the Midwest', by: 'Michael Kuo and Andrew Methven', note: 'Deeper regional guide from the author of MushroomExpert.com.', dp: '0252079760', image: '/affiliate/midwest.webp' },
+  northeast: { title: 'Mushrooms of the Northeast', by: 'Teresa Marrone and Walt Sturgeon', note: 'Simple photo guide to the common species from Pennsylvania to Maine.', dp: '1591935911', image: '/affiliate/northeast.webp' },
+  baroni: { title: 'Mushrooms of the Northeastern United States and Eastern Canada', by: 'Timothy Baroni', note: 'Timber Press field guide with full descriptions and look-alikes.', dp: '1604696346', image: '/affiliate/baroni.webp' },
+  pnw: { title: 'Mushrooms of the Pacific Northwest, Revised Edition', by: 'Steve Trudell', note: 'Timber Press field guide for Washington, Oregon, Idaho and British Columbia.', dp: '1643260863', image: '/affiliate/pnw.webp' },
+  rockies: { title: 'Mushrooms of the Rocky Mountain Region', by: 'Vera Stucky Evenson', note: 'Timber Press field guide for Colorado, Utah, New Mexico and the mountain West.', dp: '1604695765', image: '/affiliate/rockies.webp' },
+  southeast: { title: 'Mushrooms of the Southeast', by: 'Todd Elliott and Steven Stephenson', note: 'Timber Press field guide for Georgia, the Carolinas and the Gulf states.', dp: '160469730X', image: '/affiliate/southeast.webp' },
 } satisfies Record<string, Product>
 
 const GEAR = {
-  loupe: { title: '10x jeweler’s loupe', by: 'Glass 10x hand lens', note: 'Lets you see gill edges, pore size and surface hairs that separate look-alikes.', dp: 'B018V46B4A' },
-  knife: { title: 'Opinel No. 08 mushroom knife', by: 'Curved stainless blade with a boar-bristle brush', note: 'Cuts cleanly and brushes soil off caps so you can see the base and the ring.', dp: 'B000KIMSG6' },
-  bag: { title: 'Foldable mesh foraging bag', by: 'Mesh, not plastic', note: 'Keeps finds dry and lets spores fall as you walk. Plastic bags turn mushrooms to mush.', dp: 'B0FPF1J14D' },
-  dehydrator: { title: 'Food dehydrator', by: 'Any tray dehydrator with a thermostat', note: 'The simplest way to store a good find. Dried mushrooms keep for a year.', search: 'food dehydrator' },
-  oysterKit: { title: 'Oyster mushroom grow kit', by: 'Countertop kit', note: 'Grow the real thing at home and learn its gills and smell before you forage it.', search: 'oyster mushroom grow kit' },
-  lionsManeKit: { title: 'Lion’s mane grow kit', by: 'Countertop kit', note: 'A safe way to know this species by sight before you look for it on trees.', search: 'lions mane mushroom grow kit' },
+  loupe: { title: '10x jeweler’s loupe', by: 'Glass 10x hand lens', note: 'Lets you see gill edges, pore size and surface hairs that separate look-alikes.', dp: 'B018V46B4A', image: '/affiliate/loupe.webp' },
+  knife: { title: 'Opinel No. 08 mushroom knife', by: 'Curved stainless blade with a boar-bristle brush', note: 'Cuts cleanly and brushes soil off caps so you can see the base and the ring.', dp: 'B000KIMSG6', image: '/affiliate/knife.webp' },
+  bag: { title: 'Foldable mesh foraging bag', by: 'Mesh, not plastic', note: 'Keeps finds dry and lets spores fall as you walk. Plastic bags turn mushrooms to mush.', dp: 'B0FPF1J14D', image: '/affiliate/bag.webp' },
+  dehydrator: { title: 'Food dehydrator', by: 'Any tray dehydrator with a thermostat', note: 'The simplest way to store a good find. Dried mushrooms keep for a year.', search: 'food dehydrator', image: '/affiliate/dehydrator.webp' },
+  oysterKit: { title: 'Oyster mushroom grow kit', by: 'Countertop kit', note: 'Grow the real thing at home and learn its gills and smell before you forage it.', search: 'oyster mushroom grow kit', image: '/affiliate/oysterKit.webp' },
+  lionsManeKit: { title: 'Lion’s mane grow kit', by: 'Countertop kit', note: 'A safe way to know this species by sight before you look for it on trees.', search: 'lions mane mushroom grow kit', image: '/affiliate/lionsManeKit.webp' },
 } satisfies Record<string, Product>
 
 type Box = { eyebrow: string; heading: string; items: Product[] }
@@ -75,6 +75,7 @@ const REGION: Array<[RegExp, AffiliateContext]> = [
 
 export function affiliateContextFor(slug: string, category?: string | null): AffiliateContext {
   const s = slug.replace(/^\//, '').toLowerCase()
+  if (/identifier-book|mushroom-book|field-guide/.test(s)) return 'books-us'
   if (/psychedelic|psilocyb/.test(s)) return 'psychedelic'
   for (const [re, ctx] of REGION) if (re.test(s)) return ctx
   if (/tree|turkey|trametes|oyster|pleurotus|hericium|lions-mane|reishi|ganoderma|chaga|inonotus|laetiporus|lentinus|hypholoma|galerina|honey-mushroom|stinkhorn/.test(s)) return 'wood'
@@ -97,10 +98,11 @@ export const BOUNTY = {
 }
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
-const DISCLOSURE = 'As an Amazon Associate, Mushroom Identifiers earns from qualifying purchases. Prices and availability are shown on Amazon.'
+const DISCLOSURE = 'As an Amazon Associate, Mushroom Identifiers earns from qualifying purchases. Prices and availability are shown on Amazon. Gear pictures are illustrations of the product type; book covers are the real covers.'
 
 function item(p: Product, subtag: string): string {
-  return `<li class="mi-aff-item"><div class="mi-aff-text"><strong>${esc(p.title)}</strong><span class="mi-aff-by">${esc(p.by)}</span><span class="mi-aff-note">${esc(p.note)}</span></div><a class="mi-aff-btn" href="${amazonUrl(p, subtag)}" target="_blank" rel="sponsored nofollow noopener">See on Amazon</a></li>`
+  const thumb = p.image ? `<a class="mi-aff-thumb" href="${amazonUrl(p, subtag)}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><img src="${p.image}" alt="" width="72" height="96" loading="lazy"></a>` : ''
+  return `<li class="mi-aff-item">${thumb}<div class="mi-aff-text"><strong>${esc(p.title)}</strong><span class="mi-aff-by">${esc(p.by)}</span><span class="mi-aff-note">${esc(p.note)}</span></div><a class="mi-aff-btn" href="${amazonUrl(p, subtag)}" target="_blank" rel="sponsored nofollow noopener">See on Amazon</a></li>`
 }
 
 export function affiliateBoxHtml(context: AffiliateContext, placement: string): string {
@@ -111,7 +113,7 @@ export function affiliateBoxHtml(context: AffiliateContext, placement: string): 
 
 export function affiliateKitHtml(): string {
   const items = [GEAR.loupe, GEAR.knife, BOOKS.audubon]
-  return `<aside class="mi-aff mi-aff-kit"><div class="mi-aff-head"><span class="mi-aff-eyebrow">Forager’s kit</span><strong class="mi-aff-title">Three things worth carrying</strong></div><ul class="mi-aff-list">${items.map((p) => `<li class="mi-aff-item"><div class="mi-aff-text"><strong>${esc(p.title)}</strong><span class="mi-aff-note">${esc(p.note)}</span></div><a class="mi-aff-btn" href="${amazonUrl(p, 'sidebar-kit')}" target="_blank" rel="sponsored nofollow noopener">Amazon</a></li>`).join('')}</ul><p class="mi-aff-foot"><a href="${BOUNTY.prime}" target="_blank" rel="sponsored nofollow noopener">Try Prime free for 30 days</a> for fast shipping. ${DISCLOSURE}</p></aside>`
+  return `<aside class="mi-aff mi-aff-kit"><div class="mi-aff-head"><span class="mi-aff-eyebrow">Forager’s kit</span><strong class="mi-aff-title">Three things worth carrying</strong></div><ul class="mi-aff-list">${items.map((p) => `<li class="mi-aff-item">${p.image ? `<a class="mi-aff-thumb" href="${amazonUrl(p, 'sidebar-kit')}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><img src="${p.image}" alt="" width="56" height="72" loading="lazy"></a>` : ''}<div class="mi-aff-text"><strong>${esc(p.title)}</strong><span class="mi-aff-note">${esc(p.note)}</span></div><a class="mi-aff-btn" href="${amazonUrl(p, 'sidebar-kit')}" target="_blank" rel="sponsored nofollow noopener">Amazon</a></li>`).join('')}</ul><p class="mi-aff-foot"><a href="${BOUNTY.prime}" target="_blank" rel="sponsored nofollow noopener">Try Prime free for 30 days</a> for fast shipping. <a href="/mushroom-identifier-book">Compare field guides by region</a>. ${DISCLOSURE}</p></aside>`
 }
 
 /**
@@ -130,4 +132,26 @@ export function injectAffiliateBoxes(html: string, context: AffiliateContext): s
     if (faq > 0) out = out.slice(0, faq) + affiliateBoxHtml(context === 'edible' ? 'default' : 'edible', 'article-end') + out.slice(faq)
   }
   return out
+}
+
+/** One product per context for the sticky sidebar card. */
+const PICK: Record<AffiliateContext, { product: Product; tag: string; image: string; alt: string }> = {
+  psychedelic: { product: BOOKS.stamets, tag: 'The reference for this guide', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  northeast: { product: BOOKS.northeast, tag: 'Field guide for your region', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  midwest: { product: BOOKS.upperMidwest, tag: 'Field guide for your region', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  pnw: { product: BOOKS.pnw, tag: 'Field guide for your region', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  rockies: { product: BOOKS.rockies, tag: 'Field guide for your region', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  southeast: { product: BOOKS.southeast, tag: 'Field guide for your region', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  wood: { product: GEAR.knife, tag: 'The one tool every forager carries', image: '/affiliate-pick-knife.webp', alt: 'Curved mushroom knife with a brush beside a basket of mushrooms, illustration' },
+  edible: { product: GEAR.knife, tag: 'The one tool every forager carries', image: '/affiliate-pick-knife.webp', alt: 'Curved mushroom knife with a brush beside a basket of mushrooms, illustration' },
+  safety: { product: BOOKS.audubon, tag: 'The first book to own', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  'books-us': { product: BOOKS.demystified, tag: 'The reference experts use', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  default: { product: GEAR.knife, tag: 'The one tool every forager carries', image: '/affiliate-pick-knife.webp', alt: 'Curved mushroom knife with a brush beside a basket of mushrooms, illustration' },
+}
+
+export function affiliatePickHtml(context: AffiliateContext = 'default'): string {
+  const pick = PICK[context] || PICK.default
+  const p = pick.product
+  const url = amazonUrl(p, `sidebar-pick-${context}`)
+  return `<aside class="mi-aff mi-pick"><span class="mi-pick-tag">Editor’s pick</span><a class="mi-pick-img" href="${url}" target="_blank" rel="sponsored nofollow noopener"><img src="${p.image || pick.image}" alt="${esc(p.title)}" width="320" height="240" loading="lazy"></a><p class="mi-pick-eyebrow">${esc(pick.tag)}</p><strong class="mi-pick-title">${esc(p.title)}</strong><span class="mi-aff-by">${esc(p.by)}</span><span class="mi-aff-note">${esc(p.note)}</span><a class="mi-aff-btn mi-pick-btn" href="${url}" target="_blank" rel="sponsored nofollow noopener">Check price on Amazon</a><p class="mi-aff-foot">${DISCLOSURE}</p></aside>`
 }

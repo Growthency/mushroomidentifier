@@ -255,22 +255,7 @@ const articles: Article[] = [
     image: '/how-to-get-rid-of-mushrooms-in-grass-fairy-ring-lawn.webp',
     views: 2740,
     is_premium: false,
-  },
-  {
-    id: 8,
-    title: 'Mushroom Identifier Book: Best Field Guides, Edible Mushroom Books & Foraging Resources',
-    excerpt:
-      'A mushroom identifier book helps you recognize fungi by combining photos or illustrations with key traits such as cap shape, gills, stem structure, habitat, season, and spore print.',
-    category: 'Guide',
-    riskLevel: 'General',
-    region: 'Worldwide',
-    date: 'Apr 4, 2026',
-    readTime: '15 min',
-    slug: '/mushroom-identifier-book',
-    image: '/mushroom-identifier-book-chanterelle-cantharellus-cibarius.webp',
-    views: 2230,
-    is_premium: false,
-  },
+  },
   {
     id: 7,
     title: 'Mushroom Identification Quiz — Test Your Fungi Knowledge (50 Questions)',

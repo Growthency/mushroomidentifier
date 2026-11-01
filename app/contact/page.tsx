@@ -40,7 +40,7 @@ const schemaData = {
           name: 'How accurate is the mushroom identifier?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Our AI achieves approximately 95% accuracy across 10,000+ species in controlled tests. Accuracy depends on photo quality and angle coverage. Always verify with a professional mycologist before consuming any wild mushroom.',
+            text: 'AI results can be wrong. Accuracy depends on photo quality and angle coverage. Always verify with a professional mycologist before consuming any wild mushroom.',
           },
         },
         {

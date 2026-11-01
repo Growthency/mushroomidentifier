@@ -19,7 +19,8 @@ import {
 } from 'lucide-react'
 import AdSlot from '@/components/adify/AdSlot'
 import EzoicSlot from '@/components/adify/EzoicSlot'
-import { AffiliateKit } from '@/components/blog/AffiliateBox'
+import { AffiliateKit, AffiliatePick } from '@/components/blog/AffiliateBox'
+import type { AffiliateContext } from '@/lib/affiliate'
 // TableOfContents removed from sidebar — now auto-injected inside article content
 
 const TRENDING_POSTS = [
@@ -290,7 +291,7 @@ function SidebarSkeleton({ rows = 5 }: { rows?: number }) {
   )
 }
 
-export default function BlogSidebar() {
+export default function BlogSidebar({ affiliateContext = 'default' }: { affiliateContext?: AffiliateContext } = {}) {
   const [query, setQuery] = useState('')
   const [popular, setPopular] = useState(TRENDING_POSTS)
   const [recent, setRecent] = useState(RECENT_POSTS)
@@ -503,6 +504,10 @@ export default function BlogSidebar() {
         <AdSlot placement="sidebar" index={1} spaced={false} className="mb-5" allowSticky />
         <EzoicSlot />
 
+        {/* 6. Editor's pick: sticks while the article scrolls */}
+        <div className="lg:sticky lg:top-24 mt-5">
+          <AffiliatePick context={affiliateContext} />
+        </div>
     </aside>
   )
 }

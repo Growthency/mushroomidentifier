@@ -38,7 +38,6 @@ export async function GET() {
     { title: 'Death Cap vs Destroying Angel — How to Tell Them Apart', slug: '/death-cap-vs-destroying-angel', category: 'Comparison Guide' },
     { title: 'Mushroom Parts Explained — Anatomy & Identification', slug: '/mushroom-parts-explained', category: 'Educational' },
     { title: 'Mushroom Identification Quiz — Test Your Knowledge', slug: '/mushroom-identification-quiz', category: 'Interactive' },
-    { title: 'Best Mushroom Identifier Books', slug: '/mushroom-identifier-book', category: 'Resources' },
     { title: 'How to Get Rid of Mushrooms in Grass', slug: '/how-to-get-rid-of-mushrooms-in-grass', category: 'Guide' },
     { title: 'Why Are Mushrooms Growing in My Yard?', slug: '/why-are-mushrooms-growing-in-my-yard', category: 'Guide' },
     { title: 'Are There Any Deadly Leccinum Mushrooms?', slug: '/are-there-any-deadly-leccinum-mushrooms', category: 'Guide' },

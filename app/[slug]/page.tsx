@@ -218,7 +218,8 @@ export default async function DynamicPostPage({
     nofollowRules,
   )
   // Amazon Associates boxes, placed after the second section (lib/affiliate.ts).
-  const articleHtml = injectAffiliateBoxes(processedContent, affiliateContextFor(post.slug, post.category))
+  const affCtx = affiliateContextFor(post.slug, post.category)
+  const articleHtml = injectAffiliateBoxes(processedContent, affCtx)
 
   const publishedDate = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-US', {
@@ -545,7 +546,7 @@ export default async function DynamicPostPage({
             </article>
 
             {/* Sidebar — hidden for full-page layout */}
-            {post.layout !== 'full-page' && <BlogSidebar />}
+            {post.layout !== 'full-page' && <BlogSidebar affiliateContext={affCtx} />}
           </div>
         </div>
       </div>
