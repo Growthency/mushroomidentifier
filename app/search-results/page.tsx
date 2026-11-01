@@ -2,6 +2,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import AffiliateBox from '@/components/blog/AffiliateBox'
 import { AlertTriangle, ChevronLeft, Sparkles, History, Zap, Crown, ChevronRight, Check, Shield } from 'lucide-react'
 
 function SearchResultsContent() {
@@ -317,6 +318,12 @@ function SearchResultsContent() {
           <h2 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Recommended Action</h2>
           <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{result.recommendedAction}</p>
         </div>
+
+        {/* Amazon: a field guide to verify the result. Grow kits only for safe, commonly grown species. */}
+        <AffiliateBox context="confirm" placement="result" />
+        {result.riskLevel !== 'HIGH' && /oyster|pleurotus|lion.?s mane|hericium/i.test(`${result.commonName || ''} ${result.scientificName || ''}`) && (
+          <AffiliateBox context="grow" placement="result" />
+        )}
 
         {/* Actions */}
         <div className="flex gap-3 flex-wrap pb-8">

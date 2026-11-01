@@ -24,6 +24,10 @@ export type AffiliateContext =
   | 'edible'
   | 'safety'
   | 'books-us'
+  | 'grow'
+  | 'preserve'
+  | 'scope'
+  | 'confirm'
   | 'default'
 
 const BOOKS = {
@@ -47,6 +51,15 @@ const GEAR = {
   dehydrator: { title: 'Food dehydrator', by: 'Any tray dehydrator with a thermostat', note: 'The simplest way to store a good find. Dried mushrooms keep for a year.', search: 'food dehydrator', image: '/affiliate/dehydrator.webp' },
   oysterKit: { title: 'Oyster mushroom grow kit', by: 'Countertop kit', note: 'Grow the real thing at home and learn its gills and smell before you forage it.', search: 'oyster mushroom grow kit', image: '/affiliate/oysterKit.webp' },
   lionsManeKit: { title: 'Lion’s mane grow kit', by: 'Countertop kit', note: 'A safe way to know this species by sight before you look for it on trees.', search: 'lions mane mushroom grow kit', image: '/affiliate/lionsManeKit.webp' },
+  bttrOyster: { title: 'Back to the Roots Organic Oyster Mushroom Grow Kit', by: 'Back to the Roots', note: 'Organic countertop kit. Open it, mist it daily, and the listing promises oyster mushrooms in about 10 days.', dp: 'B00CD0KZ78', image: '/affiliate/oysterKit.webp' },
+  nsBlueOyster: { title: 'North Spore Blue Oyster Mushroom Grow Kit, 4 lb', by: 'North Spore', note: 'Larger 4 lb kit with a spray bottle. The listing gives 0.5 to 1.5 lb on the first harvest, with more flushes after.', dp: 'B076VWP33D', image: '/affiliate/oysterKit.webp' },
+  goldenOyster: { title: 'Organic 4 lb Golden Oyster Mushroom Growing Kit', by: 'Double-sided fruiting kit', note: 'Golden oysters grow in warm rooms and fruit from two sides of the block, per the listing.', dp: 'B0F3JLNN8X', image: '/affiliate/oysterKit.webp' },
+  inbloomLions: { title: 'inbloom Lion\u2019s Mane Mushroom Growing Kit, 4 lb', by: 'inbloom', note: 'A 4 lb kit with a spray bottle for growing lion\u2019s mane on the counter.', dp: 'B0HFSF6HCK', image: '/affiliate/lionsManeKit.webp' },
+  cosori5ss: { title: 'Cosori 5-Tray Stainless Steel Food Dehydrator', by: 'Cosori', note: '3.1 sq ft of drying space on stainless trays. One of the most-reviewed dehydrators on Amazon.', dp: 'B0CHRWLM5Z', image: '/affiliate/dehydrator.webp' },
+  cosori10: { title: 'Cosori 10-Tray Stainless Steel Food Dehydrator', by: 'Cosori', note: '7.4 sq ft of drying space for a large harvest or a full season of mushrooms.', dp: 'B0H3PDPV1L', image: '/affiliate/dehydrator.webp' },
+  cosoriBudget: { title: 'Cosori 5-Tray BPA-Free Food Dehydrator', by: 'Cosori', note: 'Lower-cost model with temperature control up to 165 F. Enough for a few baskets of mushrooms.', dp: 'B09GFVL7QX', image: '/affiliate/dehydrator.webp' },
+  prestoCanner: { title: 'Presto 23-Quart Pressure Canner and Cooker', by: 'Presto', note: 'The kind of pressure canner that National Center for Home Food Preservation guidance calls for when canning mushrooms.', dp: 'B0000BYCFU', image: '/affiliate/canner.webp' },
+  microscope: { title: 'AmScope 40X-1000X Compound Microscope', by: 'AmScope', note: 'Magnifies enough to see spores. Some look-alikes can only be separated under a microscope.', dp: 'B00AM5XB5O', image: '/affiliate/microscope.webp' },
 } satisfies Record<string, Product>
 
 type Box = { eyebrow: string; heading: string; items: Product[] }
@@ -62,6 +75,10 @@ const BOXES: Record<AffiliateContext, Box> = {
   edible: { eyebrow: 'Foraging kit', heading: 'What experienced foragers carry', items: [GEAR.knife, GEAR.bag, BOOKS.audubon] },
   safety: { eyebrow: 'Identification references', heading: 'Books and tools for a safer check', items: [BOOKS.audubon, BOOKS.demystified, GEAR.loupe] },
   'books-us': { eyebrow: 'Field guides for the United States', heading: 'Start with the guide for your region', items: [BOOKS.audubon, BOOKS.demystified, BOOKS.upperMidwest, BOOKS.northeast, BOOKS.pnw, BOOKS.southeast] },
+  grow: { eyebrow: 'Grow kits mentioned in this guide', heading: 'Kits that fruit on the counter', items: [GEAR.bttrOyster, GEAR.nsBlueOyster, GEAR.inbloomLions] },
+  preserve: { eyebrow: 'Equipment for drying mushrooms', heading: 'Dehydrators and a pressure canner', items: [GEAR.cosori5ss, GEAR.cosori10, GEAR.prestoCanner] },
+  confirm: { eyebrow: 'Before you trust any ID', heading: 'Check this result against a field guide', items: [BOOKS.audubon, GEAR.loupe, BOOKS.demystified] },
+  scope: { eyebrow: 'Microscopes for mushroom identification', heading: 'Two ways to start looking at spores', items: [GEAR.microscope, GEAR.loupe] },
   default: { eyebrow: 'Forager’s kit', heading: 'Books and tools for identification', items: [BOOKS.audubon, GEAR.loupe, GEAR.knife] },
 }
 
@@ -76,6 +93,9 @@ const REGION: Array<[RegExp, AffiliateContext]> = [
 export function affiliateContextFor(slug: string, category?: string | null): AffiliateContext {
   const s = slug.replace(/^\//, '').toLowerCase()
   if (/identifier-book|mushroom-book|field-guide/.test(s)) return 'books-us'
+  if (/grow-kit|growing-kit|grow-your-own|grow-mushrooms/.test(s)) return 'grow'
+  if (/dry-mushrooms|dehydrat|preserv|freeze-dr|store-mushrooms/.test(s)) return 'preserve'
+  if (/microscope|spore-print|spores-under/.test(s)) return 'scope'
   if (/psychedelic|psilocyb/.test(s)) return 'psychedelic'
   for (const [re, ctx] of REGION) if (re.test(s)) return ctx
   if (/tree|turkey|trametes|oyster|pleurotus|hericium|lions-mane|reishi|ganoderma|chaga|inonotus|laetiporus|lentinus|hypholoma|galerina|honey-mushroom|stinkhorn/.test(s)) return 'wood'
@@ -146,6 +166,10 @@ const PICK: Record<AffiliateContext, { product: Product; tag: string; image: str
   edible: { product: GEAR.knife, tag: 'The one tool every forager carries', image: '/affiliate-pick-knife.webp', alt: 'Curved mushroom knife with a brush beside a basket of mushrooms, illustration' },
   safety: { product: BOOKS.audubon, tag: 'The first book to own', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
   'books-us': { product: BOOKS.demystified, tag: 'The reference experts use', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
+  grow: { product: GEAR.bttrOyster, tag: 'Beginner kit for this guide', image: '/affiliate/oysterKit.webp', alt: 'Oyster mushroom grow kit' },
+  preserve: { product: GEAR.cosori5ss, tag: 'Dehydrator for this guide', image: '/affiliate/dehydrator.webp', alt: 'Food dehydrator' },
+  confirm: { product: BOOKS.audubon, tag: 'The first book to own', image: '/affiliate/audubon.webp', alt: 'Field guide' },
+  scope: { product: GEAR.microscope, tag: 'For looking at spores', image: '/affiliate/microscope.webp', alt: 'Compound microscope' },
   default: { product: GEAR.knife, tag: 'The one tool every forager carries', image: '/affiliate-pick-knife.webp', alt: 'Curved mushroom knife with a brush beside a basket of mushrooms, illustration' },
 }
 
