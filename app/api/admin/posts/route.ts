@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
       is_premium: is_premium ?? false,
       status: status || 'draft',
       author_name: author_name || 'Mushroom Identifiers Editorial Team',
-      author_role: author_role || 'Editorial Team',
+      author_role: author_role || 'Field Guides & Mushroom Safety',
       published_at: status === 'published' ? new Date().toISOString() : null,
       layout: body.layout || 'with-sidebar',
       custom_css: custom_css || null,

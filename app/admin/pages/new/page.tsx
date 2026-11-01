@@ -56,7 +56,7 @@ export default function NewPageEditor() {
   const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [layout, setLayout] = useState<'with-sidebar' | 'full-page'>('with-sidebar')
   const [authorName, setAuthorName] = useState('Mushroom Identifiers Editorial Team')
-  const [authorRole, setAuthorRole] = useState('Editorial Team')
+  const [authorRole, setAuthorRole] = useState('Field Guides & Mushroom Safety')
   const [metaTitle, setMetaTitle] = useState('')
   const [metaDescription, setMetaDescription] = useState('')
   const [customCss, setCustomCss] = useState('')

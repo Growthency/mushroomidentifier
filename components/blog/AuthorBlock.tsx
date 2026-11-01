@@ -10,7 +10,7 @@ interface AuthorBlockProps {
 export default function AuthorBlock({
   updatedAt,
   name = 'Mushroom Identifiers Editorial Team',
-  role = 'Editorial Team',
+  role = 'Field Guides & Mushroom Safety',
 }: AuthorBlockProps = {}) {
   return (
     <div
@@ -19,8 +19,8 @@ export default function AuthorBlock({
     >
       <div className="flex-shrink-0 rounded-full overflow-hidden" style={{ width: 72, height: 72 }}>
         <Image
-          src="/logo-512.png"
-          alt="Mushroom Identifiers"
+          src="/author-team.webp"
+          alt="Basket of wild mushrooms in a forest"
           width={72}
           height={72}
           className="w-full h-full object-cover"

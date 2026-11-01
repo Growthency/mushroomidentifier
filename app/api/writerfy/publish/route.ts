@@ -206,7 +206,7 @@ export async function POST(req: NextRequest) {
     read_time: readTime,
     status,
     author_name: body.author_name || 'Mushroom Identifiers Editorial Team',
-    author_role: body.author_role || 'Editorial Team',
+    author_role: body.author_role || 'Field Guides & Mushroom Safety',
     meta_title: metaTitle,
     meta_description: metaDescription,
     layout: normaliseLayout(body.layout),

@@ -370,26 +370,48 @@ export default function BlogSidebar({ affiliateContext = 'default' }: { affiliat
         </div>
 
         {/* 2. About the editorial team */}
-        <div className="rounded-xl overflow-hidden mb-5"
+        <div className="rounded-xl overflow-hidden mb-5 relative"
           style={{ border: '1px solid var(--border)' }}>
-          <div className="px-4 pt-5 pb-4 text-center" style={{ background: 'var(--bg-card)' }}>
+          {/* Cover: the same photo as a blurred background */}
+          <div className="relative w-full overflow-hidden" style={{ height: 230 }}>
             <Image
-              src="/logo-512.png"
-              alt="Mushroom Identifiers"
-              width={72}
-              height={72}
-              className="rounded-full object-cover mx-auto mb-3"
+              src="/author-team.webp"
+              alt=""
+              fill
+              className="object-cover"
+              style={{ filter: 'blur(16px) brightness(0.4) saturate(1.3)', transform: 'scale(1.2)' }}
             />
+            <div className="absolute inset-0"
+              style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.35) 100%)' }} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="rounded-full p-[3px]"
+                style={{
+                  background: 'linear-gradient(135deg, #34d399, #10b981, #059669)',
+                  boxShadow: '0 8px 28px rgba(0,0,0,0.45)',
+                }}>
+                <Image
+                  src="/author-team.webp"
+                  alt="Basket of wild mushrooms in a forest"
+                  width={200}
+                  height={200}
+                  className="rounded-full object-cover"
+                  style={{ width: 200, height: 200, border: '4px solid rgba(255,255,255,0.9)' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="px-4 pt-3.5 pb-4 text-center" style={{ background: 'var(--bg-card)' }}>
             <h3 className="font-bold text-[15px] mb-2" style={{ color: 'var(--text-primary)' }}>
               Mushroom Identifiers Editorial Team
             </h3>
             <p className="text-xs leading-relaxed mb-3.5" style={{ color: 'var(--text-muted)' }}>
-              We write these guides with AI assistance and check claims against the sources linked in each guide.
+              We write field guides for anyone who has just found a mushroom, with the look-alikes shown and safety first.
             </p>
             <Link href="/editorial-policy"
               className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:brightness-110"
               style={{ background: 'rgba(16,185,129,0.1)', color: 'var(--accent)' }}>
-              How we write our guides
+              About our guides
               <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>

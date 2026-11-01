@@ -943,7 +943,7 @@ function ArticleCard({ article, isPaid, isLoggedIn, isFavorited, isLoadingFav, o
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-512.png"
+              src="/author-team.webp"
               alt="Mushroom Identifiers"
               width={22}
               height={22}
