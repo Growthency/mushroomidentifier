@@ -93,7 +93,7 @@ const nextConfig = {
       {
         // Static blog & info pages — cache at CDN edge for 1 hour, stale-while-revalidate 1 day
         // (these rarely change, so aggressive caching is safe)
-        source: '/(about|contact|pricing|mushroom-parts-explained|mushroom-identifier-book|mushroom-identification-quiz|how-to-get-rid-of-mushrooms-in-grass|why-are-mushrooms-growing-in-my-yard|are-there-any-deadly-leccinum-mushrooms|amanita-bisporigera-destroying-angel|amanita-phalloides-death-cap|amanita-virosa-mushroom|agaricus-arvensis-horse-mushroom|death-cap-vs-destroying-angel|amanita-ocreata|amanita-muscaria|amanita-pantherina|galerina-marginata|omphalotus-illudens|agaricus-campestris|boletus-edulis|cantharellus-cibarius|morchella-esculenta|pleurotus-ostreatus|gyromitra-esculenta|agaricus-xanthodermus|chlorophyllum-molybdites|scleroderma-citrinum|hypholoma-fasciculare|cortinarius-rubellus|lepiota-brunneoincarnata)',
+        source: '/(about|contact|pricing|mushroom-parts-explained|mushroom-identifier-book|mushroom-identification-quiz|how-to-get-rid-of-mushrooms-in-grass|why-are-mushrooms-growing-in-my-yard|are-there-any-deadly-leccinum-mushrooms|amanita-bisporigera-destroying-angel|amanita-phalloides-death-cap|amanita-virosa-mushroom|agaricus-arvensis-horse-mushroom|death-cap-vs-destroying-angel|amanita-ocreata|amanita-muscaria|amanita-pantherina|galerina-marginata|omphalotus-illudens|agaricus-campestris|morchella-esculenta|pleurotus-ostreatus|agaricus-xanthodermus|chlorophyllum-molybdites|scleroderma-citrinum|cortinarius-rubellus|lepiota-brunneoincarnata)',
         headers: [
           { key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=86400' },
         ],

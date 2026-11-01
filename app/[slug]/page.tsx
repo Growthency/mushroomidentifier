@@ -233,9 +233,7 @@ export default async function DynamicPostPage({
         '@type': 'Article',
         headline: post.meta_title || post.title,
         description: post.meta_description || post.excerpt || '',
-        image: post.featured_image
-          ? `https://mushroomidentifiers.com${post.featured_image}`
-          : undefined,
+        image: toAbsoluteImageUrl(post.featured_image) || undefined,
         author: {
           '@type': 'Organization',
           name: 'Mushroom Identifiers',
