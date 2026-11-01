@@ -27,7 +27,9 @@ function genCode(uid: string) {
  * Supabase links arrive without a session and go to the login page.
  */
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
+  // Behind the proxy request.url says http://0.0.0.0:3000, not the public site.
+  const origin = (process.env.NEXT_PUBLIC_SITE_URL || 'https://mushroomidentifiers.com').replace(/\/$/, '')
   const nextParam = searchParams.get('next') ?? '/dashboard'
   // Only same-site paths — never an open redirect.
   const next = nextParam.startsWith('/') && !nextParam.startsWith('//') ? nextParam : '/dashboard'
