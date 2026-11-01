@@ -3,7 +3,7 @@
  * "Bing Webmaster" tab of the admin Dashboard.
  * Data: GET /api/admin/analytics?source=bing&period=…
  */
-import { CheckCircle2, MousePointerClick, Eye, Activity, XCircle } from 'lucide-react'
+import { MousePointerClick, Eye, Activity } from 'lucide-react'
 import { useAdminData } from '@/hooks/useAdminData'
 
 interface Row { clicks: number; impressions: number; ctr: number; position: number }
@@ -49,7 +49,6 @@ export default function BingPanel({ period, periodLabel, dark }: { period: strin
     )
   }
 
-  const site = data.site
   const daily = data.daily || []
   const max = Math.max(...daily.map((d) => d.clicks), 1)
 
@@ -58,20 +57,6 @@ export default function BingPanel({ period, periodLabel, dark }: { period: strin
       {data.error && (
         <div className="rounded-xl border p-4 mb-6 text-sm break-words" style={{ background: dark ? 'rgba(239,68,68,0.1)' : '#fef2f2', borderColor: dark ? 'rgba(239,68,68,0.3)' : '#fecaca', color: dark ? '#fca5a5' : '#b91c1c' }}>
           {data.error} — check BING_WEBMASTER_API_KEY and that {data.siteUrl} is verified in Bing Webmaster Tools.
-        </div>
-      )}
-
-      {site && (
-        <div className="rounded-xl border p-5 mb-6 text-sm" style={{ background: cardBg, borderColor: cardBorder }}>
-          <h2 className="font-semibold mb-3" style={{ color: text }}>Bing setup check</h2>
-          <Check ok={site.inAccount} label={site.inAccount ? `${data.siteUrl} is in this Bing account` : `${data.siteUrl} is not in this Bing account`} />
-          <Check ok={site.verified} label={site.verified ? 'Site verified' : 'Site not verified yet'} />
-          <Check ok={site.sitemaps.length > 0} label={site.sitemaps.length ? `${site.sitemaps.length} sitemap(s) known to Bing` : 'No sitemap yet — use Indexing Report → Submit Sitemap'} />
-          {site.sitemaps.map((f) => (
-            <p key={f.url} className="text-xs mt-1 ml-6" style={{ color: muted }}>
-              {f.url} — {f.status || 'pending'}, {f.urlCount} URLs{f.lastCrawled ? `, crawled ${f.lastCrawled}` : ''}
-            </p>
-          ))}
         </div>
       )}
 
@@ -103,15 +88,6 @@ export default function BingPanel({ period, periodLabel, dark }: { period: strin
         </>
       )}
     </div>
-  )
-}
-
-function Check({ ok, label }: { ok: boolean; label: string }) {
-  const Icon = ok ? CheckCircle2 : XCircle
-  return (
-    <p className={`flex items-center gap-2 mb-1 ${ok ? 'text-emerald-500' : 'text-red-400'}`}>
-      <Icon className="w-4 h-4 shrink-0" /> {label}
-    </p>
   )
 }
 
