@@ -626,7 +626,7 @@ export default function BlogPageClient({ dbPosts = [] }: { dbPosts?: Article[] }
                     style={{ color: 'var(--text-primary)', background: selectedRegion === region ? 'var(--accent-bg)' : 'transparent' }}
                   >
                     <span className="text-base w-5 text-center flex-shrink-0">
-                      {region === 'All Regions' ? '🌐' : regionMeta[region].icon}
+                      {region === 'All Regions' ? '🌐' : (regionMeta[region] ?? regionMeta.Others).icon}
                     </span>
                     <span className="flex-1">{region}</span>
                     {selectedRegion === region && <span style={{ color: 'var(--accent)', fontSize: '12px' }}>✓</span>}
@@ -807,7 +807,7 @@ interface ArticleCardProps {
 
 function ArticleCard({ article, isPaid, isLoggedIn, isFavorited, isLoadingFav, onToggleFavorite }: ArticleCardProps) {
   const riskColor = riskLevelColors[article.riskLevel]
-  const region    = regionMeta[article.region]
+  const region    = regionMeta[article.region] ?? regionMeta.Others
   const isPremium = article.is_premium
   const canRead   = !isPremium || isPaid
   const href      = article.slug.startsWith('/') ? article.slug : `/blog/${article.slug}`
