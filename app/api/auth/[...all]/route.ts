@@ -8,6 +8,8 @@ export const runtime = 'nodejs'
 const ALLOWED = new Set([
   '/sign-in/email',
   '/sign-up/email',
+  '/sign-in/social',
+  '/callback/google',
   '/sign-out',
   '/get-session',
   '/change-password',

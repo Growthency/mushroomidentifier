@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/browser-client'
@@ -12,6 +12,12 @@ export default function LoginPage() {
   const [error, setError]     = useState('')
   const router  = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('error')) {
+      setError('Google sign-in failed. Please try again or use your email and password.')
+    }
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

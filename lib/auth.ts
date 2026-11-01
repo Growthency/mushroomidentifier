@@ -1,5 +1,6 @@
 /**
- * Better Auth (email + password) on our own PostgreSQL — replaces Supabase Auth.
+ * Better Auth (email + password, Google) on our own PostgreSQL — replaces
+ * Supabase Auth.
  *
  * Password compatibility: accounts moved from Supabase keep their GoTrue
  * bcrypt hash (`$2a$10$…`) in account.password, and new passwords are bcrypt
@@ -9,7 +10,9 @@
  * analyses.user_id, saved_articles.user_id … still point at the right user.
  *
  * Env: DATABASE_URL, BETTER_AUTH_SECRET (≥32 random chars),
- *      NEXT_PUBLIC_SITE_URL (https://mushroomidentifiers.com).
+ *      NEXT_PUBLIC_SITE_URL (https://mushroomidentifiers.com),
+ *      GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET (OAuth web client; its redirect
+ *      URI is https://mushroomidentifiers.com/api/auth/callback/google).
  */
 import { randomUUID } from 'node:crypto'
 import bcrypt from 'bcryptjs'
@@ -29,6 +32,12 @@ function trustedOrigins(): string[] {
     if (extra.trim()) list.push(extra.trim())
   }
   return Array.from(new Set(list))
+}
+
+function googleProvider() {
+  const clientId = (process.env.GOOGLE_CLIENT_ID || '').trim()
+  const clientSecret = (process.env.GOOGLE_CLIENT_SECRET || '').trim()
+  return clientId && clientSecret ? { google: { clientId, clientSecret, prompt: 'select_account' as const } } : {}
 }
 
 function createAuth() {
@@ -55,6 +64,12 @@ function createAuth() {
           return bcrypt.compare(password, hash)
         },
       },
+    },
+    socialProviders: googleProvider(),
+    account: {
+      // Accounts moved from Supabase have no Google link yet: a verified Google
+      // sign-in with the same email continues the same user.
+      accountLinking: { enabled: true, trustedProviders: ['google'] },
     },
     user: {
       changeEmail: { enabled: true, updateEmailWithoutVerification: true },

@@ -18,6 +18,8 @@ import {
 import HeroH1 from "./HeroH1";
 import SeeHowItWorksButton from "./SeeHowItWorksButton";
 import IdentifyBanner from "@/components/blog/IdentifyBanner";
+import GooglePlayBadge from "@/components/homepage/GooglePlayBadge";
+import HeroPhoneMockup from "@/components/homepage/HeroPhoneMockup";
 import HomepageBlocks from "@/components/homepage/HomepageBlocks";
 import { getHomepageBlocks } from "@/lib/homepage-blocks";
 import { getSiteContent } from "@/lib/site-content";
@@ -289,78 +291,73 @@ export default async function Home() {
         />
         <HeroCanvas />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          {heroEyebrow && (
-            <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-xs font-medium tracking-wide"
-              style={{
-                background: "var(--accent-bg)",
-                color: "var(--accent)",
-                border: "1px solid var(--border-hover)",
-              }}
-            >
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-10 lg:py-14 grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          <div className="text-center lg:text-left">
+            {heroEyebrow && (
               <div
-                className="w-2 h-2 rounded-full pulse-dot"
-                style={{ background: "var(--accent)" }}
-              />
-              {heroEyebrow}
-            </div>
-          )}
-
-          {/* HeroH1 renders solid color server-side (LCP-safe), adds shimmer client-side */}
-          <HeroH1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-            {heroTitle}
-          </HeroH1>
-
-          <p
-            className="text-lg sm:text-xl mb-12 max-w-3xl mx-auto leading-relaxed"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {heroSubtitle}
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <a
-              href="#identifier"
-              className="px-8 py-4 rounded-full text-lg font-semibold glow-green transition-all"
-              style={{ background: "var(--btn-primary)", color: "#fff" }}
-            >
-              Identify a Mushroom →
-            </a>
-            <SeeHowItWorksButton />
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
-            {[
-              { label: "10,000+ Species", icon: Globe },
-              { label: "Quick Results",  icon: Clock },
-              { label: "Toxicity Warnings", icon: AlertTriangle },
-              { label: "30 Free Credits", icon: Shield },
-            ].map((stat, i) => (
-              <div key={i} className="flex flex-col items-center gap-2">
-                <stat.icon
-                  className="w-6 h-6"
-                  style={{ color: "var(--accent)" }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 text-xs font-medium tracking-wide"
+                style={{
+                  background: "var(--accent-bg)",
+                  color: "var(--accent)",
+                  border: "1px solid var(--border-hover)",
+                }}
+              >
+                <div
+                  className="w-2 h-2 rounded-full pulse-dot"
+                  style={{ background: "var(--accent)" }}
                 />
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  {stat.label}
-                </span>
+                {heroEyebrow}
               </div>
-            ))}
+            )}
+
+            {/* HeroH1 renders solid color server-side (LCP-safe), adds shimmer client-side */}
+            <HeroH1 className="font-playfair text-4xl sm:text-5xl font-bold mb-5">
+              {heroTitle}
+            </HeroH1>
+
+            <p
+              className="text-base sm:text-lg mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {heroSubtitle}
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-10">
+              <GooglePlayBadge />
+              <a
+                href="#identifier"
+                className="px-7 py-4 rounded-full font-semibold glow-green transition-all"
+                style={{ background: "var(--btn-primary)", color: "#fff" }}
+              >
+                Identify a Mushroom →
+              </a>
+              <SeeHowItWorksButton />
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 max-w-xl mx-auto lg:mx-0">
+              {[
+                { label: "10,000+ Species", icon: Globe },
+                { label: "Quick Results",  icon: Clock },
+                { label: "Toxicity Warnings", icon: AlertTriangle },
+                { label: "30 Free Credits", icon: Shield },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col items-center lg:items-start gap-2">
+                  <stat.icon
+                    className="w-6 h-6"
+                    style={{ color: "var(--accent)" }}
+                  />
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="mt-20 flex flex-col items-center gap-2 animate-scroll-bounce">
-            <div
-              className="w-px h-12"
-              style={{ background: "var(--border)" }}
-            />
-            <span className="text-xs" style={{ color: "var(--text-faint)" }}>
-              scroll
-            </span>
-          </div>
+          <HeroPhoneMockup />
         </div>
       </section>
 

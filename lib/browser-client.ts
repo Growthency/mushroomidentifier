@@ -171,8 +171,16 @@ const client = {
       }
       return { data: null, error: { message: 'Use the password form to change your password.' } }
     },
-    async signInWithOAuth(_opts?: any) {
-      return { data: null, error: { message: 'Google sign-in is not available. Please use your email and password.' } }
+    async signInWithOAuth({ provider, options }: { provider: string; options?: { redirectTo?: string } }) {
+      const { json, error } = await authCall('/sign-in/social', {
+        provider,
+        callbackURL: options?.redirectTo || '/dashboard',
+        errorCallbackURL: '/login?error=oauth_failed',
+      })
+      if (error) return { data: null, error }
+      if (!json?.url) return { data: null, error: { message: 'Google sign-in is not available right now. Please try again.' } }
+      window.location.href = json.url
+      return { data: { url: json.url }, error: null }
     },
     onAuthStateChange(fn: Listener) {
       listeners.add(fn)
