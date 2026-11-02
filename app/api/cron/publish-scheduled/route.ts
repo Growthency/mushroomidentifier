@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import { google } from 'googleapis'
 import { createAdminClient as createAdmin } from '@/lib/db'
+import { googleAuth } from '@/lib/google-auth'
 
 /**
  * GET /api/cron/publish-scheduled
@@ -17,6 +19,29 @@ export const runtime = 'nodejs'
 
 // Must be fully dynamic — we want the cron to see fresh data every run.
 export const dynamic = 'force-dynamic'
+
+const SITE_URL = 'https://mushroomidentifiers.com'
+const INDEXNOW_KEY = 'a1b2c3d4e5f6g7h8i9j0mushroomid2026'
+
+/** Tells IndexNow and Google about posts that just went live. A failure here never blocks publishing. */
+async function announce(urls: string[]) {
+  try {
+    await fetch('https://api.indexnow.org/indexnow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ host: 'mushroomidentifiers.com', key: INDEXNOW_KEY, keyLocation: `${SITE_URL}/${INDEXNOW_KEY}.txt`, urlList: urls }),
+      signal: AbortSignal.timeout(10000),
+    })
+  } catch (err) {
+    console.error('[publish-scheduled] IndexNow failed', err)
+  }
+  try {
+    const indexing = google.indexing({ version: 'v3', auth: googleAuth(['https://www.googleapis.com/auth/indexing']) })
+    for (const url of urls) await indexing.urlNotifications.publish({ requestBody: { url, type: 'URL_UPDATED' } })
+  } catch (err) {
+    console.error('[publish-scheduled] Google request failed', err)
+  }
+}
 
 function supabase() {
   return createAdmin()
@@ -63,6 +88,7 @@ export async function GET(req: NextRequest) {
   // in a single .update() call, so we loop. For a small batch (a few dozen
   // at most per tick) this is fine.
   const publishedIds: any[] = []
+  const liveUrls: string[] = []
   const errors: { id: any; error: string }[] = []
 
   for (const post of toPublish) {
@@ -84,6 +110,7 @@ export async function GET(req: NextRequest) {
       continue
     }
     publishedIds.push(post.id)
+    if (post.slug) liveUrls.push(`${SITE_URL}${post.slug}`)
 
     // Bust caches so the freshly-live post appears immediately.
     if (post.slug) revalidatePath(post.slug)
@@ -93,6 +120,7 @@ export async function GET(req: NextRequest) {
     revalidatePath('/blog')
     revalidatePath('/sitemap.xml')
     revalidatePath('/feed.xml')
+    if (liveUrls.length > 0) await announce(liveUrls)
   }
 
   return NextResponse.json({
