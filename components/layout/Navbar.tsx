@@ -82,6 +82,7 @@ export default function Navbar({ menuItems }: { menuItems?: MenuItem[] }) {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
         scrolled ? 'nav-glass nav-scrolled' : ''
       }`}
+      style={{ top: 'var(--mi-bar-h, 0px)' }}
     >
       <div className={`max-w-7xl mx-auto px-6 transition-all duration-500 ease-in-out ${scrolled ? 'py-3' : 'py-6'}`}>
         <div className="flex items-center justify-between">

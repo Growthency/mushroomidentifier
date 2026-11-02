@@ -17,7 +17,7 @@ import Link from 'next/link'
 import { createCachedClient } from '@/lib/db'
 import { ArrowRight } from 'lucide-react'
 import AuthorBlock from '@/components/blog/AuthorBlock'
-import BlogSidebar from '@/components/blog/BlogSidebar'
+import BlogSidebar, { type TopPick } from '@/components/blog/BlogSidebar'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ArticleContent from '@/components/blog/ArticleContent'
@@ -220,6 +220,14 @@ export default async function DynamicPostPage({
   // Amazon Associates boxes, placed after the second section (lib/affiliate.ts).
   const affCtx = affiliateContextFor(post.slug, post.category)
   const articleHtml = injectAffiliateBoxes(processedContent, affCtx)
+  // Roundups carry their pick list in a comment for the sticky sidebar list.
+  let topPicks: TopPick[] | undefined
+  try {
+    const m = articleHtml.match(/<!--MI-PICKS:(\[[\s\S]*?\])-->/)
+    if (m) topPicks = JSON.parse(m[1])
+  } catch {
+    topPicks = undefined
+  }
 
   const publishedDate = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-US', {
@@ -546,7 +554,7 @@ export default async function DynamicPostPage({
             </article>
 
             {/* Sidebar — hidden for full-page layout */}
-            {post.layout !== 'full-page' && <BlogSidebar affiliateContext={affCtx} />}
+            {post.layout !== 'full-page' && <BlogSidebar affiliateContext={affCtx} topPicks={topPicks} />}
           </div>
         </div>
       </div>

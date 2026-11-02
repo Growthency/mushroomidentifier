@@ -1,6 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Navbar from './Navbar'
+import PrimeTopBar from './PrimeTopBar'
 import Footer from './Footer'
 import AdifyProvider from '@/components/adify/AdifyProvider'
 import AdSlot from '@/components/adify/AdSlot'
@@ -25,7 +26,9 @@ export default function LayoutShell({
   return (
     <AdifyProvider>
       <EzoicRouteHandler />
+      <PrimeTopBar />
       <Navbar menuItems={menus?.header} />
+      <div style={{ height: 'var(--mi-bar-h, 0px)' }} aria-hidden="true" />
       {/* Adify — header strip (below the navbar; follows scroll when the
           unit's admin-controlled Sticky flag is on) */}
       <AdSlot placement="header" className="px-4" allowSticky />

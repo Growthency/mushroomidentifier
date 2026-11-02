@@ -291,7 +291,9 @@ function SidebarSkeleton({ rows = 5 }: { rows?: number }) {
   )
 }
 
-export default function BlogSidebar({ affiliateContext = 'default' }: { affiliateContext?: AffiliateContext } = {}) {
+export type TopPick = { n: string; s: string; u: string; i: string }
+
+export default function BlogSidebar({ affiliateContext = 'default', topPicks }: { affiliateContext?: AffiliateContext; topPicks?: TopPick[] } = {}) {
   const [query, setQuery] = useState('')
   const [popular, setPopular] = useState(TRENDING_POSTS)
   const [recent, setRecent] = useState(RECENT_POSTS)
@@ -528,7 +530,27 @@ export default function BlogSidebar({ affiliateContext = 'default' }: { affiliat
 
         {/* 6. Editor's pick: sticks while the article scrolls */}
         <div className="lg:sticky lg:top-24 mt-5">
-          <AffiliatePick context={affiliateContext} />
+          {topPicks?.length ? (
+            <aside className="mi-toplist">
+              <p className="mi-toplist-title">Our top picks</p>
+              <ol>
+                {topPicks.map((p, i) => (
+                  <li key={p.u}>
+                    <span className="mi-grid-rank">{i + 1}</span>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.i} alt="" width={56} height={56} loading="lazy" />
+                    <div>
+                      <a href={p.u} target="_blank" rel="sponsored nofollow noopener">{p.n}</a>
+                      <span>{p.s}/10 our score</span>
+                      <a className="mi-toplist-btn" href={p.u} target="_blank" rel="sponsored nofollow noopener">Check it</a>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </aside>
+          ) : (
+            <AffiliatePick context={affiliateContext} />
+          )}
         </div>
     </aside>
   )

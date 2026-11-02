@@ -136,21 +136,55 @@ export function affiliateKitHtml(): string {
   return `<aside class="mi-aff mi-aff-kit"><div class="mi-aff-head"><span class="mi-aff-eyebrow">Forager’s kit</span><strong class="mi-aff-title">Three things worth carrying</strong></div><ul class="mi-aff-list">${items.map((p) => `<li class="mi-aff-item">${p.image ? `<a class="mi-aff-thumb" href="${amazonUrl(p, 'sidebar-kit')}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><img src="${p.image}" alt="" width="56" height="72" loading="lazy"></a>` : ''}<div class="mi-aff-text"><strong>${esc(p.title)}</strong><span class="mi-aff-note">${esc(p.note)}</span></div><a class="mi-aff-btn" href="${amazonUrl(p, 'sidebar-kit')}" target="_blank" rel="sponsored nofollow noopener">Amazon</a></li>`).join('')}</ul><p class="mi-aff-foot"><a href="${BOUNTY.prime}" target="_blank" rel="sponsored nofollow noopener">Try Prime free for 30 days</a> for fast shipping. <a href="/mushroom-identifier-book">Compare field guides by region</a>. ${DISCLOSURE}</p></aside>`
 }
 
+/** Prime free-trial link. The subtag separates the bar from the banners in reports. */
+export function primeUrl(sub: string): string {
+  return `${BOUNTY.prime}&ascsubtag=${encodeURIComponent(sub)}`
+}
+
+/** In-content landscape banner, 728x90 on desktop. Part of the article flow. */
+export function primeBannerHtml(sub: string): string {
+  const u = primeUrl(sub)
+  return `<aside class="mi-prime"><a class="mi-prime-img" href="${u}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><img src="/affiliate/prime.webp" alt="" width="160" height="90" loading="lazy"></a><div class="mi-prime-text"><span class="mi-prime-eyebrow">Free for 30 days</span><strong class="mi-prime-title">Try Amazon Prime free</strong><span class="mi-prime-sub">Fast delivery on field guides, kits and gear.</span></div><a class="mi-prime-btn" href="${u}" target="_blank" rel="sponsored nofollow noopener">Start free trial</a><span class="mi-prime-ad">Ad</span></aside>`
+}
+
+function gridItem(p: Product, rank: number, sub: string): string {
+  const u = amazonUrl(p, sub)
+  return `<li class="mi-grid-item"><span class="mi-grid-rank">${rank}</span><a class="mi-grid-img" href="${u}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><img src="${p.image || ''}" alt="${esc(p.title)}" width="240" height="180" loading="lazy"></a><span class="mi-grid-tag">${esc(p.by)}</span><a class="mi-grid-name" href="${u}" target="_blank" rel="sponsored nofollow noopener">${esc(p.title)}</a><a class="mi-grid-btn" href="${u}" target="_blank" rel="sponsored nofollow noopener">See it on Amazon</a></li>`
+}
+
+/** Three-card "Our picks at a glance" row, placed right after the intro. */
+export function picksGridHtml(context: AffiliateContext): string {
+  const box = BOXES[context] || BOXES.default
+  const sub = `intro-${context}`.replace(/[^a-z0-9-]/gi, '').slice(0, 40)
+  return `<aside class="mi-grid"><p class="mi-grid-title">Our picks at a glance</p><ol class="mi-grid-list">${box.items.slice(0, 3).map((p, i) => gridItem(p, i + 1, sub)).join('')}</ol></aside>`
+}
+
 /**
- * Put one product box into an article body: before the third H2 when the
- * article has at least four sections, otherwise at the end. Long articles
- * (eight or more H2s) also get a kit box before the FAQ.
+ * Article placements. Right after the intro: the picks grid, then the Prime
+ * banner. Long articles add one box before the FAQ. Poison and safety pages
+ * keep the products lower down, so the warning comes first. Pages with
+ * hand-placed cards keep those and only gain what they lack.
  */
 export function injectAffiliateBoxes(html: string, context: AffiliateContext): string {
-  if (!html || html.includes('class="mi-aff')) return html
+  if (!html) return html
+  const hasGrid = html.includes('class="mi-grid')
+  const handPlaced = hasGrid || html.includes('class="mi-aff')
+  const banner = primeBannerHtml(`banner-${context}`.replace(/[^a-z0-9-]/gi, ''))
   const h2s = [...html.matchAll(/<h2[\s>]/g)].map((m) => m.index as number)
-  const main = affiliateBoxHtml(context, 'article')
-  if (h2s.length < 4) return html + main
-  let out = html.slice(0, h2s[2]) + main + html.slice(h2s[2])
-  if (h2s.length >= 8) {
-    const faq = out.search(/<h2[^>]*>[^<]*(Frequently Asked Questions|Final Safety)/i)
-    if (faq > 0) out = out.slice(0, faq) + affiliateBoxHtml(context === 'edible' ? 'default' : 'edible', 'article-end') + out.slice(faq)
+
+  if (context === 'safety') {
+    if (handPlaced) return html
+    const main = affiliateBoxHtml(context, 'article') + banner
+    if (h2s.length < 4) return html + main
+    return html.slice(0, h2s[2]) + main + html.slice(h2s[2])
   }
+
+  const first = html.search(/<h[23][\s>]/i)
+  const top = (hasGrid ? '' : picksGridHtml(context)) + banner
+  let out = first > 0 ? html.slice(0, first) + top + html.slice(first) : top + html
+  if (handPlaced || h2s.length < 8) return out
+  const faq = out.search(/<h2[^>]*>[^<]*(Frequently Asked Questions|Final Safety)/i)
+  if (faq > 0) out = out.slice(0, faq) + affiliateBoxHtml(context === 'edible' ? 'default' : 'edible', 'article-end') + out.slice(faq)
   return out
 }
 
