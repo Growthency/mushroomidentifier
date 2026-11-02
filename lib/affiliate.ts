@@ -93,7 +93,7 @@ const REGION: Array<[RegExp, AffiliateContext]> = [
 export function affiliateContextFor(slug: string, category?: string | null): AffiliateContext {
   const s = slug.replace(/^\//, '').toLowerCase()
   if (/identifier-book|mushroom-book|field-guide/.test(s)) return 'books-us'
-  if (/grow-kit|growing-kit|grow-your-own|grow-mushrooms/.test(s)) return 'grow'
+  if (/grow-kit|growing-kit|grow-your-own|grow-mushrooms|how-to-grow|grow-bags/.test(s)) return 'grow'
   if (/dry-mushrooms|dehydrat|preserv|freeze-dr|store-mushrooms/.test(s)) return 'preserve'
   if (/microscope|spore-print|spores-under/.test(s)) return 'scope'
   if (/psychedelic|psilocyb/.test(s)) return 'psychedelic'
@@ -186,6 +186,16 @@ export function injectAffiliateBoxes(html: string, context: AffiliateContext): s
   const faq = out.search(/<h2[^>]*>[^<]*(Frequently Asked Questions|Final Safety)/i)
   if (faq > 0) out = out.slice(0, faq) + affiliateBoxHtml(context === 'edible' ? 'default' : 'edible', 'article-end') + out.slice(faq)
   return out
+}
+
+/** List of the other grow pages, placed before the FAQ. The pillar comes first. */
+export function addGrowGuides(html: string, guides: { slug: string; title: string }[]): string {
+  if (!html || !guides.length) return html
+  const sorted = [...guides].sort((a, b) => Number(b.slug === '/mushroom-grow-kits') - Number(a.slug === '/mushroom-grow-kits') || a.title.localeCompare(b.title))
+  const items = sorted.map((g) => `<li><a href="https://mushroomidentifiers.com${g.slug}">${esc(g.title.replace(/\s*\(.*?\)\s*$/, ''))}</a></li>`).join('')
+  const list = `<aside class="mi-guides"><p class="mi-guides-title">More grow guides</p><ul>${items}</ul></aside>`
+  const faq = html.search(/<h2[^>]*>[^<]*Frequently Asked Questions/i)
+  return faq > 0 ? html.slice(0, faq) + list + html.slice(faq) : html + list
 }
 
 /** One product per context for the sticky sidebar card. */

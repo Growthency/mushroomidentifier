@@ -26,7 +26,7 @@ import ViewTracker from '@/components/blog/ViewTracker'
 import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 import { resolveFeaturedImage, dedupeProductHeadings } from '@/lib/content-helpers'
 import { getNofollowRules, applyNofollowRules } from '@/lib/external-links'
-import { affiliateContextFor, injectAffiliateBoxes } from '@/lib/affiliate'
+import { affiliateContextFor, injectAffiliateBoxes, addGrowGuides } from '@/lib/affiliate'
 
 /* ── Supabase admin client — uses Next.js fetch cache (60s revalidate) so
    repeat visits within the window are instant. The previous `cache: 'no-store'`
@@ -72,6 +72,17 @@ async function getPost(slug: string) {
     .eq('status', 'published')
     .single()
   return data
+}
+
+/* ── Published grow pages for the cluster list; a scheduled page joins once it is live ── */
+async function getGrowGuides(currentSlug: string) {
+  const fullSlug = currentSlug.startsWith('/') ? currentSlug : `/${currentSlug}`
+  const { data } = await getSupabase()
+    .from('blog_posts')
+    .select('slug, title')
+    .eq('status', 'published')
+    .or('slug.ilike.%grow-kit%,slug.ilike.%how-to-grow%,slug.ilike.%grow-bags%')
+  return ((data ?? []) as { slug: string; title: string }[]).filter((p) => p.slug !== fullSlug)
 }
 
 /* ── Fetch related posts (same category preferred, else random published) ── */
@@ -219,7 +230,8 @@ export default async function DynamicPostPage({
   )
   // Amazon Associates boxes, placed after the second section (lib/affiliate.ts).
   const affCtx = affiliateContextFor(post.slug, post.category)
-  const articleHtml = injectAffiliateBoxes(processedContent, affCtx)
+  const growGuides = affCtx === 'grow' ? await getGrowGuides(post.slug) : []
+  const articleHtml = addGrowGuides(injectAffiliateBoxes(processedContent, affCtx), growGuides)
   // Roundups carry their pick list in a comment for the sticky sidebar list.
   let topPicks: TopPick[] | undefined
   try {

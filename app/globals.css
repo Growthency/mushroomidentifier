@@ -977,3 +977,24 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
 .mi-toplist li span { color: var(--text-muted); font-size: 12px; }
 .mi-toplist a.mi-toplist-btn { align-self: flex-start; margin-top: 2px; padding: 4px 10px; border: 1px solid var(--text-primary); border-radius: 6px; color: var(--text-primary); font-size: 12px; font-weight: 600; text-decoration: none; }
 .mi-toplist a.mi-toplist-btn:hover { background: var(--text-primary); color: var(--bg-primary); }
+
+/* ── Cluster list and chart caption ── */
+.mi-guides, .rich-content .mi-guides { margin: 28px 0; padding: 16px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-card); }
+.rich-content .mi-guides .mi-guides-title, .mi-guides-title { margin: 0 0 8px; color: var(--text-primary) !important; font-size: 16px !important; font-weight: 700 !important; }
+.mi-guides ul, .rich-content .mi-guides ul { margin: 0; padding-left: 18px; columns: 2; column-gap: 24px; }
+.rich-content .mi-guides li { margin: 0 0 6px; font-size: 15px !important; break-inside: avoid; }
+.rich-content .mi-chart { margin: 24px 0; }
+.rich-content .mi-chart img { width: 100%; height: auto; }
+.rich-content .mi-chart figcaption { margin-top: 8px; color: var(--text-muted) !important; font-size: 13px !important; text-align: center; }
+@media (max-width: 640px) { .mi-guides ul, .rich-content .mi-guides ul { columns: 1; } }
+
+/* ── Picks grid on phones: picture left, text right, so three picks fit on one screen ── */
+@media (max-width: 640px) {
+  .mi-grid li.mi-grid-item, .rich-content .mi-grid li.mi-grid-item { display: grid; grid-template-columns: 96px minmax(0, 1fr); column-gap: 12px; row-gap: 6px; padding: 10px; }
+  .mi-grid-img { grid-column: 1; grid-row: 1 / span 4; height: 112px; margin-bottom: 0; }
+  .mi-grid li.mi-grid-item > .mi-grid-tag, .mi-grid li.mi-grid-item > .mi-grid-name, .mi-grid li.mi-grid-item > .mi-grid-score, .mi-grid li.mi-grid-item > .mi-grid-btn { grid-column: 2; }
+  .rich-content .mi-grid .mi-grid-tag, .mi-grid-tag { margin-bottom: 0; justify-self: start; }
+  .rich-content .mi-grid a.mi-grid-name, .mi-grid a.mi-grid-name { font-size: 14px !important; }
+  .rich-content .mi-grid .mi-grid-score, .mi-grid-score { margin-top: 0; }
+  .rich-content .mi-grid a.mi-grid-btn, .mi-grid a.mi-grid-btn, .mi-grid a.mi-grid-name + a.mi-grid-btn, .mi-grid .mi-grid-score + a.mi-grid-btn { margin-top: 2px; padding: 8px; font-size: 13px !important; }
+}
