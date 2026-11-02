@@ -911,3 +911,7 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
 .rich-content .mi-aff .mi-aff-note { color: var(--text-muted) !important; font-size: 13px !important; line-height: 1.45 !important; }
 .rich-content .mi-aff .mi-aff-foot { color: var(--text-faint) !important; font-size: 11.5px !important; line-height: 1.5 !important; margin-bottom: 0 !important; }
 .rich-content .mi-aff .mi-aff-foot a { color: var(--accent) !important; }
+
+/* Sidebar kit: the column is narrow, so the button sits under the text. */
+.mi-aff-kit li.mi-aff-item { grid-template-columns: auto minmax(0, 1fr); gap: 10px 12px; }
+.mi-aff-kit a.mi-aff-btn { grid-column: 1 / -1; width: 100%; }
