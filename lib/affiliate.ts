@@ -144,7 +144,7 @@ export function primeUrl(sub: string): string {
 /** In-content landscape banner, 728x90 on desktop. Part of the article flow. */
 export function primeBannerHtml(sub: string): string {
   const u = primeUrl(sub)
-  return `<aside class="mi-prime"><a class="mi-prime-img" href="${u}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><img src="/affiliate/prime.webp" alt="" width="160" height="90" loading="lazy"></a><div class="mi-prime-text"><span class="mi-prime-eyebrow">Free for 30 days</span><strong class="mi-prime-title">Try Amazon Prime free</strong><span class="mi-prime-sub">Fast delivery on field guides, kits and gear.</span></div><a class="mi-prime-btn" href="${u}" target="_blank" rel="sponsored nofollow noopener">Start free trial</a><span class="mi-prime-ad">Ad</span></aside>`
+  return `<aside class="mi-prime"><a class="mi-prime-img" href="${u}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><img src="/affiliate/prime.webp" alt="" width="160" height="90" loading="lazy"></a><div class="mi-prime-text"><span class="mi-prime-eyebrow">Free for 30 days</span><strong class="mi-prime-title">Try Amazon Prime free</strong><span class="mi-prime-sub">Fast delivery on field guides, kits and gear.</span></div><a class="mi-prime-btn" href="${u}" target="_blank" rel="sponsored nofollow noopener">Start free trial</a></aside>`
 }
 
 function gridItem(p: Product, rank: number, sub: string): string {
@@ -193,7 +193,7 @@ export function addGrowGuides(html: string, guides: { slug: string; title: strin
   if (!html || !guides.length) return html
   const sorted = [...guides].sort((a, b) => Number(b.slug === '/mushroom-grow-kits') - Number(a.slug === '/mushroom-grow-kits') || a.title.localeCompare(b.title))
   const items = sorted.map((g) => `<li><a href="https://mushroomidentifiers.com${g.slug}">${esc(g.title.replace(/\s*\(.*?\)\s*$/, ''))}</a></li>`).join('')
-  const list = `<aside class="mi-guides"><p class="mi-guides-title">More grow guides</p><ul>${items}</ul></aside>`
+  const list = `<aside class="mi-guides"><div class="mi-guides-title">More grow guides</div><ul>${items}</ul></aside>`
   const faq = html.search(/<h2[^>]*>[^<]*Frequently Asked Questions/i)
   return faq > 0 ? html.slice(0, faq) + list + html.slice(faq) : html + list
 }

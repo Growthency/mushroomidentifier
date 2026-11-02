@@ -39,7 +39,6 @@ export default function PrimeTopBar() {
 
   return (
     <div className="mi-topbar" role="region" aria-label="Amazon Prime trial">
-      <span className="mi-topbar-ad">Ad</span>
       <span className="mi-topbar-text">
         <strong>Try Amazon Prime free for 30 days</strong>
         <span className="mi-topbar-more"> for fast delivery on field guides, kits and gear</span>
