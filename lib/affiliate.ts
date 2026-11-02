@@ -23,6 +23,7 @@ export type AffiliateContext =
   | 'wood'
   | 'edible'
   | 'safety'
+  | 'health'
   | 'books-us'
   | 'grow'
   | 'preserve'
@@ -73,6 +74,7 @@ const BOXES: Record<AffiliateContext, Box> = {
   southeast: { eyebrow: 'Field guides for this region', heading: 'Books that cover these species', items: [BOOKS.southeast, BOOKS.audubon, GEAR.knife] },
   wood: { eyebrow: 'Gear for wood-growing species', heading: 'Tools that make this identification easier', items: [GEAR.loupe, GEAR.oysterKit, GEAR.dehydrator] },
   edible: { eyebrow: 'Foraging kit', heading: 'What experienced foragers carry', items: [GEAR.knife, GEAR.bag, BOOKS.audubon] },
+  health: { eyebrow: 'Identification references', heading: 'Books and tools for a safer check', items: [BOOKS.audubon, BOOKS.demystified, GEAR.loupe] },
   safety: { eyebrow: 'Identification references', heading: 'Books and tools for a safer check', items: [BOOKS.audubon, BOOKS.demystified, GEAR.loupe] },
   'books-us': { eyebrow: 'Field guides for the United States', heading: 'Start with the guide for your region', items: [BOOKS.audubon, BOOKS.demystified, BOOKS.upperMidwest, BOOKS.northeast, BOOKS.pnw, BOOKS.southeast] },
   grow: { eyebrow: 'Grow kits mentioned in this guide', heading: 'Kits that fruit on the counter', items: [GEAR.bttrOyster, GEAR.nsBlueOyster, GEAR.inbloomLions] },
@@ -92,7 +94,8 @@ const REGION: Array<[RegExp, AffiliateContext]> = [
 
 export function affiliateContextFor(slug: string, category?: string | null): AffiliateContext {
   const s = slug.replace(/^\//, '').toLowerCase()
-  if (/identifier-book|mushroom-book|field-guide/.test(s)) return 'books-us'
+  if (/gummies|mushroom-coffee/.test(s)) return 'health'
+  if (/identifier-book|mushroom-book|mushrooms-books|field-guide/.test(s)) return 'books-us'
   if (/grow-kit|growing-kit|grow-your-own|grow-mushrooms|how-to-grow|grow-bags/.test(s)) return 'grow'
   if (/dry-mushrooms|dehydrat|preserv|freeze-dr|store-mushrooms/.test(s)) return 'preserve'
   if (/microscope|spore-print|spores-under/.test(s)) return 'scope'
@@ -189,7 +192,7 @@ export function injectAffiliateBoxes(html: string, context: AffiliateContext): s
   const tag = context.replace(/[^a-z0-9-]/gi, '')
   const h2s = [...html.matchAll(/<h2[\s>]/g)].map((m) => m.index as number)
 
-  if (context === 'safety') {
+  if (context === 'safety' || context === 'health') {
     if (handPlaced) return addPrimeBanners(html, tag)
     const main = affiliateBoxHtml(context, 'article')
     if (h2s.length < 4) return addPrimeBanners(html + main, tag)
@@ -226,6 +229,7 @@ const PICK: Record<AffiliateContext, { product: Product; tag: string; image: str
   southeast: { product: BOOKS.southeast, tag: 'Field guide for your region', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
   wood: { product: GEAR.knife, tag: 'The one tool every forager carries', image: '/affiliate-pick-knife.webp', alt: 'Curved mushroom knife with a brush beside a basket of mushrooms, illustration' },
   edible: { product: GEAR.knife, tag: 'The one tool every forager carries', image: '/affiliate-pick-knife.webp', alt: 'Curved mushroom knife with a brush beside a basket of mushrooms, illustration' },
+  health: { product: BOOKS.audubon, tag: 'The first book to own', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
   safety: { product: BOOKS.audubon, tag: 'The first book to own', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
   'books-us': { product: BOOKS.demystified, tag: 'The reference experts use', image: '/affiliate-pick-books.webp', alt: 'Stack of mushroom field guides with a hand lens, illustration' },
   grow: { product: GEAR.bttrOyster, tag: 'Beginner kit for this guide', image: '/affiliate/oysterKit.webp', alt: 'Oyster mushroom grow kit' },
