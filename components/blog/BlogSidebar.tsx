@@ -419,7 +419,7 @@ export default function BlogSidebar({ affiliateContext = 'default', topPicks }: 
           </div>
         </div>
 
-        <AffiliateKit />
+        {!topPicks?.length && <AffiliateKit />}
 
         {/* Adify — sidebar ad #1 (after search + author) */}
         <AdSlot placement="sidebar" index={0} spaced={false} className="mb-5" />

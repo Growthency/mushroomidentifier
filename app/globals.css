@@ -998,3 +998,8 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   .rich-content .mi-grid .mi-grid-score, .mi-grid-score { margin-top: 0; }
   .rich-content .mi-grid a.mi-grid-btn, .mi-grid a.mi-grid-btn, .mi-grid a.mi-grid-name + a.mi-grid-btn, .mi-grid .mi-grid-score + a.mi-grid-btn { margin-top: 2px; padding: 8px; font-size: 13px !important; }
 }
+
+/* Links in article text must read as links. `.rich-content p *` paints them as body text otherwise.
+   Cards and buttons carry a class, so they keep their own colors. */
+.rich-content p a:not([class]), .rich-content li:not([class]) a:not([class]), .rich-content td a:not([class]) { color: var(--accent) !important; font-weight: 600 !important; text-decoration: underline !important; text-decoration-thickness: 1px !important; text-underline-offset: 3px; }
+.rich-content p a:not([class]):hover, .rich-content li:not([class]) a:not([class]):hover, .rich-content td a:not([class]):hover { color: var(--accent-glow) !important; }
