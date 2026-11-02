@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -145,6 +146,7 @@ export default function GalerinaMarginataPage() {
               <TableOfContents />
 
               {/* ── Quick ID Summary ── */}
+              <PrimeBanner sub="top-galerina-marginata" />
               <Section>
                 <H2 id="identification-summary">Galerina marginata Identification Summary</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -408,6 +410,7 @@ export default function GalerinaMarginataPage() {
               <Divider />
 
               {/* ── Look-Alikes ── */}
+              <PrimeBanner sub="mid-galerina-marginata" />
               <Section>
                 <H2 id="similar-species">Galerina marginata Similar Species (Look-Alikes Comparison)</H2>
                 <div className="overflow-x-auto rounded-xl" style={{ border: '1px solid var(--border)' }}>
@@ -570,6 +573,7 @@ export default function GalerinaMarginataPage() {
                   <p className="text-sm font-semibold">Golden rule: Never consume small brown mushrooms unless absolutely certain of identification.</p>
                 </WarningBox>
               </Section>
+              <PrimeBanner sub="end-galerina-marginata" />
 
               <Divider />
               <ViewTracker slug="/galerina-marginata" />

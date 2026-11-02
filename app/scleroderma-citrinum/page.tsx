@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -128,6 +129,7 @@ export default function SclerodermaClitrinumPage() {
           <TableOfContents />
 
           {/* Taxonomy */}
+          <PrimeBanner sub="top-scleroderma-citrinum" />
           <Section>
             <H2 id="scientific-classification">Scientific Classification &amp; Taxonomy</H2>
             <div className="overflow-x-auto rounded-xl" style={{ border: '1px solid var(--border)' }}>
@@ -369,6 +371,7 @@ export default function SclerodermaClitrinumPage() {
           <Divider />
 
           {/* Look-alikes Comparison */}
+          <PrimeBanner sub="mid-scleroderma-citrinum" />
           <Section>
             <H2 id="lookalikes">Similar Species (Critical Comparison)</H2>
             <div className="overflow-x-auto rounded-xl mb-5" style={{ border: '1px solid var(--border)' }}>
@@ -602,6 +605,7 @@ export default function SclerodermaClitrinumPage() {
               </p>
             </InfoBox>
           </Section>
+          <PrimeBanner sub="end-scleroderma-citrinum" />
 
           <RelatedPosts currentSlug="/scleroderma-citrinum" />
           <ViewTracker slug="/scleroderma-citrinum" />

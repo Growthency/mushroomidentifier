@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 import AffiliateBox from '@/components/blog/AffiliateBox'
@@ -102,6 +103,7 @@ export default async function MushroomPartsExplainedPage() {
           <>
 
           {/* ── SECTION 1: Introduction ── */}
+          <PrimeBanner sub="top-mushroom-parts-explained" />
           <Section>
             <H2>Introduction to Mushroom Anatomy and Fungal Structure (Mycology Basics)</H2>
             <p>
@@ -422,6 +424,7 @@ export default async function MushroomPartsExplainedPage() {
           <Divider />
 
           {/* ── SECTION 8: Additional Structures ── */}
+          <PrimeBanner sub="mid-mushroom-parts-explained" />
           <Section>
             <H2>Additional Mushroom Structures (Advanced Mycology Entities)</H2>
             <p>Beyond the main five parts, several additional structures are important for deeper fungal identification.</p>
@@ -609,6 +612,7 @@ export default async function MushroomPartsExplainedPage() {
             <p>For further reading on how anatomy knowledge applies in the field, explore our <a href="/mushroom-identifier-book" style={{ color: 'var(--accent)' }} className="hover:underline">mushroom identifier book guide</a> for the best field references. You can also <a href="/mushroom-identification-quiz" style={{ color: 'var(--accent)' }} className="hover:underline">test your knowledge with our mushroom identification quiz</a> to see how well you can recognize key mushroom parts in practice.</p>
             <InfoBox>Always remember: use identification tools as guidance, not final proof, especially when dealing with wild mushrooms.</InfoBox>
           </Section>
+          <PrimeBanner sub="end-mushroom-parts-explained" />
 
           <RelatedPosts currentSlug="/mushroom-parts-explained" />
 

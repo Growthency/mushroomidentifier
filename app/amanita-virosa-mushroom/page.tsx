@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -136,6 +137,7 @@ export default function AmanitaVirosaPage() {
           <TableOfContents />
 
           {/* Quick ID Summary */}
+          <PrimeBanner sub="top-amanita-virosa-mushroom" />
           <Section>
             <H2 id="quick-id-summary">Quick Identification Summary</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -374,6 +376,7 @@ export default function AmanitaVirosaPage() {
           <Divider />
 
           {/* Edibility & Risk */}
+          <PrimeBanner sub="mid-amanita-virosa-mushroom" />
           <Section>
             <H2 id="edibility-safety">Edibility, Safety &amp; Risk Level</H2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
@@ -567,6 +570,7 @@ export default function AmanitaVirosaPage() {
               </p>
             </InfoBox>
           </Section>
+          <PrimeBanner sub="end-amanita-virosa-mushroom" />
 
           <RelatedPosts currentSlug="/amanita-virosa-mushroom" />
           <ViewTracker slug="/amanita-virosa-mushroom" />

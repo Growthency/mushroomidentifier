@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -217,6 +218,7 @@ export default function AmanitaOcreatePage() {
               <TableOfContents />
 
               {/* ── Quick ID Summary ── */}
+              <PrimeBanner sub="top-amanita-ocreata" />
               <Section>
                 <H2 id="quick-id-summary">Amanita ocreata Identification Summary</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -472,6 +474,7 @@ export default function AmanitaOcreatePage() {
               <Divider />
 
               {/* ── Edibility & Risk ── */}
+              <PrimeBanner sub="mid-amanita-ocreata" />
               <Section>
                 <H2 id="edibility">Edibility, Safety &amp; Risk Level</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
@@ -718,6 +721,7 @@ export default function AmanitaOcreatePage() {
                   </p>
                 </InfoBox>
               </Section>
+              <PrimeBanner sub="end-amanita-ocreata" />
 
               <RelatedPosts currentSlug="/amanita-ocreata" />
               <ViewTracker slug="/amanita-ocreata" />

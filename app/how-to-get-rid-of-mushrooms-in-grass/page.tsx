@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -217,6 +218,7 @@ export default function MushroomsInGrassPage() {
           <TableOfContents />
 
           {/* ── Why Mushrooms Grow ── */}
+          <PrimeBanner sub="top-how-to-get-rid-of-mushroom" />
           <Section>
             <H2 id="why-mushrooms-grow-in-grass">Why Mushrooms Grow in Grass</H2>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
@@ -410,6 +412,7 @@ export default function MushroomsInGrassPage() {
           <Divider />
 
           {/* ── Natural Prevention ── */}
+          <PrimeBanner sub="mid-how-to-get-rid-of-mushroom" />
           <Section>
             <H2 id="natural-ways-to-prevent-mushrooms">Natural Ways to Prevent Mushrooms</H2>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
@@ -556,6 +559,7 @@ export default function MushroomsInGrassPage() {
               ))}
             </div>
           </Section>
+          <PrimeBanner sub="end-how-to-get-rid-of-mushroom" />
 
           <RelatedPosts currentSlug="/how-to-get-rid-of-mushrooms-in-grass" />
           <ViewTracker slug="/how-to-get-rid-of-mushrooms-in-grass" />

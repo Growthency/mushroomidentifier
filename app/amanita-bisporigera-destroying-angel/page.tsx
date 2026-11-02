@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -134,6 +135,7 @@ export default function DestroyingAngelPage() {
           <TableOfContents />
 
           {/* Quick ID Summary */}
+          <PrimeBanner sub="top-amanita-bisporigera-destro" />
           <Section>
             <H2 id="quick-id-summary">Quick Identification Summary</H2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -372,6 +374,7 @@ export default function DestroyingAngelPage() {
           <Divider />
 
           {/* Edibility & Risk */}
+          <PrimeBanner sub="mid-amanita-bisporigera-destro" />
           <Section>
             <H2>Edibility, Safety &amp; Risk Level</H2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
@@ -565,6 +568,7 @@ export default function DestroyingAngelPage() {
               </p>
             </InfoBox>
           </Section>
+          <PrimeBanner sub="end-amanita-bisporigera-destro" />
 
           <RelatedPosts currentSlug="/amanita-bisporigera-destroying-angel" />
           <ViewTracker slug="/amanita-bisporigera-destroying-angel" />

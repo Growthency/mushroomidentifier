@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -189,6 +190,7 @@ export default function AmanitaMuscariaPage() {
               <TableOfContents />
 
               {/* ── Quick ID Summary ── */}
+              <PrimeBanner sub="top-amanita-muscaria" />
               <Section>
                 <H2 id="identification-summary">Amanita muscaria Identification Summary</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -403,6 +405,7 @@ export default function AmanitaMuscariaPage() {
               <Divider />
 
               {/* ── Edibility & Safety ── */}
+              <PrimeBanner sub="mid-amanita-muscaria" />
               <Section>
                 <H2 id="edibility-safety">Edibility, Safety &amp; Risk Level</H2>
                 <H3>Is it Edible?</H3>
@@ -604,6 +607,7 @@ export default function AmanitaMuscariaPage() {
                   Understanding its structure, habitat, and chemical properties helps ensure safe identification. Using a mushroom identifier can assist, but knowledge and caution are always essential.
                 </p>
               </Section>
+              <PrimeBanner sub="end-amanita-muscaria" />
 
               <Divider />
               <ViewTracker slug="/amanita-muscaria" />

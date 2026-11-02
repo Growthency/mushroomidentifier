@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -116,6 +117,7 @@ export default function OmphalotusIlludensPage() {
               </div>
 
               {/* ── What is Omphalotus illudens? ── */}
+              <PrimeBanner sub="top-omphalotus-illudens" />
               <Section>
                 <H2 id="what-is-omphalotus-illudens">What is Omphalotus illudens?</H2>
                 <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
@@ -367,6 +369,7 @@ export default function OmphalotusIlludensPage() {
               <Divider />
 
               {/* ── Similar Species ── */}
+              <PrimeBanner sub="mid-omphalotus-illudens" />
               <Section>
                 <H2 id="similar-species">Similar Species (Critical Comparison)</H2>
                 <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--text-muted)' }}>
@@ -551,6 +554,7 @@ export default function OmphalotusIlludensPage() {
                   <em>Omphalotus illudens</em> (jack-o&apos;-lantern mushroom) is a perfect example of nature&apos;s beauty hiding danger. Its glowing appearance and vibrant color attract attention, but its toxicity makes it unsafe for consumption. Proper identification using habitat, structure, and expert tools is essential. Whether you&apos;re a beginner or an experienced forager, always prioritize safety and verification.
                 </p>
               </Section>
+              <PrimeBanner sub="end-omphalotus-illudens" />
 
               <Divider />
               <ViewTracker slug="/omphalotus-illudens" />

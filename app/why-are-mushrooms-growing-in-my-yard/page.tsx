@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -222,6 +223,7 @@ export default function WhyMushroomsInYardPage() {
           <TableOfContents />
 
           {/* ── What Mushrooms Mean ── */}
+          <PrimeBanner sub="top-why-are-mushrooms-growing-" />
           <Section>
             <H2 id="what-mushrooms-in-your-yard-actually-mean">What Mushrooms in Your Yard Actually Mean</H2>
             <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
@@ -382,6 +384,7 @@ export default function WhyMushroomsInYardPage() {
           <Divider />
 
           {/* ── Root Cause Checklist ── */}
+          <PrimeBanner sub="mid-why-are-mushrooms-growing-" />
           <Section>
             <H2 id="how-to-identify-the-root-cause">How to Identify the Root Cause (Quick Checklist)</H2>
             <div className="overflow-x-auto my-5">
@@ -500,6 +503,7 @@ export default function WhyMushroomsInYardPage() {
               — upload a photo from multiple angles and get an instant AI analysis with toxicity warnings.
             </p>
           </Section>
+          <PrimeBanner sub="end-why-are-mushrooms-growing-" />
 
           <RelatedPosts currentSlug="/why-are-mushrooms-growing-in-my-yard" />
           <ViewTracker slug="/why-are-mushrooms-growing-in-my-yard" />

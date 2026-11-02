@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -130,6 +131,7 @@ export default function HorseMushroomPage() {
           <TableOfContents />
 
           {/* ── Taxonomy ── */}
+          <PrimeBanner sub="top-agaricus-arvensis-horse-mu" />
           <Section>
             <H2 id="family-species">Family and Species</H2>
             <div className="grid md:grid-cols-2 gap-4 my-5">
@@ -334,6 +336,7 @@ export default function HorseMushroomPage() {
           <Divider />
 
           {/* ── Edibility & Safety ── */}
+          <PrimeBanner sub="mid-agaricus-arvensis-horse-mu" />
           <Section>
             <H2>Edibility, Safety &amp; Risk Level</H2>
 
@@ -484,6 +487,7 @@ export default function HorseMushroomPage() {
             </p>
             <WarningBox>⚠️ <strong>Golden Rule:</strong> If you are not 100% sure of your identification, never consume a wild mushroom.</WarningBox>
           </Section>
+          <PrimeBanner sub="end-agaricus-arvensis-horse-mu" />
 
           <RelatedPosts currentSlug="/agaricus-arvensis-horse-mushroom" />
           <ViewTracker slug="/agaricus-arvensis-horse-mushroom" />

@@ -5,6 +5,7 @@ import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -117,6 +118,7 @@ export default function MorchellaEsculentaPage() {
               <TableOfContents />
 
               {/* ── What is Morchella esculenta? ── */}
+              <PrimeBanner sub="top-morchella-esculenta" />
               <Section>
                 <H2 id="what-is-morchella-esculenta">What is Morchella esculenta?</H2>
                 <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
@@ -393,6 +395,7 @@ export default function MorchellaEsculentaPage() {
               <Divider />
 
               {/* ── Similar Species ── */}
+              <PrimeBanner sub="mid-morchella-esculenta" />
               <Section>
                 <H2 id="similar-species">Similar Species (Critical Comparison)</H2>
                 <H3 id="true-vs-false-morel">True Morel vs False Morel</H3>
@@ -585,6 +588,7 @@ export default function MorchellaEsculentaPage() {
                   By combining field knowledge with a reliable <Link href="/" className="font-medium hover:underline" style={{ color: 'var(--accent)' }}>mushroom identifier tool</Link>, you can safely enjoy foraging and avoid dangerous mistakes.
                 </p>
               </Section>
+              <PrimeBanner sub="end-morchella-esculenta" />
 
               <Divider />
               <ViewTracker slug="/morchella-esculenta" />

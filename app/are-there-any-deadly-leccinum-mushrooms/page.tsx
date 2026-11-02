@@ -5,6 +5,7 @@ import IdentifyBanner from '@/components/blog/IdentifyBanner'
 import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -175,6 +176,7 @@ export default function LeccinumPage() {
               <Divider />
 
               {/* Section 1 — What is Leccinum */}
+              <PrimeBanner sub="top-are-there-any-deadly-lecci" />
               <Section>
                 <H2 id="what-is-leccinum">What Is Leccinum? (Understanding the Genus)</H2>
                 <p className="mb-4" style={{ color: 'var(--text-muted)' }}>
@@ -359,6 +361,7 @@ export default function LeccinumPage() {
               <Divider />
 
               {/* Section 5 — Are They Edible */}
+              <PrimeBanner sub="mid-are-there-any-deadly-lecci" />
               <Section>
                 <H2 id="are-edible">Are Leccinum Mushrooms Edible?</H2>
 
@@ -531,6 +534,7 @@ export default function LeccinumPage() {
                   ))}
                 </div>
               </Section>
+              <PrimeBanner sub="end-are-there-any-deadly-lecci" />
 
           <ViewTracker slug="/are-there-any-deadly-leccinum-mushrooms" />
               <BlogComments slug="/are-there-any-deadly-leccinum-mushrooms" />

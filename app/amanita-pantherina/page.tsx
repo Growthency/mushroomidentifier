@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -145,6 +146,7 @@ export default function AmanitaPantherinaPage() {
               <TableOfContents />
 
               {/* ── Quick ID Summary ── */}
+              <PrimeBanner sub="top-amanita-pantherina" />
               <Section>
                 <H2 id="identification-summary">Amanita pantherina Identification Summary</H2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -414,6 +416,7 @@ export default function AmanitaPantherinaPage() {
               <Divider />
 
               {/* ── Look-Alikes ── */}
+              <PrimeBanner sub="mid-amanita-pantherina" />
               <Section>
                 <H2 id="similar-species">Similar Species (Look-Alikes Comparison)</H2>
                 <div className="overflow-x-auto rounded-xl" style={{ border: '1px solid var(--border)' }}>
@@ -589,6 +592,7 @@ export default function AmanitaPantherinaPage() {
                   Understanding its features, habitat, and risks is essential for avoiding dangerous mistakes. Tools like a mushroom identifier can assist, but should always be used alongside expert knowledge.
                 </p>
               </Section>
+              <PrimeBanner sub="end-amanita-pantherina" />
 
               <Divider />
               <ViewTracker slug="/amanita-pantherina" />

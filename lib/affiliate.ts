@@ -160,6 +160,23 @@ export function picksGridHtml(context: AffiliateContext): string {
 }
 
 /**
+ * Puts the Prime banner in three places: after the intro, before the section
+ * nearest the middle, and at the end. The subtag shows which place earns.
+ */
+function addPrimeBanners(html: string, tag: string): string {
+  const banner = (place: string) => primeBannerHtml(`${place}-${tag}`.slice(0, 40))
+  const first = html.search(/<h[23][\s>]/i)
+  const faq = html.search(/<h2[^>]*>[^<]*Frequently Asked Questions/i)
+  const stop = faq > 0 ? faq : html.length
+  const centre = (Math.max(first, 0) + stop) / 2
+  const heads = [...html.matchAll(/<h2[\s>]/g)].map((m) => m.index as number).filter((i) => i > first && i < stop)
+  const mid = heads.length ? heads.reduce((a, b) => (Math.abs(b - centre) < Math.abs(a - centre) ? b : a)) : -1
+  let out = html + banner('end')
+  if (mid > 0) out = out.slice(0, mid) + banner('mid') + out.slice(mid)
+  return first > 0 ? out.slice(0, first) + banner('top') + out.slice(first) : banner('top') + out
+}
+
+/**
  * Article placements. Right after the intro: the picks grid, then the Prime
  * banner. Long articles add one box before the FAQ. Poison and safety pages
  * keep the products lower down, so the warning comes first. Pages with
@@ -169,23 +186,24 @@ export function injectAffiliateBoxes(html: string, context: AffiliateContext): s
   if (!html) return html
   const hasGrid = html.includes('class="mi-grid')
   const handPlaced = hasGrid || html.includes('class="mi-aff')
-  const banner = primeBannerHtml(`banner-${context}`.replace(/[^a-z0-9-]/gi, ''))
+  const tag = context.replace(/[^a-z0-9-]/gi, '')
   const h2s = [...html.matchAll(/<h2[\s>]/g)].map((m) => m.index as number)
 
   if (context === 'safety') {
-    if (handPlaced) return html
-    const main = affiliateBoxHtml(context, 'article') + banner
-    if (h2s.length < 4) return html + main
-    return html.slice(0, h2s[2]) + main + html.slice(h2s[2])
+    if (handPlaced) return addPrimeBanners(html, tag)
+    const main = affiliateBoxHtml(context, 'article')
+    if (h2s.length < 4) return addPrimeBanners(html + main, tag)
+    return addPrimeBanners(html.slice(0, h2s[2]) + main + html.slice(h2s[2]), tag)
   }
 
   const first = html.search(/<h[23][\s>]/i)
-  const top = (hasGrid ? '' : picksGridHtml(context)) + banner
-  let out = first > 0 ? html.slice(0, first) + top + html.slice(first) : top + html
-  if (handPlaced || h2s.length < 8) return out
-  const faq = out.search(/<h2[^>]*>[^<]*(Frequently Asked Questions|Final Safety)/i)
-  if (faq > 0) out = out.slice(0, faq) + affiliateBoxHtml(context === 'edible' ? 'default' : 'edible', 'article-end') + out.slice(faq)
-  return out
+  const grid = hasGrid ? '' : picksGridHtml(context)
+  let out = first > 0 ? html.slice(0, first) + grid + html.slice(first) : grid + html
+  if (!handPlaced && h2s.length >= 8) {
+    const faq = out.search(/<h2[^>]*>[^<]*(Frequently Asked Questions|Final Safety)/i)
+    if (faq > 0) out = out.slice(0, faq) + affiliateBoxHtml(context === 'edible' ? 'default' : 'edible', 'article-end') + out.slice(faq)
+  }
+  return addPrimeBanners(out, tag)
 }
 
 /** List of the other grow pages, placed before the FAQ. The pillar comes first. */

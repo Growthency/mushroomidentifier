@@ -6,6 +6,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -122,6 +123,7 @@ export default function AgaricusCampestrisPage() {
               </div>
 
               {/* ── What is Agaricus campestris? ── */}
+              <PrimeBanner sub="top-agaricus-campestris" />
               <Section>
                 <H2 id="what-is-agaricus-campestris">What is Agaricus campestris?</H2>
                 <p className="text-base leading-relaxed" style={{ color: 'var(--text-muted)' }}>
@@ -359,6 +361,7 @@ export default function AgaricusCampestrisPage() {
               <Divider />
 
               {/* ── Similar Species ── */}
+              <PrimeBanner sub="mid-agaricus-campestris" />
               <Section>
                 <H2 id="similar-species">Similar Species (Critical Comparison)</H2>
 
@@ -570,6 +573,7 @@ export default function AgaricusCampestrisPage() {
                   By understanding its gill color progression, smell, and habitat, and combining that with a reliable mushroom identifier tool, you can forage more safely and confidently.
                 </p>
               </Section>
+              <PrimeBanner sub="end-agaricus-campestris" />
 
               <Divider />
               <ViewTracker slug="/agaricus-campestris" />

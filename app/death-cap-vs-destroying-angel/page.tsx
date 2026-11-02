@@ -7,6 +7,7 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
+import PrimeBanner from '@/components/blog/PrimeBanner'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
@@ -182,6 +183,7 @@ export default function DeathCapVsDestroyingAngelPage() {
           </div>
 
           {/* ── Intro Body ─────────────────────────────────── */}
+          <PrimeBanner sub="top-death-cap-vs-destroying-an" />
           <Section>
             <p>
               The Death Cap typically has a <strong>greenish or olive cap</strong>, while Destroying Angels are usually <strong>pure white</strong>. However, both share dangerous traits like white gills, a ring (annulus), and a volva (basal cup), making them extremely easy to confuse with edible mushrooms. Accurate identification requires analyzing multiple mushroom parts together — not just appearance — which is why tools like a{' '}
@@ -491,6 +493,7 @@ export default function DeathCapVsDestroyingAngelPage() {
           <Divider />
 
           {/* ── Toxicity ──────────────────────────────────── */}
+          <PrimeBanner sub="mid-death-cap-vs-destroying-an" />
           <Section>
             <H2>Toxicity Comparison: Which Is More Dangerous?</H2>
 
@@ -772,6 +775,7 @@ export default function DeathCapVsDestroyingAngelPage() {
               ⚠️ <strong>Golden Rule:</strong> If you are not 100% sure, never consume a wild mushroom.
             </WarningBox>
           </Section>
+          <PrimeBanner sub="end-death-cap-vs-destroying-an" />
 
           {/* ── Back to Blog ──────────────────────────────── */}
           <div className="mt-14 pt-8" style={{ borderTop: '1px solid var(--border)' }}>
