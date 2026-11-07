@@ -7,9 +7,13 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import PrimeBanner from '@/components/blog/PrimeBanner'
+import ChartLinks from '@/components/blog/ChartLinks'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
+
+// Re-render every 10 minutes so new chart links appear once their pages go live.
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: "Omphalotus illudens — Jack-o'-Lantern Mushroom Guide",
@@ -554,6 +558,7 @@ export default function OmphalotusIlludensPage() {
                   <em>Omphalotus illudens</em> (jack-o&apos;-lantern mushroom) is a perfect example of nature&apos;s beauty hiding danger. Its glowing appearance and vibrant color attract attention, but its toxicity makes it unsafe for consumption. Proper identification using habitat, structure, and expert tools is essential. Whether you&apos;re a beginner or an experienced forager, always prioritize safety and verification.
                 </p>
               </Section>
+              <ChartLinks slug="/omphalotus-illudens" />
               <PrimeBanner sub="end-omphalotus-illudens" />
 
               <Divider />

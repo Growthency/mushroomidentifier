@@ -6,9 +6,13 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import PrimeBanner from '@/components/blog/PrimeBanner'
+import ChartLinks from '@/components/blog/ChartLinks'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
+
+// Re-render every 10 minutes so new chart links appear once their pages go live.
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: 'Morchella esculenta (True Morel) \u2013 Identification Guide',
@@ -588,6 +592,7 @@ export default function MorchellaEsculentaPage() {
                   By combining field knowledge with a reliable <Link href="/" className="font-medium hover:underline" style={{ color: 'var(--accent)' }}>mushroom identifier tool</Link>, you can safely enjoy foraging and avoid dangerous mistakes.
                 </p>
               </Section>
+              <ChartLinks slug="/morchella-esculenta" />
               <PrimeBanner sub="end-morchella-esculenta" />
 
               <Divider />

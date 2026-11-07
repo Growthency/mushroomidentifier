@@ -7,9 +7,13 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import PrimeBanner from '@/components/blog/PrimeBanner'
+import ChartLinks from '@/components/blog/ChartLinks'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
+
+// Re-render every 10 minutes so new chart links appear once their pages go live.
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: 'Galerina marginata: Deadly Funeral Bell ID Guide',
@@ -573,6 +577,7 @@ export default function GalerinaMarginataPage() {
                   <p className="text-sm font-semibold">Golden rule: Never consume small brown mushrooms unless absolutely certain of identification.</p>
                 </WarningBox>
               </Section>
+              <ChartLinks slug="/galerina-marginata" />
               <PrimeBanner sub="end-galerina-marginata" />
 
               <Divider />

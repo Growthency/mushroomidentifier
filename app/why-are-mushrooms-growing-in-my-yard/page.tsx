@@ -7,9 +7,13 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import PrimeBanner from '@/components/blog/PrimeBanner'
+import ChartLinks from '@/components/blog/ChartLinks'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
+
+// Re-render every 10 minutes so new chart links appear once their pages go live.
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: 'Why Are Mushrooms Growing in My Yard?',
@@ -503,6 +507,7 @@ export default function WhyMushroomsInYardPage() {
               — upload a photo from multiple angles and get an instant AI analysis with toxicity warnings.
             </p>
           </Section>
+          <ChartLinks slug="/why-are-mushrooms-growing-in-my-yard" />
           <PrimeBanner sub="end-why-are-mushrooms-growing-" />
 
           <RelatedPosts currentSlug="/why-are-mushrooms-growing-in-my-yard" />

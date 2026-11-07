@@ -27,6 +27,7 @@ import { BLOG_HIDDEN_SLUGS } from '@/lib/blog-hidden-slugs'
 import { resolveFeaturedImage, dedupeProductHeadings } from '@/lib/content-helpers'
 import { getNofollowRules, applyNofollowRules } from '@/lib/external-links'
 import { affiliateContextFor, injectAffiliateBoxes, addGrowGuides } from '@/lib/affiliate'
+import { addChartLinks, getChartLinks } from '@/lib/chart-links'
 
 /* ── Supabase admin client — uses Next.js fetch cache (60s revalidate) so
    repeat visits within the window are instant. The previous `cache: 'no-store'`
@@ -231,7 +232,8 @@ export default async function DynamicPostPage({
   // Amazon Associates boxes, placed after the second section (lib/affiliate.ts).
   const affCtx = affiliateContextFor(post.slug, post.category)
   const growGuides = affCtx === 'grow' ? await getGrowGuides(post.slug) : []
-  const articleHtml = addGrowGuides(injectAffiliateBoxes(processedContent, affCtx), growGuides)
+  const chartLinks = await getChartLinks(post.slug)
+  const articleHtml = addChartLinks(addGrowGuides(injectAffiliateBoxes(processedContent, affCtx), growGuides), chartLinks)
   // Roundups carry their pick list in a comment for the sticky sidebar list.
   let topPicks: TopPick[] | undefined
   try {

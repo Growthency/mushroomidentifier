@@ -7,9 +7,13 @@ import RelatedPosts from '@/components/blog/RelatedPosts'
 import AuthorBlock from '@/components/blog/AuthorBlock'
 import BlogSidebar from '@/components/blog/BlogSidebar'
 import PrimeBanner from '@/components/blog/PrimeBanner'
+import ChartLinks from '@/components/blog/ChartLinks'
 import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
+
+// Re-render every 10 minutes so new chart links appear once their pages go live.
+export const revalidate = 600
 
 export const metadata: Metadata = {
   title: 'Amanita muscaria: Fly Agaric Identification Guide',
@@ -607,6 +611,7 @@ export default function AmanitaMuscariaPage() {
                   Understanding its structure, habitat, and chemical properties helps ensure safe identification. Using a mushroom identifier can assist, but knowledge and caution are always essential.
                 </p>
               </Section>
+              <ChartLinks slug="/amanita-muscaria" />
               <PrimeBanner sub="end-amanita-muscaria" />
 
               <Divider />
