@@ -12,9 +12,9 @@ import ViewTracker from '@/components/blog/ViewTracker'
 import AffiliateBox from '@/components/blog/AffiliateBox'
 
 export const metadata: Metadata = {
-  title: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
+  title: 'Parts of a Mushroom: Labeled Diagram and What Each Part Does',
   description:
-    'Learn mushroom parts explained — cap, gills, stem, ring, and volva. Master fungal anatomy to safely identify edible and toxic mushroom species in the wild.',
+    'Labeled mushroom anatomy diagram: cap, gills, stem, ring, volva and mycelium, what each part does, and which parts matter most for safe identification.',
 }
 
 const schemaData = {
@@ -22,7 +22,7 @@ const schemaData = {
   '@graph': [
     {
       '@type': 'Article',
-      headline: 'Mushroom Parts Explained: Cap, Gills, Stem, Ring, Volva',
+      headline: 'Parts of a Mushroom: Labeled Diagram and What Each Part Does',
       description:
         'Learn mushroom anatomy with a clear guide to cap, gills, stem, ring, and volva. Understand how these fungal structures help with mushroom identification and safety.',
       author: { '@type': 'Organization', name: 'Mushroom Identifier', url: 'https://mushroomidentifiers.com/' },
@@ -70,7 +70,7 @@ export default async function MushroomPartsExplainedPage() {
               Mycology Guide
             </span>
             <h1 className="font-playfair text-3xl md:text-5xl font-bold leading-tight mb-4" style={{ color: 'var(--text-primary)' }}>
-              Mushroom Parts Explained: Cap, Gills, Stem, Ring &amp; Volva
+              Parts of a Mushroom: Labeled Diagram and What Each Part Does
             </h1>
             <AuthorBlock updatedAt="Mar 31, 2026" />
             <LiveViewCount slug="/mushroom-parts-explained" className="mb-2" />
