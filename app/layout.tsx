@@ -27,7 +27,7 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mushroomidentifiers.com'),
-  title: 'Free Mushroom Identifier by Photo: Poisonous or Safe?',
+  title: 'Free Mushroom Identifier App by Picture: Poisonous or Safe?',
   description: 'Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide, in seconds.',
   icons: {
     icon: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: 'Free Mushroom Identifier by Photo: Poisonous or Safe?',
+    title: 'Free Mushroom Identifier App by Picture: Poisonous or Safe?',
     description: 'Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide, in seconds.',
     url: 'https://mushroomidentifiers.com',
     siteName: 'Mushroom Identifier',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Free Mushroom Identifier by Photo: Poisonous or Safe?',
+    title: 'Free Mushroom Identifier App by Picture: Poisonous or Safe?',
     description: 'Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide, in seconds.',
     images: ['https://mushroomidentifiers.com/mushroom-fungi-identifier.webp'],
   },
