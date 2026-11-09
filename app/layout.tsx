@@ -27,8 +27,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mushroomidentifiers.com'),
-  title: 'Free Mushroom Identifier App by Picture: Poisonous or Safe?',
-  description: 'Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide, in seconds.',
+  title: 'Mushroom Identifier: Free Mushroom Identification App by Picture',
+  description: 'Poisonous or safe? Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide.',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '48x48' },
@@ -40,8 +40,8 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: 'Free Mushroom Identifier App by Picture: Poisonous or Safe?',
-    description: 'Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide, in seconds.',
+    title: 'Mushroom Identifier: Free Mushroom Identification App by Picture',
+    description: 'Poisonous or safe? Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide.',
     url: 'https://mushroomidentifiers.com',
     siteName: 'Mushroom Identifier',
     type: 'website',
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Free Mushroom Identifier App by Picture: Poisonous or Safe?',
-    description: 'Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide, in seconds.',
+    title: 'Mushroom Identifier: Free Mushroom Identification App by Picture',
+    description: 'Poisonous or safe? Upload a photo and the free AI mushroom identifier names the likely species, flags poisonous look-alikes and links the field guide.',
     images: ['https://mushroomidentifiers.com/mushroom-fungi-identifier.webp'],
   },
   robots: {
