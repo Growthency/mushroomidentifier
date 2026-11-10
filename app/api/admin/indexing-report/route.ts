@@ -262,12 +262,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: String(err?.message || err).slice(0, 200) }, { status: 502 })
     }
 
+    // Bing throttles GetUrlInfo quickly ("ThrottleHost"): pages already shown
+    // in search skip it, the rest are spaced out and retried with a pause.
+    const urlInfoWithRetry = async (url: string) => {
+      for (let attempt = 1; ; attempt++) {
+        try {
+          return await getBingUrlInfo(url)
+        } catch (err: any) {
+          if (attempt === 3 || !/Throttle/i.test(String(err?.message || err))) throw err
+          await new Promise(r => setTimeout(r, 4000 * attempt))
+        }
+      }
+    }
+
     const results: any[] = []
     for (const url of urls.slice(0, 5)) {
       const record: any = { url, checked_at: new Date().toISOString() }
       const shown = inSearch.has(bingPageKey(url))
+      if (shown) {
+        record.status = 'indexed'
+        record.coverage_state = 'Indexed - shown in Bing search'
+        await admin.from('bing_indexing_cache').upsert(record, { onConflict: 'url' })
+        results.push(record)
+        continue
+      }
       try {
-        const info = await getBingUrlInfo(url)
+        const info = await urlInfoWithRetry(url)
         record.last_crawl_time = info.lastCrawled
         record.discovered_at = info.discovered
         record.http_status = info.httpStatus || null
@@ -283,14 +303,15 @@ export async function POST(request: NextRequest) {
                 ? 'Discovered - not crawled yet'
                 : 'URL is unknown to Bing'
       } catch (err: any) {
-        record.status = shown ? 'indexed' : 'error'
-        record.coverage_state = shown
-          ? 'Indexed - shown in Bing search'
-          : String(err?.message || err).replace(/^Bing GetUrlInfo: /, '').slice(0, 200) || 'API Error'
+        const msg = String(err?.message || err).replace(/^Bing GetUrlInfo: /, '')
+        record.status = 'error'
+        record.coverage_state = /Throttle/i.test(msg)
+          ? 'Bing rate limit - run the scan again later'
+          : msg.slice(0, 200) || 'API Error'
       }
       await admin.from('bing_indexing_cache').upsert(record, { onConflict: 'url' })
       results.push(record)
-      await new Promise(r => setTimeout(r, 300))
+      await new Promise(r => setTimeout(r, 1500))
     }
 
     return NextResponse.json({ results, checked: results.length })
