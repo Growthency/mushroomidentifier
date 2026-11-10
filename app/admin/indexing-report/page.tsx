@@ -25,6 +25,17 @@ interface CacheRow {
   published_at: string | null
 }
 
+type Engine = 'google' | 'bing'
+
+interface BingInfo {
+  configured: boolean
+  siteUrl: string
+  quota: { daily: number; monthly: number } | null
+  error: string
+}
+
+const ENGINE_LABEL: Record<Engine, string> = { google: 'Google', bing: 'Bing' }
+
 const PER_PAGE = 100
 
 function timeAgo(iso: string | null): string {
@@ -202,6 +213,11 @@ export default function IndexingReportPage() {
   const textSecondary = dark ? 'rgba(255,255,255,0.45)' : '#94a3b8'
 
   // State
+  // Which search engine's report is showing. Each has its own scan data;
+  // IndexNow and the sitemap tools above the report serve both.
+  const [engine, setEngine] = useState<Engine>('google')
+  const [bingInfo, setBingInfo] = useState<BingInfo | null>(null)
+  const engineLabel = ENGINE_LABEL[engine]
   const [results, setResults] = useState<CacheRow[]>([])
   const [loading, setLoading] = useState(true)
   const [scanning, setScanning] = useState(false)
@@ -234,15 +250,28 @@ export default function IndexingReportPage() {
   // Fetch cached results
   const fetchResults = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/indexing-report')
+      const res = await fetch(`/api/admin/indexing-report?engine=${engine}`)
       const data = await res.json()
       setResults(data.results || [])
       setLastScan(data.lastScan)
+      setBingInfo(data.bing || null)
     } catch {}
     setLoading(false)
-  }, [])
+  }, [engine])
 
   useEffect(() => { fetchResults() }, [fetchResults])
+
+  const switchEngine = (next: Engine) => {
+    if (next === engine) return
+    setLoading(true)
+    setResults([])
+    setLastScan(null)
+    setScanError('')
+    setSearchQuery('')
+    setIndexedPage(1)
+    setNotIndexedPage(1)
+    setEngine(next)
+  }
 
   // Show toast briefly
   const showToast = (msg: string) => {
@@ -304,7 +333,7 @@ export default function IndexingReportPage() {
         const res = await fetch('/api/admin/indexing-report', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check-batch', urls: batch }),
+          body: JSON.stringify({ action: engine === 'bing' ? 'bing-check-batch' : 'check-batch', urls: batch }),
         })
         const data = await res.json()
 
@@ -332,14 +361,14 @@ export default function IndexingReportPage() {
       const res = await fetch('/api/admin/indexing-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'request-index', url }),
+        body: JSON.stringify(engine === 'bing' ? { action: 'bing-submit', urls: [url] } : { action: 'request-index', url }),
       })
       const data = await res.json()
       if (data.success) {
-        showToast(`Indexing requested: ${extractPath(url)}`)
+        showToast(`${engineLabel} indexing requested: ${extractPath(url)}`)
         await fetchResults()
       } else {
-        showToast(`Failed: ${data.error || 'Unknown error'}`)
+        showToast(`Failed: ${data.details || data.error || 'Unknown error'}`)
       }
     } catch {
       showToast('Network error')
@@ -366,7 +395,7 @@ export default function IndexingReportPage() {
         const res = await fetch('/api/admin/indexing-report', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'bulk-request', urls: batch }),
+          body: JSON.stringify({ action: engine === 'bing' ? 'bing-submit' : 'bulk-request', urls: batch }),
         })
         const data = await res.json()
         totalSuccess += data.success || 0
@@ -532,7 +561,9 @@ export default function IndexingReportPage() {
               Indexing Report
             </h1>
             <p className="text-xs" style={{ color: textSecondary }}>
-              Monitor &amp; manage your Google search index
+              {engine === 'bing'
+                ? 'What Bing knows about each page, plus Bing URL submission'
+                : 'Monitor & manage your Google search index'}
             </p>
           </div>
         </div>
@@ -552,6 +583,55 @@ export default function IndexingReportPage() {
           </button>
         </div>
       </div>
+
+      {/* ── Search engine tabs ── */}
+      <div className="inline-flex p-1 rounded-xl gap-1" role="tablist"
+        style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+        {(['google', 'bing'] as Engine[]).map(e => (
+          <button key={e} role="tab" aria-selected={engine === e}
+            onClick={() => switchEngine(e)}
+            disabled={scanning || requestingUrl === '__bulk__'}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-60"
+            style={{
+              background: engine === e ? '#10b981' : 'transparent',
+              color: engine === e ? '#fff' : textSecondary,
+            }}>
+            {e === 'google' ? <Search className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
+            {ENGINE_LABEL[e]}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Bing: site, submission quota and how the status is worked out ── */}
+      {engine === 'bing' && bingInfo && (
+        <>
+          {bingInfo.configured ? (
+            <p className="text-xs" style={{ color: textSecondary }}>
+              Bing site <code className="font-mono">{bingInfo.siteUrl}</code>
+              {bingInfo.quota && (
+                <> · URL submissions left <code className="font-mono">{bingInfo.quota.daily} today, {bingInfo.quota.monthly} this month</code></>
+              )}
+              {bingInfo.error && <span style={{ color: '#ef4444' }}> · {bingInfo.error}</span>}
+            </p>
+          ) : (
+            <div className="rounded-xl p-4 text-xs" style={{ background: dark ? 'rgba(245,158,11,0.08)' : '#fffbeb', border: '1px solid rgba(245,158,11,0.25)', color: textPrimary }}>
+              Bing is not connected. Add BING_WEBMASTER_API_KEY in Coolify → Mushroom Identifiers → Environment Variables, then redeploy.
+            </div>
+          )}
+          <div className="rounded-xl p-4 flex items-start gap-3"
+            style={{ background: dark ? 'rgba(59,130,246,0.08)' : '#eff6ff', border: '1px solid rgba(59,130,246,0.2)' }}>
+            <Globe className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#3b82f6' }} />
+            <div>
+              <p className="text-sm font-medium" style={{ color: '#3b82f6' }}>How Bing status works</p>
+              <p className="text-xs mt-1" style={{ color: dark ? 'rgba(255,255,255,0.5)' : '#6b7280' }}>
+                Bing&apos;s API has no direct &quot;indexed&quot; field like Google&apos;s. A page counts as indexed once Bing has
+                shown it in search results or crawled it successfully. For a single page that matters, confirm it with
+                URL Inspection in Bing Webmaster Tools.
+              </p>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── Scan Progress Bar ── */}
       {scanning && scanProgress.total > 0 && (
@@ -781,7 +861,7 @@ export default function IndexingReportPage() {
           <FileSearch className="w-16 h-16 mx-auto mb-4" style={{ color: textSecondary, opacity: 0.4 }} />
           <h3 className="text-lg font-bold mb-2" style={{ color: textPrimary }}>No Scan Data Yet</h3>
           <p className="text-sm mb-6 max-w-md mx-auto" style={{ color: textSecondary }}>
-            Run your first scan to check which pages from your sitemap are indexed by Google.
+            Run your first scan to check which pages from your sitemap are indexed by {engineLabel}.
           </p>
           <button onClick={runScan}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110"
@@ -1054,7 +1134,7 @@ export default function IndexingReportPage() {
                             {row.index_requested_at && (
                               <p className="text-[9px] mt-0.5 flex items-center gap-1" style={{ color: '#10b981' }}>
                                 <Send className="w-2.5 h-2.5" />
-                                Google {timeAgo(row.index_requested_at)}
+                                {engineLabel} {timeAgo(row.index_requested_at)}
                               </p>
                             )}
                             {row.indexnow_requested_at && (
@@ -1091,7 +1171,7 @@ export default function IndexingReportPage() {
                                 className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:brightness-110 disabled:opacity-50"
                                 style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981' }}>
                                 {requestingUrl === row.url ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-                                Google
+                                {engineLabel}
                               </button>
                               <button onClick={() => submitSingleIndexNow(row.url)}
                                 disabled={requestingUrl === `indexnow-${row.url}`}

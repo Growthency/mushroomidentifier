@@ -248,6 +248,19 @@ CREATE TABLE IF NOT EXISTS "indexing_cache" (
   PRIMARY KEY ("url")
 );
 
+-- What Bing knows about each page (admin Indexing Report, Bing tab).
+CREATE TABLE IF NOT EXISTS "bing_indexing_cache" (
+  "url" text,
+  "status" text DEFAULT 'unknown' NOT NULL,
+  "coverage_state" text,
+  "last_crawl_time" text,
+  "discovered_at" text,
+  "http_status" integer,
+  "checked_at" timestamp with time zone DEFAULT now(),
+  "submitted_at" timestamp with time zone,
+  PRIMARY KEY ("url")
+);
+
 CREATE TABLE IF NOT EXISTS "ip_usage" (
   "ip_address" text,
   "count" integer DEFAULT 0 NOT NULL,

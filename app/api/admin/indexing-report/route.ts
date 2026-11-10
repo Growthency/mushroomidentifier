@@ -4,7 +4,10 @@ import { getDb } from '@/lib/db'
 import { isAdminEmail } from '@/lib/admin'
 import { google } from 'googleapis'
 import { googleAuth, googleErrorMessage, searchConsoleProperty } from '@/lib/google-auth'
-import { bingConfigured, submitBingSitemap } from '@/lib/bing-webmaster'
+import {
+  bingConfigured, bingPageKey, bingSiteUrl, getBingPagesInSearch, getBingQuota, getBingUrlInfo,
+  submitBingSitemap, submitBingUrls,
+} from '@/lib/bing-webmaster'
 import sitemap from '@/lib/sitemap-entries'
 
 const SITE_URL = 'https://mushroomidentifiers.com'
@@ -31,14 +34,38 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // ?engine=bing reads the Bing tab's table; the rows are returned in the
+  // same shape as Google's so the page renders both the same way.
+  const bing = new URL(request.url).searchParams.get('engine') === 'bing'
   const admin = getAdmin()
-  const { data: cache, error } = await admin
-    .from('indexing_cache')
+  const { data: rows, error } = await admin
+    .from(bing ? 'bing_indexing_cache' : 'indexing_cache')
     .select('*')
     .order('url')
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  let cache = rows || []
+  let bingInfo: any
+  if (bing) {
+    // IndexNow requests are recorded on the Google table for every URL.
+    const { data: google } = await admin.from('indexing_cache').select('url, indexnow_requested_at')
+    const indexNowAt = new Map((google || []).map((g: any) => [g.url, g.indexnow_requested_at]))
+    cache = cache.map((r: any) => ({
+      ...r,
+      index_requested_at: r.submitted_at,
+      indexnow_requested_at: indexNowAt.get(r.url) || null,
+    }))
+    bingInfo = { configured: bingConfigured(), siteUrl: bingSiteUrl(), quota: null, error: '' }
+    if (bingInfo.configured) {
+      try {
+        bingInfo.quota = await getBingQuota()
+      } catch (err: any) {
+        bingInfo.error = String(err?.message || err).slice(0, 200)
+      }
+    }
   }
 
   // Enrich each cache row with a publish date so the admin UI can show
@@ -92,7 +119,7 @@ export async function GET(request: NextRequest) {
     // DB-backed posts still get theirs from source 1.
   }
 
-  const results = (cache || []).map((r: any) => ({
+  const results = cache.map((r: any) => ({
     ...r,
     published_at: dateByPath.get(normalizePath(r.url)) || null,
   }))
@@ -116,6 +143,7 @@ export async function GET(request: NextRequest) {
       : 0,
     results,
     lastScan,
+    bing: bingInfo,
   })
 }
 
@@ -213,6 +241,84 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ results, checked: results.length })
+  }
+
+  // ─── Bing: check a batch of URLs via the Bing Webmaster API ────────────────
+  // Bing has no "indexed" field like Google's URL Inspection. A page counts
+  // as indexed when Bing has shown it in search (it has impressions) or has
+  // crawled it successfully.
+  if (action === 'bing-check-batch') {
+    const { urls } = body
+    if (!urls?.length) return NextResponse.json({ error: 'No URLs provided' }, { status: 400 })
+    if (!bingConfigured()) {
+      return NextResponse.json({ error: 'BING_WEBMASTER_API_KEY is not set in Coolify' }, { status: 400 })
+    }
+
+    let inSearch: Set<string>
+    try {
+      inSearch = await getBingPagesInSearch()
+    } catch (err: any) {
+      // Key / site problem: say so once, and keep the last scan.
+      return NextResponse.json({ error: String(err?.message || err).slice(0, 200) }, { status: 502 })
+    }
+
+    const results: any[] = []
+    for (const url of urls.slice(0, 5)) {
+      const record: any = { url, checked_at: new Date().toISOString() }
+      const shown = inSearch.has(bingPageKey(url))
+      try {
+        const info = await getBingUrlInfo(url)
+        record.last_crawl_time = info.lastCrawled
+        record.discovered_at = info.discovered
+        record.http_status = info.httpStatus || null
+        const crawledOk = !!info.lastCrawled && (!info.httpStatus || info.httpStatus === 200)
+        record.status = shown || crawledOk ? 'indexed' : 'not_indexed'
+        record.coverage_state = shown
+          ? 'Indexed - shown in Bing search'
+          : crawledOk
+            ? 'Indexed - crawled by Bing'
+            : info.lastCrawled
+              ? `Crawled - HTTP ${info.httpStatus}`
+              : info.discovered
+                ? 'Discovered - not crawled yet'
+                : 'URL is unknown to Bing'
+      } catch (err: any) {
+        record.status = shown ? 'indexed' : 'error'
+        record.coverage_state = shown
+          ? 'Indexed - shown in Bing search'
+          : String(err?.message || err).replace(/^Bing GetUrlInfo: /, '').slice(0, 200) || 'API Error'
+      }
+      await admin.from('bing_indexing_cache').upsert(record, { onConflict: 'url' })
+      results.push(record)
+      await new Promise(r => setTimeout(r, 300))
+    }
+
+    return NextResponse.json({ results, checked: results.length })
+  }
+
+  // ─── Bing: submit URLs for crawling (counts against the daily quota) ───────
+  if (action === 'bing-submit') {
+    const urls: string[] = (body.urls || []).slice(0, 10)
+    if (!urls.length) return NextResponse.json({ error: 'No URLs' }, { status: 400 })
+    if (!bingConfigured()) {
+      return NextResponse.json({ error: 'BING_WEBMASTER_API_KEY is not set in Coolify' }, { status: 400 })
+    }
+    try {
+      await submitBingUrls(urls)
+      const now = new Date().toISOString()
+      for (const url of urls) {
+        await admin.from('bing_indexing_cache').upsert({ url, submitted_at: now }, { onConflict: 'url' })
+      }
+      return NextResponse.json({ success: urls.length, failed: 0, total: urls.length })
+    } catch (err: any) {
+      return NextResponse.json({
+        success: 0,
+        failed: urls.length,
+        total: urls.length,
+        error: 'Bing submission failed',
+        details: String(err?.message || err).slice(0, 200),
+      }, { status: 502 })
+    }
   }
 
   // ─── Request indexing via Indexing API ──────────────────────────────────────

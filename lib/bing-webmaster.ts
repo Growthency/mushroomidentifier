@@ -93,6 +93,43 @@ export async function submitBingSitemap(feedUrl: string) {
   cache.delete(`GetFeeds|${bingSiteUrl()}`)
 }
 
+/** ISO time from a Bing date, or null for Bing's "never" (year 0001). */
+function bingTime(value: any): string | null {
+  const ms = Number(/\/Date\((-?\d+)/.exec(String(value || ''))?.[1])
+  return Number.isFinite(ms) && ms > Date.UTC(2005, 0, 1) ? new Date(ms).toISOString() : null
+}
+
+/** Same page regardless of scheme, www, case or trailing slash. */
+export const bingPageKey = (url: string) =>
+  String(url || '').toLowerCase().replace(/^https?:\/\/(www\.)?/, '').replace(/\/+$/, '')
+
+/** What Bing's crawler knows about one URL (GetUrlInfo). Throws on API errors. */
+export async function getBingUrlInfo(url: string) {
+  const d = await request('GetUrlInfo', { query: { siteUrl: bingSiteUrl(), url } })
+  return {
+    httpStatus: Number(d?.HttpStatus) || 0,
+    lastCrawled: bingTime(d?.LastCrawledDate),
+    discovered: bingTime(d?.DiscoveryDate),
+  }
+}
+
+/** Pages Bing has shown in search results (impressions in the last ~6 months). */
+export async function getBingPagesInSearch(): Promise<Set<string>> {
+  const pages = await call('GetPageStats')
+  return new Set(pages.filter((p) => Number(p.Impressions) > 0).map((p) => bingPageKey(p.Query)))
+}
+
+/** URL submissions left today / this month (GetUrlSubmissionQuota). */
+export async function getBingQuota() {
+  const d = await request('GetUrlSubmissionQuota', { query: { siteUrl: bingSiteUrl() } })
+  return { daily: Number(d?.DailyQuota) || 0, monthly: Number(d?.MonthlyQuota) || 0 }
+}
+
+/** Ask Bing to crawl these URLs (SubmitUrlBatch); counts against the quota. */
+export async function submitBingUrls(urls: string[]) {
+  await request('SubmitUrlBatch', { body: { siteUrl: bingSiteUrl(), urlList: urls } })
+}
+
 /** Sum Bing's weekly query / page rows per key inside the range. */
 function aggregate(rows: any[], start: string, end: string) {
   const map = new Map<string, { key: string; clicks: number; impressions: number; posWeighted: number }>()
