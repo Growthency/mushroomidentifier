@@ -19,6 +19,8 @@ const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID || '529177700'
 // cached for a few minutes, identical requests share one fetch, and a quota
 // error is retried once after a pause.
 
+// Never let a stalled Google call hang the dashboard.
+const GOOGLE_TIMEOUT_MS = 12000
 const GA_CACHE_MS = 5 * 60 * 1000
 const gaCache = new Map<string, { at: number; data: GA4Dashboard }>()
 const gaInflight = new Map<string, Promise<GA4Dashboard>>()
@@ -42,9 +44,13 @@ const isRetryable = (err: any) => {
 async function runReport(analyticsData: any, requestBody: any) {
   for (let attempt = 1; ; attempt++) {
     try {
-      const res = await analyticsData.properties.runReport({ property: `properties/${GA4_PROPERTY_ID}`, requestBody })
+      const res = await analyticsData.properties.runReport({ property: `properties/${GA4_PROPERTY_ID}`, requestBody }, { timeout: GOOGLE_TIMEOUT_MS })
       return res.data
     } catch (err: any) {
+      // A stalled call is not retried: the user is waiting on the dashboard.
+      if (/timeout|ETIMEDOUT|ECONNRESET|ESOCKETTIMEDOUT/i.test(String(err?.code || '') + String(err?.message || ''))) {
+        throw new Error(`Google Analytics did not answer within ${GOOGLE_TIMEOUT_MS / 1000} s. Try again in a minute.`)
+      }
       if (attempt === 3 || !isRetryable(err)) throw err
       await new Promise(r => setTimeout(r, 2500 * attempt))
     }
@@ -52,8 +58,10 @@ async function runReport(analyticsData: any, requestBody: any) {
 }
 
 async function fetchGA4Dashboard(startDate: string, endDate: string): Promise<GA4Dashboard> {
+  const t0 = Date.now()
   const auth = getAuth()
   const analyticsData = google.analyticsdata({ version: 'v1beta', auth })
+  const step = (name: string) => console.log(`[analytics] GA4 ${name} ${Date.now() - t0}ms`)
 
   // Overview for the period, the last 7 days and today in ONE request. GA4
   // returns a row per date range, tagged in the trailing "dateRange" dimension.
@@ -65,6 +73,7 @@ async function fetchGA4Dashboard(startDate: string, endDate: string): Promise<GA
     ],
     metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }, { name: 'newUsers' }],
   })
+  step('overview')
   const byRange: Record<string, any[]> = {}
   for (const row of overviewData.rows ?? []) {
     const range = row.dimensionValues?.[0]?.value || 'period'
@@ -79,6 +88,7 @@ async function fetchGA4Dashboard(startDate: string, endDate: string): Promise<GA
     orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
     limit: 25,
   })
+  step('pages')
   const countriesData = await runReport(analyticsData, {
     dateRanges: [{ startDate, endDate }],
     dimensions: [{ name: 'country' }],
@@ -86,6 +96,7 @@ async function fetchGA4Dashboard(startDate: string, endDate: string): Promise<GA
     orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
     limit: 25,
   })
+  step('countries')
   const dailyData = await runReport(analyticsData, {
     dateRanges: [{ startDate, endDate }],
     dimensions: [{ name: 'date' }],
@@ -93,6 +104,7 @@ async function fetchGA4Dashboard(startDate: string, endDate: string): Promise<GA
     orderBys: [{ dimension: { dimensionName: 'date' }, desc: false }],
   })
 
+  step('daily (done)')
   return {
     overview: {
       activeUsers: metric('period', 0),
@@ -155,8 +167,10 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
   const auth = getAuth()
   const searchConsole = google.searchconsole({ version: 'v1', auth })
 
+  const t0 = Date.now()
   try {
     const siteUrl = await searchConsoleProperty()
+    console.log(`[analytics] GSC property ${Date.now() - t0}ms`)
     // Top queries (keywords), top pages, daily clicks
     const [queriesRes, pagesRes, dailyRes] = await Promise.all([
       searchConsole.searchanalytics.query({
@@ -168,7 +182,7 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
           rowLimit: 25,
           type: 'web',
         },
-      }),
+      }, { timeout: GOOGLE_TIMEOUT_MS }),
       searchConsole.searchanalytics.query({
         siteUrl,
         requestBody: {
@@ -178,7 +192,7 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
           rowLimit: 25,
           type: 'web',
         },
-      }),
+      }, { timeout: GOOGLE_TIMEOUT_MS }),
       searchConsole.searchanalytics.query({
         siteUrl,
         requestBody: {
@@ -187,9 +201,10 @@ export async function getSearchConsoleData(startDate: string, endDate: string) {
           dimensions: ['date'],
           type: 'web',
         },
-      }),
+      }, { timeout: GOOGLE_TIMEOUT_MS }),
     ])
 
+    console.log(`[analytics] GSC queries done ${Date.now() - t0}ms`)
     const topKeywords = (queriesRes.data.rows ?? []).map(row => ({
       keyword: row.keys?.[0] || '',
       clicks: row.clicks || 0,

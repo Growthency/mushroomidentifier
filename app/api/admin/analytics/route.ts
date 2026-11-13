@@ -40,6 +40,8 @@ export async function GET(request: NextRequest) {
   let gaError: string | null = null
   let gscError: string | null = null
   const fresh = request.nextUrl.searchParams.get('fresh') === '1'
+  const t0 = Date.now()
+  console.log(`[analytics] request period=${period} fresh=${fresh}`)
   const [ga4Data, searchData] = await Promise.all([
     getGA4Dashboard(startDate, endDate, fresh).catch((err) => { gaError = err.message; return null }),
     getSearchConsoleData(
@@ -47,6 +49,8 @@ export async function GET(request: NextRequest) {
       getDateString(0)
     ).catch((err) => { gscError = err.message; return null }),
   ])
+
+  console.log(`[analytics] answered in ${Date.now() - t0}ms ga=${!!ga4Data} gsc=${!!searchData}${gaError ? ` gaError=${gaError.slice(0, 80)}` : ''}`)
 
   return NextResponse.json({
     // GA4 overview
