@@ -67,6 +67,11 @@ function describePrivateKey(): string {
 export function googleErrorMessage(err: any): string {
   const apiMsg = err?.response?.data?.error?.message || err?.errors?.[0]?.message
   let msg = String(apiMsg || err?.message || err)
+  // Google's 5xx pages come back as HTML: keep just the status.
+  if (/<!DOCTYPE|<html/i.test(msg)) {
+    const status = msg.match(/Error (\d{3})/)?.[1] || err?.code || err?.response?.status || '5xx'
+    msg = `Google returned a temporary server error (${status}). It usually clears in a minute — reload or press Clear Cache.`
+  }
   if (!apiMsg && /DECODER|PEM|asn1|private key/i.test(msg)) msg = `${describePrivateKey()} (${msg})`
   return msg.length > 300 ? `${msg.slice(0, 300)}…` : msg
 }

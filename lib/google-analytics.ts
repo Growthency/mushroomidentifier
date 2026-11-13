@@ -32,7 +32,12 @@ export interface GA4Dashboard {
   dailyUsers: { date: string; count: number }[]
 }
 
-const isQuotaError = (err: any) => /concurrent requests quota|RESOURCE_EXHAUSTED|quota/i.test(String(err?.message || err))
+// Worth a retry: GA4's concurrent-request quota, and Google's own 5xx hiccups
+// (which arrive as an HTML "Error 502 (Server Error)!!1" page).
+const isRetryable = (err: any) => {
+  const code = Number(err?.code || err?.response?.status || 0)
+  return code === 429 || code >= 500 || /concurrent requests quota|RESOURCE_EXHAUSTED|quota|Server Error/i.test(String(err?.message || err))
+}
 
 async function runReport(analyticsData: any, requestBody: any) {
   for (let attempt = 1; ; attempt++) {
@@ -40,8 +45,8 @@ async function runReport(analyticsData: any, requestBody: any) {
       const res = await analyticsData.properties.runReport({ property: `properties/${GA4_PROPERTY_ID}`, requestBody })
       return res.data
     } catch (err: any) {
-      if (attempt === 2 || !isQuotaError(err)) throw err
-      await new Promise(r => setTimeout(r, 3000))
+      if (attempt === 3 || !isRetryable(err)) throw err
+      await new Promise(r => setTimeout(r, 2500 * attempt))
     }
   }
 }
