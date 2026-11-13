@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     ).catch((err) => { gscError = err.message; return null }),
   ])
 
-  console.log(`[analytics] answered in ${Date.now() - t0}ms ga=${!!ga4Data} gsc=${!!searchData}${gaError ? ` gaError=${gaError.slice(0, 80)}` : ''}`)
+  console.log(`[analytics] answered in ${Date.now() - t0}ms ga=${!!ga4Data} gsc=${!!searchData}${gaError ? ` gaError=${String(gaError).slice(0, 80)}` : ''}`)
 
   return NextResponse.json({
     // GA4 overview
