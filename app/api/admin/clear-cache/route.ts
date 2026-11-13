@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
+import { clearGA4Cache } from '@/lib/google-analytics'
 
 /**
  * Admin-only "nuke all caches" endpoint.
@@ -48,6 +49,10 @@ export async function POST() {
     // ── 1. Entire route cache (cascades to every page under root layout) ──
     revalidatePath('/', 'layout')
     cleared.push('all pages (layout cascade)')
+
+    // Dashboard's Google Analytics reports (in-memory, 5 min)
+    clearGA4Cache()
+    cleared.push('GA4 dashboard reports')
 
     // ── 2. Known cache tags ──
     const tags = ['site-content', 'homepage-blocks']

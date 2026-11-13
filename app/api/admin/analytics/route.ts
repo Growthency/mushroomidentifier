@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
-import { getGA4Report, getGA4Users7d, getGA4UsersToday, getSearchConsoleData } from '@/lib/google-analytics'
+import { getGA4Dashboard, getSearchConsoleData } from '@/lib/google-analytics'
 import { bingConfigured, bingSiteUrl, getBingData, getBingSiteStatus } from '@/lib/bing-webmaster'
 
 export async function GET(request: NextRequest) {
@@ -36,13 +36,12 @@ export async function GET(request: NextRequest) {
     })
   }
 
-  // Fetch GA4 + Search Console data in parallel
+  // GA4 (one request at a time, cached) and Search Console side by side.
   let gaError: string | null = null
   let gscError: string | null = null
-  const [ga4Data, ga4Users7d, ga4UsersToday, searchData] = await Promise.all([
-    getGA4Report(startDate, endDate).catch((err) => { gaError = err.message; return null }),
-    getGA4Users7d(),
-    getGA4UsersToday(),
+  const fresh = request.nextUrl.searchParams.get('fresh') === '1'
+  const [ga4Data, searchData] = await Promise.all([
+    getGA4Dashboard(startDate, endDate, fresh).catch((err) => { gaError = err.message; return null }),
     getSearchConsoleData(
       getDateString(days),
       getDateString(0)
@@ -53,8 +52,8 @@ export async function GET(request: NextRequest) {
     // GA4 overview
     totalUsers: ga4Data?.overview.activeUsers ?? 0,
     users30d: ga4Data?.overview.activeUsers ?? 0,
-    users7d: ga4Users7d,
-    usersToday: ga4UsersToday,
+    users7d: ga4Data?.users7d ?? 0,
+    usersToday: ga4Data?.usersToday ?? 0,
     sessions30d: ga4Data?.overview.sessions ?? 0,
     pageViews30d: ga4Data?.overview.pageViews ?? 0,
     newUsers30d: ga4Data?.overview.newUsers ?? 0,

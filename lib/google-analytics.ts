@@ -11,138 +11,137 @@ function getAuth() {
 const GA4_PROPERTY_ID = process.env.GA4_PROPERTY_ID || '529177700'
 
 // ── Google Analytics 4 Data ──
+//
+// GA4 allows only 10 concurrent requests per property. The dashboard used to
+// fire six at once per load, so two admins or two tabs exhausted the quota
+// ("Exhausted concurrent requests quota"). Now: one report call at a time,
+// 7-day and today folded into the overview as extra date ranges, results
+// cached for a few minutes, identical requests share one fetch, and a quota
+// error is retried once after a pause.
 
-export async function getGA4Report(startDate: string, endDate: string) {
+const GA_CACHE_MS = 5 * 60 * 1000
+const gaCache = new Map<string, { at: number; data: GA4Dashboard }>()
+const gaInflight = new Map<string, Promise<GA4Dashboard>>()
+
+export interface GA4Dashboard {
+  overview: { activeUsers: number; sessions: number; pageViews: number; newUsers: number }
+  users7d: number
+  usersToday: number
+  topPages: { slug: string; title: string; views: number }[]
+  topCountries: { country: string; users: number }[]
+  dailyUsers: { date: string; count: number }[]
+}
+
+const isQuotaError = (err: any) => /concurrent requests quota|RESOURCE_EXHAUSTED|quota/i.test(String(err?.message || err))
+
+async function runReport(analyticsData: any, requestBody: any) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const res = await analyticsData.properties.runReport({ property: `properties/${GA4_PROPERTY_ID}`, requestBody })
+      return res.data
+    } catch (err: any) {
+      if (attempt === 2 || !isQuotaError(err)) throw err
+      await new Promise(r => setTimeout(r, 3000))
+    }
+  }
+}
+
+async function fetchGA4Dashboard(startDate: string, endDate: string): Promise<GA4Dashboard> {
   const auth = getAuth()
   const analyticsData = google.analyticsdata({ version: 'v1beta', auth })
 
-  try {
-    // Active users, sessions, pageviews
-    const [overviewRes, pagesRes, countriesRes, dailyRes] = await Promise.all([
-      // Overview metrics
-      analyticsData.properties.runReport({
-        property: `properties/${GA4_PROPERTY_ID}`,
-        requestBody: {
-          dateRanges: [
-            { startDate, endDate },
-          ],
-          metrics: [
-            { name: 'activeUsers' },
-            { name: 'sessions' },
-            { name: 'screenPageViews' },
-            { name: 'newUsers' },
-          ],
-        },
-      }),
+  // Overview for the period, the last 7 days and today in ONE request. GA4
+  // returns a row per date range, tagged in the trailing "dateRange" dimension.
+  const overviewData = await runReport(analyticsData, {
+    dateRanges: [
+      { startDate, endDate, name: 'period' },
+      { startDate: '7daysAgo', endDate: 'today', name: 'week' },
+      { startDate: 'today', endDate: 'today', name: 'today' },
+    ],
+    metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }, { name: 'newUsers' }],
+  })
+  const byRange: Record<string, any[]> = {}
+  for (const row of overviewData.rows ?? []) {
+    const range = row.dimensionValues?.[0]?.value || 'period'
+    byRange[range] = row.metricValues ?? []
+  }
+  const metric = (range: string, i: number) => Number(byRange[range]?.[i]?.value || 0)
 
-      // Top pages
-      analyticsData.properties.runReport({
-        property: `properties/${GA4_PROPERTY_ID}`,
-        requestBody: {
-          dateRanges: [{ startDate, endDate }],
-          dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
-          metrics: [{ name: 'screenPageViews' }],
-          orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
-          limit: 25,
-        },
-      }),
+  const pagesData = await runReport(analyticsData, {
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
+    metrics: [{ name: 'screenPageViews' }],
+    orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+    limit: 25,
+  })
+  const countriesData = await runReport(analyticsData, {
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'country' }],
+    metrics: [{ name: 'activeUsers' }],
+    orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+    limit: 25,
+  })
+  const dailyData = await runReport(analyticsData, {
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'date' }],
+    metrics: [{ name: 'activeUsers' }],
+    orderBys: [{ dimension: { dimensionName: 'date' }, desc: false }],
+  })
 
-      // Top countries
-      analyticsData.properties.runReport({
-        property: `properties/${GA4_PROPERTY_ID}`,
-        requestBody: {
-          dateRanges: [{ startDate, endDate }],
-          dimensions: [{ name: 'country' }],
-          metrics: [{ name: 'activeUsers' }],
-          orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
-          limit: 25,
-        },
-      }),
-
-      // Daily active users (for chart)
-      analyticsData.properties.runReport({
-        property: `properties/${GA4_PROPERTY_ID}`,
-        requestBody: {
-          dateRanges: [{ startDate, endDate }],
-          dimensions: [{ name: 'date' }],
-          metrics: [{ name: 'activeUsers' }],
-          orderBys: [{ dimension: { dimensionName: 'date' }, desc: false }],
-        },
-      }),
-    ])
-
-    // Parse overview
-    const overviewRow = overviewRes.data.rows?.[0]
-    const overview = {
-      activeUsers: Number(overviewRow?.metricValues?.[0]?.value || 0),
-      sessions: Number(overviewRow?.metricValues?.[1]?.value || 0),
-      pageViews: Number(overviewRow?.metricValues?.[2]?.value || 0),
-      newUsers: Number(overviewRow?.metricValues?.[3]?.value || 0),
-    }
-
-    // Parse top pages
-    const topPages = (pagesRes.data.rows ?? []).map(row => ({
+  return {
+    overview: {
+      activeUsers: metric('period', 0),
+      sessions: metric('period', 1),
+      pageViews: metric('period', 2),
+      newUsers: metric('period', 3),
+    },
+    users7d: metric('week', 0),
+    usersToday: metric('today', 0),
+    topPages: (pagesData.rows ?? []).map((row: any) => ({
       slug: row.dimensionValues?.[0]?.value || '/',
       title: row.dimensionValues?.[1]?.value || 'Unknown',
       views: Number(row.metricValues?.[0]?.value || 0),
-    }))
-
-    // Parse top countries
-    const topCountries = (countriesRes.data.rows ?? []).map(row => ({
+    })),
+    topCountries: (countriesData.rows ?? []).map((row: any) => ({
       country: row.dimensionValues?.[0]?.value || 'Unknown',
       users: Number(row.metricValues?.[0]?.value || 0),
-    }))
-
-    // Parse daily users
-    const dailyUsers = (dailyRes.data.rows ?? []).map(row => ({
+    })),
+    dailyUsers: (dailyData.rows ?? []).map((row: any) => ({
       date: formatGADate(row.dimensionValues?.[0]?.value || ''),
       count: Number(row.metricValues?.[0]?.value || 0),
-    }))
-
-    return { overview, topPages, topCountries, dailyUsers }
-  } catch (err: any) {
-    const message = googleErrorMessage(err)
-    console.error('GA4 API error:', message)
-    throw new Error(message)
+    })),
   }
 }
 
-// Get 7-day data separately
-export async function getGA4Users7d() {
-  const auth = getAuth()
-  const analyticsData = google.analyticsdata({ version: 'v1beta', auth })
+/**
+ * Everything the dashboard's Google Analytics tab shows. Cached per period;
+ * on an API error the last good result (if any) is returned instead.
+ */
+export async function getGA4Dashboard(startDate: string, endDate: string, fresh = false): Promise<GA4Dashboard> {
+  const key = `${startDate}|${endDate}`
+  const hit = gaCache.get(key)
+  if (!fresh && hit && Date.now() - hit.at < GA_CACHE_MS) return hit.data
+  if (gaInflight.has(key)) return gaInflight.get(key)!
 
-  try {
-    const res = await analyticsData.properties.runReport({
-      property: `properties/${GA4_PROPERTY_ID}`,
-      requestBody: {
-        dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
-        metrics: [{ name: 'activeUsers' }],
-      },
+  const p = fetchGA4Dashboard(startDate, endDate)
+    .then((data) => {
+      gaCache.set(key, { at: Date.now(), data })
+      return data
     })
-    return Number(res.data.rows?.[0]?.metricValues?.[0]?.value || 0)
-  } catch {
-    return 0
-  }
+    .catch((err) => {
+      const message = googleErrorMessage(err)
+      console.error('GA4 API error:', message)
+      if (hit) return hit.data
+      throw new Error(message)
+    })
+    .finally(() => gaInflight.delete(key))
+  gaInflight.set(key, p)
+  return p
 }
 
-// Get today's data
-export async function getGA4UsersToday() {
-  const auth = getAuth()
-  const analyticsData = google.analyticsdata({ version: 'v1beta', auth })
-
-  try {
-    const res = await analyticsData.properties.runReport({
-      property: `properties/${GA4_PROPERTY_ID}`,
-      requestBody: {
-        dateRanges: [{ startDate: 'today', endDate: 'today' }],
-        metrics: [{ name: 'activeUsers' }],
-      },
-    })
-    return Number(res.data.rows?.[0]?.metricValues?.[0]?.value || 0)
-  } catch {
-    return 0
-  }
+/** Drop the cached GA4 reports (admin "Clear Cache"). */
+export function clearGA4Cache() {
+  gaCache.clear()
 }
 
 // ── Google Search Console ──
