@@ -48,7 +48,7 @@ async function runReport(analyticsData: any, requestBody: any) {
       return res.data
     } catch (err: any) {
       // A stalled call is not retried: the user is waiting on the dashboard.
-      if (/timeout|ETIMEDOUT|ECONNRESET|ESOCKETTIMEDOUT/i.test(String(err?.code || '') + String(err?.message || ''))) {
+      if (/timeout|aborted|ETIMEDOUT|ECONNRESET|ESOCKETTIMEDOUT/i.test(String(err?.code || '') + String(err?.message || ''))) {
         throw new Error(`Google Analytics did not answer within ${GOOGLE_TIMEOUT_MS / 1000} s. Try again in a minute.`)
       }
       if (attempt === 3 || !isRetryable(err)) throw err
