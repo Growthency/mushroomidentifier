@@ -24,6 +24,11 @@ export async function GET(request: NextRequest) {
     const out: Record<string, any> = {}
     const t0 = Date.now()
     try {
+      const dns = await import('node:dns/promises')
+      for (const host of ['analyticsdata.googleapis.com', 'searchconsole.googleapis.com', 'oauth2.googleapis.com']) {
+        out[`dns:${host}`] = await dns.lookup(host, { all: true }).then(a => a.map(x => x.address)).catch(e => String(e))
+      }
+      out.nodeOptions = process.env.NODE_OPTIONS || ''
       const auth = googleAuth(['https://www.googleapis.com/auth/analytics.readonly'])
       const token = await auth.getAccessToken()
       out.tokenMs = Date.now() - t0
