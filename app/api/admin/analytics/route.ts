@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
 import { getGA4Dashboard, getSearchConsoleData } from '@/lib/google-analytics'
+import { googleAuth } from '@/lib/google-auth'
 import { bingConfigured, bingSiteUrl, getBingData, getBingSiteStatus } from '@/lib/bing-webmaster'
 
 export async function GET(request: NextRequest) {
@@ -16,6 +17,33 @@ export async function GET(request: NextRequest) {
 
   const { startDate, days } = getPeriodDates(period)
   const endDate = 'today'
+
+  // ?diag=ga4 — admin-only probe: is the GA4 API reachable from this server
+  // without the googleapis client? Reports token + raw request timings.
+  if (request.nextUrl.searchParams.get('diag') === 'ga4') {
+    const out: Record<string, any> = {}
+    const t0 = Date.now()
+    try {
+      const auth = googleAuth(['https://www.googleapis.com/auth/analytics.readonly'])
+      const token = await auth.getAccessToken()
+      out.tokenMs = Date.now() - t0
+      out.tokenOk = !!token
+      const t1 = Date.now()
+      const res = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${process.env.GA4_PROPERTY_ID || '529177700'}:runReport`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }], metrics: [{ name: 'activeUsers' }] }),
+        signal: AbortSignal.timeout(15000),
+      })
+      out.rawMs = Date.now() - t1
+      out.rawStatus = res.status
+      out.rawBody = (await res.text()).slice(0, 300)
+    } catch (err: any) {
+      out.error = String(err?.message || err).slice(0, 300)
+      out.failedAfterMs = Date.now() - t0
+    }
+    return NextResponse.json(out)
+  }
 
   // Bing tab — fetched on its own so a Bing problem never touches GA / GSC.
   if (request.nextUrl.searchParams.get('source') === 'bing') {
