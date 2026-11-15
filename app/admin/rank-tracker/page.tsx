@@ -32,6 +32,12 @@ function fmtVol(v: number | null) {
   return String(v)
 }
 
+interface ProviderInfo {
+  serper: { configured: boolean; last4: string | null; used: number; freeCredits: number }
+  serpapiKeys: number
+  active: 'serper' | 'serpapi' | 'none'
+}
+
 interface Quota {
   used: number
   limit: number
@@ -185,6 +191,10 @@ export default function RankTrackerPage() {
 
   const [keywords, setKeywords] = useState<Keyword[]>([])
   const [quota, setQuota] = useState<Quota>({ used: 0, limit: 250, remaining: 250 })
+  const [provider, setProvider] = useState<ProviderInfo | null>(null)
+  const [serperInput, setSerperInput] = useState('')
+  const [serperBusy, setSerperBusy] = useState(false)
+  const [serperMsg, setSerperMsg] = useState('')
   const [loading, setLoading] = useState(true)
   const [checking, setChecking] = useState(false)
   const [newKeyword, setNewKeyword] = useState('')
@@ -211,9 +221,30 @@ export default function RankTrackerPage() {
       const data = await res.json()
       setKeywords(data.keywords || [])
       if (data.quota) setQuota(data.quota)
+      if (data.provider) setProvider(data.provider)
     } catch {}
     setLoading(false)
   }, [])
+
+  const saveSerperKey = async (clear = false) => {
+    setSerperBusy(true)
+    setSerperMsg('')
+    try {
+      const res = await fetch('/api/admin/rank-tracker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(clear ? { action: 'clear_serper_key' } : { action: 'set_serper_key', key: serperInput.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not save key')
+      setProvider(data.provider)
+      setSerperInput('')
+      setSerperMsg(clear ? 'Serper key removed. Checks use SerpAPI again.' : 'Serper key saved and tested. Checks now use Serper.dev.')
+    } catch (err: any) {
+      setSerperMsg(err.message)
+    }
+    setSerperBusy(false)
+  }
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -599,6 +630,47 @@ export default function RankTrackerPage() {
             )}
           </span>
         </button>
+      </div>
+
+      {/* ── SERP provider ── */}
+      <div className="rounded-2xl border p-5 mb-6" style={{ background: cardBg, borderColor: cardBorder }}>
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4 justify-between">
+          <div>
+            <h2 className="text-sm font-bold" style={{ color: textPrimary }}>
+              SERP provider:{' '}
+              <span style={{ color: '#10b981' }}>
+                {provider?.active === 'serper' ? 'Serper.dev' : provider?.active === 'serpapi' ? 'SerpAPI' : 'none'}
+              </span>
+            </h2>
+            <p className="text-xs mt-1" style={{ color: textSecondary }}>
+              {provider?.serper.configured
+                ? `Serper key ••••${provider.serper.last4} · ${provider.serper.used} of ${provider.serper.freeCredits} free credits used here · SerpAPI stays as fallback`
+                : 'Paste a Serper.dev API key to get 2,500 free searches (serper.dev → API keys). Until then SerpAPI is used.'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="password"
+              value={serperInput}
+              onChange={e => setSerperInput(e.target.value)}
+              placeholder={provider?.serper.configured ? 'Paste a new Serper key to replace' : 'Serper.dev API key'}
+              className="w-64 text-xs px-3 py-2 rounded-lg outline-none"
+              style={{ background: inputBg, border: `1px solid ${cardBorder}`, color: textPrimary }}
+              autoComplete="off"
+            />
+            <button onClick={() => saveSerperKey(false)} disabled={serperBusy || serperInput.trim().length < 20}
+              className="px-3 py-2 rounded-lg text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-40 transition-colors">
+              {serperBusy ? 'Testing…' : 'Save key'}
+            </button>
+            {provider?.serper.configured && (
+              <button onClick={() => saveSerperKey(true)} disabled={serperBusy}
+                className="px-3 py-2 rounded-lg text-xs font-semibold text-red-400 hover:bg-red-500/10 disabled:opacity-40 transition-colors">
+                Remove
+              </button>
+            )}
+          </div>
+        </div>
+        {serperMsg && <p className="text-xs mt-3" style={{ color: /saved|removed/i.test(serperMsg) ? '#10b981' : '#ef4444' }}>{serperMsg}</p>}
       </div>
 
       {/* Error */}

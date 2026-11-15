@@ -222,15 +222,97 @@ async function serpFetch(searchParams: Record<string, string>): Promise<{ data: 
   return { data: { error: lastError || 'All SerpAPI keys exhausted' }, keyIndex: -1 }
 }
 
-// One request per keyword: Google's top 100 in a single page, so a check
-// costs 1 credit instead of up to 10 and positions need no page math.
+// Google stopped honouring num=100 in 2025, so a check reads up to
+// MAX_PAGES pages of 10 and stops as soon as the site turns up.
 const SERP_BASE_PARAMS = {
   engine: 'google',
   location: 'United States',
   google_domain: 'google.com',
   gl: 'us',
   hl: 'en',
-  num: '100',
+  num: '10',
+}
+const MAX_PAGES = 5
+
+// ── Serper.dev (2,500 free credits, key pasted in the dashboard) ──────────
+// Stored in site_settings so the owner can rotate it without a redeploy.
+const SERPER_KEY_SETTING = 'serper_api_key'
+const SERPER_USED_SETTING = 'serper_used'
+
+async function getSetting(key: string): Promise<string> {
+  const { data } = await supabase.from('site_settings').select('value').eq('key', key).maybeSingle()
+  return String(data?.value || '').trim()
+}
+
+async function setSetting(key: string, value: string, group = 'rank_tracker') {
+  await supabase.from('site_settings').upsert(
+    { key, value, type: 'text', group_name: group, label: key, updated_at: new Date().toISOString() },
+    { onConflict: 'key' }
+  )
+}
+
+async function bumpSerperUsed(n = 1) {
+  const used = Number(await getSetting(SERPER_USED_SETTING)) || 0
+  await setSetting(SERPER_USED_SETTING, String(used + n))
+}
+
+interface SerpPage { organic: any[]; featured: any | null; error?: string }
+
+/** One page of Google results from Serper.dev (page is 1-based). */
+async function serperPage(key: string, q: string, device: Device, page: number): Promise<SerpPage> {
+  const res = await fetch('https://google.serper.dev/search', {
+    method: 'POST',
+    headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ q, gl: 'us', hl: 'en', location: 'United States', num: 10, page, device }),
+    signal: AbortSignal.timeout(20000),
+  })
+  const text = await res.text()
+  let data: any = {}
+  try { data = JSON.parse(text) } catch { /* non-JSON error page */ }
+  if (!res.ok) {
+    const msg = data?.message || data?.error || text.slice(0, 120) || `HTTP ${res.status}`
+    return { organic: [], featured: null, error: `Serper: ${res.status === 401 || res.status === 403 ? 'API key rejected' : msg}` }
+  }
+  await bumpSerperUsed()
+  const organic = (data.organic || []).map((r: any, i: number) => ({
+    link: r.link,
+    displayed_link: r.link,
+    position: (page - 1) * 10 + (Number(r.position) || i + 1),
+  }))
+  const kg = data.answerBox || data.knowledgeGraph
+  const featured = kg ? { link: kg.link || kg.website || '', displayed_link: kg.link || kg.website || '' } : null
+  return { organic, featured }
+}
+
+/** One page of Google results from SerpAPI (page is 1-based). */
+async function serpapiPage(q: string, device: Device, page: number): Promise<SerpPage> {
+  const start = (page - 1) * 10
+  const { data } = await serpFetch({ ...SERP_BASE_PARAMS, q, device, start: String(start) })
+  if (data.error) {
+    if (/hasn't returned any results/i.test(data.error)) return { organic: [], featured: null }
+    return { organic: [], featured: null, error: `SerpAPI: ${data.error}` }
+  }
+  const organic = (data.organic_results || []).map((r: any, i: number) => ({
+    link: r.link,
+    displayed_link: r.displayed_link,
+    position: start + (Number(r.position) || i + 1),
+  }))
+  const f = data.answer_box || data.knowledge_graph
+  return { organic, featured: f ? { link: f.link || '', displayed_link: f.displayed_link || f.link || '' } : null }
+}
+
+async function providerInfo() {
+  const key = await getSetting(SERPER_KEY_SETTING)
+  return {
+    serper: {
+      configured: !!key,
+      last4: key ? key.slice(-4) : null,
+      used: Number(await getSetting(SERPER_USED_SETTING)) || 0,
+      freeCredits: 2500,
+    },
+    serpapiKeys: SERPAPI_KEYS.length,
+    active: key ? 'serper' : SERPAPI_KEYS.length ? 'serpapi' : 'none',
+  }
 }
 
 type Device = 'desktop' | 'mobile'
@@ -279,7 +361,7 @@ async function findOurs(organic: any[]): Promise<{ position: number; url: string
   for (let i = 0; i < organic.length; i++) {
     const r = organic[i]
     const link: string = r.link || ''
-    const position = Number(r.position) || i + 1
+    const position = Number(r.position) || i + 1 // absolute (page offset already applied)
     let host = ''
     try { host = new URL(link).hostname.replace(/^www\./, '').toLowerCase() } catch { host = hostOf(link) }
     if (isOurHost(host)) return { position, url: link }
@@ -294,31 +376,38 @@ async function findOurs(organic: any[]): Promise<{ position: number; url: string
   return null
 }
 
-/** One SerpAPI call (top 100); throws with SerpAPI's message on error. */
+/**
+ * Where the site ranks for one keyword: Serper.dev when a key is saved,
+ * otherwise SerpAPI. Reads page after page (10 results each) until the site
+ * appears or MAX_PAGES is reached. Throws with the provider's message.
+ */
 async function lookupRank(keyword: string, device: Device) {
-  const { data } = await serpFetch({ ...SERP_BASE_PARAMS, q: keyword, device })
-  if (data.error) {
-    // "Google hasn't returned any results" is a real answer, not a failure.
-    if (/hasn't returned any results/i.test(data.error)) return { position: null, url: '', total: 0 }
-    throw new Error(data.error)
-  }
-  const organic: any[] = data.organic_results || []
-  let found = await findOurs(organic)
-  if (!found) {
-    const featured = data.answer_box || data.knowledge_graph
-    const fl: string = featured?.link || ''
-    if (fl && (isOurHost(hostOf(fl)) || (isGotoLink(fl) && isOurHost(hostOf(featured?.displayed_link || ''))))) {
-      found = { position: 1, url: isGotoLink(fl) ? `https://${SITE_DOMAIN}/` : fl }
+  const serperKey = await getSetting(SERPER_KEY_SETTING)
+  if (!serperKey && SERPAPI_KEYS.length === 0) throw new Error('No SERP provider: save a Serper.dev key below or set SERPAPI_KEY')
+  const provider = serperKey ? 'serper' : 'serpapi'
+  let total = 0
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const res = serperKey ? await serperPage(serperKey, keyword, device, page) : await serpapiPage(keyword, device, page)
+    if (res.error) throw new Error(res.error)
+    total += res.organic.length
+    const found = await findOurs(res.organic)
+    if (found) return { position: found.position, url: found.url, total, provider }
+    if (page === 1 && res.featured) {
+      const fl: string = res.featured.link || ''
+      if (fl && (isOurHost(hostOf(fl)) || (isGotoLink(fl) && isOurHost(hostOf(res.featured.displayed_link || ''))))) {
+        return { position: 1, url: isGotoLink(fl) ? `https://${SITE_DOMAIN}/` : fl, total, provider }
+      }
     }
+    if (res.organic.length === 0) break
   }
-  return { position: found?.position ?? null, url: found?.url ?? '', total: organic.length }
+  return { position: null, url: '', total, provider }
 }
 
 /** Check one keyword row and save it; an API error keeps the old position. */
 async function checkKeyword(kw: any, device: Device) {
   const prevPosition = kw.position
   try {
-    const { position, url, total } = await lookupRank(kw.keyword, device)
+    const { position, url, total, provider } = await lookupRank(kw.keyword, device)
     const change = prevPosition && position ? prevPosition - position : null
     await supabase.from('rank_keywords').update({
       prev_position: prevPosition,
@@ -329,7 +418,7 @@ async function checkKeyword(kw: any, device: Device) {
       last_error: null,
       checked_at: new Date().toISOString(),
     }).eq('id', kw.id)
-    return { id: kw.id, keyword: kw.keyword, position, prev_position: prevPosition, change, rank_url: url, total_organic: total, device }
+    return { id: kw.id, keyword: kw.keyword, position, prev_position: prevPosition, change, rank_url: url, total_organic: total, device, provider }
   } catch (err: any) {
     const message = String(err?.message || err).slice(0, 200)
     await supabase.from('rank_keywords').update({ last_error: message, checked_at: new Date().toISOString() }).eq('id', kw.id)
@@ -389,7 +478,7 @@ export async function GET() {
   // earliest-refill date instead of per-key noise.
   const quota = await getCombinedQuota()
 
-  return NextResponse.json({ keywords: withGsc, quota })
+  return NextResponse.json({ keywords: withGsc, quota, provider: await providerInfo() })
 }
 
 // ── POST: add keyword OR run check ──
@@ -426,11 +515,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ keyword: data })
   }
 
+  // --- Serper.dev key: save / remove (stored in site_settings) ---
+  if (body.action === 'set_serper_key') {
+    const key = String(body.key || '').trim()
+    if (!/^[A-Za-z0-9_-]{20,}$/.test(key)) return NextResponse.json({ error: 'That does not look like a Serper API key' }, { status: 400 })
+    // Try it once before saving so a typo is caught here, not at check time.
+    const test = await serperPage(key, 'mushroom identifier', 'desktop', 1)
+    if (test.error) return NextResponse.json({ error: test.error }, { status: 400 })
+    await setSetting(SERPER_KEY_SETTING, key)
+    return NextResponse.json({ ok: true, provider: await providerInfo() })
+  }
+  if (body.action === 'clear_serper_key') {
+    await setSetting(SERPER_KEY_SETTING, '')
+    return NextResponse.json({ ok: true, provider: await providerInfo() })
+  }
+
   // --- Run rank check (all keywords) ---
   if (body.action === 'check') {
-    if (SERPAPI_KEYS.length === 0) {
-      return NextResponse.json({ error: 'SERPAPI_KEY not configured' }, { status: 500 })
-    }
     const { data: keywords } = await supabase
       .from('rank_keywords')
       .select('*')
@@ -445,9 +546,6 @@ export async function POST(req: NextRequest) {
 
   // --- Check single keyword ---
   if (body.action === 'check_single') {
-    if (SERPAPI_KEYS.length === 0) {
-      return NextResponse.json({ error: 'SERPAPI_KEY not configured' }, { status: 500 })
-    }
     const { id } = body
     if (!id) return NextResponse.json({ error: 'Missing keyword id' }, { status: 400 })
     const { data: kw, error: kwErr } = await supabase
@@ -466,35 +564,15 @@ export async function POST(req: NextRequest) {
     const keyword = (body.keyword || '').trim()
     if (!keyword) return NextResponse.json({ error: 'Missing keyword' }, { status: 400 })
 
-    if (SERPAPI_KEYS.length === 0) {
-      return NextResponse.json({ error: 'SERPAPI_KEY not configured' }, { status: 500 })
-    }
-
-    const { data, keyIndex } = await serpFetch({
-      ...SERP_BASE_PARAMS,
-      q: keyword,
-      device,
-    })
-
-    // Extract just the info we need for debugging
-    const organic = (data.organic_results || []).map((r: any, i: number) => ({
-      pos: r.position ?? i + 1,
-      title: r.title?.slice(0, 60),
-      link: r.link,
-      displayed: r.displayed_link,
-    }))
-    const ours = await findOurs(data.organic_results || [])
-
+    const serperKey = await getSetting(SERPER_KEY_SETTING)
+    const page = serperKey ? await serperPage(serperKey, keyword, device, 1) : await serpapiPage(keyword, device, 1)
     return NextResponse.json({
-      error: data.error || null,
+      error: page.error || null,
+      provider: serperKey ? 'serper' : 'serpapi',
       device,
-      search_info: data.search_information,
-      total_organic: organic.length,
-      top_results: organic.slice(0, 15),
-      our_match: ours,
-      // Surface which key handled this debug call so the owner can
-      // verify the failover is wired (0 = primary, 1 = backup).
-      key_used: keyIndex,
+      total_organic: page.organic.length,
+      top_results: page.organic.slice(0, 15).map((r: any) => ({ pos: r.position, link: r.link, displayed: r.displayed_link })),
+      our_match: await findOurs(page.organic),
       keys_configured: SERPAPI_KEYS.length,
     })
   }
