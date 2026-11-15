@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { google } from 'googleapis'
 import { createAdminClient as createClient } from '@/lib/db'
+import { getSessionUser } from '@/lib/session'
+import { isAdminEmail } from '@/lib/admin'
+import { googleAuth, searchConsoleProperty } from '@/lib/google-auth'
 
 export const dynamic = 'force-dynamic'
 
 const supabase = createClient()
+
+async function requireAdmin() {
+  const user = await getSessionUser()
+  return user && isAdminEmail(user.email) ? user : null
+}
 
 /**
  * SerpAPI keys, in priority order. We support a primary + backup so the
@@ -213,16 +222,158 @@ async function serpFetch(searchParams: Record<string, string>): Promise<{ data: 
   return { data: { error: lastError || 'All SerpAPI keys exhausted' }, keyIndex: -1 }
 }
 
+// One request per keyword: Google's top 100 in a single page, so a check
+// costs 1 credit instead of up to 10 and positions need no page math.
 const SERP_BASE_PARAMS = {
   engine: 'google',
   location: 'United States',
+  google_domain: 'google.com',
   gl: 'us',
   hl: 'en',
-  num: '10',
+  num: '100',
+}
+
+type Device = 'desktop' | 'mobile'
+const asDevice = (v: any): Device => (v === 'mobile' ? 'mobile' : 'desktop')
+
+/** Hostname of a displayed_link like "https://www.site.com › path" or "site.com/path". */
+function hostOf(value: string): string {
+  const raw = String(value || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '')
+  return raw.split(/[\s/›>]/)[0]
+}
+
+const isOurHost = (host: string) => host === SITE_DOMAIN || host.endsWith(`.${SITE_DOMAIN}`)
+
+/** Google's /goto redirect wrapper (SerpAPI sometimes passes it through). */
+const isGotoLink = (link: string) => /google\.[a-z.]+\/(goto|url)\?/i.test(String(link || ''))
+
+const gotoCache = new Map<string, string | null>()
+
+/** Follow a google.com/goto link once to learn the destination; null when Google won't say. */
+async function resolveGoto(link: string): Promise<string | null> {
+  if (gotoCache.has(link)) return gotoCache.get(link)!
+  let target: string | null = null
+  try {
+    const u = new URL(link)
+    const direct = u.searchParams.get('url') || u.searchParams.get('q')
+    if (direct && /^https?:\/\//i.test(direct)) target = direct
+    if (!target) {
+      const res = await fetch(link, { method: 'HEAD', redirect: 'manual', signal: AbortSignal.timeout(6000), headers: { 'User-Agent': 'Mozilla/5.0' } })
+      const loc = res.headers.get('location')
+      if (loc && /^https?:\/\//i.test(loc)) target = loc
+    }
+  } catch {
+    target = null
+  }
+  gotoCache.set(link, target)
+  return target
+}
+
+/**
+ * Find mushroomidentifiers.com in a SerpAPI result list. Matches on the
+ * real link, on displayed_link (which still shows the true domain when
+ * the link is a Google /goto redirect) and, as a last resort, by resolving
+ * the redirect. Returns the absolute position and the page URL.
+ */
+async function findOurs(organic: any[]): Promise<{ position: number; url: string } | null> {
+  for (let i = 0; i < organic.length; i++) {
+    const r = organic[i]
+    const link: string = r.link || ''
+    const position = Number(r.position) || i + 1
+    let host = ''
+    try { host = new URL(link).hostname.replace(/^www\./, '').toLowerCase() } catch { host = hostOf(link) }
+    if (isOurHost(host)) return { position, url: link }
+    if (isGotoLink(link)) {
+      const shown = hostOf(r.displayed_link || '')
+      if (isOurHost(shown)) {
+        const real = await resolveGoto(link)
+        return { position, url: real && isOurHost(hostOf(real)) ? real : `https://${SITE_DOMAIN}/` }
+      }
+    }
+  }
+  return null
+}
+
+/** One SerpAPI call (top 100); throws with SerpAPI's message on error. */
+async function lookupRank(keyword: string, device: Device) {
+  const { data } = await serpFetch({ ...SERP_BASE_PARAMS, q: keyword, device })
+  if (data.error) {
+    // "Google hasn't returned any results" is a real answer, not a failure.
+    if (/hasn't returned any results/i.test(data.error)) return { position: null, url: '', total: 0 }
+    throw new Error(data.error)
+  }
+  const organic: any[] = data.organic_results || []
+  let found = await findOurs(organic)
+  if (!found) {
+    const featured = data.answer_box || data.knowledge_graph
+    const fl: string = featured?.link || ''
+    if (fl && (isOurHost(hostOf(fl)) || (isGotoLink(fl) && isOurHost(hostOf(featured?.displayed_link || ''))))) {
+      found = { position: 1, url: isGotoLink(fl) ? `https://${SITE_DOMAIN}/` : fl }
+    }
+  }
+  return { position: found?.position ?? null, url: found?.url ?? '', total: organic.length }
+}
+
+/** Check one keyword row and save it; an API error keeps the old position. */
+async function checkKeyword(kw: any, device: Device) {
+  const prevPosition = kw.position
+  try {
+    const { position, url, total } = await lookupRank(kw.keyword, device)
+    const change = prevPosition && position ? prevPosition - position : null
+    await supabase.from('rank_keywords').update({
+      prev_position: prevPosition,
+      position,
+      rank_url: url || null,
+      change,
+      device,
+      last_error: null,
+      checked_at: new Date().toISOString(),
+    }).eq('id', kw.id)
+    return { id: kw.id, keyword: kw.keyword, position, prev_position: prevPosition, change, rank_url: url, total_organic: total, device }
+  } catch (err: any) {
+    const message = String(err?.message || err).slice(0, 200)
+    await supabase.from('rank_keywords').update({ last_error: message, checked_at: new Date().toISOString() }).eq('id', kw.id)
+    return { id: kw.id, keyword: kw.keyword, position: prevPosition, prev_position: kw.prev_position, change: kw.change, rank_url: kw.rank_url, error: message, device }
+  }
+}
+
+// Search Console's own average position per tracked keyword (last 28 days,
+// all countries and devices): Google's number next to the SERP check.
+const gscCache = new Map<string, { at: number; rows: Map<string, any> }>()
+
+async function gscPositions(keywords: string[]) {
+  const key = keywords.slice().sort().join('|')
+  const hit = gscCache.get(key)
+  if (hit && Date.now() - hit.at < 60 * 60 * 1000) return hit.rows
+  const rows = new Map<string, any>()
+  try {
+    const auth = googleAuth(['https://www.googleapis.com/auth/webmasters.readonly'])
+    const sc = google.searchconsole({ version: 'v1', auth })
+    const siteUrl = await searchConsoleProperty()
+    const end = new Date(); end.setDate(end.getDate() - 1)
+    const start = new Date(end); start.setDate(start.getDate() - 27)
+    const fmt = (d: Date) => d.toISOString().slice(0, 10)
+    for (const kw of keywords) {
+      const res = await sc.searchanalytics.query({
+        siteUrl,
+        requestBody: {
+          startDate: fmt(start), endDate: fmt(end), dimensions: ['query'], type: 'web', rowLimit: 1,
+          dimensionFilterGroups: [{ filters: [{ dimension: 'query', operator: 'equals', expression: kw }] }],
+        },
+      }, { timeout: 10000 })
+      const row = res.data.rows?.[0]
+      if (row) rows.set(kw, { position: Number((row.position || 0).toFixed(1)), clicks: row.clicks || 0, impressions: row.impressions || 0 })
+    }
+    gscCache.set(key, { at: Date.now(), rows })
+  } catch (err: any) {
+    console.error('[rank-tracker] GSC positions failed:', err?.message || err)
+  }
+  return rows
 }
 
 // ── GET: list keywords + account quota ──
 export async function GET() {
+  if (!(await requireAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { data: keywords, error } = await supabase
     .from('rank_keywords')
     .select('*')
@@ -230,17 +381,22 @@ export async function GET() {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+  const gsc = await gscPositions((keywords || []).map((k: any) => k.keyword))
+  const withGsc = (keywords || []).map((k: any) => ({ ...k, gsc: gsc.get(k.keyword) || null }))
+
   // Combined quota across all configured SerpAPI keys (primary + backup).
   // The dashboard now sees one pooled "X / 500 used" number with a single
   // earliest-refill date instead of per-key noise.
   const quota = await getCombinedQuota()
 
-  return NextResponse.json({ keywords: keywords || [], quota })
+  return NextResponse.json({ keywords: withGsc, quota })
 }
 
 // ── POST: add keyword OR run check ──
 export async function POST(req: NextRequest) {
+  if (!(await requireAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await req.json()
+  const device = asDevice(body.device)
 
   // --- Add keyword ---
   if (body.action === 'add') {
@@ -270,114 +426,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ keyword: data })
   }
 
-  // --- Run rank check ---
+  // --- Run rank check (all keywords) ---
   if (body.action === 'check') {
     if (SERPAPI_KEYS.length === 0) {
       return NextResponse.json({ error: 'SERPAPI_KEY not configured' }, { status: 500 })
     }
-
     const { data: keywords } = await supabase
       .from('rank_keywords')
       .select('*')
       .order('created_at', { ascending: true })
-
     if (!keywords?.length) {
       return NextResponse.json({ error: 'No keywords to check' }, { status: 400 })
     }
-
     const results = []
-
-    for (const kw of keywords) {
-      try {
-        let position: number | null = null
-        let rankUrl = ''
-        // Hoisted out of the per-page for-loop so the final-iteration
-        // value is visible to the result-push below (the previous
-        // declaration was block-scoped, which left `organic` undefined
-        // in the report — pre-existing TS2304 in this file).
-        let organic: any[] = []
-
-        // Search up to 5 pages (50 results) to find our domain
-        // Each page uses 1 SerpAPI credit, so we stop as soon as we find a match
-        const MAX_PAGES = 10
-        for (let page = 0; page < MAX_PAGES; page++) {
-          const start = page * 10
-          // serpFetch handles primary→backup key failover automatically
-          // when the primary returns a quota-exhausted error.
-          const { data } = await serpFetch({
-            ...SERP_BASE_PARAMS,
-            q: kw.keyword,
-            start: String(start),
-          })
-
-          if (data.error) {
-            if (page === 0) results.push({ id: kw.id, keyword: kw.keyword, error: data.error })
-            break
-          }
-
-          // Search organic results for our domain
-          // SerpAPI returns positions relative to each page (1,2,3...),
-          // so we calculate absolute position: start + relative position
-          organic = data.organic_results || []
-          for (const result of organic) {
-            const link = (result.link || '').toLowerCase()
-            const displayed = (result.displayed_link || '').toLowerCase()
-            if (link.includes(SITE_DOMAIN) || displayed.includes(SITE_DOMAIN)) {
-              position = start + result.position
-              rankUrl = result.link
-              break
-            }
-          }
-
-          // Also check featured snippets on first page
-          if (page === 0 && !position) {
-            const featured = data.answer_box || data.knowledge_graph
-            if (featured?.link?.toLowerCase().includes(SITE_DOMAIN)) {
-              position = 1
-              rankUrl = featured.link
-            }
-          }
-
-          // Found it or no more results — stop paginating
-          if (position || organic.length === 0) break
-        }
-
-        const prevPosition = kw.position
-        const change = (prevPosition && position)
-          ? prevPosition - position // positive = improved
-          : null
-
-        // Update keyword in DB
-        await supabase
-          .from('rank_keywords')
-          .update({
-            prev_position: prevPosition,
-            position,
-            rank_url: rankUrl || null,
-            change,
-            checked_at: new Date().toISOString(),
-          })
-          .eq('id', kw.id)
-
-        results.push({
-          id: kw.id,
-          keyword: kw.keyword,
-          position,
-          prev_position: prevPosition,
-          change,
-          rank_url: rankUrl,
-          total_organic: organic.length,
-        })
-      } catch (err: any) {
-        results.push({
-          id: kw.id,
-          keyword: kw.keyword,
-          error: err.message,
-        })
-      }
-    }
-
-    return NextResponse.json({ results, checked: results.length })
+    for (const kw of keywords) results.push(await checkKeyword(kw, device))
+    return NextResponse.json({ results, checked: results.length, device })
   }
 
   // --- Check single keyword ---
@@ -385,87 +448,17 @@ export async function POST(req: NextRequest) {
     if (SERPAPI_KEYS.length === 0) {
       return NextResponse.json({ error: 'SERPAPI_KEY not configured' }, { status: 500 })
     }
-
     const { id } = body
     if (!id) return NextResponse.json({ error: 'Missing keyword id' }, { status: 400 })
-
     const { data: kw, error: kwErr } = await supabase
       .from('rank_keywords')
       .select('*')
       .eq('id', id)
       .single()
-
     if (kwErr || !kw) return NextResponse.json({ error: 'Keyword not found' }, { status: 404 })
-
-    try {
-      let position: number | null = null
-      let rankUrl = ''
-
-      const MAX_PAGES = 10
-      for (let page = 0; page < MAX_PAGES; page++) {
-        const start = page * 10
-        // Failover-aware fetch — primary key tried first, backup on quota.
-        const { data } = await serpFetch({
-          ...SERP_BASE_PARAMS,
-          q: kw.keyword,
-          start: String(start),
-        })
-
-        if (data.error) {
-          return NextResponse.json({ error: data.error }, { status: 500 })
-        }
-
-        const organic = data.organic_results || []
-        for (const result of organic) {
-          const link = (result.link || '').toLowerCase()
-          const displayed = (result.displayed_link || '').toLowerCase()
-          if (link.includes(SITE_DOMAIN) || displayed.includes(SITE_DOMAIN)) {
-            position = start + result.position
-            rankUrl = result.link
-            break
-          }
-        }
-
-        if (page === 0 && !position) {
-          const featured = data.answer_box || data.knowledge_graph
-          if (featured?.link?.toLowerCase().includes(SITE_DOMAIN)) {
-            position = 1
-            rankUrl = featured.link
-          }
-        }
-
-        if (position || organic.length === 0) break
-      }
-
-      const prevPosition = kw.position
-      const change = (prevPosition && position)
-        ? prevPosition - position
-        : null
-
-      await supabase
-        .from('rank_keywords')
-        .update({
-          prev_position: prevPosition,
-          position,
-          rank_url: rankUrl || null,
-          change,
-          checked_at: new Date().toISOString(),
-        })
-        .eq('id', kw.id)
-
-      return NextResponse.json({
-        result: {
-          id: kw.id,
-          keyword: kw.keyword,
-          position,
-          prev_position: prevPosition,
-          change,
-          rank_url: rankUrl,
-        },
-      })
-    } catch (err: any) {
-      return NextResponse.json({ error: err.message }, { status: 500 })
-    }
+    const result = await checkKeyword(kw, device)
+    if (result.error) return NextResponse.json({ error: result.error, result }, { status: 502 })
+    return NextResponse.json({ result })
   }
 
   // --- Debug: test a single keyword and return raw results ---
@@ -480,22 +473,25 @@ export async function POST(req: NextRequest) {
     const { data, keyIndex } = await serpFetch({
       ...SERP_BASE_PARAMS,
       q: keyword,
+      device,
     })
 
     // Extract just the info we need for debugging
     const organic = (data.organic_results || []).map((r: any, i: number) => ({
-      pos: r.position,
+      pos: r.position ?? i + 1,
       title: r.title?.slice(0, 60),
       link: r.link,
       displayed: r.displayed_link,
     }))
+    const ours = await findOurs(data.organic_results || [])
 
     return NextResponse.json({
       error: data.error || null,
+      device,
       search_info: data.search_information,
       total_organic: organic.length,
       top_results: organic.slice(0, 15),
-      our_match: organic.find((r: any) => r.link?.includes(SITE_DOMAIN)) || null,
+      our_match: ours,
       // Surface which key handled this debug call so the owner can
       // verify the failover is wired (0 = primary, 1 = backup).
       key_used: keyIndex,
@@ -522,6 +518,7 @@ export async function POST(req: NextRequest) {
 
 // ── DELETE: remove keyword ──
 export async function DELETE(req: NextRequest) {
+  if (!(await requireAdmin())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 

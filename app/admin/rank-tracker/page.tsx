@@ -18,6 +18,10 @@ interface Keyword {
   volume: number | null
   checked_at: string | null
   created_at: string
+  last_error?: string | null
+  device?: string | null
+  /** Search Console's own 28-day average for this exact query (all countries, all devices). */
+  gsc?: { position: number; clicks: number; impressions: number } | null
 }
 
 // Format volume: 1200 → "1.2K", 54000 → "54K"
@@ -193,6 +197,13 @@ export default function RankTrackerPage() {
   const [volInput, setVolInput] = useState('')
   const [sortBy, setSortBy] = useState<'volume' | 'position' | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
+  // SERP device for checks. Most of the site's traffic is mobile, and
+  // Google ranks the two differently, so the choice is explicit.
+  const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop')
+  useEffect(() => {
+    try { const d = localStorage.getItem('rank_device'); if (d === 'mobile' || d === 'desktop') setDevice(d) } catch {}
+  }, [])
+  const pickDevice = (d: 'desktop' | 'mobile') => { setDevice(d); try { localStorage.setItem('rank_device', d) } catch {} }
 
   const fetchData = useCallback(async () => {
     try {
@@ -275,7 +286,7 @@ export default function RankTrackerPage() {
       const res = await fetch('/api/admin/rank-tracker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'check' }),
+        body: JSON.stringify({ action: 'check', device }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -296,7 +307,7 @@ export default function RankTrackerPage() {
       const res = await fetch('/api/admin/rank-tracker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'check_single', id }),
+        body: JSON.stringify({ action: 'check_single', id, device }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -308,6 +319,8 @@ export default function RankTrackerPage() {
           prev_position: data.result.prev_position,
           change: data.result.change,
           rank_url: data.result.rank_url,
+          last_error: null,
+          device,
           checked_at: new Date().toISOString(),
         } : k))
       }
@@ -372,10 +385,20 @@ export default function RankTrackerPage() {
             <div>
               <h1 className="text-2xl font-bold" style={{ color: textPrimary }}>Rank Tracker</h1>
               <p className="text-sm mt-0.5" style={{ color: textSecondary }}>
-                Track your Google rankings for target keywords (US)
+                Google US rankings (top 100) for your target keywords, next to Search Console&apos;s own average
               </p>
             </div>
           </div>
+        </div>
+        <div className="inline-flex p-1 rounded-xl gap-1" role="tablist" title="Which Google results to check"
+          style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          {(['desktop', 'mobile'] as const).map(d => (
+            <button key={d} role="tab" aria-selected={device === d} onClick={() => pickDevice(d)} disabled={checking}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all disabled:opacity-60"
+              style={{ background: device === d ? '#10b981' : 'transparent', color: device === d ? '#fff' : textSecondary }}>
+              {d}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -605,7 +628,7 @@ export default function RankTrackerPage() {
         <div className="rounded-2xl border overflow-hidden" style={{ background: cardBg, borderColor: cardBorder }}>
           {/* Table header */}
           <div className="grid gap-4 px-6 py-3 text-xs font-medium uppercase tracking-wider"
-            style={{ gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 44px 40px', color: textSecondary, borderBottom: `1px solid ${cardBorder}`, background: dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}>
+            style={{ gridTemplateColumns: '40px 1fr 80px 100px 90px 80px 1fr 80px 44px 40px', color: textSecondary, borderBottom: `1px solid ${cardBorder}`, background: dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}>
             <div>#</div>
             <div>Keyword</div>
             <button onClick={() => toggleSort('volume')} className="text-center flex items-center justify-center gap-1 cursor-pointer hover:opacity-70 transition-opacity" title="Sort by volume">
@@ -616,6 +639,7 @@ export default function RankTrackerPage() {
               <span className="text-base leading-none">🇺🇸</span> Position
               {sortBy === 'position' ? (sortDir === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
             </button>
+            <div className="text-center" title="Search Console average position, last 28 days, all countries and devices">GSC avg</div>
             <div className="text-center">Change</div>
             <div>Ranking URL</div>
             <div className="text-center">Checked</div>
@@ -629,7 +653,7 @@ export default function RankTrackerPage() {
               key={kw.id}
               className="grid gap-4 px-6 py-4 items-center transition-colors group"
               style={{
-                gridTemplateColumns: '40px 1fr 80px 100px 80px 1fr 80px 44px 40px',
+                gridTemplateColumns: '40px 1fr 80px 100px 90px 80px 1fr 80px 44px 40px',
                 borderBottom: idx < sortedKeywords.length - 1 ? `1px solid ${cardBorder}` : 'none',
                 background: 'transparent',
               }}
@@ -646,6 +670,11 @@ export default function RankTrackerPage() {
                 <p className="text-sm font-semibold truncate" style={{ color: textPrimary }}>
                   {kw.keyword}
                 </p>
+                {kw.last_error ? (
+                  <p className="text-[11px] mt-0.5 text-red-400 truncate" title={kw.last_error}>Last check failed: {kw.last_error}</p>
+                ) : kw.device ? (
+                  <p className="text-[10px] mt-0.5 capitalize" style={{ color: textSecondary }}>{kw.device} · US</p>
+                ) : null}
               </div>
 
               {/* Volume */}
@@ -679,6 +708,18 @@ export default function RankTrackerPage() {
                 <PositionBadge position={kw.position} />
               </div>
 
+              {/* Search Console average */}
+              <div className="flex flex-col items-center">
+                {kw.gsc ? (
+                  <>
+                    <span className="text-sm font-bold" style={{ color: textPrimary }}>{kw.gsc.position}</span>
+                    <span className="text-[10px]" style={{ color: textSecondary }}>{kw.gsc.clicks} clicks</span>
+                  </>
+                ) : (
+                  <span className="text-xs opacity-30" title="No impressions for this exact query in the last 28 days">—</span>
+                )}
+              </div>
+
               {/* Change */}
               <div className="flex justify-center">
                 <ChangeIndicator change={kw.change} />
@@ -693,7 +734,7 @@ export default function RankTrackerPage() {
                     rel="noopener noreferrer"
                     className="text-xs text-emerald-500 hover:underline truncate block"
                   >
-                    {kw.rank_url.replace('https://mushroomidentifiers.com', '')}
+                    {kw.rank_url.replace(/^https:\/\/(www\.)?mushroomidentifiers\.com/, '') || '/'}
                   </a>
                 ) : (
                   <span className="text-xs opacity-30">—</span>
