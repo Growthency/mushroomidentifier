@@ -256,7 +256,27 @@ async function bumpSerperUsed(n = 1) {
   await setSetting(SERPER_USED_SETTING, String(used + n))
 }
 
-interface SerpPage { organic: any[]; featured: any | null; error?: string }
+interface SerpPage {
+  organic: any[]
+  featured: any | null
+  /** Non-organic places the site can appear: People also ask, AI Overview… */
+  features: { name: string; links: { link: string; displayed_link?: string }[] }[]
+  error?: string
+}
+
+/** First SERP feature (PAA, AI Overview…) that cites the site, if any. */
+function featureHit(features: SerpPage['features']): { name: string; url: string } | null {
+  for (const f of features) {
+    for (const l of f.links) {
+      const link = l.link || ''
+      let host = ''
+      try { host = new URL(link).hostname.replace(/^www\./, '').toLowerCase() } catch { host = hostOf(link) }
+      if (isOurHost(host)) return { name: f.name, url: link }
+      if (isGotoLink(link) && isOurHost(hostOf(l.displayed_link || ''))) return { name: f.name, url: `https://${SITE_DOMAIN}/` }
+    }
+  }
+  return null
+}
 
 /** One page of Google results from Serper.dev (page is 1-based). */
 async function serperPage(key: string, q: string, device: Device, page: number): Promise<SerpPage> {
@@ -271,7 +291,7 @@ async function serperPage(key: string, q: string, device: Device, page: number):
   try { data = JSON.parse(text) } catch { /* non-JSON error page */ }
   if (!res.ok) {
     const msg = data?.message || data?.error || text.slice(0, 120) || `HTTP ${res.status}`
-    return { organic: [], featured: null, error: `Serper: ${res.status === 401 || res.status === 403 ? 'API key rejected' : msg}` }
+    return { organic: [], featured: null, features: [], error: `Serper: ${res.status === 401 || res.status === 403 ? 'API key rejected' : msg}` }
   }
   await bumpSerperUsed()
   const organic = (data.organic || []).map((r: any, i: number) => ({
@@ -281,7 +301,13 @@ async function serperPage(key: string, q: string, device: Device, page: number):
   }))
   const kg = data.answerBox || data.knowledgeGraph
   const featured = kg ? { link: kg.link || kg.website || '', displayed_link: kg.link || kg.website || '' } : null
-  return { organic, featured }
+  const features = [
+    { name: 'People also ask', links: (data.peopleAlsoAsk || []).map((q: any) => ({ link: q.link || '' })) },
+    { name: 'AI Overview', links: (data.aiOverview?.references || data.aiOverview?.sources || []).map((r: any) => ({ link: r.link || r.url || '' })) },
+    { name: 'Top stories', links: (data.topStories || []).map((r: any) => ({ link: r.link || '' })) },
+    { name: 'Sitelinks', links: (data.organic || []).flatMap((r: any) => (r.sitelinks || []).map((l: any) => ({ link: l.link || '' }))) },
+  ].filter(f => f.links.length)
+  return { organic, featured, features }
 }
 
 /** One page of Google results from SerpAPI (page is 1-based). */
@@ -289,8 +315,8 @@ async function serpapiPage(q: string, device: Device, page: number): Promise<Ser
   const start = (page - 1) * 10
   const { data } = await serpFetch({ ...SERP_BASE_PARAMS, q, device, start: String(start) })
   if (data.error) {
-    if (/hasn't returned any results/i.test(data.error)) return { organic: [], featured: null }
-    return { organic: [], featured: null, error: `SerpAPI: ${data.error}` }
+    if (/hasn't returned any results/i.test(data.error)) return { organic: [], featured: null, features: [] }
+    return { organic: [], featured: null, features: [], error: `SerpAPI: ${data.error}` }
   }
   const organic = (data.organic_results || []).map((r: any, i: number) => ({
     link: r.link,
@@ -298,7 +324,13 @@ async function serpapiPage(q: string, device: Device, page: number): Promise<Ser
     position: start + (Number(r.position) || i + 1),
   }))
   const f = data.answer_box || data.knowledge_graph
-  return { organic, featured: f ? { link: f.link || '', displayed_link: f.displayed_link || f.link || '' } : null }
+  const features = [
+    { name: 'People also ask', links: (data.related_questions || []).map((q: any) => ({ link: q.link || '', displayed_link: q.displayed_link || '' })) },
+    { name: 'AI Overview', links: (data.ai_overview?.references || []).map((r: any) => ({ link: r.link || '', displayed_link: r.source || '' })) },
+    { name: 'Top stories', links: (data.top_stories || []).map((r: any) => ({ link: r.link || '' })) },
+    { name: 'Sitelinks', links: (data.organic_results || []).flatMap((r: any) => (r.sitelinks?.inline || r.sitelinks?.expanded || []).map((l: any) => ({ link: l.link || '' }))) },
+  ].filter(f => f.links.length)
+  return { organic, featured: f ? { link: f.link || '', displayed_link: f.displayed_link || f.link || '' } : null, features }
 }
 
 async function providerInfo() {
@@ -386,28 +418,33 @@ async function lookupRank(keyword: string, device: Device) {
   if (!serperKey && SERPAPI_KEYS.length === 0) throw new Error('No SERP provider: save a Serper.dev key below or set SERPAPI_KEY')
   const provider = serperKey ? 'serper' : 'serpapi'
   let total = 0
+  let feature: { name: string; url: string } | null = null
   for (let page = 1; page <= MAX_PAGES; page++) {
     const res = serperKey ? await serperPage(serperKey, keyword, device, page) : await serpapiPage(keyword, device, page)
     if (res.error) throw new Error(res.error)
     total += res.organic.length
+    if (!feature) feature = featureHit(res.features)
     const found = await findOurs(res.organic)
-    if (found) return { position: found.position, url: found.url, total, provider }
+    if (found) return { position: found.position, url: found.url, total, provider, feature: feature?.name ?? null }
     if (page === 1 && res.featured) {
       const fl: string = res.featured.link || ''
       if (fl && (isOurHost(hostOf(fl)) || (isGotoLink(fl) && isOurHost(hostOf(res.featured.displayed_link || ''))))) {
-        return { position: 1, url: isGotoLink(fl) ? `https://${SITE_DOMAIN}/` : fl, total, provider }
+        return { position: 1, url: isGotoLink(fl) ? `https://${SITE_DOMAIN}/` : fl, total, provider, feature: 'Featured snippet' }
       }
     }
     if (res.organic.length === 0) break
   }
-  return { position: null, url: '', total, provider }
+  // Not a blue link, but cited in a SERP feature: Search Console counts that
+  // as a position too, which is why its average can be ~8 while the organic
+  // list has no entry.
+  return { position: null, url: feature?.url ?? '', total, provider, feature: feature?.name ?? null }
 }
 
 /** Check one keyword row and save it; an API error keeps the old position. */
 async function checkKeyword(kw: any, device: Device) {
   const prevPosition = kw.position
   try {
-    const { position, url, total, provider } = await lookupRank(kw.keyword, device)
+    const { position, url, total, provider, feature } = await lookupRank(kw.keyword, device)
     const change = prevPosition && position ? prevPosition - position : null
     await supabase.from('rank_keywords').update({
       prev_position: prevPosition,
@@ -415,10 +452,11 @@ async function checkKeyword(kw: any, device: Device) {
       rank_url: url || null,
       change,
       device,
+      serp_feature: feature,
       last_error: null,
       checked_at: new Date().toISOString(),
     }).eq('id', kw.id)
-    return { id: kw.id, keyword: kw.keyword, position, prev_position: prevPosition, change, rank_url: url, total_organic: total, device, provider }
+    return { id: kw.id, keyword: kw.keyword, position, prev_position: prevPosition, change, rank_url: url, total_organic: total, device, provider, feature }
   } catch (err: any) {
     const message = String(err?.message || err).slice(0, 200)
     await supabase.from('rank_keywords').update({ last_error: message, checked_at: new Date().toISOString() }).eq('id', kw.id)
@@ -588,6 +626,7 @@ export async function POST(req: NextRequest) {
       total_organic: page.organic.length,
       top_results: page.organic.slice(0, 15).map((r: any) => ({ pos: r.position, link: r.link, displayed: r.displayed_link })),
       our_match: await findOurs(page.organic),
+      features: page.features.map(f => ({ name: f.name, count: f.links.length, ours: featureHit([f])?.url || null })),
       keys_configured: SERPAPI_KEYS.length,
     })
   }

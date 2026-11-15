@@ -410,6 +410,7 @@ CREATE TABLE IF NOT EXISTS "rank_keywords" (
 -- Rank Tracker: why the last check gave no position, and which device it used.
 ALTER TABLE "rank_keywords" ADD COLUMN IF NOT EXISTS "last_error" text;
 ALTER TABLE "rank_keywords" ADD COLUMN IF NOT EXISTS "device" text;
+ALTER TABLE "rank_keywords" ADD COLUMN IF NOT EXISTS "serp_feature" text;
 
 CREATE TABLE IF NOT EXISTS "saved_articles" (
   "id" uuid DEFAULT gen_random_uuid(),

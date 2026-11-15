@@ -20,6 +20,8 @@ interface Keyword {
   created_at: string
   last_error?: string | null
   device?: string | null
+  /** Set when the site is cited in a SERP feature (People also ask, AI Overview…) rather than as a blue link. */
+  serp_feature?: string | null
   /** Search Console's own 28-day average for this exact query (all countries, all devices). */
   gsc?: {
     position: number; clicks: number; impressions: number
@@ -106,12 +108,14 @@ function QuotaDonut({ used, limit }: { used: number; limit: number }) {
 }
 
 // ── Position Badge ──
-function PositionBadge({ position }: { position: number | null }) {
+function PositionBadge({ position, feature }: { position: number | null; feature?: string | null }) {
   if (position === null) {
+    const short = feature ? (feature === 'People also ask' ? 'PAA' : feature === 'AI Overview' ? 'AIO' : feature.slice(0, 4)) : null
     return (
       <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
-        style={{ background: 'rgba(100,116,139,0.15)' }}>
-        <span className="text-xs font-bold" style={{ color: '#64748b' }}>N/A</span>
+        title={feature ? `Not in the organic list, but cited in: ${feature}` : 'Not found in the organic results checked'}
+        style={{ background: short ? 'rgba(139,92,246,0.15)' : 'rgba(100,116,139,0.15)' }}>
+        <span className="text-xs font-bold" style={{ color: short ? '#8b5cf6' : '#64748b' }}>{short || 'N/A'}</span>
       </div>
     )
   }
@@ -354,6 +358,7 @@ export default function RankTrackerPage() {
           prev_position: data.result.prev_position,
           change: data.result.change,
           rank_url: data.result.rank_url,
+          serp_feature: data.result.feature ?? null,
           last_error: null,
           device,
           checked_at: new Date().toISOString(),
@@ -781,7 +786,7 @@ export default function RankTrackerPage() {
 
               {/* Position Badge */}
               <div className="flex justify-center">
-                <PositionBadge position={kw.position} />
+                <PositionBadge position={kw.position} feature={kw.serp_feature} />
               </div>
 
               {/* Search Console average */}
@@ -868,6 +873,7 @@ export default function RankTrackerPage() {
             { label: '11-30', bg: 'linear-gradient(135deg, #60a5fa, #3b82f6)' },
             { label: '31-50', bg: 'linear-gradient(135deg, #fb923c, #f97316)' },
             { label: '50+', bg: 'linear-gradient(135deg, #f87171, #ef4444)' },
+            { label: 'PAA / AIO = cited in People also ask / AI Overview only', bg: 'rgba(139,92,246,0.6)' },
           ].map(l => (
             <div key={l.label} className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full" style={{ background: l.bg }} />
