@@ -443,15 +443,30 @@ async function gscPositions(keywords: string[]) {
     const start = new Date(end); start.setDate(start.getDate() - 27)
     const fmt = (d: Date) => d.toISOString().slice(0, 10)
     for (const kw of keywords) {
-      const res = await sc.searchanalytics.query({
-        siteUrl,
-        requestBody: {
-          startDate: fmt(start), endDate: fmt(end), dimensions: ['query'], type: 'web', rowLimit: 1,
-          dimensionFilterGroups: [{ filters: [{ dimension: 'query', operator: 'equals', expression: kw }] }],
-        },
-      }, { timeout: 10000 })
-      const row = res.data.rows?.[0]
-      if (row) rows.set(kw, { position: Number((row.position || 0).toFixed(1)), clicks: row.clicks || 0, impressions: row.impressions || 0 })
+      const filter = { dimensionFilterGroups: [{ filters: [{ dimension: 'query', operator: 'equals', expression: kw }] }] }
+      const base = { startDate: fmt(start), endDate: fmt(end), type: 'web', ...filter }
+      // Worldwide average, then the same query split by country: the SERP
+      // check is US-only, so the US row is the one to compare against.
+      const [all, byCountry] = await Promise.all([
+        sc.searchanalytics.query({ siteUrl, requestBody: { ...base, dimensions: ['query'], rowLimit: 1 } }, { timeout: 10000 }),
+        sc.searchanalytics.query({ siteUrl, requestBody: { ...base, dimensions: ['country'], rowLimit: 8 } }, { timeout: 10000 }),
+      ])
+      const row = all.data.rows?.[0]
+      if (!row) continue
+      const countries = (byCountry.data.rows || []).map((r: any) => ({
+        country: String(r.keys?.[0] || '').toUpperCase(),
+        position: Number((r.position || 0).toFixed(1)),
+        clicks: r.clicks || 0,
+        impressions: r.impressions || 0,
+      }))
+      const us = countries.find((c: any) => c.country === 'USA') || null
+      rows.set(kw, {
+        position: Number((row.position || 0).toFixed(1)),
+        clicks: row.clicks || 0,
+        impressions: row.impressions || 0,
+        us,
+        countries,
+      })
     }
     gscCache.set(key, { at: Date.now(), rows })
   } catch (err: any) {

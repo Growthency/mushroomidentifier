@@ -21,7 +21,11 @@ interface Keyword {
   last_error?: string | null
   device?: string | null
   /** Search Console's own 28-day average for this exact query (all countries, all devices). */
-  gsc?: { position: number; clicks: number; impressions: number } | null
+  gsc?: {
+    position: number; clicks: number; impressions: number
+    us: { position: number; clicks: number; impressions: number } | null
+    countries: { country: string; position: number; clicks: number; impressions: number }[]
+  } | null
 }
 
 // Format volume: 1200 → "1.2K", 54000 → "54K"
@@ -711,7 +715,7 @@ export default function RankTrackerPage() {
               <span className="text-base leading-none">🇺🇸</span> Position
               {sortBy === 'position' ? (sortDir === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
             </button>
-            <div className="text-center" title="Search Console average position, last 28 days, all countries and devices">GSC avg</div>
+            <div className="text-center" title="Search Console average position, last 28 days. Top: United States only. Below: all countries.">GSC US / all</div>
             <div className="text-center">Change</div>
             <div>Ranking URL</div>
             <div className="text-center">Checked</div>
@@ -783,10 +787,14 @@ export default function RankTrackerPage() {
               {/* Search Console average */}
               <div className="flex flex-col items-center">
                 {kw.gsc ? (
-                  <>
-                    <span className="text-sm font-bold" style={{ color: textPrimary }}>{kw.gsc.position}</span>
-                    <span className="text-[10px]" style={{ color: textSecondary }}>{kw.gsc.clicks} clicks</span>
-                  </>
+                  <div title={kw.gsc.countries.map(c => `${c.country}: #${c.position} (${c.clicks} clicks)`).join('\n')} className="text-center">
+                    <span className="text-sm font-bold block" style={{ color: textPrimary }}>
+                      {kw.gsc.us ? `US ${kw.gsc.us.position}` : 'US —'}
+                    </span>
+                    <span className="text-[10px] block" style={{ color: textSecondary }}>
+                      all {kw.gsc.position} · {kw.gsc.clicks} clicks
+                    </span>
+                  </div>
                 ) : (
                   <span className="text-xs opacity-30" title="No impressions for this exact query in the last 28 days">—</span>
                 )}
