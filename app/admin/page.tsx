@@ -22,6 +22,7 @@ import { useTheme } from '@/components/providers/ThemeProvider'
 import { useAdminData } from '@/hooks/useAdminData'
 import ClearCacheButton from '@/components/admin/ClearCacheButton'
 import BingPanel from '@/components/admin/BingPanel'
+import GlossyStat from '@/components/admin/GlossyStat'
 
 interface AnalyticsData {
   users30d: number
@@ -33,6 +34,10 @@ interface AnalyticsData {
   newUsers30d: number
   topPages: { slug: string; title: string; views: number }[]
   topCountries: { country: string; users: number }[]
+  channels?: { name: string; sessions: number }[]
+  sources?: { source: string; medium: string; sessions: number }[]
+  searchEngines?: { name: string; sessions: number }[]
+  devices?: { name: string; users: number }[]
   dailySignups: { date: string; count: number }[]
   dailyClicks: { date: string; clicks: number; impressions: number; position?: number }[]
   topKeywords: { keyword: string; clicks: number; impressions: number; ctr: number; position: number }[]
@@ -216,26 +221,26 @@ export default function AdminDashboard() {
 
       {/* Overview Stats */}
       {tab === 'ga' && <>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard icon={Users} label="Users (30d)" value={data.users30d} color="blue" dark={dark} />
-        <StatCard icon={Calendar} label="Users (7d)" value={data.users7d} color="emerald" dark={dark} />
-        <StatCard icon={Clock} label="Today" value={data.usersToday} color="purple" dark={dark} />
-        <StatCard icon={TrendingUp} label="New Users (30d)" value={data.newUsers30d} color="amber" dark={dark} />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+        <GlossyStat icon={Users} label={`Users · ${PERIOD_LABELS[period]}`} value={data.users30d} hint="active users" tone="ga" dark={dark} />
+        <GlossyStat icon={Calendar} label="Users · 7 days" value={data.users7d} hint="last 7 days" tone="ga" dark={dark} />
+        <GlossyStat icon={Clock} label="Today" value={data.usersToday} hint="so far today" tone="ga" dark={dark} />
+        <GlossyStat icon={TrendingUp} label="New users" value={data.newUsers30d} hint={PERIOD_LABELS[period].toLowerCase()} tone="ga" dark={dark} />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <StatCard icon={Activity} label="Sessions (30d)" value={data.sessions30d} color="blue" dark={dark} />
-        <StatCard icon={Eye} label="Page Views (30d)" value={data.pageViews30d} color="emerald" dark={dark} />
-        <StatCard icon={Layers} label="Total Active Users" value={data.totalUsers} color="slate" dark={dark} />
+        <GlossyStat icon={Activity} label="Sessions" value={data.sessions30d} hint={PERIOD_LABELS[period].toLowerCase()} tone="ga" dark={dark} />
+        <GlossyStat icon={Eye} label="Page views" value={data.pageViews30d} hint={PERIOD_LABELS[period].toLowerCase()} tone="ga" dark={dark} />
+        <GlossyStat icon={Layers} label="Total active users" value={data.totalUsers} hint="all sessions counted" tone="ga" dark={dark} />
       </div>
       </>}
 
       {tab === 'gsc' && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard icon={MousePointerClick} label="Clicks" value={gscClicks} color="blue" dark={dark} />
-          <StatCard icon={Eye} label="Impressions" value={gscImpressions} color="emerald" dark={dark} />
-          <StatCard icon={Activity} label="CTR %" value={gscCtr} color="purple" dark={dark} />
-          <StatCard icon={TrendingUp} label="Avg. position" value={gscPosition} color="amber" dark={dark} />
+          <GlossyStat icon={MousePointerClick} label="Clicks" value={gscClicks} hint="from Google Search" tone="gsc" dark={dark} />
+          <GlossyStat icon={Eye} label="Impressions" value={gscImpressions} hint="times shown in results" tone="gsc" dark={dark} />
+          <GlossyStat icon={Activity} label="CTR" value={`${gscCtr}%`} hint="clicks ÷ impressions" tone="gsc" dark={dark} />
+          <GlossyStat icon={TrendingUp} label="Avg. position" value={gscPosition} hint="lower is better" tone="gsc" dark={dark} />
         </div>
       )}
 
@@ -440,6 +445,59 @@ export default function AdminDashboard() {
         </div>
       </div>}
 
+      {/* Acquisition: how visitors arrive, search engines, devices, sources */}
+      {tab === 'ga' && <>
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
+          <BreakdownCard
+            title="How visitors arrive" subtitle="share of visits" unit="visits" dark={dark}
+            rows={(data.channels || []).map(c => ({ label: c.name, value: c.sessions }))}
+            footnote={<><b>Direct</b> — typed the address or used a saved link. <b>Organic Search</b> — came from a search engine. <b>Organic Social</b> — Facebook, YouTube and the like. <b>Referral</b> — a link on another website. <b>AI Assistant</b> — ChatGPT, Perplexity, Gemini and similar.</>}
+          />
+          <BreakdownCard
+            title="Which search engine" subtitle="share of search visits" unit="visits" dark={dark}
+            rows={(data.searchEngines || []).map(e => ({ label: e.name.charAt(0).toUpperCase() + e.name.slice(1), value: e.sessions }))}
+            empty="No organic search visits in this period"
+          />
+          <BreakdownCard
+            title="Which device" subtitle="share of visitors" unit="visitors" dark={dark}
+            rows={(data.devices || []).map(d => ({ label: d.name.charAt(0).toUpperCase() + d.name.slice(1), value: d.users }))}
+          />
+        </div>
+
+        <div className="rounded-2xl border overflow-hidden mb-6" style={{ background: cardBg, borderColor: cardBorder }}>
+          <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+            <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>Top 25 sources</h2>
+            <span className="text-[10px] ml-auto" style={{ color: dark ? '#64748b' : '#94a3b8' }}>where exactly each visit came from</span>
+          </div>
+          <div className="p-3">
+            {(() => {
+              const rows = data.sources || []
+              const total = rows.reduce((n, r) => n + r.sessions, 0) || 1
+              const max = rows[0]?.sessions || 1
+              if (!rows.length) return <p className="px-2 py-6 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>No source data</p>
+              return rows.map((r, i) => {
+                const isDirect = r.source === '(direct)'
+                const label = isDirect ? 'Direct — typed address or saved link' : r.source
+                const sub = isDirect ? 'no referrer' : r.medium
+                return (
+                  <div key={`${r.source}|${r.medium}`} className="relative flex items-center justify-between px-3 py-2 my-1 rounded-xl overflow-hidden">
+                    <div className="absolute inset-y-0 left-0 rounded-xl" style={{ width: `${Math.max(2, (r.sessions / max) * 100)}%`, background: dark ? 'rgba(16,185,129,0.14)' : 'rgba(16,185,129,0.10)' }} />
+                    <div className="relative flex items-center gap-3 min-w-0">
+                      <span className="text-[11px] font-bold w-7 shrink-0" style={{ color: i < 3 ? '#10b981' : dark ? '#64748b' : '#94a3b8' }}>#{i + 1}</span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate" style={{ color: dark ? '#fff' : '#0f172a' }}>{label}</p>
+                        <p className="text-[11px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{sub} · {((r.sessions / total) * 100).toFixed(1)}% of visits</p>
+                      </div>
+                    </div>
+                    <span className="relative text-sm font-bold ml-3 shrink-0" style={{ color: dark ? '#fff' : '#0f172a' }}>{r.sessions.toLocaleString()}</span>
+                  </div>
+                )
+              })
+            })()}
+          </div>
+        </div>
+      </>}
+
       {/* Search Console: Keywords + Search Pages */}
       {tab === 'gsc' && <div className="grid lg:grid-cols-2 gap-6 mb-6">
         {/* Top Keywords */}
@@ -531,25 +589,38 @@ function SourceError({ title, message, dark }: { title: string; message: string;
   )
 }
 
-function StatCard({ icon: Icon, label, value, color, dark }: {
-  icon: any; label: string; value: number; color: string; dark: boolean
+/** Share-of-total bars: "Organic Social 77% · 1,276 visits". */
+function BreakdownCard({ title, subtitle, unit, rows, footnote, empty, dark }: {
+  title: string; subtitle: string; unit: string
+  rows: { label: string; value: number }[]
+  footnote?: React.ReactNode; empty?: string; dark: boolean
 }) {
-  const colorMap: Record<string, string> = {
-    blue: 'bg-blue-500/15 text-blue-400',
-    emerald: 'bg-emerald-500/15 text-emerald-400',
-    purple: 'bg-purple-500/15 text-purple-400',
-    slate: dark ? 'bg-slate-500/15 text-slate-400' : 'bg-slate-100 text-slate-500',
-    amber: 'bg-amber-500/15 text-amber-400',
-  }
+  const total = rows.reduce((n, r) => n + r.value, 0)
   return (
-    <div className="p-5 rounded-xl border" style={{ background: dark ? '#1e293b' : '#fff', borderColor: dark ? '#334155' : '#e2e8f0' }}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-medium" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{label}</span>
-        <div className={`p-1.5 rounded-lg ${colorMap[color] ?? colorMap.blue}`}>
-          <Icon className="w-4 h-4" />
-        </div>
+    <div className="rounded-2xl border p-5" style={{ background: dark ? '#1e293b' : '#fff', borderColor: dark ? '#334155' : '#e2e8f0' }}>
+      <div className="flex items-baseline justify-between mb-4">
+        <h2 className="font-semibold text-sm" style={{ color: dark ? '#fff' : '#0f172a' }}>{title}</h2>
+        <span className="text-[10px]" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{subtitle}</span>
       </div>
-      <p className="text-2xl font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>{value.toLocaleString()}</p>
+      {rows.length === 0 ? (
+        <p className="py-6 text-sm text-center" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{empty || 'No data for this period'}</p>
+      ) : rows.map(r => {
+        const pct = total ? (r.value / total) * 100 : 0
+        return (
+          <div key={r.label} className="mb-3.5">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-sm" style={{ color: dark ? '#e2e8f0' : '#0f172a' }}>{r.label}</span>
+              <span className="text-xs" style={{ color: dark ? '#94a3b8' : '#64748b' }}>
+                <b style={{ color: dark ? '#fff' : '#0f172a' }}>{pct < 10 ? pct.toFixed(1) : Math.round(pct)}%</b> · {r.value.toLocaleString()} {unit}
+              </span>
+            </div>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: dark ? 'rgba(71,85,105,0.3)' : '#e2e8f0' }}>
+              <div className="h-full rounded-full" style={{ width: `${Math.max(pct, 0.8)}%`, background: 'linear-gradient(to right, #047857, #10b981)' }} />
+            </div>
+          </div>
+        )
+      })}
+      {footnote && <p className="text-[11px] leading-relaxed mt-4" style={{ color: dark ? '#64748b' : '#94a3b8' }}>{footnote}</p>}
     </div>
   )
 }

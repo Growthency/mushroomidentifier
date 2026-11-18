@@ -16,10 +16,12 @@ interface Post {
   region: string; views: number; created_at: string; updated_at: string;
   scheduled_at: string | null; published_at: string | null;
   content: string;
+  /** Search Console, last 28 days, for this page's URL. */
+  gsc?: { impressions: number; clicks: number; ctr: number; position: number } | null
 }
 
 type StatusFilter = 'all' | 'published' | 'draft' | 'scheduled'
-type SortKey = 'date' | 'views' | 'links'
+type SortKey = 'date' | 'views' | 'links' | 'impressions' | 'ctr'
 type SortDir = 'asc' | 'desc'
 type PerPage = 10 | 25 | 50 | 100 | 'all'
 const PER_PAGE_OPTIONS: PerPage[] = [10, 25, 50, 100, 'all']
@@ -32,6 +34,7 @@ function countInternalLinks(html: string): number {
 
 interface PostsResponse {
   posts: Post[]
+  gscAvailable?: boolean
   totalPages: number
   total: number
   publishedCount?: number
@@ -268,13 +271,12 @@ export default function AdminPagesPage() {
               <tr style={{ borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}` }}>
                 <th className="text-left px-5 py-3.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Title</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Category</th>
-                <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden lg:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Type</th>
-                <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden lg:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Status</th>
-                {([['date', 'Date'], ['views', 'Views'], ['links', 'Links']] as [SortKey, string][]).map(([col, label]) => (
+                <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden lg:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Type / Status</th>
+                {([['date', 'Date'], ['views', 'Views'], ['impressions', 'Impr.'], ['ctr', 'CTR'], ['links', 'Links']] as [SortKey, string][]).map(([col, label]) => (
                   <th key={col} className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell"
                     style={{ color: sortBy === col ? '#10b981' : dark ? '#64748b' : '#94a3b8' }}>
                     <button onClick={() => toggleSort(col)} className="inline-flex items-center gap-1 uppercase tracking-wider hover:opacity-70 transition-opacity"
-                      title={sortBy !== col ? `Sort by ${label.toLowerCase()}: highest first` : sortDir === 'desc' ? 'Click: lowest first' : 'Click: clear sort'}>
+                      title={(col === 'impressions' || col === 'ctr' ? 'Google Search Console, last 28 days. ' : '') + (sortBy !== col ? `Sort by ${label.toLowerCase()}: highest first` : sortDir === 'desc' ? 'Click: lowest first' : 'Click: clear sort')}>
                       {label} <SortIcon col={col} />
                     </button>
                   </th>
@@ -307,32 +309,52 @@ export default function AdminPagesPage() {
                     <span className="text-[11px]" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{post.category}</span>
                   </td>
                   <td className="px-4 py-3.5 hidden lg:table-cell">
-                    {post.is_premium ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20 font-medium">
-                        <Lock className="w-3 h-3" /> Premium
+                    <div className="flex flex-col items-start gap-1">
+                      {post.is_premium ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20 font-medium">
+                          <Lock className="w-3 h-3" /> Premium
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20 font-medium">
+                          <Globe className="w-3 h-3" /> Free
+                        </span>
+                      )}
+                      <span className={`text-[10px] px-2 py-0.5 rounded-lg font-semibold ${
+                        post.status === 'published'
+                          ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
+                          : post.status === 'scheduled'
+                            ? 'bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20'
+                            : dark
+                              ? 'bg-white/[0.04] text-slate-500 ring-1 ring-white/[0.06]'
+                              : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200'
+                      }`}>
+                        {post.status}
                       </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20 font-medium">
-                        <Globe className="w-3 h-3" /> Free
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3.5 hidden lg:table-cell">
-                    <span className={`text-[11px] px-2 py-0.5 rounded-lg font-semibold ${
-                      post.status === 'published'
-                        ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
-                        : dark
-                          ? 'bg-white/[0.04] text-slate-500 ring-1 ring-white/[0.06]'
-                          : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200'
-                    }`}>
-                      {post.status}
-                    </span>
+                    </div>
                   </td>
                   <td className="px-4 py-3.5 hidden md:table-cell">
                     <span className="text-[11px]" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{formatDate(post.created_at)}</span>
                   </td>
                   <td className="px-4 py-3.5 hidden md:table-cell">
                     <span className="text-[12px] font-medium" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{post.views.toLocaleString()}</span>
+                  </td>
+                  <td className="px-4 py-3.5 hidden md:table-cell" title={post.gsc ? `${post.gsc.clicks} clicks · avg position ${post.gsc.position}` : 'No Search Console impressions in the last 28 days'}>
+                    <span className="text-[12px] font-medium" style={{ color: post.gsc ? (dark ? '#e2e8f0' : '#0f172a') : dark ? '#334155' : '#cbd5e1' }}>
+                      {post.gsc ? post.gsc.impressions.toLocaleString() : '—'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3.5 hidden md:table-cell">
+                    {post.gsc ? (
+                      <span className={`text-[11px] px-2 py-0.5 rounded-lg font-semibold ${
+                        post.gsc.ctr >= 5 ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20'
+                          : post.gsc.ctr >= 2 ? 'bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20'
+                            : 'bg-red-500/10 text-red-400 ring-1 ring-red-500/20'
+                      }`}>
+                        {post.gsc.ctr}%
+                      </span>
+                    ) : (
+                      <span className="text-[12px]" style={{ color: dark ? '#334155' : '#cbd5e1' }}>—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3.5 hidden md:table-cell">
                     {(() => {

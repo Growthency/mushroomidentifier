@@ -102,6 +102,12 @@ export async function GET(request: NextRequest) {
     // GA4 daily chart
     dailySignups: ga4Data?.dailyUsers ?? [],
 
+    // GA4 acquisition: how visitors arrive, search engines, devices, sources
+    channels: ga4Data?.channels ?? [],
+    sources: ga4Data?.sources ?? [],
+    searchEngines: ga4Data?.searchEngines ?? [],
+    devices: ga4Data?.devices ?? [],
+
     // Search Console
     topKeywords: searchData?.topKeywords ?? [],
     topSearchPages: searchData?.topSearchPages ?? [],

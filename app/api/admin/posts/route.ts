@@ -4,6 +4,52 @@ import { createClient } from '@/lib/server-client'
 import { isAdminEmail } from '@/lib/admin'
 import { createAdminClient as createAdmin } from '@/lib/db'
 import { resolveFeaturedImage } from '@/lib/content-helpers'
+import { google } from 'googleapis'
+import { googleAuth, searchConsoleProperty } from '@/lib/google-auth'
+
+// Search Console numbers per page (last 28 days), keyed by pathname, so the
+// Pages table can show impressions and CTR next to views. Cached an hour.
+type PageGsc = { impressions: number; clicks: number; ctr: number; position: number }
+let gscPagesCache: { at: number; map: Map<string, PageGsc> } | null = null
+
+const pathOf = (raw: string) => {
+  let p = raw
+  try { p = new URL(raw, 'https://mushroomidentifiers.com').pathname || '/' } catch { /* keep */ }
+  return p.length > 1 ? p.replace(/\/+$/, '').toLowerCase() : '/'
+}
+
+async function gscPageMetrics(): Promise<Map<string, PageGsc>> {
+  if (gscPagesCache && Date.now() - gscPagesCache.at < 60 * 60 * 1000) return gscPagesCache.map
+  const map = new Map<string, PageGsc>()
+  try {
+    const auth = googleAuth(['https://www.googleapis.com/auth/webmasters.readonly'])
+    const sc = google.searchconsole({ version: 'v1', auth })
+    const siteUrl = await searchConsoleProperty()
+    const end = new Date(); end.setDate(end.getDate() - 1)
+    const start = new Date(end); start.setDate(start.getDate() - 27)
+    const fmt = (d: Date) => d.toISOString().slice(0, 10)
+    const res = await sc.searchanalytics.query({
+      siteUrl,
+      requestBody: { startDate: fmt(start), endDate: fmt(end), dimensions: ['page'], type: 'web', rowLimit: 5000 },
+    }, { timeout: 12000 })
+    for (const row of res.data.rows || []) {
+      const key = pathOf(row.keys?.[0] || '')
+      const prev = map.get(key)
+      const impressions = (row.impressions || 0) + (prev?.impressions || 0)
+      const clicks = (row.clicks || 0) + (prev?.clicks || 0)
+      map.set(key, {
+        impressions,
+        clicks,
+        ctr: impressions ? Number(((clicks / impressions) * 100).toFixed(1)) : 0,
+        position: Number((row.position || 0).toFixed(1)),
+      })
+    }
+    gscPagesCache = { at: Date.now(), map }
+  } catch (err: any) {
+    console.error('[posts] GSC page metrics failed:', err?.message || err)
+  }
+  return map
+}
 
 async function getAdmin() {
   const supabase = await createClient()
@@ -47,19 +93,26 @@ export async function GET(req: NextRequest) {
   // so "highest views" really is the highest across every page.
   //   sort=date|views|links, dir=asc|desc (default: newest first)
   const sortParam = url.searchParams.get('sort')
-  const sort = sortParam === 'views' || sortParam === 'links' ? sortParam : 'date'
+  const sort = ['views', 'links', 'impressions', 'ctr'].includes(sortParam || '') ? (sortParam as string) : 'date'
   const desc = url.searchParams.get('dir') !== 'asc'
   const statusOk = status === 'published' || status === 'draft' || status === 'scheduled'
 
+  const gsc = await gscPageMetrics()
+  const gscOf = (p: any) => gsc.get(pathOf(p.slug || ''))
+
   let listQuery
-  if (sort === 'links') {
-    // Internal-link count lives in the HTML, so order it here: fetch the
-    // filtered rows, count, sort, page. A few hundred posts is fine.
+  if (sort === 'links' || sort === 'impressions' || sort === 'ctr') {
+    // These values are not DB columns (links live in the HTML, GSC numbers
+    // come from Google), so order here: fetch the filtered rows, sort, page.
     let allQuery = admin.from('blog_posts').select('*', { count: 'exact' })
     if (statusOk) allQuery = allQuery.eq('status', status)
+    const metric = (p: any) =>
+      sort === 'links' ? countInternalLinks(p.content)
+        : sort === 'impressions' ? (gscOf(p)?.impressions ?? 0)
+          : (gscOf(p)?.ctr ?? 0)
     listQuery = allQuery.then((res: any) => {
       const rows = [...(res.data ?? [])].sort((a: any, b: any) => {
-        const d = countInternalLinks(a.content) - countInternalLinks(b.content)
+        const d = metric(a) - metric(b)
         return (desc ? -d : d) || Date.parse(b.created_at) - Date.parse(a.created_at)
       })
       return { ...res, data: rows.slice(offset, offset + limit) }
@@ -84,7 +137,8 @@ export async function GET(req: NextRequest) {
   ])
 
   return NextResponse.json({
-    posts: listRes.data ?? [],
+    posts: (listRes.data ?? []).map((p: any) => ({ ...p, gsc: gscOf(p) ?? null })),
+    gscAvailable: gsc.size > 0,
     total: listRes.count ?? 0,
     publishedCount: publishedRes.count ?? 0,
     draftCount: draftRes.count ?? 0,

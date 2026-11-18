@@ -5,6 +5,7 @@
  */
 import { MousePointerClick, Eye, Activity } from 'lucide-react'
 import { useAdminData } from '@/hooks/useAdminData'
+import GlossyStat from '@/components/admin/GlossyStat'
 
 interface Row { clicks: number; impressions: number; ctr: number; position: number }
 interface BingData {
@@ -63,9 +64,9 @@ export default function BingPanel({ period, periodLabel, dark }: { period: strin
       {data.connected && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <Stat icon={MousePointerClick} label="Clicks" value={data.totals?.clicks ?? 0} dark={dark} />
-            <Stat icon={Eye} label="Impressions" value={data.totals?.impressions ?? 0} dark={dark} />
-            <Stat icon={Activity} label="CTR %" value={data.totals?.ctr ?? 0} dark={dark} />
+            <GlossyStat icon={MousePointerClick} label="Clicks" value={data.totals?.clicks ?? 0} hint={`from Bing · ${periodLabel.toLowerCase()}`} tone="bing" dark={dark} />
+            <GlossyStat icon={Eye} label="Impressions" value={data.totals?.impressions ?? 0} hint="times shown in Bing results" tone="bing" dark={dark} />
+            <GlossyStat icon={Activity} label="CTR" value={`${data.totals?.ctr ?? 0}%`} hint="clicks ÷ impressions" tone="bing" dark={dark} />
           </div>
 
           <div className="rounded-xl border p-5 mb-6" style={{ background: cardBg, borderColor: cardBorder }}>
@@ -87,18 +88,6 @@ export default function BingPanel({ period, periodLabel, dark }: { period: strin
           </div>
         </>
       )}
-    </div>
-  )
-}
-
-function Stat({ icon: Icon, label, value, dark }: { icon: any; label: string; value: number; dark: boolean }) {
-  return (
-    <div className="p-5 rounded-xl border" style={{ background: dark ? '#1e293b' : '#fff', borderColor: dark ? '#334155' : '#e2e8f0' }}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-medium" style={{ color: dark ? '#94a3b8' : '#64748b' }}>{label}</span>
-        <Icon className="w-4 h-4 text-blue-400" />
-      </div>
-      <p className="text-2xl font-bold" style={{ color: dark ? '#fff' : '#0f172a' }}>{value.toLocaleString()}</p>
     </div>
   )
 }

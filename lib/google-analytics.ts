@@ -32,7 +32,18 @@ export interface GA4Dashboard {
   topPages: { slug: string; title: string; views: number }[]
   topCountries: { country: string; users: number }[]
   dailyUsers: { date: string; count: number }[]
+  /** Sessions by default channel group, e.g. Organic Social / Direct / Organic Search. */
+  channels: { name: string; sessions: number }[]
+  /** Sessions by source + medium, top 25, e.g. "lm.facebook.com / referral". */
+  sources: { source: string; medium: string; sessions: number }[]
+  /** Organic-search sessions by engine (google, bing, duckduckgo…). */
+  searchEngines: { name: string; sessions: number }[]
+  devices: { name: string; users: number }[]
 }
+
+// Referrers that are AI assistants: GA4 files them under Referral, we show
+// them as their own channel ("AI Assistant") and keep Referral honest.
+const AI_SOURCE = /chatgpt|openai|perplexity|claude\.ai|anthropic|gemini\.google|copilot|bing\.com\/chat|you\.com|poe\.com|meta\.ai|grok|mistral|deepseek/i
 
 // Worth a retry: GA4's concurrent-request quota, and Google's own 5xx hiccups
 // (which arrive as an HTML "Error 502 (Server Error)!!1" page).
@@ -104,8 +115,59 @@ async function fetchGA4Dashboard(startDate: string, endDate: string): Promise<GA
     orderBys: [{ dimension: { dimensionName: 'date' }, desc: false }],
   })
 
-  step('daily (done)')
+  step('daily')
+  const channelData = await runReport(analyticsData, {
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+    metrics: [{ name: 'sessions' }],
+    orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+  })
+  const sourceData = await runReport(analyticsData, {
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'sessionSource' }, { name: 'sessionMedium' }],
+    metrics: [{ name: 'sessions' }],
+    orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+    limit: 60,
+  })
+  const deviceData = await runReport(analyticsData, {
+    dateRanges: [{ startDate, endDate }],
+    dimensions: [{ name: 'deviceCategory' }],
+    metrics: [{ name: 'activeUsers' }],
+    orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+  })
+  step('channels/sources/devices (done)')
+
+  const sourcesAll = (sourceData.rows ?? []).map((row: any) => ({
+    source: row.dimensionValues?.[0]?.value || '(not set)',
+    medium: row.dimensionValues?.[1]?.value || '(none)',
+    sessions: Number(row.metricValues?.[0]?.value || 0),
+  }))
+  const aiSessions = sourcesAll.filter((s: any) => AI_SOURCE.test(s.source)).reduce((n: number, s: any) => n + s.sessions, 0)
+  const channels = (channelData.rows ?? []).map((row: any) => ({
+    name: row.dimensionValues?.[0]?.value || 'Unassigned',
+    sessions: Number(row.metricValues?.[0]?.value || 0),
+  }))
+  if (aiSessions > 0) {
+    const ref = channels.find((c: any) => c.name === 'Referral')
+    if (ref) ref.sessions = Math.max(0, ref.sessions - aiSessions)
+    channels.push({ name: 'AI Assistant', sessions: aiSessions })
+    channels.sort((a: any, b: any) => b.sessions - a.sessions)
+  }
+  const engines = new Map<string, number>()
+  for (const s of sourcesAll) {
+    if (s.medium !== 'organic') continue
+    const name = s.source.toLowerCase().replace(/^www\./, '')
+    engines.set(name, (engines.get(name) || 0) + s.sessions)
+  }
+
   return {
+    channels,
+    sources: sourcesAll.slice(0, 25),
+    searchEngines: Array.from(engines, ([name, sessions]) => ({ name, sessions })).sort((a, b) => b.sessions - a.sessions),
+    devices: (deviceData.rows ?? []).map((row: any) => ({
+      name: row.dimensionValues?.[0]?.value || 'unknown',
+      users: Number(row.metricValues?.[0]?.value || 0),
+    })),
     overview: {
       activeUsers: metric('period', 0),
       sessions: metric('period', 1),
