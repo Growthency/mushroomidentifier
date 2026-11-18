@@ -31,8 +31,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(post)
   }
 
-  const page = Number(url.searchParams.get('page') ?? '1')
-  const limit = 25
+  const page = Math.max(1, Number(url.searchParams.get('page') ?? '1') || 1)
+  // Rows per page: 10 / 25 / 50 / 100, or "all" (capped so a typo cannot
+  // ask for millions). Default stays 25.
+  const limitParam = url.searchParams.get('limit')
+  const limit = limitParam === 'all' ? 10000 : [10, 25, 50, 100].includes(Number(limitParam)) ? Number(limitParam) : 25
   const offset = (page - 1) * limit
 
   // Optional status filter — when set, narrows the paginated list to a
@@ -87,7 +90,8 @@ export async function GET(req: NextRequest) {
     draftCount: draftRes.count ?? 0,
     scheduledCount: scheduledRes.count ?? 0,
     page,
-    totalPages: Math.ceil((listRes.count ?? 0) / limit),
+    totalPages: Math.max(1, Math.ceil((listRes.count ?? 0) / limit)),
+    limit: limitParam === 'all' ? 'all' : limit,
     status: status ?? 'all',
     sort,
     dir: desc ? 'desc' : 'asc',

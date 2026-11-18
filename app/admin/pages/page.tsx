@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   Plus, Pencil, Trash2, Eye, Loader2, Link2,
@@ -21,6 +21,8 @@ interface Post {
 type StatusFilter = 'all' | 'published' | 'draft' | 'scheduled'
 type SortKey = 'date' | 'views' | 'links'
 type SortDir = 'asc' | 'desc'
+type PerPage = 10 | 25 | 50 | 100 | 'all'
+const PER_PAGE_OPTIONS: PerPage[] = [10, 25, 50, 100, 'all']
 
 function countInternalLinks(html: string): number {
   if (!html) return 0
@@ -38,8 +40,8 @@ interface PostsResponse {
   page: number
 }
 
-function buildPostsUrl(p: number, filter: StatusFilter, sort: SortKey | null, dir: SortDir): string {
-  const qs = new URLSearchParams({ page: String(p) })
+function buildPostsUrl(p: number, filter: StatusFilter, sort: SortKey | null, dir: SortDir, perPage: PerPage): string {
+  const qs = new URLSearchParams({ page: String(p), limit: String(perPage) })
   if (filter !== 'all') qs.set('status', filter)
   // Sorting is done on the server across every page of the list.
   if (sort) { qs.set('sort', sort); qs.set('dir', dir) }
@@ -58,6 +60,20 @@ export default function AdminPagesPage() {
   // a third time → back to the default (newest first).
   const [sortBy, setSortBy] = useState<SortKey | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>('desc')
+  // Rows per page, remembered in this browser.
+  const [perPage, setPerPage] = useState<PerPage>(25)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('admin_pages_per_page')
+      const v: PerPage | undefined = saved === 'all' ? 'all' : (PER_PAGE_OPTIONS as any[]).includes(Number(saved)) ? (Number(saved) as PerPage) : undefined
+      if (v) setPerPage(v)
+    } catch {}
+  }, [])
+  const changePerPage = (v: PerPage) => {
+    setPerPage(v)
+    setPage(1)
+    try { localStorage.setItem('admin_pages_per_page', String(v)) } catch {}
+  }
   const toggleSort = (col: SortKey) => {
     if (sortBy === col) {
       if (sortDir === 'desc') setSortDir('asc')
@@ -77,7 +93,7 @@ export default function AdminPagesPage() {
   // to this page (or switching filters/pages back to one we've seen) is
   // instant — cached rows render immediately while a background refetch
   // keeps them fresh.
-  const url = buildPostsUrl(page, statusFilter, sortBy, sortDir)
+  const url = buildPostsUrl(page, statusFilter, sortBy, sortDir, perPage)
   const {
     data: pageData,
     isInitialLoading,
@@ -199,21 +215,40 @@ export default function AdminPagesPage() {
         </Link>
       </div>
 
-      {/* Search */}
-      <div className="relative mb-5">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: dark ? '#64748b' : '#94a3b8' }} />
-        <input
-          type="text"
-          placeholder="Search articles…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 rounded-xl text-[13px] outline-none transition-all"
-          style={{
-            background: dark ? 'rgba(255,255,255,0.03)' : '#fff',
-            border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}`,
-            color: dark ? '#fff' : '#0f172a',
-          }}
-        />
+      {/* Search + rows per page */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: dark ? '#64748b' : '#94a3b8' }} />
+          <input
+            type="text"
+            placeholder="Search articles…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 rounded-xl text-[13px] outline-none transition-all"
+            style={{
+              background: dark ? 'rgba(255,255,255,0.03)' : '#fff',
+              border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}`,
+              color: dark ? '#fff' : '#0f172a',
+            }}
+          />
+        </div>
+        <label className="flex items-center gap-2 text-[12px] font-medium shrink-0" style={{ color: dark ? '#94a3b8' : '#64748b' }}>
+          Per page
+          <select
+            value={String(perPage)}
+            onChange={e => changePerPage(e.target.value === 'all' ? 'all' : (Number(e.target.value) as PerPage))}
+            className="py-3 pl-3 pr-8 rounded-xl text-[13px] outline-none cursor-pointer"
+            style={{
+              background: dark ? 'rgba(255,255,255,0.03)' : '#fff',
+              border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : '#e2e8f0'}`,
+              color: dark ? '#fff' : '#0f172a',
+            }}
+          >
+            {PER_PAGE_OPTIONS.map(o => (
+              <option key={String(o)} value={String(o)}>{o === 'all' ? `All (${total})` : o}</option>
+            ))}
+          </select>
+        </label>
       </div>
 
       {/* Table */}
@@ -372,8 +407,10 @@ export default function AdminPagesPage() {
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-              const p = i + 1
+            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+              // Window of up to 7 page buttons that follows the current page.
+              const start = Math.max(1, Math.min(page - 3, totalPages - 6))
+              const p = start + i
               return (
                 <button
                   key={p}
