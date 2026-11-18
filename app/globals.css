@@ -926,19 +926,27 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
 .mi-topbar-x:hover { opacity: 1; }
 @media (max-width: 640px) { .mi-topbar { gap: 8px; font-size: 12px; } .mi-topbar-more { display: none; } .mi-topbar-btn { padding: 6px 10px; } }
 
-/* Black Friday Week variant: black and gold, same sizes as the Prime pieces */
-.mi-topbar.mi-bf { background: #0b0b0b; color: #ffd814; border-bottom: 1px solid #2a2a2a; }
-.mi-topbar.mi-bf .mi-topbar-more { color: #e8e2cf; }
-.mi-topbar.mi-bf .mi-topbar-btn { background: #ffd814; color: #0b0b0b; }
+/* Black Friday variant: black with a bright gold badge, same sizes as the Prime pieces */
+.mi-topbar.mi-bf { background: #0b0b0b; color: #ffd814; border-bottom: 1px solid #3a3000; }
+.mi-topbar.mi-bf .mi-topbar-more { color: #f3eedd; }
+.mi-topbar.mi-bf .mi-topbar-btn { position: relative; overflow: hidden; background: #ffd814; color: #0b0b0b; }
 .mi-topbar.mi-bf .mi-topbar-btn:hover { background: #ffe14d; color: #0b0b0b; }
-.mi-prime.mi-bf, .rich-content .mi-prime.mi-bf { background: linear-gradient(90deg, #0b0b0b 0%, #1c1c1c 100%); border: 1px solid #333; }
+.mi-bf-dot { display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; background: #ff3b30; vertical-align: middle; animation: mi-bf-pulse 1.6s ease-out infinite; }
+.mi-prime.mi-bf, .rich-content .mi-prime.mi-bf { background: linear-gradient(100deg, #0b0b0b 0%, #171717 55%, #2b2206 100%); border: 1px solid rgba(255, 216, 20, 0.6); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28), 0 0 0 3px rgba(255, 216, 20, 0.1); }
 .mi-prime.mi-bf .mi-prime-eyebrow { color: #ffd814 !important; }
-.mi-prime.mi-bf a.mi-prime-btn, .rich-content .mi-prime.mi-bf a.mi-prime-btn { background: #ffd814 !important; color: #0b0b0b !important; }
-.mi-bf-badge, .rich-content .mi-bf-badge { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 90px; background: radial-gradient(circle at 30% 20%, #3a2f00 0%, #141414 55%, #000 100%); color: #ffd814 !important; text-decoration: none !important; border-right: 1px solid #333; }
-.mi-prime .mi-bf-badge-top, .rich-content .mi-prime .mi-bf-badge-top { display: block; color: #ffd814 !important; font-size: 15px !important; font-weight: 800 !important; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1 !important; }
-.mi-prime .mi-bf-badge-mid, .rich-content .mi-prime .mi-bf-badge-mid { display: block; color: #fff !important; font-size: 24px !important; font-weight: 900 !important; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1 !important; }
-.mi-prime .mi-bf-badge-date, .rich-content .mi-prime .mi-bf-badge-date { display: block; color: #e8e2cf !important; font-size: 11px !important; font-weight: 700 !important; letter-spacing: 0.08em; line-height: 1.2 !important; }
-@media (max-width: 640px) { .mi-prime .mi-bf-badge-top, .rich-content .mi-prime .mi-bf-badge-top { font-size: 11px !important; } .mi-prime .mi-bf-badge-mid, .rich-content .mi-prime .mi-bf-badge-mid { font-size: 17px !important; } .mi-prime .mi-bf-badge-date, .rich-content .mi-prime .mi-bf-badge-date { font-size: 10px !important; } }
+.mi-prime.mi-bf a.mi-prime-btn, .rich-content .mi-prime.mi-bf a.mi-prime-btn, .rich-content .mi-prime.mi-bf a.mi-prime-btn:hover { position: relative; overflow: hidden; background: #ffd814 !important; color: #0b0b0b !important; font-weight: 800 !important; box-shadow: 0 0 0 0 rgba(255, 216, 20, 0.6); animation: mi-bf-glow 2.2s ease-out infinite; }
+.mi-prime.mi-bf a.mi-prime-btn::after, .mi-topbar.mi-bf .mi-topbar-btn::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.75), transparent); transform: skewX(-20deg); animation: mi-bf-shine 3s ease-in-out infinite; }
+.mi-bf-badge, .rich-content .mi-bf-badge { position: relative; display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 90px; padding: 8px 6px; overflow: hidden; text-align: center; white-space: nowrap; background: linear-gradient(135deg, #fff0a3 0%, #ffd814 42%, #f2a900 100%); text-decoration: none !important; }
+.mi-bf-badge::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0 10px, transparent 10px 22px); pointer-events: none; }
+.mi-prime .mi-bf-badge-top, .rich-content .mi-prime .mi-bf-badge-top { position: relative; display: block; color: #0b0b0b !important; font-size: 13px !important; font-weight: 800 !important; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1 !important; }
+.mi-prime .mi-bf-badge-mid, .rich-content .mi-prime .mi-bf-badge-mid { position: relative; display: block; color: #0b0b0b !important; font-size: 34px !important; font-weight: 900 !important; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1 !important; }
+.mi-prime .mi-bf-badge-tag, .rich-content .mi-prime .mi-bf-badge-tag { position: relative; display: block; margin-top: 3px; padding: 3px 9px; border-radius: 999px; background: #c8102e; color: #fff !important; font-size: 10px !important; font-weight: 800 !important; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.2 !important; }
+@keyframes mi-bf-pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.75); } 70% { box-shadow: 0 0 0 7px rgba(255, 59, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); } }
+@keyframes mi-bf-glow { 0% { box-shadow: 0 0 0 0 rgba(255, 216, 20, 0.55); } 70% { box-shadow: 0 0 0 10px rgba(255, 216, 20, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 216, 20, 0); } }
+@keyframes mi-bf-shine { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+@media (prefers-reduced-motion: reduce) { .mi-bf-dot, .mi-prime.mi-bf a.mi-prime-btn, .mi-prime.mi-bf a.mi-prime-btn::after, .mi-topbar.mi-bf .mi-topbar-btn::after { animation: none; } }
+@media (max-width: 640px) { .mi-prime .mi-bf-badge-top, .rich-content .mi-prime .mi-bf-badge-top { font-size: 10px !important; } .mi-prime .mi-bf-badge-mid, .rich-content .mi-prime .mi-bf-badge-mid { font-size: 23px !important; } .mi-prime .mi-bf-badge-tag, .rich-content .mi-prime .mi-bf-badge-tag { font-size: 9px !important; padding: 2px 7px; } .mi-bf-dot { margin-right: 6px; } }
+@media (max-width: 560px) { .mi-prime.mi-bf .mi-prime-img { width: 108px; } }
 
 /* ── 728x90 Prime banner in the article ── */
 .mi-prime, .rich-content .mi-prime { position: relative; display: flex; align-items: center; gap: 16px; width: 100%; max-width: 728px; min-height: 90px; margin: 24px auto; overflow: hidden; border-radius: 14px; background: linear-gradient(100deg, #16261d 0%, #1c3829 60%, #245038 100%); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16); }
@@ -955,7 +963,7 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
   .mi-prime-img { width: 96px; align-self: stretch; }
   .mi-prime-text { flex: 1 1 0; padding: 12px 12px 8px 0; }
   .mi-prime .mi-prime-title { font-size: 16px !important; }
-  .mi-prime a.mi-prime-btn, .rich-content .mi-prime a.mi-prime-btn { flex: 1 0 100%; margin: 0 12px 12px; text-align: center; }
+  .mi-prime a.mi-prime-btn, .rich-content .mi-prime a.mi-prime-btn { flex: 1 0 calc(100% - 24px); margin: 0 12px 12px; text-align: center; }
 }
 
 /* ── Our picks at a glance: three cards after the intro ── */

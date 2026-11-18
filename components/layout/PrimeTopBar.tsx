@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
-import { BLACK_FRIDAY, blackFridayUrl, isBlackFriday, primeUrl } from '@/lib/affiliate'
+import { blackFridayUrl, isBlackFriday, primeUrl } from '@/lib/affiliate'
 
 const KEY = 'mi_prime_bar_closed'
 const BF_KEY = 'mi_bf_bar_closed'
@@ -43,11 +43,12 @@ export default function PrimeTopBar() {
     return (
       <div className="mi-topbar mi-bf" role="region" aria-label="Amazon Black Friday deals">
         <span className="mi-topbar-text">
-          <strong>Amazon Black Friday Week is on</strong>
-          <span className="mi-topbar-more"> &middot; deals on grow kits, field guides and gear, {BLACK_FRIDAY.label}</span>
+          <span className="mi-bf-dot" aria-hidden="true" />
+          <strong>Black Friday deals are live</strong>
+          <span className="mi-topbar-more"> on Amazon &middot; limited-time discounts, grab them before they&rsquo;re gone</span>
         </span>
         <a className="mi-topbar-btn" href={blackFridayUrl('topbar')} target="_blank" rel="sponsored nofollow noopener">
-          Shop the deals
+          Grab the deals
         </a>
         <button type="button" className="mi-topbar-x" aria-label="Close" onClick={() => close()}>
           <X className="w-4 h-4" />

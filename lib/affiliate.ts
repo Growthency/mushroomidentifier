@@ -55,7 +55,7 @@ const GEAR = {
   bttrOyster: { title: 'Back to the Roots Organic Oyster Mushroom Grow Kit', by: 'Back to the Roots', note: 'Organic countertop kit. Open it, mist it daily, and the listing promises oyster mushrooms in about 10 days.', dp: 'B00CD0KZ78', image: '/affiliate/oysterKit.webp' },
   nsBlueOyster: { title: 'North Spore Blue Oyster Mushroom Grow Kit, 4 lb', by: 'North Spore', note: 'Larger 4 lb kit with a spray bottle. The listing gives 0.5 to 1.5 lb on the first harvest, with more flushes after.', dp: 'B076VWP33D', image: '/affiliate/blueKit.webp' },
   goldenOyster: { title: 'Organic 4 lb Golden Oyster Mushroom Growing Kit', by: 'Double-sided fruiting kit', note: 'Golden oysters grow in warm rooms and fruit from two sides of the block, per the listing.', dp: 'B0F3JLNN8X', image: '/affiliate/goldKit.webp' },
-  inbloomLions: { title: 'inbloom Lion\u2019s Mane Mushroom Growing Kit, 4 lb', by: 'inbloom', note: 'A 4 lb kit with a spray bottle for growing lion\u2019s mane on the counter.', dp: 'B0HFSF6HCK', image: '/affiliate/lionsManeKit.webp' },
+  inbloomLions: { title: 'inbloom Lion’s Mane Mushroom Growing Kit, 4 lb', by: 'inbloom', note: 'A 4 lb kit with a spray bottle for growing lion’s mane on the counter.', dp: 'B0HFSF6HCK', image: '/affiliate/lionsManeKit.webp' },
   cosori5ss: { title: 'Cosori 5-Tray Stainless Steel Food Dehydrator', by: 'Cosori', note: '3.1 sq ft of drying space on stainless trays. One of the most-reviewed dehydrators on Amazon.', dp: 'B0CHRWLM5Z', image: '/affiliate/dehydrator.webp' },
   cosori10: { title: 'Cosori 10-Tray Stainless Steel Food Dehydrator', by: 'Cosori', note: '7.4 sq ft of drying space for a large harvest or a full season of mushrooms.', dp: 'B0H3PDPV1L', image: '/affiliate/dehydrator.webp' },
   cosoriBudget: { title: 'Cosori 5-Tray BPA-Free Food Dehydrator', by: 'Cosori', note: 'Lower-cost model with temperature control up to 165 F. Enough for a few baskets of mushrooms.', dp: 'B09GFVL7QX', image: '/affiliate/dehydrator.webp' },
@@ -149,7 +149,7 @@ export function primeUrl(sub: string): string {
  * the banners point at the deals page for that window and go back to Prime afterwards.
  * The end is midnight Pacific at the close of November 30.
  */
-export const BLACK_FRIDAY = { start: Date.UTC(2026, 10, 18, 0, 0), end: Date.UTC(2026, 11, 1, 8, 0), label: 'Nov 19–30' }
+export const BLACK_FRIDAY = { start: Date.UTC(2026, 10, 18, 0, 0), end: Date.UTC(2026, 11, 1, 8, 0) }
 
 export function isBlackFriday(now = Date.now()): boolean {
   return now >= BLACK_FRIDAY.start && now < BLACK_FRIDAY.end
@@ -162,7 +162,7 @@ export function blackFridayUrl(sub: string): string {
 
 function blackFridayBannerHtml(sub: string): string {
   const u = blackFridayUrl(sub)
-  return `<aside class="mi-prime mi-bf"><a class="mi-prime-img mi-bf-badge" href="${u}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><span class="mi-bf-badge-top">Black Friday</span><span class="mi-bf-badge-mid">Week</span><span class="mi-bf-badge-date">${BLACK_FRIDAY.label}</span></a><div class="mi-prime-text"><span class="mi-prime-eyebrow">Black Friday Week &amp; Cyber Monday</span><strong class="mi-prime-title">Amazon’s biggest deals of the year are on</strong><span class="mi-prime-sub">Deals on grow kits, field guides, dehydrators and gear, ${BLACK_FRIDAY.label}.</span></div><a class="mi-prime-btn" href="${u}" target="_blank" rel="sponsored nofollow noopener">Shop the deals</a></aside>`
+  return `<aside class="mi-prime mi-bf"><a class="mi-prime-img mi-bf-badge" href="${u}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><span class="mi-bf-badge-top">Black Friday</span><span class="mi-bf-badge-mid">Deals</span><span class="mi-bf-badge-tag">Limited time</span></a><div class="mi-prime-text"><span class="mi-prime-eyebrow"><span class="mi-bf-dot"></span>Black Friday deals are live on Amazon</span><strong class="mi-prime-title">Hurry, grab them before they’re gone</strong><span class="mi-prime-sub">Limited-time discounts. See today’s prices on kits and gear.</span></div><a class="mi-prime-btn" href="${u}" target="_blank" rel="sponsored nofollow noopener">Grab the deals</a></aside>`
 }
 
 /** In-content landscape banner, 728x90 on desktop. Part of the article flow. */
