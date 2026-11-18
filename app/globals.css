@@ -935,10 +935,10 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
 .mi-prime.mi-bf .mi-prime-eyebrow { color: #ffd814 !important; }
 .mi-prime.mi-bf a.mi-prime-btn, .rich-content .mi-prime.mi-bf a.mi-prime-btn { background: #ffd814 !important; color: #0b0b0b !important; }
 .mi-bf-badge, .rich-content .mi-bf-badge { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 90px; background: radial-gradient(circle at 30% 20%, #3a2f00 0%, #141414 55%, #000 100%); color: #ffd814 !important; text-decoration: none !important; border-right: 1px solid #333; }
-.mi-bf-badge-top { font-size: 15px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; }
-.mi-bf-badge-mid { font-size: 24px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1; color: #fff; }
-.mi-bf-badge-date { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #e8e2cf; }
-@media (max-width: 640px) { .mi-bf-badge-top { font-size: 11px; } .mi-bf-badge-mid { font-size: 17px; } .mi-bf-badge-date { font-size: 10px; } }
+.mi-prime .mi-bf-badge-top, .rich-content .mi-prime .mi-bf-badge-top { display: block; color: #ffd814 !important; font-size: 15px !important; font-weight: 800 !important; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1 !important; }
+.mi-prime .mi-bf-badge-mid, .rich-content .mi-prime .mi-bf-badge-mid { display: block; color: #fff !important; font-size: 24px !important; font-weight: 900 !important; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1 !important; }
+.mi-prime .mi-bf-badge-date, .rich-content .mi-prime .mi-bf-badge-date { display: block; color: #e8e2cf !important; font-size: 11px !important; font-weight: 700 !important; letter-spacing: 0.08em; line-height: 1.2 !important; }
+@media (max-width: 640px) { .mi-prime .mi-bf-badge-top, .rich-content .mi-prime .mi-bf-badge-top { font-size: 11px !important; } .mi-prime .mi-bf-badge-mid, .rich-content .mi-prime .mi-bf-badge-mid { font-size: 17px !important; } .mi-prime .mi-bf-badge-date, .rich-content .mi-prime .mi-bf-badge-date { font-size: 10px !important; } }
 
 /* ── 728x90 Prime banner in the article ── */
 .mi-prime, .rich-content .mi-prime { position: relative; display: flex; align-items: center; gap: 16px; width: 100%; max-width: 728px; min-height: 90px; margin: 24px auto; overflow: hidden; border-radius: 14px; background: linear-gradient(100deg, #16261d 0%, #1c3829 60%, #245038 100%); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16); }
