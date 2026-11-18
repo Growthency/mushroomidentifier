@@ -144,8 +144,30 @@ export function primeUrl(sub: string): string {
   return `${BOUNTY.prime}&ascsubtag=${encodeURIComponent(sub)}`
 }
 
+/**
+ * Amazon's Black Friday Week and Cyber Monday run November 19 to 30, 2026. The bar and
+ * the banners point at the deals page for that window and go back to Prime afterwards.
+ * The end is midnight Pacific at the close of November 30.
+ */
+export const BLACK_FRIDAY = { start: Date.UTC(2026, 10, 18, 0, 0), end: Date.UTC(2026, 11, 1, 8, 0), label: 'Nov 19–30' }
+
+export function isBlackFriday(now = Date.now()): boolean {
+  return now >= BLACK_FRIDAY.start && now < BLACK_FRIDAY.end
+}
+
+/** Black Friday deals page with a bf- subtag, so the report separates it from Prime. */
+export function blackFridayUrl(sub: string): string {
+  return `https://www.amazon.com/blackfriday?tag=${AMAZON_TAG}&ascsubtag=${encodeURIComponent(`bf-${sub}`.slice(0, 40))}`
+}
+
+function blackFridayBannerHtml(sub: string): string {
+  const u = blackFridayUrl(sub)
+  return `<aside class="mi-prime mi-bf"><a class="mi-prime-img mi-bf-badge" href="${u}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><span class="mi-bf-badge-top">Black Friday</span><span class="mi-bf-badge-mid">Week</span><span class="mi-bf-badge-date">${BLACK_FRIDAY.label}</span></a><div class="mi-prime-text"><span class="mi-prime-eyebrow">Black Friday Week &amp; Cyber Monday</span><strong class="mi-prime-title">Amazon’s biggest deals of the year are on</strong><span class="mi-prime-sub">Grow kits, field guides, dehydrators and foraging gear, ${BLACK_FRIDAY.label}.</span></div><a class="mi-prime-btn" href="${u}" target="_blank" rel="sponsored nofollow noopener">Shop the deals</a></aside>`
+}
+
 /** In-content landscape banner, 728x90 on desktop. Part of the article flow. */
 export function primeBannerHtml(sub: string): string {
+  if (isBlackFriday()) return blackFridayBannerHtml(sub)
   const u = primeUrl(sub)
   return `<aside class="mi-prime"><a class="mi-prime-img" href="${u}" target="_blank" rel="sponsored nofollow noopener" tabindex="-1"><img src="/affiliate/prime.webp" alt="" width="160" height="90" loading="lazy"></a><div class="mi-prime-text"><span class="mi-prime-eyebrow">Free for 30 days</span><strong class="mi-prime-title">Try Amazon Prime free</strong><span class="mi-prime-sub">Fast delivery on field guides, kits and gear.</span></div><a class="mi-prime-btn" href="${u}" target="_blank" rel="sponsored nofollow noopener">Start free trial</a></aside>`
 }

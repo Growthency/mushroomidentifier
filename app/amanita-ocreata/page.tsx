@@ -11,6 +11,9 @@ import BlogComments from '@/components/blog/BlogComments'
 import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 
+// Re-render every 10 minutes so the date-based banner switches without a deploy.
+export const revalidate = 600
+
 export const metadata: Metadata = {
   title: 'Amanita ocreata (Western Destroying Angel) ID Guide',
   description:

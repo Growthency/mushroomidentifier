@@ -1,9 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
-import { primeUrl } from '@/lib/affiliate'
+import { BLACK_FRIDAY, blackFridayUrl, isBlackFriday, primeUrl } from '@/lib/affiliate'
 
 const KEY = 'mi_prime_bar_closed'
+const BF_KEY = 'mi_bf_bar_closed'
 const QUIET_MS = 7 * 24 * 60 * 60 * 1000
 
 /**
@@ -13,10 +14,11 @@ const QUIET_MS = 7 * 24 * 60 * 60 * 1000
  */
 export default function PrimeTopBar() {
   const [open, setOpen] = useState(true)
+  const bf = isBlackFriday()
 
   useEffect(() => {
     try {
-      const at = Number(localStorage.getItem(KEY) || 0)
+      const at = Number(localStorage.getItem(bf ? BF_KEY : KEY) || 0)
       if (at && Date.now() - at < QUIET_MS) close(false)
     } catch {
       /* storage blocked: keep the bar */
@@ -28,7 +30,7 @@ export default function PrimeTopBar() {
     document.documentElement.style.setProperty('--mi-bar-h', '0px')
     if (remember) {
       try {
-        localStorage.setItem(KEY, String(Date.now()))
+        localStorage.setItem(bf ? BF_KEY : KEY, String(Date.now()))
       } catch {
         /* storage blocked: the bar returns on the next visit */
       }
@@ -36,6 +38,23 @@ export default function PrimeTopBar() {
   }
 
   if (!open) return null
+
+  if (bf) {
+    return (
+      <div className="mi-topbar mi-bf" role="region" aria-label="Amazon Black Friday deals">
+        <span className="mi-topbar-text">
+          <strong>Amazon Black Friday Week is on</strong>
+          <span className="mi-topbar-more"> &middot; deals on grow kits, field guides and gear, {BLACK_FRIDAY.label}</span>
+        </span>
+        <a className="mi-topbar-btn" href={blackFridayUrl('topbar')} target="_blank" rel="sponsored nofollow noopener">
+          Shop the deals
+        </a>
+        <button type="button" className="mi-topbar-x" aria-label="Close" onClick={() => close()}>
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="mi-topbar" role="region" aria-label="Amazon Prime trial">

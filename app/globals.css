@@ -926,6 +926,20 @@ article details[open] summary span:last-child { transform: rotate(45deg); displa
 .mi-topbar-x:hover { opacity: 1; }
 @media (max-width: 640px) { .mi-topbar { gap: 8px; font-size: 12px; } .mi-topbar-more { display: none; } .mi-topbar-btn { padding: 6px 10px; } }
 
+/* Black Friday Week variant: black and gold, same sizes as the Prime pieces */
+.mi-topbar.mi-bf { background: #0b0b0b; color: #ffd814; border-bottom: 1px solid #2a2a2a; }
+.mi-topbar.mi-bf .mi-topbar-more { color: #e8e2cf; }
+.mi-topbar.mi-bf .mi-topbar-btn { background: #ffd814; color: #0b0b0b; }
+.mi-topbar.mi-bf .mi-topbar-btn:hover { background: #ffe14d; color: #0b0b0b; }
+.mi-prime.mi-bf, .rich-content .mi-prime.mi-bf { background: linear-gradient(90deg, #0b0b0b 0%, #1c1c1c 100%); border: 1px solid #333; }
+.mi-prime.mi-bf .mi-prime-eyebrow { color: #ffd814 !important; }
+.mi-prime.mi-bf a.mi-prime-btn, .rich-content .mi-prime.mi-bf a.mi-prime-btn { background: #ffd814 !important; color: #0b0b0b !important; }
+.mi-bf-badge, .rich-content .mi-bf-badge { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 90px; background: radial-gradient(circle at 30% 20%, #3a2f00 0%, #141414 55%, #000 100%); color: #ffd814 !important; text-decoration: none !important; border-right: 1px solid #333; }
+.mi-bf-badge-top { font-size: 15px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; }
+.mi-bf-badge-mid { font-size: 24px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1; color: #fff; }
+.mi-bf-badge-date { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #e8e2cf; }
+@media (max-width: 640px) { .mi-bf-badge-top { font-size: 11px; } .mi-bf-badge-mid { font-size: 17px; } .mi-bf-badge-date { font-size: 10px; } }
+
 /* ── 728x90 Prime banner in the article ── */
 .mi-prime, .rich-content .mi-prime { position: relative; display: flex; align-items: center; gap: 16px; width: 100%; max-width: 728px; min-height: 90px; margin: 24px auto; overflow: hidden; border-radius: 14px; background: linear-gradient(100deg, #16261d 0%, #1c3829 60%, #245038 100%); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16); }
 .mi-prime-img { flex-shrink: 0; display: block; align-self: stretch; width: 160px; }

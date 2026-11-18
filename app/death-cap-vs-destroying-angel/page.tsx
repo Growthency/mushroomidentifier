@@ -13,6 +13,9 @@ import LiveViewCount from '@/components/blog/LiveViewCount'
 import ViewTracker from '@/components/blog/ViewTracker'
 import AffiliateBox from '@/components/blog/AffiliateBox'
 
+// Re-render every 10 minutes so the date-based banner switches without a deploy.
+export const revalidate = 600
+
 export const metadata: Metadata = {
   title: 'Death Cap vs Destroying Angel: ID Guide',
   description:
