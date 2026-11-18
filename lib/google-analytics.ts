@@ -147,7 +147,9 @@ async function fetchGA4Dashboard(startDate: string, endDate: string): Promise<GA
     name: row.dimensionValues?.[0]?.value || 'Unassigned',
     sessions: Number(row.metricValues?.[0]?.value || 0),
   }))
-  if (aiSessions > 0) {
+  // GA4 may already report an AI channel of its own; only derive one when it does not.
+  const gaHasAi = channels.some((c: any) => /ai|assistant|generative/i.test(c.name))
+  if (aiSessions > 0 && !gaHasAi) {
     const ref = channels.find((c: any) => c.name === 'Referral')
     if (ref) ref.sessions = Math.max(0, ref.sessions - aiSessions)
     channels.push({ name: 'AI Assistant', sessions: aiSessions })
