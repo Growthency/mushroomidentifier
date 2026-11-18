@@ -4,6 +4,7 @@ import Link from 'next/link'
 import {
   Plus, Pencil, Trash2, Eye, Loader2, Link2,
   ChevronLeft, ChevronRight, Search, Globe, Lock, ExternalLink,
+  ArrowUp, ArrowDown, ArrowUpDown,
 } from 'lucide-react'
 import { useModal } from '@/components/admin/AdminModal'
 import { useTheme } from '@/components/providers/ThemeProvider'
@@ -18,6 +19,8 @@ interface Post {
 }
 
 type StatusFilter = 'all' | 'published' | 'draft' | 'scheduled'
+type SortKey = 'date' | 'views' | 'links'
+type SortDir = 'asc' | 'desc'
 
 function countInternalLinks(html: string): number {
   if (!html) return 0
@@ -35,9 +38,11 @@ interface PostsResponse {
   page: number
 }
 
-function buildPostsUrl(p: number, filter: StatusFilter): string {
+function buildPostsUrl(p: number, filter: StatusFilter, sort: SortKey | null, dir: SortDir): string {
   const qs = new URLSearchParams({ page: String(p) })
   if (filter !== 'all') qs.set('status', filter)
+  // Sorting is done on the server across every page of the list.
+  if (sort) { qs.set('sort', sort); qs.set('dir', dir) }
   return `/api/admin/posts?${qs.toString()}`
 }
 
@@ -49,12 +54,30 @@ export default function AdminPagesPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [deleting, setDeleting] = useState<number | null>(null)
   const [search, setSearch] = useState('')
+  // Column sort: click a header → highest first, again → lowest first,
+  // a third time → back to the default (newest first).
+  const [sortBy, setSortBy] = useState<SortKey | null>(null)
+  const [sortDir, setSortDir] = useState<SortDir>('desc')
+  const toggleSort = (col: SortKey) => {
+    if (sortBy === col) {
+      if (sortDir === 'desc') setSortDir('asc')
+      else { setSortBy(null); setSortDir('desc') }
+    } else {
+      setSortBy(col)
+      setSortDir('desc')
+    }
+    setPage(1)
+  }
+  const SortIcon = ({ col }: { col: SortKey }) =>
+    sortBy === col
+      ? (sortDir === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />)
+      : <ArrowUpDown className="w-3 h-3 opacity-40" />
 
   // Pull through the shared admin cache. After the first visit, returning
   // to this page (or switching filters/pages back to one we've seen) is
   // instant — cached rows render immediately while a background refetch
   // keeps them fresh.
-  const url = buildPostsUrl(page, statusFilter)
+  const url = buildPostsUrl(page, statusFilter, sortBy, sortDir)
   const {
     data: pageData,
     isInitialLoading,
@@ -212,9 +235,15 @@ export default function AdminPagesPage() {
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Category</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden lg:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Type</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden lg:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Status</th>
-                <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Date</th>
-                <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Views</th>
-                <th className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Links</th>
+                {([['date', 'Date'], ['views', 'Views'], ['links', 'Links']] as [SortKey, string][]).map(([col, label]) => (
+                  <th key={col} className="text-left px-4 py-3.5 text-[10px] font-semibold uppercase tracking-wider hidden md:table-cell"
+                    style={{ color: sortBy === col ? '#10b981' : dark ? '#64748b' : '#94a3b8' }}>
+                    <button onClick={() => toggleSort(col)} className="inline-flex items-center gap-1 uppercase tracking-wider hover:opacity-70 transition-opacity"
+                      title={sortBy !== col ? `Sort by ${label.toLowerCase()}: highest first` : sortDir === 'desc' ? 'Click: lowest first' : 'Click: clear sort'}>
+                      {label} <SortIcon col={col} />
+                    </button>
+                  </th>
+                ))}
                 <th className="text-right px-5 py-3.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: dark ? '#64748b' : '#94a3b8' }}>Actions</th>
               </tr>
             </thead>

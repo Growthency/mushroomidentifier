@@ -40,14 +40,35 @@ export async function GET(req: NextRequest) {
   // pills can still show real totals while the user is filtered down.
   const status = url.searchParams.get('status') // 'published' | 'draft' | 'scheduled' | null
 
-  // Build the list query. Filter only when an allowed status is passed.
-  let listQuery = admin
-    .from('blog_posts')
-    .select('*', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1)
-  if (status === 'published' || status === 'draft' || status === 'scheduled') {
-    listQuery = listQuery.eq('status', status)
+  // Sorting applies to the whole filtered list, then the page is cut out,
+  // so "highest views" really is the highest across every page.
+  //   sort=date|views|links, dir=asc|desc (default: newest first)
+  const sortParam = url.searchParams.get('sort')
+  const sort = sortParam === 'views' || sortParam === 'links' ? sortParam : 'date'
+  const desc = url.searchParams.get('dir') !== 'asc'
+  const statusOk = status === 'published' || status === 'draft' || status === 'scheduled'
+
+  let listQuery
+  if (sort === 'links') {
+    // Internal-link count lives in the HTML, so order it here: fetch the
+    // filtered rows, count, sort, page. A few hundred posts is fine.
+    let allQuery = admin.from('blog_posts').select('*', { count: 'exact' })
+    if (statusOk) allQuery = allQuery.eq('status', status)
+    listQuery = allQuery.then((res: any) => {
+      const rows = [...(res.data ?? [])].sort((a: any, b: any) => {
+        const d = countInternalLinks(a.content) - countInternalLinks(b.content)
+        return (desc ? -d : d) || Date.parse(b.created_at) - Date.parse(a.created_at)
+      })
+      return { ...res, data: rows.slice(offset, offset + limit) }
+    })
+  } else {
+    let q = admin
+      .from('blog_posts')
+      .select('*', { count: 'exact' })
+      .order(sort === 'views' ? 'views' : 'created_at', { ascending: !desc, nullsFirst: !desc })
+      .range(offset, offset + limit - 1)
+    if (statusOk) q = q.eq('status', status)
+    listQuery = q
   }
 
   // Run paginated list + status counts in parallel — head-only count
@@ -68,7 +89,16 @@ export async function GET(req: NextRequest) {
     page,
     totalPages: Math.ceil((listRes.count ?? 0) / limit),
     status: status ?? 'all',
+    sort,
+    dir: desc ? 'desc' : 'asc',
   })
+}
+
+// Links to our own pages inside a post's HTML (same rule as the admin table).
+function countInternalLinks(html: string): number {
+  if (!html) return 0
+  const matches = html.match(/<a\s[^>]*href=["'](\/[^"']*|https?:\/\/mushroomidentifiers\.com[^"']*)["'][^>]*>/gi)
+  return matches?.length || 0
 }
 
 // Auto-generate excerpt from HTML content (strip tags, first ~160 chars)
