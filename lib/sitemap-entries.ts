@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/`,          lastModified: lastMod, changeFrequency: 'weekly',  priority: 1.0 },
     { url: `${BASE_URL}/pricing`,   lastModified: lastMod, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${BASE_URL}/blog`,      lastModified: lastMod, changeFrequency: 'weekly',  priority: 0.9 },
+    { url: `${BASE_URL}/mushroom-guides`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/about`,     lastModified: lastMod, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/contact`,   lastModified: lastMod, changeFrequency: 'monthly', priority: 0.7 },
 

@@ -56,7 +56,7 @@ export function chartTargetsFor(slug: string): string[] {
   const self = slug.startsWith('/') ? slug : `/${slug}`
   const out = [...(FROM[self] ?? [])]
   for (const family of FAMILIES) if (family.includes(self)) out.push(...family)
-  return Array.from(new Set(out)).filter((s) => s !== self).slice(0, MAX)
+  return Array.from(new Set(out)).filter((s) => s !== self)
 }
 
 /** The targets that are live now, in the order chartTargetsFor gave them. */
@@ -69,7 +69,7 @@ export async function getChartLinks(slug: string): Promise<{ slug: string; title
     .eq('status', 'published')
     .in('slug', targets)
   const rows = (data ?? []) as { slug: string; title: string }[]
-  return targets.flatMap((t) => rows.filter((r) => r.slug === t))
+  return targets.flatMap((t) => rows.filter((r) => r.slug === t)).slice(0, MAX)
 }
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')

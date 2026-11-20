@@ -4,6 +4,7 @@ import { Inter, Playfair_Display } from 'next/font/google'
 import Script from 'next/script'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import LayoutShell from '@/components/layout/LayoutShell'
+import LatestGuides from '@/components/layout/LatestGuides'
 import ScrollToTop from '@/components/ui/ScrollToTop'
 import { getEnabledScripts, groupByPosition } from '@/lib/site-scripts'
 import { renderHeadScript } from '@/lib/render-head-script'
@@ -202,7 +203,7 @@ export default async function RootLayout({
         ))}
 
         <ThemeProvider>
-          <LayoutShell menus={menus} siteContent={siteContent}>{children}</LayoutShell>
+          <LayoutShell menus={menus} siteContent={siteContent} latest={<LatestGuides />}>{children}</LayoutShell>
           <ScrollToTop />
         </ThemeProvider>
 

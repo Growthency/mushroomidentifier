@@ -13,8 +13,11 @@ export default function LayoutShell({
   children,
   menus,
   siteContent,
+  latest,
 }: {
   children: React.ReactNode
+  /** Server-rendered "latest guides" block, shown above the footer. */
+  latest?: React.ReactNode
   menus?: MenuGroups
   siteContent?: SiteContent
 }) {
@@ -33,6 +36,7 @@ export default function LayoutShell({
           unit's admin-controlled Sticky flag is on) */}
       <AdSlot placement="header" className="px-4" allowSticky />
       <main>{children}</main>
+      {latest}
       {/* Adify — footer strip (above the site footer) */}
       <AdSlot placement="footer" className="px-4" />
       <Footer
